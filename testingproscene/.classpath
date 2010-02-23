@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/java-6-sun-1.6.0.16"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/core.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/pierre/Fun/src/processing/build/javadoc/core/"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/projects/workspace/native_libs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/jogl.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/projects/workspace/native_libs"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/opengl.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/proscene.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
