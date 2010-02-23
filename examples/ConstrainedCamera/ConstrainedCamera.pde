@@ -119,19 +119,19 @@ void displayDir(int dir, int x, int y, char c) {
 	    }
 		text(textToDisplay, x, y);
 }
-	
+
 void displayText() {
-		text("TRANSLATION :", 10, height-30);
-		displayDir(transDir, 190, height-30, 'F');
-		displayType(constraints[activeConstraint].translationConstraintType(), 10, height-60, 'T');
+		text("TRANSLATION :", 350, height-30);
+		displayDir(transDir, (350+90), height-30, 'F');
+		displayType(constraints[activeConstraint].translationConstraintType(), 350, height-60, 'T');
 		
-		text("ROTATION :", width-220,height-30);
-		displayDir(rotDir, width-100, height-30, 'D');
-		displayType(constraints[activeConstraint].rotationConstraintType(), width-220, height-60, 'R');
+		text("ROTATION :", width-120,height-30);		
+		displayDir(rotDir, width-50, height-30, 'D');		
+		displayType(constraints[activeConstraint].rotationConstraintType(), width-120, height-60, 'R');
 		
-		switch (activeConstraint) {
-		case 0 : text("Constraint direction defined w/r to WORLD (L)", 320,20); break;
-	    case 1 : text("Constraint direction defined w/r to CAMERA (L)", 320,20); break;
+		switch (activeConstraint) {	
+	    case 0 : text("Constraint direction defined w/r to WORLD (L)", 370,20); break;
+	    case 1 : text("Constraint direction defined w/r to CAMERA (L)", 370,20); break;
 	    }
 }
 	

@@ -387,7 +387,6 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			PVector trans = new PVector(0.0f, 0.0f,
 					coef * (-event.getWheelRotation()) * wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
-			//emit manipulated();
 			break;
 		      }
 		    case MOVE_FORWARD:
@@ -395,7 +394,6 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 		      //#CONNECTION# mouseMoveEvent() MOVE_FORWARD case
 		      translate(inverseTransformOf(new PVector(0.0f, 0.0f, 
 		    		  0.2f*flySpeed()*(-event.getWheelRotation()))));
-		      //emit manipulated();
 		      break;
 		    default:
 		      break;
@@ -404,11 +402,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 		  // #CONNECTION# startAction should always be called before
 		  if (prevConstraint != null)
 		    setConstraint(prevConstraint);
-
-		  // The wheel triggers a fastDraw. A final updatePS is needed after the last wheel event to
-		  // polish the rendering using draw(). Since the last wheel event does not say its name, we use
-		  // the flyTimer_ to trigger flyUpdate(), which emits manipulated. Two wheel events
-		  // separated by more than this delay milliseconds will trigger a draw().
+		  
 		  int finalDrawAfterWheelEventDelay = 400;
 
 		  // Starts (or prolungates) the timer.
@@ -416,9 +410,6 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 		  flyTimer.setDelay(finalDrawAfterWheelEventDelay);
 		  flyTimer.start();
 
-		  // This could also be done *before* manipulated is emitted, so that isManipulated() returns false.
-		  // But then fastDraw would not be used with wheel.
-		  // Detecting the last wheel event and forcing a final draw() is done using the timer_.
 		  action = PScene.MouseAction.NO_MOUSE_ACTION;
 	}
 	

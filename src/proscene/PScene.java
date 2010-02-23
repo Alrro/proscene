@@ -287,16 +287,18 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		
 		String textToDisplay = new String();
 		textToDisplay += "KEYBOARD\n";
-		textToDisplay += "+: Increase fly speed (only for fly camera mode)\n";
-		textToDisplay += "-: Decrease fly speed (only for fly camera mode)\n";
-		textToDisplay += "a: Toggle axis drawn\n";
-		textToDisplay += "c: Toggle camera mode (revolve around point or fly mode)\n";
+		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
+		textToDisplay += "a/g: Toggle axis/grid drawn\n";
+		textToDisplay += "c: Toggle camera mode (arcball or fly mode)\n";
 		textToDisplay += "e: Toggle camera type (ortographic or perspective)\n";
-		textToDisplay += "a: Toggle grid drawn\n";
 		textToDisplay += "h: Toggle the display of this help\n";
-		textToDisplay += "i: Toggle interactivity between PSCamera frame and PSInteractiveFrame (if any)\n";
+		textToDisplay += "i: Toggle interactivity between camera and interactiv frame (if any)\n";
 		textToDisplay += "s: Show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";
+		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
+		textToDisplay += "Arcball mode: motate, zoom and translate\n";
+		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
+		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
 		textToDisplay += "MOUSE MODIFIERS\n";
 		textToDisplay += "shift+left button: zoom on region\n";
 		textToDisplay += "ctrl+left button: rotate screen\n";
@@ -819,12 +821,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		if ( readyToGo ) {
 		// /**
 		//ZOOM_ON_REGION:		
-		if ( zoomOnRegion ) {
-	    	lCorner = event.getPoint();
-			//if(!event.isShiftDown()) {
-				//TODO call method
-				//zoomOnRegion = false;
-			//}			 
+		if ( zoomOnRegion || rotateScreen) {
+	    	if (zoomOnRegion) lCorner = event.getPoint();
+	    	if (rotateScreen) {
+	    		fCorner = event.getPoint();
+				camera().frame().mouseMoveEvent(event, camera());
+	    	}			 
 		} else if ( mouseGrabber()!= null ) {
 			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if (mouseGrabber().grabsMouse())
@@ -841,8 +843,6 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 			interactiveFrame().mouseMoveEvent(event, camera());
 		}
 		else {
-			if ( rotateScreen )
-				fCorner = event.getPoint();
 			camera().frame().mouseMoveEvent(event, camera());
 		}
 		}
