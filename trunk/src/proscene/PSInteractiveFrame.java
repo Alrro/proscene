@@ -25,7 +25,7 @@ import javax.swing.Timer;
 public class PSInteractiveFrame extends PSFrame
                                 implements PSMouseGrabber, Cloneable {
 	
-	static boolean horiz = true;//Two simultaneous manipulatedFrame require two mice!
+	static boolean horiz = true;//Two simultaneous PSInteractiveFrame require two mice!
 	
 	public enum CoordinateSystemConvention {LEFT_HANDED, RIGHT_HANDED};
 	protected CoordinateSystemConvention coordSysConvention;
@@ -179,7 +179,7 @@ public class PSInteractiveFrame extends PSFrame
 	 * {@link #mouseGrabberPool()} list. 
 	 * <p> 
 	 * Default value is {@code true}. When set to {@code false} using
-	 * {@link #removeFromMouseGrabberPool()}, the GLGraphics no longer
+	 * {@link #removeFromMouseGrabberPool()}, the PScene no longer
 	 * {@link #checkIfGrabsMouse(int, int, PSCamera)} on this PSMouseGrabber.
 	 * Use {@link #addInMouseGrabberPool()} to insert it back.
 	 */
@@ -626,7 +626,6 @@ public class PSInteractiveFrame extends PSFrame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
 			translate(trans);
-			// emit manipulated();
 		}
 
 		// #CONNECTION# startAction should always be called before
