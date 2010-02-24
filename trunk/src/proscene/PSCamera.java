@@ -8,17 +8,14 @@ import java.awt.Rectangle;
 
 
 /**
- * 
- * @author pierre
+ * A perspective or orthographic camera.
  * <p>
- *         A perspective or orthographic camera. 
- *         <p>
- *         A PSCamera defines some intrinsic parameters ({@link #fieldOfView()},
- *         {@link #position()}, {@link #viewDirection()}, {@link #upVector()}...)
- *         and useful positioning tools that ease its placement 
- *         ({@link #showEntireScene()}, {@link #fitSphere(PVector, float)},
- *         {@link #lookAt(PVector)}...). It exports its associated OpenGL projection and
- *         modelview matrices and can interactively be modified using the mouse.
+ * A PSCamera defines some intrinsic parameters ({@link #fieldOfView()},
+ * {@link #position()}, {@link #viewDirection()}, {@link #upVector()}...)
+ * and useful positioning tools that ease its placement
+ * ({@link #showEntireScene()}, {@link #fitSphere(PVector, float)},
+ * {@link #lookAt(PVector)}...). It exports its associated OpenGL projection and
+ * modelview matrices and can interactively be modified using the mouse.
  */
 public class PSCamera implements Cloneable {
 	static int viewport[] = new int [4];
@@ -26,6 +23,12 @@ public class PSCamera implements Cloneable {
 	static PVector normal[] = new PVector[6];
 	static float dist[] = new float[6];
 	
+	/**
+	 * Enumerates the two possible types of Camera.
+	 * <p>
+	 * This type mainly defines different camera projection matrix. Many other
+	 * methods take this Type into account.
+	 */
 	public enum Type {
 		PERSPECTIVE, ORTHOGRAPHIC
 	};
@@ -37,7 +40,7 @@ public class PSCamera implements Cloneable {
 	private int scrnWidth, scrnHeight; // size of the window, in pixels
 	private float fldOfView; // in radians
 	private PVector scnCenter;
-	private float scnRadius; // OpenGL units
+	private float scnRadius; // processing scene units
 	private float zNearCoef;
 	private float zClippingCoef;
 	private float orthoCoef;
@@ -162,7 +165,7 @@ public class PSCamera implements Cloneable {
 	 * It is orthogonal to {@link #viewDirection()} and to {@link #rightVector()}. 
 	 * <p> 
 	 * It corresponds to the Y axis of the associated {@link #frame()} (actually returns
-	 * {@link proscene.PSFrame#inverseTransformOf(PVector)}
+	 * {@link proscene.PSFrame#inverseTransformOf(PVector)})
 	 */
 	public PVector upVector() {
 		return frame().inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
@@ -493,7 +496,7 @@ public class PSCamera implements Cloneable {
 	 * {@code halfHeight}. 
 	 * <p> 
 	 * These values are only valid and used when the PSCamera is of {@link #type()}
-	 * ORTHOGRAPHIC and they are expressed in OpenGL units. 
+	 * ORTHOGRAPHIC and they are expressed in processing scene units.
 	 * <p> 
 	 * These values are proportional to the PSCamera (z projected) distance to
 	 * the {@link #revolveAroundPoint()}. When zooming on the object, the
@@ -772,7 +775,7 @@ public class PSCamera implements Cloneable {
 	/**
 	 * Returns the ratio between pixel and OpenPS units at {@code position}. 
 	 * <p> 
-	 * A line of {@code n * pixelPSRatio()} OpenGL units, located at {@code position} in
+	 * A line of {@code n * pixelPSRatio()} processing scene units, located at {@code position} in
 	 * the world coordinates system, will be projected with a length of {@code n} pixels on screen. 
 	 * <p> 
 	 * Use this method to scale objects so that they have a constant pixel size on screen.
@@ -1335,7 +1338,7 @@ public class PSCamera implements Cloneable {
 	 * of the half line. 
 	 * <p> 
 	 * {@code x} and {@code y} are expressed in Processing format (origin in the
-	 * upper left corner). Use {@link #screenHeight()} - y to convert to OpenGL units. 
+	 * upper left corner). Use {@link #screenHeight()} - y to convert to processing scene units. 
 	 * <p> 
 	 * This method is useful for analytical intersection in a selection method.
 	 */
@@ -1726,7 +1729,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the focus distance used by stereo display, expressed in OpenGL
+	 * Returns the focus distance used by stereo display, expressed in processing
 	 * units. 
 	 * <p> 
 	 * This is the distance in the virtual world between the Camera and the
@@ -1747,7 +1750,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Sets the focusDistance(), in OpenGL scene units.
+	 * Sets the focusDistance(), in processing scene units.
 	 */
 	public void setFocusDistance(float distance) {
 		focusDist = distance;

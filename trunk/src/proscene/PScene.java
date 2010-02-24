@@ -7,25 +7,57 @@ import java.awt.event.*;
 import javax.swing.event.*; 
 
 /**
- * 
- * @author pierre
- * 
- * A processing scene
- *
+ * A processing 3D interactive scene. A PScene provides a default interactivity for your scene through
+ * the mouse and keyboard which is supposed to fit most user needs.
+ * <p>
+ * A PScene has a full reach PSCamera, an two means to manipulate objects: an {@link #interactiveFrame()}
+ * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
+ * <p>
+ * To use a PScene, you can instantiate a PScene object directly or you can implement your own derived PScene
+ * class.
+ * <p>
+ * If you instantiate your own PScene object you should implement your {@link PApplet#draw()} as usual,
+ * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus for instance,
+ * if the following code define the body of your {@link PApplet#draw()}:
+ * <p>
+ * {@code scene.beginDraw();}<br>
+ * {@code box(1);}<br>
+ * {@code scene.endDraw();}<br>
+ * <p>
+ * you would obtain full interactivity to manipulate your scene (consisting in one single box).
+ * <p>
+ * If you derive from PScene you should implement {@link #scene()} which defines the objects
+ * in your scene and call it from {@link PApplet#draw()}: {@code public void draw() {scene.draw();}}
+ * <p>
+ * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
 public class PScene implements MouseWheelListener, MouseInputListener { 
-    
+    /**
+     * This enum defines keyboard actions to be binded to the keyboard. 
+     */
+	/**
     public enum KeyboardAction { DRAW_AXIS, DRAW_GRID, DISPLAY_FPS, ENABLE_TEXT, EXIT_VIEWER,
 		SAVE_SCREENSHOT, CAMERA_MODE, FULL_SCREEN, STEREO, ANIMATION, HELP, EDIT_CAMERA,
 		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN,
 		INCREASE_FLYSPEED, DECREASE_FLYSPEED, SNAPSHOT_TO_CLIPBOARD
 	};
+	*/
 	
+	/**
 	public enum MouseHandler { CAMERA, FRAME };
+	*/
 	
+	/**
+     * This enum defines mouse click actions to be binded to the mouse. 
+     */
+	/**
 	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, RAP_FROM_PIXEL, RAP_IS_CENTER,
 		CENTER_FRAME, CENTER_SCENE, SHOW_ENTIRE_SCENE, ALIGN_FRAME, ALIGN_CAMERA };
-		
+	*/
+	
+	/**
+	 * This enum defines mouse actions to be binded to the mouse.
+	 */
 	public enum MouseAction { NO_MOUSE_ACTION,
 			ROTATE, ZOOM, TRANSLATE,
 			MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD,
@@ -75,7 +107,10 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	
 	//warning: contraproCam only for testing purposes
 	//PMatrix3D contraproCam;
-	
+	/**
+	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
+	 * See the associated documentation.
+	 */
 	public PScene(PApplet p) {
 		parent = p;	
 		parent.addMouseListener(this);
@@ -130,12 +165,15 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	// 1. Associated objects
 		
 	/**
-	 * Returns the associated PScene.Camera, never {@code null}.
+	 * Returns the associated PSCamera, never {@code null}.
 	 */
 	public PSCamera camera() {		
 		return cam;
 	}
 	
+	/**
+	 * Replaces the current {@link #camera()} with {@code camera}
+	 */
 	public void setCamera (PSCamera camera) {
 		if (camera == null)
 			return;
@@ -146,11 +184,22 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		camera.setScreenWidthAndHeight(parent.width, parent.height);
 		cam = camera;
 	}
-		
+	
+	/**
+	 * Returns the PSInteractiveFrame associated to this PScene. It could be
+	 * null if there's no PSInteractiveFrame associated to this PScene. 
+	 * 
+	 * @see #setInteractiveFrame(PSInteractiveFrame)
+	 */
 	public PSInteractiveFrame interactiveFrame() {
 		return glIFrame;
 	} 
 	
+	/**
+	 * Sets {@code frame} as the PSInteractiveFrame associated to this PScene.
+	 * 
+	 * @see #interactiveFrame()
+	 */
 	public void setInteractiveFrame (PSInteractiveFrame frame) {
 		glIFrame = frame;		
 		interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) &&
@@ -159,6 +208,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 			iFrameIsDrwn = false;
 	}
 	
+	/**
+	 * Returns the current PSMouseGrabber, or {@code null} if none currently grabs mouse events.
+	 * <p> 
+	 * When {@link proscene.PSMouseGrabber#grabsMouse()}, the different mouse events are sent to it
+	 * instead of their usual targets ({@link #camera()} or {@link #interactiveFrame()}).
+	 */
 	public PSMouseGrabber mouseGrabber() {
 		return mouseGrbbr;
 	}
@@ -199,18 +254,31 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		setGridIsDrawn(!gridIsDrawn());
 	}
 	
+	/**
+	 * Toggles the state of the {@link #helpIsDrawn()}
+	 * 
+	 * @see #setHelpIsDrawn()
+	 */
 	public void toggleHelpIsDrawn() {
 		setHelpIsDrawn(!helpIsDrawn());
 	}
 	
 	//testing function to make toggle camera mode work properly
+	/**
+	 * Tests if the {@link #camera()} is in revolve mode (also known as arc-ball).
+	 * The other {@link #camera()} mode is fly.
+	 * 
+	 * {@link #toggleCameraMode()}
+	 */
 	public boolean cameraIsInRevolveMode() {
 		return ( (cameraLeftButton == MouseAction.ROTATE)
 			  || (cameraMidButton == MouseAction.ROTATE) 
 			  || (cameraRightButton == MouseAction.ROTATE));
 	}
 	
-	//testing
+	/**
+	 * Toggles the {@link #camera()} mode between arc-ball and fly.
+	 */
 	public void toggleCameraMode() {		 
 		if ( cameraIsInRevolveMode() ) {
 			camera().frame().updateFlyUpVector();
@@ -226,6 +294,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}		
 	}
 	
+	/**
+	 * Toggles the {@link #camera()} type between PERSPECTIVE and ORTHOGRAPHIC.
+	 */
 	public void toggleCameraType() {
 		if ( camera().type() == PSCamera.Type.PERSPECTIVE )
 			setCameraType(PSCamera.Type.ORTHOGRAPHIC);
@@ -233,7 +304,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 			setCameraType(PSCamera.Type.PERSPECTIVE);		
 	}
 	
-	//testing
+	/**
+	 * Toggles the {@link #interactiveFrame()} interactivity on and off.
+	 */
 	public void toggleDrawInteractiveFrame() {
 		if ( interactiveFrameIsDrawn() )
 			setDrawInteractiveFrame(false);
@@ -241,6 +314,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 			setDrawInteractiveFrame(true);
 	}
 	
+	/**
+	 * Toggles the draw with constraint on and off.	
+	 */
 	public void toggleDrawWithConstraint() {
 		if ( drawIsConstrained() )
 			setDrawWithConstraint(false);
@@ -248,6 +324,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 			setDrawWithConstraint(true);
 	}
 	
+	/**
+	 * Associates interactivity actions to defualt keys.
+	 */
 	public void defaultKeyBindings() {
 		if (parent.key == '+') {
 			camera().setFlySpeed(camera().flySpeed() * 1.5f);
@@ -281,6 +360,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}
 	}
 	
+	/**
+	 * Displays the help text describing how interactivity actions are binded to the keyboard and mouse.
+	 */
 	public void help() {
 		parent.textFont(font);
 		parent.textMode(PApplet.SCREEN);
@@ -312,6 +394,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	
 	// 3. Drawing methods
 	
+	/**
+	 * 
+	 */
 	public void init() {}
 	
     public void draw() {
@@ -348,86 +433,179 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	}
 	
 	// 4. Scene dimensions
+	
+	/**
+	 * Returns the scene radius.
+	 * <p>
+	 * Convenience wrapper function that simply calls {@code camera().sceneRadius()}
+	 * 
+	 * @see #setSceneRadius(float)
+	 * @see #sceneCenter()
+	 */
 	public float sceneRadius () {
 		return camera().sceneRadius();
 	} 
-	  
+	
+	/**
+	 * Returns the scene center.
+	 * <p>
+	 * Convenience wrapper function that simply calls {@code camera().sceneCenter()}
+	 * 
+	 * @see #setSceneCenter(PVector)
+	 * {@link #sceneRadius()}
+	 */
 	public PVector sceneCenter () {
 		return camera().sceneCenter();
 	} 
 	
+	/**
+	 * Sets the {@link #sceneRadius()} of the PScene. 
+	 * <p>
+	 * Convenience wrapper function that simply calls {@code camera().setSceneRadius(radius)}
+	 * 
+	 * @see #setSceneCenter(PVector)
+	 */
 	public void setSceneRadius (float radius) {
 		camera().setSceneRadius(radius);
 	}
 	
+	/**
+	 * Sets the {@link #sceneCenter()} of the PScene. 
+	 * <p>
+	 * Convenience wrapper function that simply calls {@code }
+	 * 
+	 * @see #setSceneRadius(float)
+	 */
 	public void setSceneCenter (PVector center) {
 		camera().setSceneCenter(center);
 	}
 	
+	/**
+	 * Sets the {@link #sceneCenter()} and {@link #sceneRadius()} of the PScene from the
+	 * {@code min} and {@code max} PVectors. 
+	 * <p>
+	 * Convenience wrapper function that simply calls {@code camera().setSceneBoundingBox(min,max)}
+	 * 
+	 * @see #setSceneRadius(float)
+	 * @see #setSceneCenter(PVector)
+	 */
 	public void setSceneBoundingBox (PVector min, PVector max) {
 		camera().setSceneBoundingBox(min,max);
 	}
 	
+	/**
+	 * Convenience wrapper function that simply calls {@code camera().showEntireScene()}
+	 * 
+	 * @see proscene.PSCamera#showEntireScene()
+	 */
 	public void showEntireScene () {
 		camera().showEntireScene();
 	}
 	
 	// 5. State of the viewer
+	
+	/**
+	 * Returns the current {@link #camera()} type.
+	 */
 	public final PSCamera.Type cameraType() {
 		return camera().type();
 	}
 	
+	/**
+	 * Sets the {@link #camera()} type.
+	 */
 	public void setCameraType(PSCamera.Type type) {
 		if ( type != camera().type() ) {
 			camera().setType(type);		
 		}
 	}
 	
+	/**
+	 * Returns the {@link PApplet#width} to {@link PApplet#height} aspect ratio of the
+	 * processing display window.
+	 */
 	public float aspectRatio() { 
 		return (float)parent.width / (float)parent.height;
 	}	
 	
 	// 6. Display of visual hints and Display methods
+	
+	/**
+	 * Returns {@code true} if axis is currently being drawn and {@code false} otherwise. 
+	 */
 	public boolean axisIsDrawn () {
 		return axisIsDrwn;
 	} 
 	
+	/**
+	 * Returns {@code true} if grid is currently being drawn and {@code false} otherwise. 
+	 */
 	public boolean gridIsDrawn() {
 		return gridIsDrwn;
 	}
 	
+	/**
+	 * Returns {@code true} if the {@link #help()} is currently being drawn and {@code false} otherwise. 
+	 */
 	public boolean helpIsDrawn() {
 		return helpIsDrwn;
 	}
 	
+	/**
+	 * Returns {@code true} if axis is currently being drawn and {@code false} otherwise. 
+	 */
 	public boolean interactiveFrameIsDrawn() {
 		return iFrameIsDrwn;
 	}
 	
+	/**
+	 * Returns {@code true} if drawn is currently being constrained and {@code false} otherwise. 
+	 */
 	public boolean drawIsConstrained() {
 		return withConstraint;
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code setAxisIsDrawn(true)}
+	 */
 	public void setAxisIsDrawn() {
 		setAxisIsDrawn(true);
 	}
 	
+	/**
+	 * Sets the display of the axis according to {@code draw}
+	 * 
+	 */
 	public void setAxisIsDrawn(boolean draw) {
 		axisIsDrwn = draw;
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code setGridIsDrawn(true)}
+	 */
 	public void setGridIsDrawn() {
 		setGridIsDrawn(true);
 	}
 	
+	/**
+	 * Sets the display of the grid according to {@code draw}
+	 * 
+	 */
 	public void setGridIsDrawn(boolean draw) {
 		gridIsDrwn = draw;
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code setHelpIsDrawn(true)}
+	 */
 	public void setHelpIsDrawn() {
 		setHelpIsDrawn(true);
 	}
 	
+	/**
+	 * Sets the display of the {@link #help()} according to {@code draw}
+	 * 
+	 */
 	public void setHelpIsDrawn(boolean draw) {
 		helpIsDrwn = draw;
 	}
@@ -436,20 +614,33 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		setDrawInteractiveFrame(true);
 	}
 	
+	/**
+	 * Sets the interactivity to the PScene {@link #interactiveFrame()} instance according to {@code draw}
+	 */
     public void setDrawInteractiveFrame(boolean draw) {
     	if (draw && (glIFrame == null))
     		return;
     	iFrameIsDrwn = draw;
 	}
     
+    /**
+	 * Constrain frame displacements according to {@code wConstraint}
+	 */
     public void setDrawWithConstraint(boolean wConstraint) {
     	withConstraint = wConstraint;
     }
 	
+    /**
+     * Convenience function that simply calls {@code drawAxis(1.0f)} 
+     */
 	public static void drawAxis() {
 		drawAxis(1.0f);
 	}
 	
+	/**
+	 * Draws an axis of length {@code length} which origin corrrespond to that
+	 * of the world coordinate system. 
+	 */
 	public static void drawAxis(float length) {
 		final float charWidth = length / 40.0f;
 		final float charHeight = length / 30.0f;
@@ -525,7 +716,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	 * 
 	 * Use {@link #drawArrow(PVector, PVector, float)} to place the arrow in 3D.
 	 * 
-	 * Uses current color and does not modify the OpenGL state.
+	 * Uses current color and does not modify the processing state.
 	 */
 	public static void drawArrow(float length, float radius) {
 		float head = 2.5f*(radius / length) + 0.1f;
@@ -867,7 +1058,6 @@ public class PScene implements MouseWheelListener, MouseInputListener {
     		mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() , camera());
     		if (!(mouseGrabber().grabsMouse()))
     			setMouseGrabber(null);
-    		// updateGL();
     	}
     	else if ( interactiveFrameIsDrawn() ) {
     		interactiveFrame().mouseReleaseEvent(event, camera());

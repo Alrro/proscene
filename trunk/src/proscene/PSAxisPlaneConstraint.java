@@ -2,11 +2,8 @@ package proscene;
 
 import processing.core.*;
 
-/**
- * 
- * @author pierre
- * <p>
- * An abstract class for PSFrame PSConstraints defined by an axis or a plane. * 
+/** 
+ * An abstract class for PSFrame PSConstraints defined by an axis or a plane.
  * <p> 
  * PSAxisPlaneConstraint is an interface for (translation and/or rotation)
  * PSConstraint that are defined by a direction. {@link #translationConstraintType()}

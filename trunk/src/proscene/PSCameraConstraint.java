@@ -3,9 +3,6 @@ package proscene;
 import processing.core.*;
 
 /**
- * 
- * @author pierre
- * <p>
  * A PSAxisPlaneConstraint defined in the camera coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}

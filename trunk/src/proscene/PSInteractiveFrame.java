@@ -8,18 +8,13 @@ import java.awt.Point;
 import javax.swing.Timer;
 
 /**
- * 
- * @author nakednous
+ * A PSInteractiveFrame is a PSFrame that can be rotated and translated using the mouse.
  * <p>
- *         A PSInteractiveFrame is a PSFrame that can be rotated and translated
- *         using the mouse. 
- *         <p> 
- *         It converts the mouse motion into a translation and an orientation
- *         updates. A PSInteractiveFrame is used to move an object in the scene.
- *         Combined with object selection, its PSMouseGrabber properties and a
- *         dynamic update of the scene, the PSInteractiveFrame introduces a
- *         great reactivity in your applications.
- * 
+ * It converts the mouse motion into a translation and an orientation updates.
+ * A PSInteractiveFrame is used to move an object in the scene. Combined with
+ * object selection, its PSMouseGrabber properties and a dynamic update of the
+ * scene, the PSInteractiveFrame introduces a great reactivity in your
+ * processing applications. 
  */
 
 public class PSInteractiveFrame extends PSFrame
@@ -27,6 +22,10 @@ public class PSInteractiveFrame extends PSFrame
 	
 	static boolean horiz = true;//Two simultaneous PSInteractiveFrame require two mice!
 	
+	/**
+	 * This enum defines the coordinate system convention which is defined as {@code LEFT_HANDED}
+	 * by default (processing standard).
+	 */
 	public enum CoordinateSystemConvention {LEFT_HANDED, RIGHT_HANDED};
 	protected CoordinateSystemConvention coordSysConvention;
 
