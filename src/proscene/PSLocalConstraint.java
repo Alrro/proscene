@@ -3,20 +3,17 @@ package proscene;
 import processing.core.*;
 
 /**
- * 
- * @author pierre
- * <p>
- * A GLAxisPlaneConstraint defined in the GLFrame local coordinate system. 
+ * A PSAxisPlaneConstraint defined in the PSFrame local coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
- * are expressed in the GLFrame local coordinate system (see
+ * are expressed in the PSFrame local coordinate system (see
  * {@link proscene.PSFrame#referenceFrame()}).
  */
 public class PSLocalConstraint extends PSAxisPlaneConstraint {
 
 	/**
 	 * Depending on {@link #translationConstraintType()}, {@code constrain} translation
-	 * to be along an axis or limited to a plane defined in the GLFrame local coordinate
+	 * to be along an axis or limited to a plane defined in the PSFrame local coordinate
 	 * system by {@link #translationConstraintDirection()}.
 	 */
 	public PVector constrainTranslation(PVector translation, PSFrame frame) {
@@ -42,7 +39,7 @@ public class PSLocalConstraint extends PSAxisPlaneConstraint {
 
 	/**
 	 * When {@link #rotationConstraintType()} is of Type AXIS, constrain {@code rotation}
-	 * to be a rotation around an axis whose direction is defined in the GLFrame local
+	 * to be a rotation around an axis whose direction is defined in the PSFrame local
 	 * coordinate system by {@link #rotationConstraintDirection()}.
 	 */
 	public PSQuaternion constrainRotation(PSQuaternion rotation, PSFrame frame) {

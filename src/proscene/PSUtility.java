@@ -4,6 +4,9 @@ import processing.core.PApplet;
 import processing.core.PMatrix3D;
 import processing.core.PVector;
 
+/**
+ * Utility class that complements the PVector and PMatrix classes.
+ */
 public class PSUtility {
 	
 	final static float EPS10 = 1E-10f;

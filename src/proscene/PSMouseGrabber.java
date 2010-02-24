@@ -4,9 +4,6 @@ import java.awt.event.*;
 import java.util.*;
 
 /**
- * 
- * @author pierre
- * <p>
  * Interface for objects that grab mouse focus in a PScene. 
  * <p> 
  * PSMouseGrabber are objects which react to the mouse cursor, usually when it

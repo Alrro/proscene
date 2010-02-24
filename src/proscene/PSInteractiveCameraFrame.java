@@ -7,6 +7,23 @@ import java.awt.Rectangle;
 import java.awt.Point;
 import javax.swing.Timer;
 
+/**
+ * The PSInteractiveCameraFrame class represents a PSInteractiveFrame with Camera
+ * specific mouse bindings.
+ * <p>
+ * A PSInteractiveCameraFrame is a specialization of a PSInteractiveFrame, designed to be set as the
+ * {@link PSCamera#frame()}. Mouse motions are basically interpreted in a negated way: when the
+ * mouse goes to the right, the PSInteractiveFrame translation goes to the right, while the
+ * PSInteractiveCameraCameraFrame has to go to the <i>left</i>, so that the <i>scene</i> seems
+ * to move to the right.
+ * <p>
+ * A PSInteractiveCameraFrame rotates around its {@link #revolveAroundPoint()}, which corresponds
+ * to the associated {@link PSCamera#revolveAroundPoint()}.
+ * <p>
+ * A PSInteractiveCameraFrame can also "fly" in the scene. It basically moves forward, and turns
+ * according to the mouse motion. See {@link #flySpeed()}, {@link #flyUpVector()} and the
+ * {@link PScene.MouseAction#MOVE_FORWARD} and {@link PScene.MouseAction#MOVE_BACKWARD}.
+ */
 public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	
 	static PVector flyDisp = new PVector(0.0f, 0.0f, 0.0f);
@@ -86,7 +103,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
     }
 	
 	/**
-	 * Sets the flySpeed(), defined in OpenGL units. 
+	 * Sets the flySpeed(), defined in processing scene units. 
 	 * <p> 
 	 * Default value is 0.0, but it is modified according to the
 	 * {@link proscene.PScene#sceneRadius()} when the PSInteractiveCameraFrame

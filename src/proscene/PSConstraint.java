@@ -3,9 +3,6 @@ package proscene;
 import processing.core.*;
 
 /**
- * 
- * @author pierre
- * <p>
  * An interface class for Frame constraints. 
  * <p> 
  * This class defines the interface for the PSConstraints that can be applied
