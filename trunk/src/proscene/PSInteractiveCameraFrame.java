@@ -86,7 +86,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	}
 	
     /**
-     * Returns the fly speed, expressed in OpenGL units. 
+     * Returns the fly speed, expressed in processing scene units. 
      * <p> 
      * It corresponds to the incremental displacement that is periodically
      * applied to the PSInteractiveCameraFrame position when a 

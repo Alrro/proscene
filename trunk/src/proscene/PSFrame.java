@@ -892,56 +892,19 @@ public class PSFrame implements Cloneable {
 
 	/**
 	 * Returns the 4x4 OpenGL transformation matrix represented by the PSFrame. 
-	 * <p> 
-	 * This method should be used in conjunction with {@code glMultMatrixf()}
-	 * to modify the OpenGL modelview matrix from a PSFrame hierarchy. For example
-	 * with this PSFrame hierarchy: 
-	 * <p> 
-	 * {@code PSFrame body = new PSFrame();} <br>
-	 * {@code PSFrame leftArm = new PSFrame();} <br>
-	 * {@code PSFrame rightArm = new PSFrame();} <br>
-	 * {@code leftArm.setReferenceFrame(body);} <br>
-	 * {@code rightArm.setReferenceFrame(body);} <br> 
-	 * <p> 
-	 * The associated OpenGL drawing code should look like: 
-	 * <p> 
-	 * {@code gl.glPushMatrix();} <br>
-	 * {@code gl.glMultMatrixd(body.matrix());} <br>
-	 * {@code drawBody();} <br>
-	 * {@code gl.glPushMatrix();} <br>
-	 * {@code gl.glMultMatrixd(leftArm.matrix());} <br>
-	 * {@code gl.drawArm();} <br>
-	 * {@code gl.glPopMatrix();} <br>
-	 * {@code gl.glPushMatrix();} <br>
-	 * {@code gl.glMultMatrixd(rightArm.matrix());} <br>
-	 * {@code drawArm();} <br>
-	 * {@code gl.glPopMatrix();} <br>
-	 * {@code gl.glPopMatrix();} <br> 
-	 * <p> 
-	 * Note the use of nested {@code gl.glPushMatrix()} and {@code gl.glPopMatrix()}
-	 * blocks to represent the frame hierarchy: {@code leftArm} and {@code rightArm}
-	 * are both correctly drawn with respect to the {@code body} coordinate system. 
-	 * <p> 
-	 * This matrix only represents the local PSFrame transformation (i.e., with respect
-	 * to the {@link #referenceFrame()}). Use {@link #worldMatrix()} to get the full 
-	 * PSFrame transformation matrix (i.e., from the world to the Frame coordinate system).
-	 * These two match when the {@link #referenceFrame()} is {@code null}. 
-	 * <p>
-	 * The result is only valid until the next call to {@code matrix()}, {@link #array()},
-	 * {@link #worldMatrix()} or {@link #worldArray()}. Use it immediately (as above). 
-	 * <p> 
+	 * <p>  
 	 * <b>Attention:</b> The OpenGL format of the result is the transpose of the
 	 * actual mathematical European representation (translation is on
 	 * the last <i>line</i> instead of the last <i>column</i>). 
-	 * <p> 
+	 * <p>
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 * 
 	 * @see #pMatrix()
 	 */
-	public final float[][] matrix() {
+	public final float[][] openGLMatrix() {
 		float[][] m = new float[4][4];
 
-		m = rot.matrix();
+		m = rot.openGLMatrix();
 
 		m[3][0] = trans.x;
 		m[3][1] = trans.y;
@@ -951,12 +914,51 @@ public class PSFrame implements Cloneable {
 	}
 	
 	/**
-	 * Utility function that return the PMatrix3D associated with this PSFrame.
+	 * Returns the PMatrix3D associated with this PSFrame. 
+	 * <p> 
+	 * This method should be used in conjunction with {@code multMatrix()}
+	 * to modify the processing modelview matrix from a PSFrame hierarchy. For example
+	 * with this PSFrame hierarchy: 
+	 * <p> 
+	 * {@code PSFrame body = new PSFrame();} <br>
+	 * {@code PSFrame leftArm = new PSFrame();} <br>
+	 * {@code PSFrame rightArm = new PSFrame();} <br>
+	 * {@code leftArm.setReferenceFrame(body);} <br>
+	 * {@code rightArm.setReferenceFrame(body);} <br> 
+	 * <p> 
+	 * The associated processing drawing code should look like: 
+	 * <p> 
+	 * {@code pushMatrix();} <br>
+	 * {@code applyMatrix(body.pMatrix());} <br>
+	 * {@code drawBody();} <br>
+	 * {@code pushMatrix();} <br>
+	 * {@code applyMatrix(leftArm.pMatrix());} <br>
+	 * {@code drawArm();} <br>
+	 * {@code popMatrix();} <br>
+	 * {@code pushMatrix();} <br>
+	 * {@code applyMatrix(rightArm.pMatrix());} <br>
+	 * {@code drawArm();} <br>
+	 * {@code popMatrix();} <br>
+	 * {@code popMatrix();} <br> 
+	 * <p> 
+	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()}
+	 * blocks to represent the frame hierarchy: {@code leftArm} and {@code rightArm}
+	 * are both correctly drawn with respect to the {@code body} coordinate system. 
+	 * <p> 
+	 * This matrix only represents the local PSFrame transformation (i.e., with respect
+	 * to the {@link #referenceFrame()}). Use {@link #worldOpenGLMatrix()} to get the full 
+	 * PSFrame transformation matrix (i.e., from the world to the Frame coordinate system).
+	 * These two match when the {@link #referenceFrame()} is {@code null}. 
+	 * <p>
+	 * The result is only valid until the next call to {@code pMatrix()}, {@link #openGLArray()},
+	 * {@link #worldOpenGLMatrix()} or {@link #worldOpenGLArray()}. Use it immediately (as above). 
+	 * <p> 
+	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 * 
-	 * @see #matrix()
+	 * @see #openGLMatrix()
 	 */
 	public final PMatrix3D pMatrix() {
-		return PSUtility.fromOpenGL4x4Matrix(matrix());
+		return PSUtility.fromOpenGLToPMatrix3D(openGLMatrix());
 	}
 	
 	/**
@@ -985,12 +987,12 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * float[] version of {@link #matrix()}.
+	 * float[] version of {@link #openGLMatrix()}.
 	 */
-	public final float[] array() {
+	public final float[] openGLArray() {
 		float[] m = new float[16];
 
-		m = rot.array();
+		m = rot.openGLArray();
 
 		m[12] = trans.x;
 		m[13] = trans.y;
@@ -1002,20 +1004,20 @@ public class PSFrame implements Cloneable {
 	/**
 	 * Returns the 4x4 OpenGL transformation matrix represented by the PSFrame. 
 	 * <p> 
-	 * This method should be used in conjunction with {@code glMultMatrixf()}
-	 * to modify the OpenGL modelview matrix from a PSFrame: 
+	 * This method should be used in conjunction with {@code multMatrix()}
+	 * to modify the processing modelview matrix from a PSFrame: 
 	 * <p> 
 	 * {@code // The modelview here corresponds to the world coordinate system.}
 	 * {@code PSFrame fr = new PSFrame(pos, PSQuaternion(from, to));} <br>
-	 * {@code gl.glPushMatrix();} <br>
-	 * {@code gl.glMultMatrixf(fr.worldMatrix());} <br>
+	 * {@code pushMatrix();} <br>
+	 * {@code applyMatrix(PSUtility.fromOpenGL4x4Matrix(worldMatrix()));} <br>
 	 * {@code // draw object in the fr coordinate system.} <br>
-	 * {@code glPopMatrix();} <br> 
+	 * {@code popMatrix();} <br> 
 	 * <p>
 	 * This matrix represents the global PSFrame transformation: the entire
 	 * {@link #referenceFrame()} hierarchy is taken into account to define the
 	 * PSFrame transformation from the world coordinate system.
-	 * Use {@link #matrix()} to get the local PSFrame transformation matrix
+	 * Use {@link #pMatrix()} (or {@link #openGLMatrix()}) to get the local PSFrame transformation matrix
 	 * (i.e. defined with respect to the referenceFrame()).
 	 * These two match when the {@link #referenceFrame()} is {@code null}. 
 	 * <p> 
@@ -1024,40 +1026,41 @@ public class PSFrame implements Cloneable {
 	 * <i>line</i> instead of the last <i>column</i>. 
 	 * <p> 
 	 * <b>Attention:</b> The result is only valid until the next call to
-	 * {@link #matrix()}, {@link #array()} {@code worldMatrix()} or {@link #worldArray()}.
+	 * {@link #openGLMatrix()}, {@link #openGLArray()} {@code worldMatrix()} or {@link #worldOpenGLArray()}.
 	 * Use it immediately (as above). 
 	 * <p> 
-	 * <b>ANote:</b> The scaling factor of the 4x4 matrix is 1.0.
+	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 */
-	public final float[][] worldMatrix() {		
+	public final float[][] worldOpenGLMatrix() {
+		//TODO: should implement worldPMatrix instead!
 		if (referenceFrame() != null) {
 			final PSFrame fr = new PSFrame();
 			fr.setTranslation(position());
 			fr.setRotation(orientation());
-			return fr.matrix();
+			return fr.openGLMatrix();
 		} else
-			return matrix();
+			return openGLMatrix();
 	}
 
 	/**
-	 * float[] version of {@link #worldMatrix()}.
+	 * float[] version of {@link #worldOpenGLMatrix()}.
 	 */
-	public final float[] worldArray() {
+	public final float[] worldOpenGLArray() {		
 		if (referenceFrame() != null) {
 			final PSFrame fr = new PSFrame();
 			fr.setTranslation(position());
 			fr.setRotation(orientation());
-			return fr.array();
+			return fr.openGLArray();
 		} else
-			return array();
+			return openGLArray();
 	}
 
 	/**
-	 * This is an overloaded method provided for convenience. Same as {@link #fromArray(float[])}
+	 * This is an overloaded method provided for convenience. Same as {@link #fromOpenGLArray(float[])}
 	 * 
 	 * @see #fromPMatrix(PMatrix3D)
 	 */
-	public final void fromMatrix(float[][] m) {
+	public final void fromOpenGLMatrix(float[][] m) {
 		// m should be of size [4][4]
 		if (PApplet.abs(m[3][3]) < 1E-8) {
 			// pending: catch the exception
@@ -1078,10 +1081,10 @@ public class PSFrame implements Cloneable {
 	/**
 	 * This is an overloaded method provided for convenience.
 	 * 
-	 * @see #fromMatrix(float[][])
+	 * @see #fromOpenGLMatrix(float[][])
 	 */
 	public final void fromPMatrix(PMatrix3D pM) {
-		fromMatrix(PSUtility.OpenGLfromPMatrix3D(pM));
+		fromOpenGLMatrix(PSUtility.fromPMatrix3DToOpenGL(pM));
 	}
 
 	/**
@@ -1097,7 +1100,7 @@ public class PSFrame implements Cloneable {
 	 * <p> 
 	 * {@code PSFrame fr = new PSFrame();} <br>
 	 * {@code fr.setFromMatrix(m);} <br>
-	 * {@code gl.glMultMatrixf(fr.matrix());} <br>
+	 * {@code applyMatrix(fr.pMatrix());} <br>
 	 * <p> 
 	 * Using this conversion, you can benefit from the powerful PSFrame
 	 * transformation methods to translate points and vectors to and from
@@ -1108,13 +1111,13 @@ public class PSFrame implements Cloneable {
 	 * <b>Attention:</b> A PSFrame does not contain a scale factor. The possible scaling
 	 * in {@code m} will not be	converted into the PSFrame by this method.
 	 */
-	public final void fromArray(float[] m) {
+	public final void fromOpenGLArray(float[] m) {
 		// m should be of size [16]
 		float[][] mat = new float[4][4];
 		for (int i = 0; i < 4; ++i)
 			for (int j = 0; j < 4; ++j)
 				mat[i][j] = m[i * 4 + j];
-		fromMatrix(mat);
+		fromOpenGLMatrix(mat);
 	}
 
 	/**
