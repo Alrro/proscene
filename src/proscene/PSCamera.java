@@ -14,7 +14,7 @@ import java.awt.Rectangle;
  * {@link #position()}, {@link #viewDirection()}, {@link #upVector()}...)
  * and useful positioning tools that ease its placement
  * ({@link #showEntireScene()}, {@link #fitSphere(PVector, float)},
- * {@link #lookAt(PVector)}...). It exports its associated OpenGL projection and
+ * {@link #lookAt(PVector)}...). It exports its associated projection and
  * modelview matrices and can interactively be modified using the mouse.
  */
 public class PSCamera implements Cloneable {
@@ -324,15 +324,10 @@ public class PSCamera implements Cloneable {
 	 * Sets the PSCamera's {@link #position()} and {@link #orientation()} from an OpenGL
 	 * ModelView matrix. 
 	 * <p> 
-	 * This enables a PSCamera initialisation from an other OpenGL application.
+	 * This enables a PSCamera initialisation from other application based on OpenGL.
 	 * {@code modelView} is a 16 float vector representing a valid OpenGL ModelView matrix,
-	 * such as one can get using:
-	 * <p>
-	 * {@code PSfloat mvm[16];}<br>
-	 * {@code glGetFloatv(PS_MODELVIEW_MATRIX, mvm);}<br>
-	 * {@code myCamera.fromModelViewMatrix(mvm);}<br>
 	 * <p> 
-	 * After this method has been called, #g getModelViewMatrix() returns a matrix equivalent
+	 * After this method has been called, {@link #getModelViewMatrix()} returns a matrix equivalent
 	 * to {@code modelView}. 
 	 * <p> 
 	 * Only the {@link #orientation()} and {@link #position()} of the PSCamera are modified.
@@ -626,7 +621,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Fills {@code viewport} with the PSCamera OpenGL viewport and returns it.
+	 * Fills {@code viewport} with the PSCamera viewport and returns it.
 	 * If viewport is null (or not the correct size), a new array will be
 	 * created. 
 	 * <p>
@@ -773,7 +768,7 @@ public class PSCamera implements Cloneable {
 	}
 	
 	/**
-	 * Returns the ratio between pixel and OpenPS units at {@code position}. 
+	 * Returns the ratio between pixel and processing scene units at {@code position}. 
 	 * <p> 
 	 * A line of {@code n * pixelPSRatio()} processing scene units, located at {@code position} in
 	 * the world coordinates system, will be projected with a length of {@code n} pixels on screen. 
@@ -782,10 +777,11 @@ public class PSCamera implements Cloneable {
 	 * The following code will draw a 20 pixel line, starting at {@link #sceneCenter()} and
 	 * always directed along the screen vertical direction:
 	 * <p>
-	 * {@code gl.glBegin(PS.PS_LINES);}<br>
-	 * {@code gl.glVertex3fv(sceneCenter());}<br>
-	 * {@code gl.glVertex3fv(sceneCenter() + 20 * pixelPSRatio(sceneCenter()) * camera().upVector());}<br>
-	 * {@code gl.glEnd();}<br>
+	 * {@code beginShape(LINES);}<br>
+	 * {@code vertex(sceneCenter().x, sceneCenter().y, sceneCenter().z);}<br>
+	 * {@code PVector v = PVector.add(sceneCenter(), PVector.mult(upVector(), 20 * pixelPSRatio(sceneCenter())));}<br>
+	 * {@code vertex(v.x, v.y, v.z);}<br>
+	 * {@code endShape();}<br>
 	 */
 	public float pixelPSRatio(PVector position) {
 		switch (type()) {
@@ -795,8 +791,8 @@ public class PSCamera implements Cloneable {
 	    	float [] wh = getOrthoWidthHeight();
 	    	return 2.0f * wh[1] / screenHeight();
 	    	}
-	    }
-		return 1.0f;
+	    }		
+		return 1.0f;	
 	}
 	
 	/**
@@ -811,15 +807,15 @@ public class PSCamera implements Cloneable {
 	 * where {@code a}, {@code b}, {@code c} and {@code d} are the 4 components of each vector,
 	 * in that order. 
 	 * <p> 
-	 * This format is compatible with the {@code glClipPlane()} function. One camera frustum
+	 * This format is compatible with the {@code glClipPlane()} OpenGL function. One camera frustum
 	 * plane can hence be applied in an other viewer to visualize the culling results:
 	 * <p>
 	 * {@code // Retrieve place equations}<br>
 	 * {@code float [][] coef = mainViewer.camera().getFrustumPlanesCoefficients();}<br>
 	 * {@code // These two additional clipping planes (which must have been enabled)}<br>
 	 * {@code // will reproduce the mainViewer's near and far clipping.}<br>
-	 * {@code glClipPlane(PS_CLIP_PLANE0, coef[2]);}<br>
-	 * {@code glClipPlane(PS_CLIP_PLANE1, coef[3]);}<br>
+	 * {@code glClipPlane(GL_CLIP_PLANE0, coef[2]);}<br>
+	 * {@code glClipPlane(GL_CLIP_PLANE1, coef[3]);}<br>
 	 */
 	public float[][] getFrustumPlanesCoefficients() {
 		// Computed once and for all
@@ -1183,18 +1179,19 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * First calls {@link #computeModelViewMatrix()} to define the PSCamera modelView matrix. 
 	 * <p> 
-	 * Note that this matrix is usually not the one you would get from a
-	 * {@code glGetFloatv(GL_MODELVIEW_MATRIX, m)}. It converts from the world to the
-	 * PSCamera coordinate system, but as soon as you modify the GL_MODELVIEW in your
-	 * drawing code, the two matrices differ.
-	 * <p> 
 	 * The result is an OpenGL 4x4 matrix, which is given in column-major order (see
 	 * {@code glMultMatrix} documentation for details).
 	 *  
 	 * @see #getProjectionMatrix(float[])
 	 * @see #fromModelViewMatrix(float[])
 	 */
-	public float[] getModelViewMatrix(float[] m)	{
+	public float[] getModelViewMatrix(float[] m) {
+		/**
+		 * Note that this matrix is usually not the one you would get from a
+	     * {@code glGetFloatv(GL_MODELVIEW_MATRIX, m)}. It converts from the world to the
+	     * PSCamera coordinate system, but as soon as you modify the GL_MODELVIEW in your
+	     * drawing code, the two matrices differ.
+		 */
 		if ((m == null) || (m.length != 16)) {
 			m = new float[16];
 		}
@@ -1693,7 +1690,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * physicalDistanceToScreen() and {@link #focusDistance()} represent the same
 	 * distance. The first one is expressed in physical real world units, while
-	 * the latter is expressed in OpenGL virtual world units. Use their ratio to
+	 * the latter is expressed in processing virtual world units. Use their ratio to
 	 * convert distances between these worlds.
 	 */
 	public float physicalDistanceToScreen() {

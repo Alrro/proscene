@@ -76,7 +76,7 @@ public class PSUtility {
 	 * Utility function that returns the PMatrix3D representation of the 4x4
 	 * {@code matrix} given in OpenGL format.
 	 */
-	public static final PMatrix3D fromOpenGL4x4Matrix(float[][] matrix) {
+	public static final PMatrix3D fromOpenGLToPMatrix3D(float[][] matrix) {
 		float [][] m = transpose4x4Matrix(matrix);
 		
 		float m00 = m[0][0];
@@ -112,14 +112,14 @@ public class PSUtility {
 			for (int j = 0; j < 4; ++j)
 				matrix[i][j] = array[count++];
 		
-		return fromOpenGL4x4Matrix(matrix);
+		return fromOpenGLToPMatrix3D(matrix);
 	}
 	
 	/**
 	 * Utility function that returns the [4][4]float matrix representation
 	 * (European format) of the given PMatrix3D.
 	 */
-	public static final float[][] fromPMatrix3D(PMatrix3D pM) {
+	public static final float[][] fromPMatrix3DToMatrix(PMatrix3D pM) {
 		float [][] m = new float[4][4];
 		m[0][0] = pM.m00;
 		m[0][1] = pM.m01;
@@ -145,8 +145,8 @@ public class PSUtility {
 	 * Utility function that returns the [4][4]float matrix representation
 	 * (OpenGL format) of the given PMatrix3D.
 	 */
-	public static final float[][] OpenGLfromPMatrix3D(PMatrix3D pM) {
-		return transpose4x4Matrix(fromPMatrix3D(pM));
+	public static final float[][] fromPMatrix3DToOpenGL(PMatrix3D pM) {
+		return transpose4x4Matrix(fromPMatrix3DToMatrix(pM));
 	}
 	
 	/**
@@ -169,6 +169,29 @@ public class PSUtility {
 			for (int j = 0; j < 4; ++j)
 				matrix[i][j] = m[j][i];
 		return matrix;
+	}
+	
+	/**
+	 * Utility function that returns the [4][4] float matrix version of the given {@code m} array.
+	 */
+	public static final float [][] fromArray4x4ToMatrix(float[] m) {
+		// m should be of size [16]
+		float[][] mat = new float[4][4];
+		for (int i = 0; i < 4; ++i)
+			for (int j = 0; j < 4; ++j)
+				mat[i][j] = m[i * 4 + j];
+		return mat;
+	}
+	
+	/**
+	 * Utility function that returns the [16] float array version of the given {@code mat} matrix.
+	 */
+	public static final float [] from4x4MatrixToArray(float[][] mat) {
+		float[] m = new float[16];
+		for (int i = 0; i < 4; ++i)
+			for (int j = 0; j < 4; ++j)
+				m[i * 4 + j] = mat[i][j];
+		return m;
 	}
 	
 	/**

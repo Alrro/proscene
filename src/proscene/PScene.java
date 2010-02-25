@@ -8,7 +8,9 @@ import javax.swing.event.*;
 
 /**
  * A processing 3D interactive scene. A PScene provides a default interactivity for your scene through
- * the mouse and keyboard which is supposed to fit most user needs.
+ * the mouse and keyboard in the hope that it should fit most user needs. For those users whose needs
+ * are not completely fulfill by default, proscene main interactivity mechanisms can easily be extended
+ * to fit them. 
  * <p>
  * A PScene has a full reach PSCamera, an two means to manipulate objects: an {@link #interactiveFrame()}
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
@@ -17,17 +19,18 @@ import javax.swing.event.*;
  * class.
  * <p>
  * If you instantiate your own PScene object you should implement your {@link PApplet#draw()} as usual,
- * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus for instance,
+ * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus, for instance,
  * if the following code define the body of your {@link PApplet#draw()}:
  * <p>
  * {@code scene.beginDraw();}<br>
- * {@code box(1);}<br>
+ * {@code processing drawing routines..}<br>
  * {@code scene.endDraw();}<br>
  * <p>
- * you would obtain full interactivity to manipulate your scene (consisting in one single box).
+ * you would obtain full interactivity to manipulate your scene "for free".
  * <p>
- * If you derive from PScene you should implement {@link #scene()} which defines the objects
- * in your scene and call it from {@link PApplet#draw()}: {@code public void draw() {scene.draw();}}
+ * If you derive from PScene, you should implement {@link #scene()} which defines the objects
+ * in your scene. Then all you have to do is to call {@link #scene()} from {@link PApplet#draw()}:
+ * {@code public void draw() {scene.draw();}}
  * <p>
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */

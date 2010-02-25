@@ -14,6 +14,7 @@ void setup()	{
 		scene.setAxisIsDrawn(true);
 		scene.setInteractiveFrame(new PSInteractiveFrame());
 		scene.interactiveFrame().translate(new PVector(0.2f, 0.2f, 0));
+		scene.setDrawInteractiveFrame(true);
 }
 
 void draw() {
