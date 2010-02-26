@@ -198,7 +198,7 @@ public class PSUtility {
 	 * Utility function that returns the 3x3 upper left sub-matrix of the given
 	 * PMatrix3D.
 	 */
-	public static final float [][] get3x3UpperLeftMatrix(PMatrix3D pM) {
+	public static final float [][] get3x3UpperLeftMatrixFromPMatrix3D(PMatrix3D pM) {
 		float[][]m = new float[3][3];
 		m[0][0] = pM.m00;
 		m[0][1] = pM.m01;

@@ -891,32 +891,9 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the 4x4 OpenGL transformation matrix represented by the PSFrame. 
-	 * <p>  
-	 * <b>Attention:</b> The OpenGL format of the result is the transpose of the
-	 * actual mathematical European representation (translation is on
-	 * the last <i>line</i> instead of the last <i>column</i>). 
-	 * <p>
-	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
-	 * 
-	 * @see #pMatrix()
-	 */
-	public final float[][] openGLMatrix() {
-		float[][] m = new float[4][4];
-
-		m = rot.openGLMatrix();
-
-		m[3][0] = trans.x;
-		m[3][1] = trans.y;
-		m[3][2] = trans.z;
-
-		return m;
-	}
-	
-	/**
 	 * Returns the PMatrix3D associated with this PSFrame. 
 	 * <p> 
-	 * This method should be used in conjunction with {@code multMatrix()}
+	 * This method should be used in conjunction with {@code applyMatrix()}
 	 * to modify the processing modelview matrix from a PSFrame hierarchy. For example
 	 * with this PSFrame hierarchy: 
 	 * <p> 
@@ -929,14 +906,14 @@ public class PSFrame implements Cloneable {
 	 * The associated processing drawing code should look like: 
 	 * <p> 
 	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(body.pMatrix());} <br>
+	 * {@code applyMatrix(body.matrix());} <br>
 	 * {@code drawBody();} <br>
 	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(leftArm.pMatrix());} <br>
+	 * {@code applyMatrix(leftArm.matrix());} <br>
 	 * {@code drawArm();} <br>
 	 * {@code popMatrix();} <br>
 	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(rightArm.pMatrix());} <br>
+	 * {@code applyMatrix(rightArm.matrix());} <br>
 	 * {@code drawArm();} <br>
 	 * {@code popMatrix();} <br>
 	 * {@code popMatrix();} <br> 
@@ -946,19 +923,25 @@ public class PSFrame implements Cloneable {
 	 * are both correctly drawn with respect to the {@code body} coordinate system. 
 	 * <p> 
 	 * This matrix only represents the local PSFrame transformation (i.e., with respect
-	 * to the {@link #referenceFrame()}). Use {@link #worldOpenGLMatrix()} to get the full 
+	 * to the {@link #referenceFrame()}). Use {@link #worldMatrix()} to get the full 
 	 * PSFrame transformation matrix (i.e., from the world to the Frame coordinate system).
 	 * These two match when the {@link #referenceFrame()} is {@code null}. 
 	 * <p>
-	 * The result is only valid until the next call to {@code pMatrix()}, {@link #openGLArray()},
-	 * {@link #worldOpenGLMatrix()} or {@link #worldOpenGLArray()}. Use it immediately (as above). 
+	 * The result is only valid until the next call to {@code matrix()} or
+	 * {@link #worldMatrix()}. Use it immediately (as above). 
 	 * <p> 
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
-	 * 
-	 * @see #openGLMatrix()
 	 */
-	public final PMatrix3D pMatrix() {
-		return PSUtility.fromOpenGLToPMatrix3D(openGLMatrix());
+	public final PMatrix3D matrix() {
+		PMatrix3D pM = new PMatrix3D(); 
+
+		pM = rot.matrix();
+		
+		pM.m03 = trans.x;
+		pM.m13 = trans.y;
+		pM.m23 = trans.z;
+
+		return pM;
 	}
 	
 	/**
@@ -987,109 +970,44 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * float[] version of {@link #openGLMatrix()}.
-	 */
-	public final float[] openGLArray() {
-		float[] m = new float[16];
-
-		m = rot.openGLArray();
-
-		m[12] = trans.x;
-		m[13] = trans.y;
-		m[14] = trans.z;
-
-		return m;
-	}
-
-	/**
-	 * Returns the 4x4 OpenGL transformation matrix represented by the PSFrame. 
+	 * Returns the processing transformation matrix represented by the PSFrame. 
 	 * <p> 
-	 * This method should be used in conjunction with {@code multMatrix()}
+	 * This method should be used in conjunction with {@code applyMatrix()}
 	 * to modify the processing modelview matrix from a PSFrame: 
 	 * <p> 
 	 * {@code // The modelview here corresponds to the world coordinate system.}
 	 * {@code PSFrame fr = new PSFrame(pos, PSQuaternion(from, to));} <br>
 	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(PSUtility.fromOpenGL4x4Matrix(worldMatrix()));} <br>
+	 * {@code applyMatrix(worldMatrix());} <br>
 	 * {@code // draw object in the fr coordinate system.} <br>
 	 * {@code popMatrix();} <br> 
 	 * <p>
 	 * This matrix represents the global PSFrame transformation: the entire
 	 * {@link #referenceFrame()} hierarchy is taken into account to define the
 	 * PSFrame transformation from the world coordinate system.
-	 * Use {@link #pMatrix()} (or {@link #openGLMatrix()}) to get the local PSFrame transformation matrix
+	 * Use {@link #matrix()} to get the local PSFrame transformation matrix
 	 * (i.e. defined with respect to the referenceFrame()).
 	 * These two match when the {@link #referenceFrame()} is {@code null}. 
 	 * <p> 
-	 * The OpenGL format of the result is the transpose of the actual
-	 * mathematical European representation (translation is on the last
-	 * <i>line</i> instead of the last <i>column</i>. 
-	 * <p> 
 	 * <b>Attention:</b> The result is only valid until the next call to
-	 * {@link #openGLMatrix()}, {@link #openGLArray()} {@code worldMatrix()} or {@link #worldOpenGLArray()}.
+	 * {@link #matrix()} or {@code worldMatrix()}.
 	 * Use it immediately (as above). 
 	 * <p> 
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
-	 */
-	public final float[][] worldOpenGLMatrix() {
-		//TODO: should implement worldPMatrix instead!
+	 */	
+	public final PMatrix3D worldMatrix() {
 		if (referenceFrame() != null) {
 			final PSFrame fr = new PSFrame();
 			fr.setTranslation(position());
 			fr.setRotation(orientation());
-			return fr.openGLMatrix();
+			return fr.matrix();
 		} else
-			return openGLMatrix();
+			return matrix();
 	}
 
 	/**
-	 * float[] version of {@link #worldOpenGLMatrix()}.
-	 */
-	public final float[] worldOpenGLArray() {		
-		if (referenceFrame() != null) {
-			final PSFrame fr = new PSFrame();
-			fr.setTranslation(position());
-			fr.setRotation(orientation());
-			return fr.openGLArray();
-		} else
-			return openGLArray();
-	}
-
-	/**
-	 * This is an overloaded method provided for convenience. Same as {@link #fromOpenGLArray(float[])}
-	 * 
-	 * @see #fromPMatrix(PMatrix3D)
-	 */
-	public final void fromOpenGLMatrix(float[][] m) {
-		// m should be of size [4][4]
-		if (PApplet.abs(m[3][3]) < 1E-8) {
-			// pending: catch the exception
-			return;
-		}
-		trans.x = m[3][0] / m[3][3];
-		trans.y = m[3][1] / m[3][3];
-		trans.z = m[3][2] / m[3][3];
-		float[][] r = new float[3][3];
-		for (int i = 0; i < 3; ++i) {			
-			for (int j = 0; j < 3; ++j)
-				// Beware of the transposition (OpenGL to European math)
-				r[i][j] = m[j][i] / m[3][3];
-		}
-		rot.fromRotationMatrix(r);
-	}
-	
-	/**
-	 * This is an overloaded method provided for convenience.
-	 * 
-	 * @see #fromOpenGLMatrix(float[][])
-	 */
-	public final void fromPMatrix(PMatrix3D pM) {
-		fromOpenGLMatrix(PSUtility.fromPMatrix3DToOpenGL(pM));
-	}
-
-	/**
-	 * Sets the PSFrame from an OpenGL matrix representation (rotation
-	 * in the upper left 3x3 matrix and translation on the last line). 
+	 * Sets the PSFrame from an PMatrix3D (processing matrix) representation (rotation
+	 * in the upper left 3x3 matrix and translation on the last column). 
 	 * <p>
 	 * Hence, if a code fragment looks like: 
 	 * <p> 
@@ -1099,8 +1017,8 @@ public class PSFrame implements Cloneable {
 	 * It is equivalent to write: 
 	 * <p> 
 	 * {@code PSFrame fr = new PSFrame();} <br>
-	 * {@code fr.setFromMatrix(m);} <br>
-	 * {@code applyMatrix(fr.pMatrix());} <br>
+	 * {@code fr.fromMatrix(m);} <br>
+	 * {@code applyMatrix(fr.matrix());} <br>
 	 * <p> 
 	 * Using this conversion, you can benefit from the powerful PSFrame
 	 * transformation methods to translate points and vectors to and from
@@ -1111,15 +1029,32 @@ public class PSFrame implements Cloneable {
 	 * <b>Attention:</b> A PSFrame does not contain a scale factor. The possible scaling
 	 * in {@code m} will not be	converted into the PSFrame by this method.
 	 */
-	public final void fromOpenGLArray(float[] m) {
-		// m should be of size [16]
-		float[][] mat = new float[4][4];
-		for (int i = 0; i < 4; ++i)
-			for (int j = 0; j < 4; ++j)
-				mat[i][j] = m[i * 4 + j];
-		fromOpenGLMatrix(mat);
+	public final void fromMatrix(PMatrix3D pM) {
+		// m should be of size [4][4]
+		if (PApplet.abs(pM.m33) < 1E-8) {
+			// pending: catch the exception
+			return;
+		}
+		
+		trans.x = pM.m03 / pM.m33;
+		trans.y = pM.m13 / pM.m33;
+		trans.z = pM.m23 / pM.m33;
+		
+		float[][] r = new float[3][3];
+		
+		r[0][0] = pM.m00 / pM.m33;
+		r[0][1] = pM.m01 / pM.m33;
+		r[0][2] = pM.m02 / pM.m33;
+		r[1][0] = pM.m10 / pM.m33;
+		r[1][1] = pM.m11 / pM.m33;
+		r[1][2] = pM.m12 / pM.m33;
+		r[2][0] = pM.m20 / pM.m33;
+		r[2][1] = pM.m21 / pM.m33;
+		r[2][2] = pM.m22 / pM.m33;
+		
+		rot.fromRotationMatrix(r);
 	}
-
+	
 	/**
 	 * Returns a PSFrame representing the inverse of the PSFrame space transformation. 
 	 * <p> 

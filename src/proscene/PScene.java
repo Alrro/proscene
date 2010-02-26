@@ -740,7 +740,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	public static void drawArrow(PVector from, PVector to, float radius) {
 		parent.pushMatrix();
 		parent.translate(from.x,from.y,from.z);		
-		parent.applyMatrix(new PSQuaternion(new PVector(0,0,1), PVector.sub(to, from)).pMatrix());		
+		parent.applyMatrix(new PSQuaternion(new PVector(0,0,1), PVector.sub(to, from)).matrix());		
 		drawArrow(PVector.sub(to, from).mag(), radius);
 		parent.popMatrix();
 	}
@@ -1015,12 +1015,14 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		if ( readyToGo ) {
 		// /**
 		//ZOOM_ON_REGION:		
-		if ( zoomOnRegion || rotateScreen) {
+		if ( zoomOnRegion || rotateScreen || translateScreen) {
 	    	if (zoomOnRegion) lCorner = event.getPoint();
-	    	if (rotateScreen) {
+	    	else if (rotateScreen) {
 	    		fCorner = event.getPoint();
 				camera().frame().mouseMoveEvent(event, camera());
-	    	}			 
+	    	}
+	    	else //translateScreen
+	    		camera().frame().mouseMoveEvent(event, camera());
 		} else if ( mouseGrabber()!= null ) {
 			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if (mouseGrabber().grabsMouse())
