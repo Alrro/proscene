@@ -44,8 +44,10 @@ public class PSCamera implements Cloneable {
 	private float zClippingCoef;
 	private float orthoCoef;
 	private Type tp; // PERSPECTIVE or ORTHOGRAPHIC
-	private float []modelViewMat; // [16] Buffered model view matrix.
-	private float []projectionMat; // [16] Buffered projection matrix.
+	private PMatrix3D modelViewMat;
+	private PMatrix3D projectionMat;
+	//private float []modelViewMat; // [16] Buffered model view matrix.
+	//private float []projectionMat; // [16] Buffered projection matrix.
 
 	// S t e r e o p a r a m e t e r s
 	float IODist; // inter-ocular distance, in meters
@@ -92,15 +94,14 @@ public class PSCamera implements Cloneable {
 		setPhysicalDistanceToScreen(0.5f);
 		setPhysicalScreenWidth(0.4f);
 		// focusDistance is set from setFieldOfView()
-
-		modelViewMat = new float[16];
-		projectionMat = new float[16];
-		for (int j = 0; j < 16; ++j) {
-			modelViewMat[j] = ((j % 5 == 0) ? 1.0f : 0.0f);
-			// #CONNECTION# computeProjectionMatrix() is lazy and assumes 0.0
-			// almost everywhere.
-			projectionMat[j] = 0.0f;
-		}
+		
+		modelViewMat = new PMatrix3D();
+		projectionMat  = new PMatrix3D();
+		
+		projectionMat.set(0, 0, 0, 0,
+						  0, 0, 0, 0,
+						  0, 0, 0, 0,
+						  0, 0, 0, 0);
 		computeProjectionMatrix();
 	}
 
@@ -116,14 +117,10 @@ public class PSCamera implements Cloneable {
 	public PSCamera clone() {
 		try {
 			PSCamera clonedCam = (PSCamera) super.clone();
-			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y,
-					scnCenter.z);
+			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);			
+			clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
+			clonedCam.projectionMat = new PMatrix3D(projectionMat);
 			clonedCam.frm = frm.clone();
-			for (int i = 0; i < 16; i++) {
-				clonedCam.modelViewMat[i] = modelViewMat[i];
-				clonedCam.projectionMat[i] = projectionMat[i];
-			}
-
 			return clonedCam;
 		} catch (CloneNotSupportedException e) {
 			throw new Error("Is too");
@@ -317,33 +314,6 @@ public class PSCamera implements Cloneable {
 	public void setOrientation(PSQuaternion q) {
 		frame().setOrientation(q);
 		frame().updateFlyUpVector();
-	}
-	
-	/**
-	 * Sets the PSCamera's {@link #position()} and {@link #orientation()} from an OpenGL
-	 * ModelView matrix. 
-	 * <p> 
-	 * This enables a PSCamera initialisation from other application based on OpenGL.
-	 * {@code modelView} is a 16 float vector representing a valid OpenGL ModelView matrix,
-	 * <p> 
-	 * After this method has been called, {@link #getModelViewMatrix()} returns a matrix equivalent
-	 * to {@code modelView}. 
-	 * <p> 
-	 * Only the {@link #orientation()} and {@link #position()} of the PSCamera are modified.
-	 */
-	public void fromModelViewMatrix(float []modelViewMatrix) {
-		// Get upper left (rotation) matrix
-		float upperLeft[][] = new float[3][3];
-		for (int i=0; i<3; ++i)
-			for (int j=0; j<3; ++j)
-				upperLeft[i][j] = modelViewMatrix[i*4+j];
-		
-		// Transform upperLeft into the associated PSQuaternion
-		PSQuaternion q = new PSQuaternion();
-		q.fromRotationMatrix(upperLeft);
-		
-		setOrientation(q);
-		setPosition(PVector.mult(q.rotate(new PVector(modelViewMatrix[12], modelViewMatrix[13], modelViewMatrix[14])), -1));
 	}
 	
 	/**
@@ -793,112 +763,6 @@ public class PSCamera implements Cloneable {
 	    }		
 		return 1.0f;	
 	}
-	
-	/**
-	 * Returns the 6 plane equations of the PSCamera frustum. 
-	 * <p> 
-	 * The six 4-component vectors of {@code coef} respectively correspond to the left,
-	 * right, near, far, top and bottom PSCamera frustum planes. Each vector holds a plane
-	 * equation of the form:
-	 * <p>
-	 * {@code a*x + b*y + c*z + d = 0}
-	 * <p>
-	 * where {@code a}, {@code b}, {@code c} and {@code d} are the 4 components of each vector,
-	 * in that order. 
-	 * <p> 
-	 * This format is compatible with the {@code glClipPlane()} OpenGL function. One camera frustum
-	 * plane can hence be applied in an other viewer to visualize the culling results:
-	 * <p>
-	 * {@code // Retrieve place equations}<br>
-	 * {@code float [][] coef = mainViewer.camera().getFrustumPlanesCoefficients();}<br>
-	 * {@code // These two additional clipping planes (which must have been enabled)}<br>
-	 * {@code // will reproduce the mainViewer's near and far clipping.}<br>
-	 * {@code glClipPlane(GL_CLIP_PLANE0, coef[2]);}<br>
-	 * {@code glClipPlane(GL_CLIP_PLANE1, coef[3]);}<br>
-	 */
-	public float[][] getFrustumPlanesCoefficients() {
-		// Computed once and for all
-		float [][] coef = new float [6][4];
-		PVector pos          = position();
-		PVector viewDir      = viewDirection();
-		PVector up           = upVector();
-		PVector right        = rightVector();
-		float posViewDir = PVector.dot(pos, viewDir);
-		
-		switch (type()) {
-		case PERSPECTIVE : {
-			float hhfov = horizontalFieldOfView() / 2.0f;
-			float chhfov = PApplet.cos(hhfov);
-			float shhfov = PApplet.sin(hhfov);
-			normal[0] = PVector.mult(viewDir, -shhfov);
-			normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
-			normal[0] = PVector.sub(normal[0], PVector.mult(right, chhfov));
-			
-			normal[2] = PVector.mult(viewDir, -1);
-			normal[3] =  viewDir;
-			
-			float hfov = fieldOfView() / 2.0f;
-			float chfov = PApplet.cos(hfov);
-			float shfov = PApplet.sin(hfov);
-			normal[4] = PVector.mult(viewDir, -shfov);
-			normal[5] = PVector.sub(normal[4], PVector.mult(up, chfov));
-			normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
-			
-			for (int i=0; i<2; ++i)
-				dist[i] = PVector.dot(pos, normal[i]);
-			for (int j=4; j<6; ++j)
-				dist[j] = PVector.dot(pos, normal[j]);
-			
-			// Natural equations are:
-			// dist[0,1,4,5] = pos * normal[0,1,4,5];
-			// dist[2] = (pos + zNear() * viewDir) * normal[2];
-			// dist[3] = (pos + zFar()  * viewDir) * normal[3];
-			
-			// 2 times less computations using expanded/merged equations. Dir vectors are normalized.
-			
-			float posRightCosHH = PVector.dot(PVector.mult(pos, chhfov), right);
-			dist[0] = -shhfov * posViewDir;
-			dist[1] = dist[0] + posRightCosHH;
-			dist[0] = dist[0] - posRightCosHH;
-			float posUpCosH = PVector.dot(PVector.mult(pos, chfov), up);
-			dist[4] = - shfov * posViewDir;
-			dist[5] = dist[4] - posUpCosH;
-			dist[4] = dist[4] + posUpCosH;
-			
-			break;
-			}
-		
-		case ORTHOGRAPHIC :
-			normal[0] = PVector.mult(right, -1);
-			normal[1] =  right;
-			normal[4] =  up;
-			normal[5] = PVector.mult(up, -1);
-			
-			float [] wh = getOrthoWidthHeight();
-			
-			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])), normal[0]);
-			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])), normal[1]);
-			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])), normal[4]);
-			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])), normal[5]);
-			break;
-			}
-		
-		// Front and far planes are identical for both camera types.
-		normal[2] = PVector.mult(viewDir, -1);
-		normal[3] =  viewDir;
-		dist[2] = -posViewDir - zNear();
-		dist[3] =  posViewDir + zFar();
-		
-		for (int i=0; i<6; ++i) {
-			coef[i][0] = normal[i].x;
-			coef[i][1] = normal[i].y;
-			coef[i][2] = normal[i].z;
-			coef[i][3] = dist[i];
-		}
-		
-		return coef;
-	}
-
 
 	// 3. SCENE RADIUS AND CENTER
 
@@ -1065,34 +929,29 @@ public class PSCamera implements Cloneable {
 	// 6. OPENGL MATRICES
 	
 	/**
-	 * Convenience function that simply returns {@code return getProjectionMatrix(new float[16])}
+	 * Convenience function that simply returns {@code return return getProjectionMatrix(new PMatrix3D())}
 	 * 
-	 * @see #getProjectionMatrix(float[])
+	 * @see #getProjectionMatrix(PMatrix3D)
 	 */
-	public float[] getProjectionMatrix() {
-		return getProjectionMatrix(new float[16]);
+	public PMatrix3D getProjectionMatrix() {
+		return getProjectionMatrix(new PMatrix3D());
 	}
 	
 	/**
 	 * Fills {@code m} with the PSCamera projection matrix values and returns it. If
-	 * {@code m} is {@code null} (or not the correct size), a new array will created. 
+	 * {@code m} is {@code null} a new PMatrix3D will be created. 
 	 * <p> 
 	 * Calls {@link #computeProjectionMatrix()} to define the PSCamera projection matrix.
 	 * <p>
-	 * The result is an OpenGL 4x4 matrix, which is given in column-major order (see
-	 * {@code glMultMatrix} documentation for details).
 	 * 
 	 * @see #getModelViewMatrix()
 	 */
-	public float[] getProjectionMatrix(float[] m) {
-		if ((m == null) || (m.length != 16)) {
-			m = new float[16];
-		}
+	public PMatrix3D getProjectionMatrix(PMatrix3D m) {
+		if (m == null) m = new PMatrix3D();
 		
 		// May not be needed, but easier and more robust like this.
 		computeProjectionMatrix();
-		for (int i=0; i<16; ++i)
-			m[i] = projectionMat[i];
+		m.set(projectionMat);
 		
 		return m;
 	}	
@@ -1101,11 +960,11 @@ public class PSCamera implements Cloneable {
 	 * Computes the projection matrix associated with the PSCamera. 
 	 * <p> 
 	 * If {@link #type()} is PERSPECTIVE, defines a GL_PROJECTION matrix similar to what
-	 * would {@code gluPerspective()} do using the {@link #fieldOfView()}, window
+	 * would {@code perspective()} do using the {@link #fieldOfView()}, window
 	 * {@link #aspectRatio()}, {@link #zNear()} and {@link #zFar()} parameters. 
 	 * <p> 
 	 * If {@link #type()} is ORTHOGRAPHIC, the projection matrix is as what {@code
-	 * glOrtho()} would do. Frustum's width and height are set using
+	 * ortho()} would do. Frustum's width and height are set using
 	 * {@link #getOrthoWidthHeight()}. 
 	 * <p> 
 	 * Both types use {@link #zNear()} and {@link #zFar()} to place clipping planes. These values
@@ -1115,8 +974,8 @@ public class PSCamera implements Cloneable {
 	 * Use {@link #getProjectionMatrix()} to retrieve this matrix.
 	 * <p> 
 	 * <b>Note:</b> You must call this method if your PSCamera is not associated
-	 * with a PScene and is used for offscreen computations (using
-	 * (un)projectedCoordinatesOf() for instance).
+	 * with a PScene and is used for offscreen computations
+	 * (using {@code (un)projectedCoordinatesOf()} for instance).
 	 * 
 	 * @see #setProjectionfromPCamera(PMatrix3D)
 	 */
@@ -1129,25 +988,22 @@ public class PSCamera implements Cloneable {
 			// #CONNECTION# all non null coefficients were set to 0.0 in
 			// constructor.
 			float f = 1.0f / PApplet.tan(fieldOfView() / 2.0f);
-			projectionMat[0] = f / aspectRatio();
-			projectionMat[5] = f;
-			projectionMat[10] = (ZNear + ZFar) / (ZNear - ZFar);
-			projectionMat[11] = -1.0f;
-			projectionMat[14] = 2.0f * ZNear * ZFar / (ZNear - ZFar);
-			projectionMat[15] = 0.0f;
-			// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(),
-			// zNear(), zFar() );
+			projectionMat.m00 = f / aspectRatio();
+			projectionMat.m11 = f;
+			projectionMat.m22 = (ZNear + ZFar) / (ZNear - ZFar);
+			projectionMat.m32 = -1.0f;
+			projectionMat.m23 = 2.0f * ZNear * ZFar / (ZNear - ZFar);
+			projectionMat.m33 = 0.0f;
 			break;
 		}
 		case ORTHOGRAPHIC: {
 			float[] wh = getOrthoWidthHeight();
-			projectionMat[0] = 1.0f / wh[0];
-			projectionMat[5] = 1.0f / wh[1];
-			projectionMat[10] = -2.0f / (ZFar - ZNear);
-			projectionMat[11] = 0.0f;
-			projectionMat[14] = -(ZFar + ZNear) / (ZFar - ZNear);
-			projectionMat[15] = 1.0f;
-			// same as glOrtho( -w, w, -h, h, zNear(), zFar() );
+			projectionMat.m00 = 1.0f / wh[0];
+			projectionMat.m11 = 1.0f / wh[1];
+			projectionMat.m22 = -2.0f / (ZFar - ZNear);
+			projectionMat.m32 = 0.0f;
+			projectionMat.m23 = -(ZFar + ZNear) / (ZFar - ZNear);
+			projectionMat.m33 = 1.0f;
 			break;
 		}
 		}
@@ -1159,48 +1015,32 @@ public class PSCamera implements Cloneable {
 	 * @see #computeProjectionMatrix()
 	 */
 	public void setProjectionfromPCamera(PMatrix3D proj) {
-		PMatrix3D temp = new PMatrix3D(proj);
-		temp.transpose();
-		temp.get(projectionMat);
+		projectionMat.set(proj);
 	}
 
 	/**
 	 * Convenience function that simply returns
-	 * {@code return this.getModelViewMatrix(new float[16])}
+	 * {@code return getModelViewMatrix(new PMatrix3D())}
 	 */
-	public float[] getModelViewMatrix() {
-		return this.getModelViewMatrix(new float[16]);	
+	public PMatrix3D getModelViewMatrix() {
+		return getModelViewMatrix(new PMatrix3D());	
 	}
 	
 	/**
 	 * Fills {@code m} with the Camera modelView matrix values and returns it. If
-	 * {@code m} is {@code null} (or not the correct size), a new array will be created.
+	 * {@code m} is {@code null} a new PMatrix3D will be created.
 	 * <p> 
-	 * First calls {@link #computeModelViewMatrix()} to define the PSCamera modelView matrix. 
-	 * <p> 
-	 * The result is an OpenGL 4x4 matrix, which is given in column-major order (see
-	 * {@code glMultMatrix} documentation for details).
+	 * First calls {@link #computeModelViewMatrix()} to define the PSCamera modelView matrix.
 	 *  
-	 * @see #getProjectionMatrix(float[])
-	 * @see #fromModelViewMatrix(float[])
+	 * @see #getProjectionMatrix(PMatrix3D)
 	 */
-	public float[] getModelViewMatrix(float[] m) {
-		/**
-		 * Note that this matrix is usually not the one you would get from a
-	     * {@code glGetFloatv(GL_MODELVIEW_MATRIX, m)}. It converts from the world to the
-	     * PSCamera coordinate system, but as soon as you modify the GL_MODELVIEW in your
-	     * drawing code, the two matrices differ.
-		 */
-		if ((m == null) || (m.length != 16)) {
-			m = new float[16];
-		}
+	public PMatrix3D getModelViewMatrix(PMatrix3D m) {
+		if (m == null) m = new PMatrix3D();
 		// May not be needed, but easier like this.
 		// Prevents from retrieving matrix in stereo mode -> overwrites shifted value.
 		computeModelViewMatrix();
-		for (int i=0; i<16; ++i)
-			m[i] = modelViewMat[i];
-	  
-	  return m;
+		m.set(modelViewMat);
+		return m;
 	}
 
 	/**
@@ -1214,8 +1054,8 @@ public class PSCamera implements Cloneable {
 	 * Use {@link #getModelViewMatrix()} to retrieve this matrix.
 	 * <p> 
 	 * <b>Note:</b> You must call this method if your PSCamera is not associated with a
-	 * PScene and is used for offscreen computations (using (un)projectedCoordinatesOf()
-	 * for instance).
+	 * PScene and is used for offscreen computations
+	 * (using {@code (un)projectedCoordinatesOf()} for instance).
 	 */
 	public void computeModelViewMatrix() {
 		PSQuaternion q = frame().orientation();
@@ -1232,27 +1072,27 @@ public class PSCamera implements Cloneable {
 		float q13 = 2.0f * q.y * q.w;
 		float q23 = 2.0f * q.z * q.w;
 		
-		modelViewMat[0] = 1.0f  - q11 - q22;
-		modelViewMat[1] =         q01 - q23;
-		modelViewMat[2] =         q02 + q13;
-		modelViewMat[3] = 0.0f;
+		modelViewMat.m00 = 1.0f  - q11 - q22;
+		modelViewMat.m10 =         q01 - q23;
+		modelViewMat.m20 =         q02 + q13;
+		modelViewMat.m30 = 0.0f;
 		
-		modelViewMat[4] =         q01 + q23;
-		modelViewMat[5] = 1.0f  - q22 - q00;
-		modelViewMat[6] =         q12 - q03;
-		modelViewMat[7] = 0.0f;
+		modelViewMat.m01 =         q01 + q23;
+		modelViewMat.m11 = 1.0f  - q22 - q00;
+		modelViewMat.m21 =         q12 - q03;
+		modelViewMat.m31 = 0.0f;
 		
-		modelViewMat[8] =         q02 - q13;
-		modelViewMat[9] =         q12 + q03;
-		modelViewMat[10] = 1.0f - q11 - q00;
-		modelViewMat[11] = 0.0f;
+		modelViewMat.m02 =         q02 - q13;
+		modelViewMat.m12 =         q12 + q03;
+		modelViewMat.m22 = 1.0f - q11 - q00;
+		modelViewMat.m32 = 0.0f;
 		
 		PVector t = q.inverseRotate(frame().position());
 		
-		modelViewMat[12] = -t.x;
-		modelViewMat[13] = -t.y;
-		modelViewMat[14] = -t.z;
-		modelViewMat[15] = 1.0f;
+		modelViewMat.m03 = -t.x;
+		modelViewMat.m13 = -t.y;
+		modelViewMat.m23 = -t.z;
+		modelViewMat.m33 = 1.0f;
 	}
 	
 	/**
@@ -1261,41 +1101,9 @@ public class PSCamera implements Cloneable {
 	 * @see #computeModelViewMatrix()
 	 */
 	public void setModelViewfromPCamera(PMatrix3D modelview) {
-		PMatrix3D temp = new PMatrix3D(modelview);
-		temp.transpose();
-		temp.get(modelViewMat);
+		modelViewMat.set(modelview);
 	}
 	
-	/**
-	 * Convenience function that simply returns
-	 * {@code return getModelViewProjectionMatrix(new float[16])}
-	 */
-	public float[] getModelViewProjectionMatrix() {
-		return getModelViewProjectionMatrix(new float[16]);	
-	}
-	
-	/**
-	 * Fills {@code m} m with the product of the ModelView and Projection matrices and returns it.
-	 * If {@code m} is {@code null} (or not the correct size), a new array will created.  
-	 * <p>  
-	 * Calls {@link #getModelViewMatrix()} and {@link #getProjectionMatrix()} and then fills
-	 * {@code m} with the product of these two matrices.
-	 */
-	public float[] getModelViewProjectionMatrix(float[] m) {
-		float mv[] = getModelViewMatrix(); 
-		float proj[] = getProjectionMatrix();
-		
-		for (int i=0; i<4; ++i)	{
-			for (int j=0; j<4; ++j) {
-				float sum = 0.0f;
-				for (int k=0; k<4; ++k)
-					sum += proj[i+4*k]*mv[k+4*j];
-				m[i+4*j] = sum;
-			}
-		}
-		return m;
-	}
-
 	// 7. WORLD -> CAMERA
 
 	/**
@@ -1392,20 +1200,30 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * <b>Attention:</b> This method only uses the intrinsic PSCamera parameters
 	 * (see {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
-	 * {@link #getViewport()}) and is completely independent of the OpenGL
-	 * GL_MODELVIEW, GL_PROJECTION and viewport matrices. You can hence define
-	 * a virtual PSCamera and use this method to compute projections out of a
-	 * classical rendering context.
+	 * {@link #getViewport()}) and is completely independent of the processing
+	 * matrices. You can hence define a virtual PSCamera and use this method to
+	 * compute projections out of a classical rendering context.
 	 */
 	public final PVector projectedCoordinatesOf(PVector src, PSFrame frame) {		
 		float xyz[] = new float[3];		
 		viewport = getViewport();
 		
+		//TODO: implement glu* functions that convey processing matrix conventions
+		//instead of that found in OpenGL		
+		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
+		modelViewMatT.transpose();
+		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
+		projectionMatT.transpose();		
+		float[] modelview = new float[16];
+		float[] projection = new float[16];
+		modelViewMatT.get(modelview);
+		projectionMatT.get(projection);
+		
 		if (frame != null) {
 			PVector tmp = frame.inverseCoordinatesOf(src);
-			gluProjectf(tmp.x, tmp.y, tmp.z, modelViewMat, projectionMat, viewport, xyz);
+			gluProjectf(tmp.x, tmp.y, tmp.z, modelview, projection, viewport, xyz);
 		} else
-			gluProjectf(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
+			gluProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);
 		
 		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 			xyz[1] = screenHeight() - xyz[1];
@@ -1441,10 +1259,9 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * This method only uses the intrinsic PSCamera parameters (see
 	 * {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
-	 * {@link #getViewport()}) and is completely independent of the OpenGL
-	 * GL_MODELVIEW, GL_PROJECTION and viewport matrices. You can hence
-	 * define a virtual PSCamera and use this method to compute un-projections
-	 * out of a classical rendering context. 
+	 * {@link #getViewport()}) and is completely independent of the processing
+	 * matrices. You can hence define a virtual PSCamera and use this method to
+	 * compute un-projections out of a classical rendering context. 
 	 * <p> 
 	 * <b>Attention:</b> However, if your PSCamera is not attached to a
 	 * PScene (used for offscreen computations for instance), make sure the
@@ -1463,10 +1280,22 @@ public class PSCamera implements Cloneable {
 		//it is responsible of the caller to check coordinateSystemConvention on src
 		float xyz[] = new float[3];
 		viewport = getViewport();
+		
+		//TODO: implement glu* functions that convey processing matrix conventions
+		//instead of that found in OpenGL		
+		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
+		modelViewMatT.transpose();
+		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
+		projectionMatT.transpose();		
+		float[] modelview = new float[16];
+		float[] projection = new float[16];
+		modelViewMatT.get(modelview);
+		projectionMatT.get(projection);
+		
 		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			gluUnProjectf(src.x, (screenHeight() - src.y), src.z, modelViewMat, projectionMat, viewport, xyz);
+			gluUnProjectf(src.x, (screenHeight() - src.y), src.z, modelview, projection, viewport, xyz);
 		else
-			gluUnProjectf(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);		
+			gluUnProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);		
 		if (frame != null)
 			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]));
 		else
@@ -1752,7 +1581,170 @@ public class PSCamera implements Cloneable {
 		focusDist = distance;
 	}
 	
-	// 13. Implementation of glu utility functions
+	// 15. Future versions
+	
+	//TODO: check to see if it is worth implementing these methods
+	/**
+	    //Sets the PSCamera's {@link #position()} and {@link #orientation()} from an OpenGL
+		//ModelView matrix. 
+		//<p> 
+		//This enables a PSCamera initialisation from other application based on OpenGL.
+		//{@code modelView} is a 16 float vector representing a valid OpenGL ModelView matrix,
+		//<p> 
+		//After this method has been called, {@link #getModelViewMatrix()} returns a 
+		//PMatrix3D (processing matrix) equivalent to {@code modelView}. 
+		//<p> 
+		//Only the {@link #orientation()} and {@link #position()} of the PSCamera are modified.
+		// Get upper left (rotation) matrix
+	public void fromModelViewMatrix(float []modelViewMatrix) {		
+		float upperLeft[][] = new float[3][3];
+		for (int i=0; i<3; ++i)
+			for (int j=0; j<3; ++j)
+				upperLeft[i][j] = modelViewMatrix[i*4+j];
+		
+		// Transform upperLeft into the associated PSQuaternion
+		PSQuaternion q = new PSQuaternion();
+		q.fromRotationMatrix(upperLeft);
+		
+		setOrientation(q);
+		setPosition(PVector.mult(q.rotate(new PVector(modelViewMatrix[12], modelViewMatrix[13], modelViewMatrix[14])), -1));
+	}
+	
+	     //Returns the 6 plane equations of the PSCamera frustum. 
+		 //<p> 
+		 //The six 4-component vectors of {@code coef} respectively correspond to the left,
+		 //right, near, far, top and bottom PSCamera frustum planes. Each vector holds a plane
+		 //equation of the form:
+		 //<p>
+		 //{@code a*x + b*y + c*z + d = 0}
+		 //<p>
+		 //where {@code a}, {@code b}, {@code c} and {@code d} are the 4 components of each vector,
+		 //in that order. 
+		 //<p> 
+		 //This format is compatible with the {@code glClipPlane()} OpenGL function. One camera frustum
+		 //plane can hence be applied in an other viewer to visualize the culling results:
+		 //<p>
+		 //{@code // Retrieve place equations}<br>
+		 //{@code float [][] coef = mainViewer.camera().getFrustumPlanesCoefficients();}<br>
+		 //{@code // These two additional clipping planes (which must have been enabled)}<br>
+		 //{@code // will reproduce the mainViewer's near and far clipping.}<br>
+		 //{@code glClipPlane(GL_CLIP_PLANE0, coef[2]);}<br>
+		 //{@code glClipPlane(GL_CLIP_PLANE1, coef[3]);}<br>
+		 //Computed once and for all
+	public float[][] getFrustumPlanesCoefficients() {		 
+		float [][] coef = new float [6][4];
+		PVector pos          = position();
+		PVector viewDir      = viewDirection();
+		PVector up           = upVector();
+		PVector right        = rightVector();
+		float posViewDir = PVector.dot(pos, viewDir);
+		
+		switch (type()) {
+		case PERSPECTIVE : {
+			float hhfov = horizontalFieldOfView() / 2.0f;
+			float chhfov = PApplet.cos(hhfov);
+			float shhfov = PApplet.sin(hhfov);
+			normal[0] = PVector.mult(viewDir, -shhfov);
+			normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
+			normal[0] = PVector.sub(normal[0], PVector.mult(right, chhfov));
+			
+			normal[2] = PVector.mult(viewDir, -1);
+			normal[3] =  viewDir;
+			
+			float hfov = fieldOfView() / 2.0f;
+			float chfov = PApplet.cos(hfov);
+			float shfov = PApplet.sin(hfov);
+			normal[4] = PVector.mult(viewDir, -shfov);
+			normal[5] = PVector.sub(normal[4], PVector.mult(up, chfov));
+			normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
+			
+			for (int i=0; i<2; ++i)
+				dist[i] = PVector.dot(pos, normal[i]);
+			for (int j=4; j<6; ++j)
+				dist[j] = PVector.dot(pos, normal[j]);
+			
+			// Natural equations are:
+			// dist[0,1,4,5] = pos * normal[0,1,4,5];
+			// dist[2] = (pos + zNear() * viewDir) * normal[2];
+			// dist[3] = (pos + zFar()  * viewDir) * normal[3];
+			
+			// 2 times less computations using expanded/merged equations. Dir vectors are normalized.
+			
+			float posRightCosHH = PVector.dot(PVector.mult(pos, chhfov), right);
+			dist[0] = -shhfov * posViewDir;
+			dist[1] = dist[0] + posRightCosHH;
+			dist[0] = dist[0] - posRightCosHH;
+			float posUpCosH = PVector.dot(PVector.mult(pos, chfov), up);
+			dist[4] = - shfov * posViewDir;
+			dist[5] = dist[4] - posUpCosH;
+			dist[4] = dist[4] + posUpCosH;
+			
+			break;
+			}
+		
+		case ORTHOGRAPHIC :
+			normal[0] = PVector.mult(right, -1);
+			normal[1] =  right;
+			normal[4] =  up;
+			normal[5] = PVector.mult(up, -1);
+			
+			float [] wh = getOrthoWidthHeight();
+			
+			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])), normal[0]);
+			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])), normal[1]);
+			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])), normal[4]);
+			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])), normal[5]);
+			break;
+			}
+		
+		// Front and far planes are identical for both camera types.
+		normal[2] = PVector.mult(viewDir, -1);
+		normal[3] =  viewDir;
+		dist[2] = -posViewDir - zNear();
+		dist[3] =  posViewDir + zFar();
+		
+		for (int i=0; i<6; ++i) {
+			coef[i][0] = normal[i].x;
+			coef[i][1] = normal[i].y;
+			coef[i][2] = normal[i].z;
+			coef[i][3] = dist[i];
+		}
+		
+		return coef;
+	}
+	
+	//Convenience function that simply returns
+	//{@code return getModelViewProjectionMatrix(new float[16])}
+	public float[] getModelViewProjectionMatrix() {	
+		return getModelViewProjectionMatrix(new float[16]);	
+	}
+	
+	//Fills {@code m} m with the product of the ModelView and Projection matrices and returns it.
+	//If {@code m} is {@code null} (or not the correct size), a new array will created.  
+	//<p>  
+	//Calls {@link #getModelViewMatrix()} and {@link #getProjectionMatrix()} and then fills
+	//{@code m} with the product of these two matrices.
+	public float[] getModelViewProjectionMatrix(float[] m) {
+		float mv[] = getModelViewMatrix(); 
+		float proj[] = getProjectionMatrix();
+		
+		for (int i=0; i<4; ++i)	{
+			for (int j=0; j<4; ++j) {
+				float sum = 0.0f;
+				for (int k=0; k<4; ++k)
+					sum += proj[i+4*k]*mv[k+4*j];
+				m[i+4*j] = sum;
+			}
+		}
+		return m;
+	}
+    */
+	
+	// 14. Implementation of glu utility functions
+	
+	//TODO: implement glu* functions that convey processing matrix conventions
+	//instead of that found in OpenGL	
+	
 	/**
 	 * Utility function that does the same as {@code gluProject()} using float precision
 	 * numbers instead of doubles. See the {@code gluProject()} documentation for details. 
