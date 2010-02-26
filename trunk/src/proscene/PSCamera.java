@@ -1,3 +1,28 @@
+/**
+ * This java package provides classes to ease the creation of
+ * interactive 3D scenes in Processing.
+ * @author Jean Pierre Charalambos, A/Prof. National University of Colombia
+ * (http://disi.unal.edu.co/profesores/pierre/, http://www.unal.edu.co/).
+ * @version 0.7.0
+ * 
+ * Copyright (c) 2010 Jean Pierre Charalambos
+ * 
+ * This source file is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * A copy of the GNU General Public License is available on the World
+ * Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also
+ * obtain it by writing to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
+ */
+
 package proscene;
 
 import processing.core.*;
@@ -46,8 +71,6 @@ public class PSCamera implements Cloneable {
 	private Type tp; // PERSPECTIVE or ORTHOGRAPHIC
 	private PMatrix3D modelViewMat;
 	private PMatrix3D projectionMat;
-	//private float []modelViewMat; // [16] Buffered model view matrix.
-	//private float []projectionMat; // [16] Buffered projection matrix.
 
 	// S t e r e o p a r a m e t e r s
 	float IODist; // inter-ocular distance, in meters
@@ -1325,7 +1348,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the Camera so that the rectangular screen region defined by {@code
+	 * Moves the PSCamera so that the rectangular screen region defined by {@code
 	 * rectangle} (pixel units, with origin in the upper left corner) fits the
 	 * screen. 
 	 * <p> 
