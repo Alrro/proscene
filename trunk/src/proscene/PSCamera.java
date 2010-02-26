@@ -6,7 +6,6 @@ import proscene.PSInteractiveFrame.CoordinateSystemConvention;
 import java.awt.Point;
 import java.awt.Rectangle;
 
-
 /**
  * A perspective or orthographic camera.
  * <p>

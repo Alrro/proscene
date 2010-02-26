@@ -1,6 +1,6 @@
 public class Caja {
 	PApplet parent;
-	PSFrame psIFrame;
+	PSInteractiveFrame psIFrame;
 	
 	Caja(PApplet p) {
 		parent = p;

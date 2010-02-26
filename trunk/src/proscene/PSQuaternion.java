@@ -347,6 +347,8 @@ public class PSQuaternion {
 	 * A composition of a PSQuaternion and its {@link #inverse()} results in
 	 * an identity function. Use {@link #invert()} to actually
 	 * modify the PSQuaternion.
+	 * 
+	 * @see #invert()
 	 */
 	public final PSQuaternion inverse() {
 		PSQuaternion tempQuat = new PSQuaternion(this);
@@ -356,6 +358,8 @@ public class PSQuaternion {
 
 	/**
 	 * Sets the value of this PSQuaternion to the inverse of itself.
+	 * 
+	 * @see #inverse()
 	 */
 	public final void invert() {
 		float sqNorm = squaredNorm(this);
@@ -509,8 +513,7 @@ public class PSQuaternion {
 	 * Set the PSQuaternion from a (supposedly correct) 3x3 rotation matrix. 
 	 * <p> 
 	 * The matrix is expressed in European format: its three columns are the
-	 * images by the rotation of the three vectors of an orthogonal basis. Note
-	 * that OpenGL uses a symmetric representation for its matrices. 
+	 * images by the rotation of the three vectors of an orthogonal basis.
 	 * <p>
 	 * {@link #fromRotatedBasis(PVector, PVector, PVector)} sets a PSQuaternion
 	 * from the three axis of a rotated frame. It actually fills the three
@@ -561,8 +564,8 @@ public class PSQuaternion {
 	 * 
 	 * @see #fromRotationMatrix(float[][])
 	 */
-	public final void fromPMatrix(PMatrix3D pM) {
-		fromRotationMatrix(PSUtility.get3x3UpperLeftMatrix(pM));
+	public final void fromMatrix(PMatrix3D pM) {
+		fromRotationMatrix(PSUtility.get3x3UpperLeftMatrixFromPMatrix3D(pM));
 	}
 
 	/**
@@ -635,13 +638,26 @@ public class PSQuaternion {
 	}
 
 	/**
-	 * Returns the OpenGL 4*4 matrix representation of the PSQuaternion rotation.
+	 * Returns the 3x3 rotation matrix associated with the PSQuaternion. 
+	 * <p> 
+	 * <b>Attention:</b> The method returns the European mathematical representation of
+	 * the rotation matrix.
 	 * 
-	 * @see #inverseMatrix()
-	 * @see proscene.PSFrame#openGLMatrix()
+	 * @see #inverseRotationMatrix()
+	 * 
 	 */
-	public final float[][] openGLMatrix() {
-		float[][] m = new float[4][4];
+	public final float[][] rotationMatrix() {
+		return PSUtility.get3x3UpperLeftMatrixFromPMatrix3D(matrix());
+	}
+	
+	/**
+	 * Returns the PMatrix3D (processing matrix) which represents the rotation
+	 * matrix associated with the PSQuaternion. 
+	 *  
+	 * @see #rotationMatrix()
+	 */
+	public final PMatrix3D matrix() {
+
 		float q00 = 2.0f * this.x * this.x;
 		float q11 = 2.0f * this.y * this.y;
 		float q22 = 2.0f * this.z * this.z;
@@ -655,125 +671,51 @@ public class PSQuaternion {
 
 		float q23 = 2.0f * this.z * this.w;
 
-		m[0][0] = 1.0f - q11 - q22;
-		m[1][0] = q01 - q23;
-		m[2][0] = q02 + q13;
+		float m00 = 1.0f - q11 - q22;
+		float m01 = q01 - q23;
+		float m02 = q02 + q13;
 
-		m[0][1] = q01 + q23;
-		m[1][1] = 1.0f - q22 - q00;
-		m[2][1] = q12 - q03;
+		float m10 = q01 + q23;
+		float m11 = 1.0f - q22 - q00;
+		float m12 = q12 - q03;
 
-		m[0][2] = q02 - q13;
-		m[1][2] = q12 + q03;
-		m[2][2] = 1.0f - q11 - q00;
+		float m20 = q02 - q13;
+		float m21 = q12 + q03;
+		float m22 = 1.0f - q11 - q00;
 
-		m[0][3] = 0.0f;
-		m[1][3] = 0.0f;
-		m[2][3] = 0.0f;
+		float m30 = 0.0f;
+		float m31 = 0.0f;
+		float m32 = 0.0f;
 
-		m[3][0] = 0.0f;
-		m[3][1] = 0.0f;
-		m[3][2] = 0.0f;
-		m[3][3] = 1.0f;
+		float m03 = 0.0f;
+		float m13 = 0.0f;
+		float m23 = 0.0f;
+		float m33 = 1.0f;
 
-		return m;
-	}
-
-	/**
-	 * Same as {@link #openGLMatrix()}, but this method returns an 1D array instead.
-	 * 
-	 * @see #inverseMatrix()
-	 * @see proscene.PSFrame#openGLMatrix()
-	 */
-	public final float[] openGLArray() {
-		float m[] = new float[16];
-		float[][] mat = new float[4][4];
-		mat = openGLMatrix();
-		int count = 0;
-		for (int i = 0; i < 4; ++i)
-			for (int j = 0; j < 4; ++j)
-				m[count++] = mat[i][j];
-		return m;
-	}
-
-	/**
-	 * Returns the 3x3 rotation matrix associated with the PSQuaternion. 
-	 * <p> 
-	 * <b>Attention:</b> The method returns the European mathematical representation of
-	 * the rotation matrix. Use {@link #openGLMatrix()} to retrieve the OpenGL transposed
-	 * version.
-	 * 
-	 * @see #inverseRotationMatrix()
-	 * 
-	 */
-	public final float[][] rotationMatrix() {
-		float[][] m = new float[3][3];
-		float[][] mat = new float[4][4];
-		mat = openGLMatrix();
-		for (int i = 0; i < 3; ++i)
-			for (int j = 0; j < 3; ++j)
-				// Beware of transposition
-				m[i][j] = mat[j][i];
-		return m;
+		return new PMatrix3D(m00,m01,m02,m03,m10,m11,m12,m13,m20,m21,m22,m23,m30,m31,m32,m33);
 	}
 	
 	/**
-	 * Returns the PMatrix3D (processing matrix) which represents the rotation
-	 * matrix associated with the PSQuaternion. 
-	 *  
-	 * @see #rotationMatrix()
-	 * @see #openGLMatrix() 
-	 */
-	public final PMatrix3D pMatrix() {
-		return PSUtility.fromOpenGLToPMatrix3D(openGLMatrix());
-	}
-
-	/**
-	 * Returns the associated 4x4 OpenGL inverse rotation matrix. This is simply
-	 * the {@link #openGLMatrix()} of the {@link #inverse()}. 
+	 * Returns the associated inverse rotation processing PMatrix3D. This is simply
+	 * {@link #matrix()} of the {@link #inverse()}. 
 	 * <p> 
 	 * <b>Attention:</b> The result is only valid until the next call to
 	 * {@link #inverseMatrix()}. Use it immediately
-	 * (as in {@code applyMatrix(PSUtility.fromOpenGL4x4Matrix(q.inverseMatrix()))}). 
-	 * <p> 
-	 * The matrix is given in OpenGL format (row-major order) and is the
-	 * transpose of the actual mathematical European representation. Consider
-	 * using {@link #inverseRotationMatrix()} instead.
-	 * 
-	 * @see #openGLMatrix()
+	 * (as in {@code applyMatrix(q.inverseMatrix())}).
 	 */
-	public final float[][] inverseMatrix() {
+	public final PMatrix3D inverseMatrix() {
 		PSQuaternion tempQuat = new PSQuaternion(x, y, z, w);
 		tempQuat.invert();
-		return tempQuat.openGLMatrix();
-	}
-
-	/**
-	 * Same as {@link #inverseMatrix()}, but this method returns a 1D array instead.
-	 */
-	public final float[] inverseArray() {
-		PSQuaternion tempQuat = new PSQuaternion(x, y, z, w);
-		tempQuat.invert();
-		return tempQuat.openGLArray();
+		return tempQuat.matrix();
 	}
 
 	/**
 	 * Returns the 3x3 inverse rotation matrix associated with the PSQuaternion. 
 	 * <p> 
 	 * <b>Attention:</b> This is the classical mathematical rotation matrix.
-	 * The OpenGL format uses its transposed version.
-	 * 
-	 * @see #inverseMatrix()
 	 */
 	public final float[][] inverseRotationMatrix() {
-		float[][] m = new float[3][3];
-		float[][] mat = new float[4][4];
-		mat = inverseMatrix();
-		for (int i = 0; i < 3; ++i)
-			for (int j = 0; j < 3; ++j)
-				// Beware of transposition
-				m[i][j] = mat[j][i];
-		return m;
+		return PSUtility.get3x3UpperLeftMatrixFromPMatrix3D(inverseMatrix());
 	}
 	
 	/**
@@ -963,5 +905,5 @@ public class PSQuaternion {
 	 */
 	public static float squaredNorm(PSQuaternion q) {
 		return (q.x * q.x) + (q.y * q.y) + (q.z * q.z) + (q.w * q.w);
-	}		
+	}
 }
