@@ -975,7 +975,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * <b>Note:</b> You must call this method if your PSCamera is not associated
 	 * with a PScene and is used for offscreen computations
-	 * (using {@code (un)projectedCoordinatesOf()} for instance).
+	 * (using {@code projectedCoordinatesOf()} for instance).
 	 * 
 	 * @see #setProjectionfromPCamera(PMatrix3D)
 	 */
@@ -1055,7 +1055,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * <b>Note:</b> You must call this method if your PSCamera is not associated with a
 	 * PScene and is used for offscreen computations
-	 * (using {@code (un)projectedCoordinatesOf()} for instance).
+	 * (using {@code projectedCoordinatesOf()} for instance).
 	 */
 	public void computeModelViewMatrix() {
 		PSQuaternion q = frame().orientation();
@@ -1193,11 +1193,7 @@ public class PSCamera implements Cloneable {
 	 * The x and y coordinates of the returned PVector are expressed in pixel,
 	 * (0,0) being the upper left corner of the window. The z coordinate ranges
 	 * between 0.0 (near plane) and 1.0 (excluded, far plane). See the {@code
-	 * gluProject} man page for details. 
-	 * <p> 
-	 * {@link #unprojectedCoordinatesOf(PVector, PSFrame)} performs the inverse
-	 * transformation.
-	 * <p> 
+	 * gluProject} man page for details.
 	 * <b>Attention:</b> This method only uses the intrinsic PSCamera parameters
 	 * (see {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
 	 * {@link #getViewport()}) and is completely independent of the processing
@@ -1208,99 +1204,17 @@ public class PSCamera implements Cloneable {
 		float xyz[] = new float[3];		
 		viewport = getViewport();
 		
-		//TODO: implement glu* functions that convey processing matrix conventions
-		//instead of that found in OpenGL		
-		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
-		modelViewMatT.transpose();
-		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
-		projectionMatT.transpose();		
-		float[] modelview = new float[16];
-		float[] projection = new float[16];
-		modelViewMatT.get(modelview);
-		projectionMatT.get(projection);
-		
 		if (frame != null) {
 			PVector tmp = frame.inverseCoordinatesOf(src);
-			gluProjectf(tmp.x, tmp.y, tmp.z, modelview, projection, viewport, xyz);
+			project(tmp.x, tmp.y, tmp.z, modelViewMat, projectionMat, viewport, xyz);
 		} else
-			gluProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);
+			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
 		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 			xyz[1] = screenHeight() - xyz[1];
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
-	
-	/**
-	 * Convenience function that simply returns {@code return
-	 * unprojectedCoordinatesOf(src, null)}
-	 */
-	public final PVector unprojectedCoordinatesOf(PVector src) {
-		return this.unprojectedCoordinatesOf(src, null);
-	}
-
-	/**
-	 * Returns the world unprojected coordinates of a point {@code src} defined
-	 * in the screen coordinate system. 
-	 * <p> 
-	 * The {@code src.x} and {@code src.y} input values are expressed in pixels,
-	 * (0,0) being the upper left corner of the window. {@code src.z} is a depth
-	 * value ranging in [0..1] (near and far plane respectively). See the
-	 * {@code gluUnProject} man page for details. 
-	 * <p> 
-	 * The result is expressed in the {@code frame} coordinate system. When
-	 * {@code frame} is {@code null}, the result is expressed in the world
-	 * coordinates system. The possible {@code frame}
-	 * {@link proscene.PSFrame#referenceFrame()} are taken into
-	 * account. 
-	 * <p> 
-	 * {@link #projectedCoordinatesOf(PVector, PSFrame)} performs the inverse
-	 * transformation. 
-	 * <p> 
-	 * This method only uses the intrinsic PSCamera parameters (see
-	 * {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
-	 * {@link #getViewport()}) and is completely independent of the processing
-	 * matrices. You can hence define a virtual PSCamera and use this method to
-	 * compute un-projections out of a classical rendering context. 
-	 * <p> 
-	 * <b>Attention:</b> However, if your PSCamera is not attached to a
-	 * PScene (used for offscreen computations for instance), make sure the
-	 * PSCamera matrices are updated before calling this method (use
-	 * {@link #computeModelViewMatrix()}, {@link #computeProjectionMatrix()}).
-	 * <p> 
-	 * This method is not computationally optimized. If you call it several
-	 * times with no change in the matrices, you should buffer the entire
-	 * inverse projection matrix (modelview, projection and then viewport) to
-	 * speed-up the queries. See the gluUnProject man page for details.
-	 * 
-	 * @see #setScreenWidthAndHeight(int, int)
-	 */
-	public final PVector unprojectedCoordinatesOf(PVector src, PSFrame frame) {
-		//Warning:
-		//it is responsible of the caller to check coordinateSystemConvention on src
-		float xyz[] = new float[3];
-		viewport = getViewport();
-		
-		//TODO: implement glu* functions that convey processing matrix conventions
-		//instead of that found in OpenGL		
-		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
-		modelViewMatT.transpose();
-		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
-		projectionMatT.transpose();		
-		float[] modelview = new float[16];
-		float[] projection = new float[16];
-		modelViewMatT.get(modelview);
-		projectionMatT.get(projection);
-		
-		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			gluUnProjectf(src.x, (screenHeight() - src.y), src.z, modelview, projection, viewport, xyz);
-		else
-			gluUnProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);		
-		if (frame != null)
-			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]));
-		else
-			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
-	}	
 
 	// 9. FLYSPEED
 
@@ -1581,6 +1495,41 @@ public class PSCamera implements Cloneable {
 		focusDist = distance;
 	}
 	
+	// 14. Implementation of glu utility functions
+	
+	protected boolean project(float objx, float objy, float objz, PMatrix3D modelview,
+                               PMatrix3D projection, int []viewport, float []windowCoordinate) {
+		//Transformation vectors
+		float in[] = new float[4];
+	    float out[] = new float[4];
+
+	    in[0]=objx;
+	    in[1]=objy;
+	    in[2]=objz;
+	    in[3]=1.0f;
+	    
+	    modelview.mult(in, out);
+	    projection.mult(out, in);
+	    
+	    if (in[3] == 0.0) return false;
+	    in[0] /= in[3];
+	    in[1] /= in[3];
+	    in[2] /= in[3];
+	    /* Map x, y and z to range 0-1 */
+	    in[0] = in[0] * 0.5f + 0.5f;
+	    in[1] = in[1] * 0.5f + 0.5f;
+	    in[2] = in[2] * 0.5f + 0.5f;
+
+	    /* Map x,y to viewport */
+	    in[0] = in[0] * viewport[2] + viewport[0];
+	    in[1] = in[1] * viewport[3] + viewport[1];
+
+	    windowCoordinate[0]=in[0];
+	    windowCoordinate[1]=in[1];
+	    windowCoordinate[2]=in[2];
+	    return true;
+	}	
+	
 	// 15. Future versions
 	
 	//TODO: check to see if it is worth implementing these methods
@@ -1738,19 +1687,11 @@ public class PSCamera implements Cloneable {
 		}
 		return m;
 	}
-    */
 	
-	// 14. Implementation of glu utility functions
-	
-	//TODO: implement glu* functions that convey processing matrix conventions
-	//instead of that found in OpenGL	
-	
-	/**
-	 * Utility function that does the same as {@code gluProject()} using float precision
+	* Utility function that does the same as {@code gluProject()} using float precision
 	 * numbers instead of doubles. See the {@code gluProject()} documentation for details. 
 	 * <p> 
 	 * Code adapted from mesa: http://www.mesa3d.org/
-	 */
 	protected boolean gluProjectf(float objx, float objy, float objz, float []modelview,
 			                  float []projection, int []viewport, float []windowCoordinate) {
 		//Transformation vectors
@@ -1767,12 +1708,12 @@ public class PSCamera implements Cloneable {
 	    in[0] /= in[3];
 	    in[1] /= in[3];
 	    in[2] /= in[3];
-	    /* Map x, y and z to range 0-1 */
+	    // Map x, y and z to range 0-1
 	    in[0] = in[0] * 0.5f + 0.5f;
 	    in[1] = in[1] * 0.5f + 0.5f;
 	    in[2] = in[2] * 0.5f + 0.5f;
 
-	    /* Map x,y to viewport */
+	    // Map x,y to viewport
 	    in[0] = in[0] * viewport[2] + viewport[0];
 	    in[1] = in[1] * viewport[3] + viewport[1];
 
@@ -1782,12 +1723,93 @@ public class PSCamera implements Cloneable {
 	    return true;
 	 }
 	
-	/**
-	 * Utility function that does the same as {@code gluUnProject()} using float precision
+	* utility function need for
+	 * {@link #gluProjectf(float, float, float, float[], float[], int[], float[])} and
+	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
+	 * <p> 
+	 * Code adapted from mesa: http://www.mesa3d.org/
+	protected void gluMultMatrixVecf(float matrix[], float in[], float out[]) {
+		//matrix should be [16]; in and out [4]
+		int i;
+		for (i=0; i<4; i++) {
+			out[i] = in[0] * matrix[0*4+i] +
+			         in[1] * matrix[1*4+i] +
+			         in[2] * matrix[2*4+i] +
+			         in[3] * matrix[3*4+i];
+		}
+	}
+	
+     * Convenience function that simply returns {@code return
+	 * unprojectedCoordinatesOf(src, null)}
+	public final PVector unprojectedCoordinatesOf(PVector src) {
+		return this.unprojectedCoordinatesOf(src, null);
+	}
+
+	 * Returns the world unprojected coordinates of a point {@code src} defined
+	 * in the screen coordinate system. 
+	 * <p> 
+	 * The {@code src.x} and {@code src.y} input values are expressed in pixels,
+	 * (0,0) being the upper left corner of the window. {@code src.z} is a depth
+	 * value ranging in [0..1] (near and far plane respectively). See the
+	 * {@code gluUnProject} man page for details. 
+	 * <p> 
+	 * The result is expressed in the {@code frame} coordinate system. When
+	 * {@code frame} is {@code null}, the result is expressed in the world
+	 * coordinates system. The possible {@code frame}
+	 * {@link proscene.PSFrame#referenceFrame()} are taken into
+	 * account. 
+	 * <p> 
+	 * {@link #projectedCoordinatesOf(PVector, PSFrame)} performs the inverse
+	 * transformation. 
+	 * <p> 
+	 * This method only uses the intrinsic PSCamera parameters (see
+	 * {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
+	 * {@link #getViewport()}) and is completely independent of the processing
+	 * matrices. You can hence define a virtual PSCamera and use this method to
+	 * compute un-projections out of a classical rendering context. 
+	 * <p> 
+	 * <b>Attention:</b> However, if your PSCamera is not attached to a
+	 * PScene (used for offscreen computations for instance), make sure the
+	 * PSCamera matrices are updated before calling this method (use
+	 * {@link #computeModelViewMatrix()}, {@link #computeProjectionMatrix()}).
+	 * <p> 
+	 * This method is not computationally optimized. If you call it several
+	 * times with no change in the matrices, you should buffer the entire
+	 * inverse projection matrix (modelview, projection and then viewport) to
+	 * speed-up the queries. See the gluUnProject man page for details.
+	 * 
+	 * @see #setScreenWidthAndHeight(int, int)
+	public final PVector unprojectedCoordinatesOf(PVector src, PSFrame frame) {
+		//Warning:
+		//it is responsible of the caller to check coordinateSystemConvention on src
+		float xyz[] = new float[3];
+		viewport = getViewport();
+		
+		//TODO: implement glu* functions that convey processing matrix conventions
+		//instead of that found in OpenGL		
+		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
+		modelViewMatT.transpose();
+		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
+		projectionMatT.transpose();		
+		float[] modelview = new float[16];
+		float[] projection = new float[16];
+		modelViewMatT.get(modelview);
+		projectionMatT.get(projection);
+		
+		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+			gluUnProjectf(src.x, (screenHeight() - src.y), src.z, modelview, projection, viewport, xyz);
+		else
+			gluUnProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);		
+		if (frame != null)
+			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]));
+		else
+			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
+	}
+	
+		 * Utility function that does the same as {@code gluUnProject()} using float precision
 	 * numbers instead of doubles. See the {@code gluUnProject()} documentation for details. 
 	 * <p> 
 	 * Code adapted from mesa: http://www.mesa3d.org/
-	 */	
 	boolean gluUnProjectf(float winx, float winy, float winz, float modelview[],
 			             float projection[], int viewport[], float []objCoordinate)	{		
         float finalMatrix[] = new float [16];
@@ -1802,11 +1824,11 @@ public class PSCamera implements Cloneable {
 	    in[2]=winz;
 	    in[3]=1.0f;
 
-	    /* Map x and y from window coordinates */
+	    // Map x and y from window coordinates
 	    in[0] = (in[0] - viewport[0]) / viewport[2];
 	    in[1] = (in[1] - viewport[1]) / viewport[3];
 
-	    /* Map to range -1 to 1 */
+	    // Map to range -1 to 1
 	    in[0] = in[0] * 2 - 1;
 	    in[1] = in[1] * 2 - 1;
 	    in[2] = in[2] * 2 - 1;
@@ -1825,34 +1847,10 @@ public class PSCamera implements Cloneable {
 	    return true;
 	}
 	
-	/**
-	 * utility function need for
-	 * {@link #gluProjectf(float, float, float, float[], float[], int[], float[])} and
+	* utility function need for
 	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
 	 * <p> 
 	 * Code adapted from mesa: http://www.mesa3d.org/
-	 */
-	protected void gluMultMatricesf(float a[], float b[], float r[]) {
-		//a, b, and r should be [16]!
-		int i, j;
-		
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < 4; j++) {
-				r[i*4+j] =	a[i*4+0]*b[0*4+j] +
-				            a[i*4+1]*b[1*4+j] +
-				            a[i*4+2]*b[2*4+j] +
-				            a[i*4+3]*b[3*4+j];
-			}
-		}
-	}
-	
-	/**
-	 * utility function need for
-	 * {@link #gluProjectf(float, float, float, float[], float[], int[], float[])} and
-	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
-	 * <p> 
-	 * Code adapted from mesa: http://www.mesa3d.org/
-	 */
 	protected boolean gluInvertMatrixf(float m[], float invOut[]) {
 		//m and invOut should be [16]!
 		float inv[] = new float[16]; 
@@ -1904,21 +1902,47 @@ public class PSCamera implements Cloneable {
 	    return true;
 	}
 	
-	/**
-	 * utility function need for
-	 * {@link #gluProjectf(float, float, float, float[], float[], int[], float[])} and
+	* utility function need for
 	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
 	 * <p> 
 	 * Code adapted from mesa: http://www.mesa3d.org/
-	 */
-	protected void gluMultMatrixVecf(float matrix[], float in[], float out[]) {
-		//matrix should be [16]; in and out [4]
-		int i;
-		for (i=0; i<4; i++) {
-			out[i] = in[0] * matrix[0*4+i] +
-			         in[1] * matrix[1*4+i] +
-			         in[2] * matrix[2*4+i] +
-			         in[3] * matrix[3*4+i];
+	protected void gluMultMatricesf(float a[], float b[], float r[]) {
+		//a, b, and r should be [16]!
+		int i, j;
+		
+		for (i = 0; i < 4; i++) {
+			for (j = 0; j < 4; j++) {
+				r[i*4+j] =	a[i*4+0]*b[0*4+j] +
+				            a[i*4+1]*b[1*4+j] +
+				            a[i*4+2]*b[2*4+j] +
+				            a[i*4+3]*b[3*4+j];
+			}
 		}
-	}	
+	}
+	
+	public final PVector projectedCoordinatesOf(PVector src, PSFrame frame) {		
+		float xyz[] = new float[3];		
+		viewport = getViewport();
+				
+		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
+		modelViewMatT.transpose();
+		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
+		projectionMatT.transpose();		
+		float[] modelview = new float[16];
+		float[] projection = new float[16];
+		modelViewMatT.get(modelview);
+		projectionMatT.get(projection);
+		
+		if (frame != null) {
+			PVector tmp = frame.inverseCoordinatesOf(src);
+			gluProjectf(tmp.x, tmp.y, tmp.z, modelview, projection, viewport, xyz);
+		} else
+			gluProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);
+		
+		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+			xyz[1] = screenHeight() - xyz[1];
+
+		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
+	}
+    */
 }

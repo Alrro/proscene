@@ -9,13 +9,19 @@ public class Caja {
 	
 	public void draw(PVector v) {
 		setOrientation(v);
-		pushMatrix();		
+		parent.pushMatrix();		
 		psIFrame.applyTransformation(parent);
 		PScene.drawAxis(0.3f);
-		fill(0,255,255);		
-		//Draw a box
-		box(0.3f);		
-		popMatrix();
+
+		if (psIFrame.grabsMouse()) {
+			parent.fill(0, 255, 0);
+			parent.box(0.35f);
+		}
+		else {
+			parent.fill(0,255,255);
+			parent.box(0.3f);
+		}			
+		parent.popMatrix();
 	}
 	
 	public void setPosition(PVector pos) {
