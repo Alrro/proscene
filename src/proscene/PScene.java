@@ -1,3 +1,28 @@
+/**
+ * This java package provides classes to ease the creation of
+ * interactive 3D scenes in Processing.
+ * @author Jean Pierre Charalambos, A/Prof. National University of Colombia
+ * (http://disi.unal.edu.co/profesores/pierre/, http://www.unal.edu.co/).
+ * @version 0.7.0
+ * 
+ * Copyright (c) 2010 Jean Pierre Charalambos
+ * 
+ * This source file is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * General Public License for more details.
+ * 
+ * A copy of the GNU General Public License is available on the World
+ * Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also
+ * obtain it by writing to the Free Software Foundation,
+ * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
+ */
+
 package proscene;
 
 import processing.core.*;
@@ -23,13 +48,13 @@ import javax.swing.event.*;
  * if the following code define the body of your {@link PApplet#draw()}:
  * <p>
  * {@code scene.beginDraw();}<br>
- * {@code processing drawing routines..}<br>
+ * {@code processing drawing routines...}<br>
  * {@code scene.endDraw();}<br>
  * <p>
  * you would obtain full interactivity to manipulate your scene "for free".
  * <p>
  * If you derive from PScene, you should implement {@link #scene()} which defines the objects
- * in your scene. Then all you have to do is to call {@link #scene()} from {@link PApplet#draw()}:
+ * in your scene. Then all you have to do is to call {@link #scene()} from {@link PApplet#draw()}, e.g.,
  * {@code public void draw() {scene.draw();}}
  * <p>
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
@@ -108,8 +133,6 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	boolean helpIsDrwn;
 	PFont font;
 	
-	//warning: contraproCam only for testing purposes
-	//PMatrix3D contraproCam;
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
 	 * See the associated documentation.
@@ -266,7 +289,6 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		setHelpIsDrawn(!helpIsDrawn());
 	}
 	
-	//testing function to make toggle camera mode work properly
 	/**
 	 * Tests if the {@link #camera()} is in revolve mode (also known as arc-ball).
 	 * The other {@link #camera()} mode is fly.
@@ -328,7 +350,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	}
 	
 	/**
-	 * Associates interactivity actions to defualt keys.
+	 * Associates interactivity actions to default keys.
 	 */
 	public void defaultKeyBindings() {
 		if (parent.key == '+') {
@@ -398,17 +420,34 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	// 3. Drawing methods
 	
 	/**
-	 * 
+	 * This method is called before the first drawing and should be overloaded to initialize stuff
+	 * not initialized in {@code PApplet.setup()}. The default implementation is empty.
+	 * <p>
+	 * Typical usage include {@link #camera()} initialization ({@link #showEntireScene()}) and
+	 * PScene state setup ({@link #setAxisIsDrawn(boolean)}, {@link #setGridIsDrawn(boolean)}
+	 * {@link #setHelpIsDrawn(boolean)}).
 	 */
 	public void init() {}
 	
+	/** Main paint method.
+	 * <p>
+	 * Calls the following methods, in that order:<br>
+	 * {@link #beginDraw()}: Sets processing camera parameters from the PSCamera and displays
+	 * axis and grid accordingly to user flags. <br>
+	 * {@link #scene()}: Main drawing method that could be overloaded.  <br>
+	 * {@link #endDraw()}: Displays some visual hints, such the {@link #help()} text.
+	 */
     public void draw() {
 		beginDraw();
 		scene();
 		endDraw();
 	}
     
-	public void beginDraw() {
+    /**
+     * Sets the processing camera parameters from {@link #camera()} and displays
+     * axis and grid accordingly to user flags
+     */
+	protected void beginDraw() {
 		pg3d = (PGraphics3D) parent.g;  // g may change
 		//TODO would be nice to check if the background was set and set if not (no not set it if yes).
 		setPCameraProjection();
@@ -418,9 +457,24 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());		
 	}
 	
+	/** The method that actually defines the scene.
+	 * <p>
+	 * If you build a class that inherits from PScene, this is the method you should overload,
+	 * but no if you instantiate your own PScene object (in this case you should just overload
+	 * {@code PApplet.draw()} to define your scene).
+	 * <p> 
+	 * The processing camera set in {@link #beginDraw()} converts from the world to the camera
+	 * coordinate systems. Vertices given in {@code scene()} can then be considered as being
+	 * given in the world coordinate system. The camera is moved in this world using the mouse.
+	 * This representation is much more	intuitive than a camera-centric system (which for 
+	 * instance is the standard in OpenGL).
+	 */
 	public void scene() {}
 	
-	public void endDraw() {
+	/**
+	 * Displays some visual hints, such the {@link #help()} text.
+	 */
+	protected void endDraw() {
 		if(readyToGo) {
 			if( helpIsDrawn() ) help();
 			if( zoomOnRegion ) drawZoomWindow();
@@ -641,8 +695,10 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	}
 	
 	/**
-	 * Draws an axis of length {@code length} which origin corrrespond to that
-	 * of the world coordinate system. 
+	 * Draws an axis of length {@code length} which origin correspond to that
+	 * of the world coordinate system.
+	 * 
+	 * @see #drawGrid(float, int)
 	 */
 	public static void drawAxis(float length) {
 		final float charWidth = length / 40.0f;
@@ -709,17 +765,11 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	}
 	
 	/**
-	 * Draws a 3D arrow along the positive Z axis.
-	 * 
-	 * <p>
-	 * 
-	 * {@code length} and {@code radius} define its geometry.
-	 * 
-	 * <p>
-	 * 
-	 * Use {@link #drawArrow(PVector, PVector, float)} to place the arrow in 3D.
-	 * 
-	 * Uses current color and does not modify the processing state.
+	 * Draws a 3D arrow along the positive Z axis. 
+	 * <p> 
+	 * {@code length} and {@code radius} define its geometry. 
+	 * <p> 
+	 * Use {@link #drawArrow(PVector, PVector, float)} to place the arrow in 3D. 
 	 */
 	public static void drawArrow(float length, float radius) {
 		float head = 2.5f*(radius / length) + 0.1f;
@@ -745,18 +795,40 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		parent.popMatrix();
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code drawGrid(1.0f, 10)}
+	 * 
+	 * @see #drawGrid(float, int)
+	 */
 	public static void drawGrid() {
 		drawGrid(1.0f, 10);
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code drawGrid(size, 10)}
+	 * 
+	 * @see #drawGrid(float, int)
+	 */
 	public static void drawGrid(float size) {
 		drawGrid(size, 10);
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code drawGrid(1.0f, nbSubdivisions)}
+	 * 
+	 * @see #drawGrid(float, int)
+	 */
 	public static void drawGrid(int nbSubdivisions) {
 		drawGrid(1.0f, nbSubdivisions);
 	}
-		
+	
+	/** Draws a grid in the XY plane, centered on (0,0,0)
+	 * (defined in the current coordinate system).
+	 * <p>
+	 * {@code size} (processing scene units) and {@code nbSubdivisions} define its geometry.
+	 * 
+	 * @see #drawAxis(float) 
+	 */
 	public static void drawGrid(float size, int nbSubdivisions) {
 		//parent.noLights();		
 		parent.stroke(170, 170, 170);		
@@ -773,7 +845,11 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		//parent.lights();
 	}
 	
-	public void drawZoomWindow() {
+	/**
+	 * Draws a rectangle on the screen showing the region where a zoom
+	 * operation is taking place. 
+	 */
+	protected void drawZoomWindow() {
 		float threshold = 0.01f;
 		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
 		PVector v1 = new PVector();
@@ -839,7 +915,11 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		parent.popMatrix();
 	}
 	
-	public void drawScreenRotateLine() {
+	/**
+	 * Draws visual hint (a line on the screen) when a screen
+	 * rotation is taking place. 
+	 */
+	protected void drawScreenRotateLine() {
 		float threshold = 0.01f;
 		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
 		PVector v1 = new PVector();
@@ -899,6 +979,15 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	
 	// /**
 	//only in interface MouseMotionListener
+	
+	/**
+	 * Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * Sets the PSCamera from processing camera parameters.
+	 * <p>
+	 * {@link #setMouseGrabber(PSMouseGrabber)} to the PSMouseGrabber that grabs
+	 * the mouse (or to {@code null} if none of them grab it).
+	 */
 	public void mouseMoved(MouseEvent event) {
 		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
 		if ( readyToGo ) {
@@ -919,6 +1008,15 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}
 	}
 	
+	/** Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
+	 * {@link proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)} is called.
+	 * Otherwise, the {@link #camera()} or the {@link #interactiveFrame()} interprets
+	 * the mouse displacements,	depending on mouse bindings.
+	 * 
+	 * @see #mouseDragged(MouseEvent)
+	 */
 	public void mousePressed(MouseEvent event) {
 		if ( readyToGo ) {
 		//ZOOM_ON_REGION:
@@ -1010,7 +1108,14 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}
 	}
 	
-	//only in interface MouseMotionListener
+	/**
+	 * Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * Mouse drag event is sent to the {@link #mouseGrabber()} (if any) or to the
+	 * {@link #camera()} or the {@link #interactiveFrame()}, depending on mouse bindings.
+	 * 
+	 * @see #mouseMoved(MouseEvent)
+	 */
 	public void mouseDragged(MouseEvent event) {
 		if ( readyToGo ) {
 		// /**
@@ -1044,6 +1149,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}
 	}
 	
+	/**
+	 * Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
+	 * {@link #interactiveFrame()} mouseReleaseEvent method.
+	 */
 	public void mouseReleased(MouseEvent event) {
 		if ( readyToGo ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
@@ -1073,6 +1184,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}
     }
 	
+	/**
+	 * Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * Implements mouse double click events: left button aligns scene,
+	 * middle button shows entire scene, and right button centers scene.
+	 */
 	public void mouseClicked(MouseEvent event) {
 		if ( readyToGo && ( event.getClickCount() == 2 ) ) {			
 		if ( mouseGrabber() != null ) {
@@ -1114,11 +1231,26 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		}
 	}
 	
+	/**
+	 * Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * Current implementation is empty.
+	 */ 
 	public void mouseEntered(MouseEvent event) {}
 	
+	/**
+	 * Implementation of the MouseMotionListener interface method.
+	 * <p>
+	 * Current implementation is empty.
+	 */
 	public void mouseExited(MouseEvent event) {}	
 	
-	// from interface MouseWheelListener
+	/**
+	 * Implementation of the MouseWheelListener interface method.
+	 * <p>
+	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
+	 * {@link #interactiveFrame()} mouseWheelEvent method.
+	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
 		if ( readyToGo ) {
 		if ( mouseGrabber() != null )	{
@@ -1155,7 +1287,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	
 	// 10. Processing objects
 	
-	public void setPCameraProjection() {
+	/**
+	 * Sets the processing camera projection matrix from {@link #camera()} (PSCamera).
+	 * Calls {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
+	 * {@link proscene.PSCamera#type()}. 
+	 */
+	protected void setPCameraProjection() {
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			parent.perspective(camera().fieldOfView(), camera().aspectRatio(),
@@ -1169,7 +1306,11 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		pProjectionMatrix = pg3d.projection;		
 	}
 	
-	public void setPCameraMatrix() {
+	/**
+	 * Sets the processing camera matrix from {@link #camera()} (PSCamera).
+	 * Simply calls {@code PApplet.camera()}.
+	 */
+	protected void setPCameraMatrix() {
 		parent.camera(camera().position().x, camera().position().y, camera().position().z,
 				      camera().at().x, camera().at().y, camera().at().z,
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
@@ -1179,10 +1320,9 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	// 11. Utility
 	
 	/**
-	 * Adapted from http://www.processingblogs.org/category/processing-java/
+	 * Draws a cylinder of width {@code w} and height {@code h}.
 	 * <p>
-	 * 
-	 * {@code w} defined the width of the cylinder and {@code h} its height
+	 * Code adapted from http://www.processingblogs.org/category/processing-java/
 	 */	
 	public static void cylinder(float w,float h) {
 		  float px,py;
@@ -1234,13 +1374,11 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	}
 	
 	/**
-	 * cone taken from http://processinghacks.com/hacks:cone
-	 * Thanks to Tom Carden
-	 * 
-	 * <p>
-	 * 
 	 * Places a cone with it's base centered at {@code (x,y)}, height {@code h}
 	 * in positive {@code z}, radius {@code r}.
+	 * <p>
+	 * The code of this function was taken from http://processinghacks.com/hacks:cone
+	 * Thanks to Tom Carden
 	 */
 	public static void cone(int detail, float x, float y, float r, float h) {		
 		float unitConeX[] = new float[detail+1];
