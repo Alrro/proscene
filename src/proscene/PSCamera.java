@@ -1000,7 +1000,7 @@ public class PSCamera implements Cloneable {
 	 * with a PScene and is used for offscreen computations
 	 * (using {@code projectedCoordinatesOf()} for instance).
 	 * 
-	 * @see #setProjectionfromPCamera(PMatrix3D)
+	 * @see #setProjectionMatrix(PMatrix3D)
 	 */
 	public void computeProjectionMatrix() {
 		float ZNear = zNear();
@@ -1037,7 +1037,7 @@ public class PSCamera implements Cloneable {
 	 * 
 	 * @see #computeProjectionMatrix()
 	 */
-	public void setProjectionfromPCamera(PMatrix3D proj) {
+	public void setProjectionMatrix(PMatrix3D proj) {
 		projectionMat.set(proj);
 	}
 
@@ -1123,7 +1123,7 @@ public class PSCamera implements Cloneable {
 	 * 
 	 * @see #computeModelViewMatrix()
 	 */
-	public void setModelViewfromPCamera(PMatrix3D modelview) {
+	public void setModelViewMatrix(PMatrix3D modelview) {
 		modelViewMat.set(modelview);
 	}
 	

@@ -6,7 +6,9 @@
  * related classes) to your frames to limit their motion. All possible
  * constraints are tested here. They can be defined respect to the
  * world or camera frames. Try all the possibilities following the on
- * screen helping text.   
+ * screen helping text.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.PApplet;

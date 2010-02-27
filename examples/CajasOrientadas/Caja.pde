@@ -16,6 +16,8 @@
  *
  * Override PSInteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 public class Caja {

@@ -5,8 +5,12 @@
  * This example illustrates how to add and manipulate and interactive
  * frame to your PScene, which represents one of the three interactive
  * mechanisms built-in proscene (camera and mouse grabber, being the
- * other two). Press 'i' to switch manipulation between the
- * camera frame and the interactive frame.  
+ * other two).
+ *
+ * Press 'i' to switch the interaction between the camera frame and
+ * the interactive frame.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.*;
