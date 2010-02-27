@@ -41,7 +41,8 @@ import javax.swing.event.*;
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
  * <p>
  * To use a PScene, you can instantiate a PScene object directly or you can implement your own derived PScene
- * class.
+ * class. You also need to call {@link #defaultKeyBindings()} from your PApplet.keyPressed() function.
+ * That's all there is to it.
  * <p>
  * If you instantiate your own PScene object you should implement your {@link PApplet#draw()} as usual,
  * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus, for instance,
@@ -447,7 +448,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
      * Sets the processing camera parameters from {@link #camera()} and displays
      * axis and grid accordingly to user flags
      */
-	protected void beginDraw() {
+	public void beginDraw() {
 		pg3d = (PGraphics3D) parent.g;  // g may change
 		//TODO would be nice to check if the background was set and set if not (no not set it if yes).
 		setPCameraProjection();
@@ -474,7 +475,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	/**
 	 * Displays some visual hints, such the {@link #help()} text.
 	 */
-	protected void endDraw() {
+	public void endDraw() {
 		if(readyToGo) {
 			if( helpIsDrawn() ) help();
 			if( zoomOnRegion ) drawZoomWindow();
