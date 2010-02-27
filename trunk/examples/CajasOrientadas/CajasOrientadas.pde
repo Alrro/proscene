@@ -10,6 +10,8 @@
  *
  * This example illustrates some functionality which was needed by the
  * http://cajas.sourceforge.net/ project.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.*;

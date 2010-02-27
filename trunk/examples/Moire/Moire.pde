@@ -1,19 +1,23 @@
 /**
- * Interactive Frame. 
+ * Moire. 
  * by Jean Pierre Charalambos.
  *
- * Coordinate transformation between different Frames. 
+ * Coordinate transformation between different Frames.
+ *
  * This example illustrates the camera and world coordinate systems relationship.
  * Three sets of lines (red, green, blue) are drawn. They have different starting
  * points, but common end points, located on a circle in the XY plane. All the red
  * lines start from the camera position, and will hence always be aligned with the
- * viewing direction, making them invisible. The green lines starting points'
+ * viewing direction, making them invisible, unless you change the camera
+ * projection to ORTHOGRAPHIC (press 'e' to do it). The green lines starting points'
  * positions are determined from the camera coordinate system. As a result, these
  * points will seem to be fixed on the screen, even when the camera is moved.
  * Finally, the blue lines are classically defined in the world coordinate system,
  * and will move with the camera.
  *
  * Beautiful Moire pattern can be obtained with a proper rotation.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.*;
@@ -45,6 +49,7 @@ void draw() {
 			
 		stroke(204, 51, 51);
 		// These lines will never be seen as they are always aligned with the viewing direction.
+		// They can only be seen if you change the camera projection to ORTHOGRAPHIC.
 		vertex(scene.camera().position().x, scene.camera().position().y, scene.camera().position().z);
 		vertex(cos(angle), sin(angle), 0.0f);			
 			

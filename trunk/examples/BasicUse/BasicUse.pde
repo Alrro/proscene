@@ -4,6 +4,8 @@
  * 
  * This example illustrates a direct approach to using proscene
  * by proscene.PScene proper instantiation.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import proscene.*;

@@ -4,6 +4,8 @@
  * 
  * This example illustrates an alternative approach to using
  * proscene through inheritance.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.*;

@@ -6,7 +6,9 @@
  * which represents one of the three interactive mechanisms found in
  * proscene (camera and interactive frame, being the other two).
  * Once you select a box it will be highlighted and you can manipulate
- * it with the mouse. Try the different mouse buttons to see what happens. 
+ * it with the mouse. Try the different mouse buttons to see what happens.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help. 
  */
 
 import processing.core.*;

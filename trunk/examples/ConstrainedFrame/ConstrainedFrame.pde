@@ -6,7 +6,12 @@
  * related classes) to your frames to limit their motion. All possible
  * constraints are tested here and they can be defined respect to the
  * local, world or camera frames. Try all the possibilities following
- * the on screen helping text.   
+ * the on screen helping text.
+ *
+ * Press 'i' to switch the interaction between the camera frame and
+ * the interactive frame.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.PApplet;

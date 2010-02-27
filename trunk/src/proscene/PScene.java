@@ -398,7 +398,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
 		textToDisplay += "a/g: Toggle axis/grid drawn\n";
 		textToDisplay += "c: Toggle camera mode (arcball or fly mode)\n";
-		textToDisplay += "e: Toggle camera type (ortographic or perspective)\n";
+		textToDisplay += "e: Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactiv frame (if any)\n";
 		textToDisplay += "s: Show entire scene\n";
@@ -992,11 +992,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	public void mouseMoved(MouseEvent event) {
 		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
 		if ( readyToGo ) {
-		//camera().computeProjectionMatrix();
-		//camera().computeModelViewMatrix();
 		if((pProjectionMatrix != null) && (pModelViewMatrix != null)) {
-			camera().setProjectionfromPCamera(pProjectionMatrix);
-			camera().setModelViewfromPCamera(pModelViewMatrix);
+			//camera().computeProjectionMatrix();
+			//camera().computeModelViewMatrix();
+			//Same as the 2 previous lines but a lot more efficient:
+			camera().setProjectionMatrix(pProjectionMatrix);
+			camera().setModelViewMatrix(pModelViewMatrix);
 		}		
 		//need in order to make mousewheel work properly 
 		setMouseGrabber(null);
