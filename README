@@ -9,13 +9,16 @@
   Send e-mail to: jpcharalambosh@unal.edu.co or nakednous@gmail.com
 
 Proscene provides classes to ease the creation of interactive 3D scenes in Processing.
-Proscene has been pretty much inspired in libqglviewer (http://www.libqglviewer.com/).
-Proscene has a very similar functionality to that found in libqglviewer, providing a
-default interactivity to your Processing scenes through the mouse and keyboard.
-Most of the examples found in this release are implementations of the libqglviewer
-counterparts. Proscene provides seemless integration with Processing: Its API has been
-designed to fit that of Processing and its implementation has been optimized to work
-along side with it.
+Proscene has been pretty much inspired in the Qt's OpenGL libqglviewer library
+(http://www.libqglviewer.com/). Proscene has a very similar functionality to that found
+in libqglviewer provided through a similar API, giving a default interactivity to your
+Processing scenes through the mouse and keyboard. Most of the examples found in this
+release are implementations of the libqglviewer counterparts. Proscene provides seemless
+integration with Processing: Its API has been designed to fit that of Processing and
+its implementation has been optimized to work along side with it. One of Proscene main
+implementation goals was to keep it independent of the underlying Processing 3D renderer.
+It has been tested with the OPENGL, P3D and GLGRAPHICS renderers and can properly work
+with any of them.
  
 Many thanks to Gilles Debunne for releasing his fantastic libqglviewer as free software.
 Many thanks to Andres Colubri for all his thorough suggestions regarding the development
