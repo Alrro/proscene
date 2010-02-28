@@ -5,7 +5,7 @@
 
 
   Copyright (C) 2010 Jean Pierre Charalambos. All rights reserved.
-  http://code.google.com/p/maku/
+  http://code.google.com/p/proscene/
   Send e-mail to: jpcharalambosh@unal.edu.co or nakednous@gmail.com
 
 Proscene provides classes to ease the creation of interactive 3D scenes in Processing.
@@ -24,7 +24,7 @@ package (http://users.design.ucla.edu/~acolubri/processing/glgraphics/home/index
  
 DOWNLOAD
 
-Released packages are available at the project's main page: http://code.google.com/p/maku/
+Released packages are available at the project's page: http://code.google.com/p/proscene/
 
 INSTALLATION
 
