@@ -1,0 +1,42 @@
+
+                                  proscene
+
+	      	            Version 0.7.0 February, 2010
+
+
+  Copyright (C) 2010 Jean Pierre Charalambos. All rights reserved.
+  http://code.google.com/p/maku/
+  Send e-mail to: jpcharalambosh@unal.edu.co or nakednous@gmail.com
+
+Proscene provides classes to ease the creation of interactive 3D scenes in Processing.
+Proscene has been pretty much inspired in libqglviewer (http://www.libqglviewer.com/).
+Proscene has a very similar functionality to that found in libqglviewer, providing a
+default interactivity to your Processing scenes through the mouse and keyboard.
+Most of the examples found in this release are implementations of the libqglviewer
+counterparts. Proscene provides seemless integration with Processing: Its API has been
+designed to fit that of Processing and its implementation has been optimized to work
+along side with it.
+ 
+Many thanks to Gilles Debunne for releasing his fantastic libqglviewer as free software.
+Many thanks to Andres Colubri for all his thorough suggestions regarding the development
+of Proscene and for redistributing this release along side his fantastic GLGraphics
+package (http://users.design.ucla.edu/~acolubri/processing/glgraphics/home/index.html).   
+ 
+DOWNLOAD
+
+Released packages are available at the project's main page: http://code.google.com/p/maku/
+
+INSTALLATION
+
+The installation of the library is quite straightforward. Just unzip the
+proscene-x.y.z.zip file inside your Processing's libraries folder.
+
+LICENSE
+
+Proscene is free software; you can redistribute it and/or modify it under the terms of
+the GNU General Public License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
+ 
+A copy of the GNU General Public License is available on the World Wide Web at
+<http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing to the
+Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
