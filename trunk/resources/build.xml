@@ -142,6 +142,9 @@
   		<fileset dir="src"/>
   	</copy> 
   	
+  	<!-- Pierre's section -->
+  	<copy file="README" todir="${dist}" />
+  	
 	<!-- create the java reference of the library -->
  	<mkdir dir="${reference}" />
  	<javadoc bottom="processing library ${libraryName} by ${author}. ${copyright}" 
@@ -266,7 +269,6 @@
   	  							match="##examples##"
   	  	  						replace=""
   	  	  						flags="g" />
-  	  	  						
   	  	  						
   	<!-- finish organizating library's distribution -->
   	<mkdir dir="${dist}/web/download" />
