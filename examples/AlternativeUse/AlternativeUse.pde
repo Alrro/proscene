@@ -14,7 +14,7 @@ import proscene.*;
 
 Scene scene;	
 	
-void setup()	{
+void setup() {
   size(640, 360, OPENGL);
   // We instantiate our Scene class defined below
   scene = new Scene(this);			  

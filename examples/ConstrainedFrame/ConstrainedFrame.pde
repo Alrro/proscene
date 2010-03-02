@@ -97,7 +97,7 @@ void draw() {
   scene.beginDraw();
 		
   pushMatrix();
-  //applyMatrix( frame.pMatrix() );
+  //applyMatrix( frame.matrix() );
   //Same as the previous commented line, but a lot more efficient:
   frame.applyTransformation(this);
   PScene.drawAxis(0.4f);		
