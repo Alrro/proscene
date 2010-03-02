@@ -31,6 +31,8 @@ public class Esfera {
 	
   public void draw() {
     pushMatrix();
+    //parent.applyMatrix( psIFrame.matrix() );
+    //Same as the previous commented line, but a lot more efficient:
     psIFrame.applyTransformation(parent);
 		
     PScene.drawAxis(0.3f);

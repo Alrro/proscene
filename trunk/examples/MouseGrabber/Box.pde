@@ -32,7 +32,7 @@ public class Box {
   public void draw() {
     pushMatrix();
 		
-    //parent.applyMatrix( glIFrame.pMatrix() );
+    //parent.applyMatrix( psIFrame.matrix() );
     //Same as the previous commented line, but a lot more efficient:
     psIFrame.applyTransformation(parent);
 		

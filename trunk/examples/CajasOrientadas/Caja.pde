@@ -31,7 +31,9 @@ public class Caja {
 	
   public void draw(PVector v) {
     setOrientation(v);
-    parent.pushMatrix();		
+    parent.pushMatrix();
+    //parent.applyMatrix( psIFrame.matrix() );
+    //Same as the previous commented line, but a lot more efficient:	
     psIFrame.applyTransformation(parent);
     PScene.drawAxis(0.3f);
 

@@ -47,7 +47,7 @@ void draw() {
   // Save the current model view matrix
   pushMatrix();
   // Multiply matrix to get in the frame coordinate system.
-  //applyMatrix( scene.interactiveFrame().pMatrix() );
+  //applyMatrix( scene.interactiveFrame().matrix() );
   //Same as the previous commented line, but a lot more efficient:
   scene.interactiveFrame().applyTransformation(this);
   // Draw an axis using the GLScene static function
