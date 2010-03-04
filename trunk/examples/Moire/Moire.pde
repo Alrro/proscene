@@ -2,20 +2,17 @@
  * Moire. 
  * by Jean Pierre Charalambos.
  *
- * Coordinate transformation between different Frames.
- *
  * This example illustrates the camera and world coordinate systems relationship.
- * Three sets of lines (red, green, blue) are drawn. They have different starting
- * points, but common end points, located on a circle in the XY plane. All the red
- * lines start from the camera position, and will hence always be aligned with the
- * viewing direction, making them invisible, unless you change the camera
- * projection to ORTHOGRAPHIC (press 'e' to do it). The green lines starting points'
- * positions are determined from the camera coordinate system. As a result, these
- * points will seem to be fixed on the screen, even when the camera is moved.
- * Finally, the blue lines are classically defined in the world coordinate system,
- * and will move with the camera.
+ * Three sets of lines (red, green, blue) are drawn. They have common end points,
+ * located on a circle in the XY plane. However, they have different starting points
+ * defined as follows: 1. The red lines start at the camera position and will hence
+ * always be aligned with the viewing direction, making them invisible, unless you
+ * change the camera projection to ORTHOGRAPHIC (press 'e' to do it); 2. The green
+ * lines starting points are determined from the camera coordinate system and will
+ * hence always be fixed on the screen; and, 3. The blue lines starting points are
+ * defined in the world coordinate system, and will hence move in camera motion.
  *
- * Beautiful Moire pattern can be obtained with a proper rotation.
+ * A very nice Moire pattern can be obtained when rotating the camera.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
@@ -26,7 +23,7 @@ import proscene.*;
 
 PScene scene;
 	
-void setup()	{
+void setup() {
   size(640, 360, OPENGL);
   scene = new PScene(this);
   scene.setAxisIsDrawn(true);
