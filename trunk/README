@@ -8,7 +8,12 @@
   http://code.google.com/p/proscene/
   Send e-mail to: jpcharalambosh@unal.edu.co or nakednous@gmail.com
 
-Proscene provides classes to ease the creation of interactive 3D scenes in Processing.
+Proscene not only means a "pro-scene", but it is a two-phoneme word pronounced similar
+as the Czech word "prosím" (which means "please"), obtained by removing the middle
+phoneme ("ce") of the word pro-ce-ssing. Thus, the name Proscene suggests the main goal
+of the package which is to help you shorten the creation of interactive 3D scenes in
+Processing.
+
 Proscene has been pretty much inspired in the Qt's OpenGL libqglviewer library
 (http://www.libqglviewer.com/). Proscene has a very similar functionality to that found
 in libqglviewer provided through a similar API, giving a default interactivity to your

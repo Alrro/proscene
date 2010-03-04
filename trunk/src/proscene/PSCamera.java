@@ -617,7 +617,8 @@ public class PSCamera implements Cloneable {
 	 * If viewport is null (or not the correct size), a new array will be
 	 * created. 
 	 * <p>
-	 * This method is mainly used in conjunction with {@code gluProject}, which
+	 * This method is mainly used in conjunction with
+	 * {@link #project(float, float, float, PMatrix3D, PMatrix3D, int[], float[])} , which
 	 * requires such a viewport. Returned values are (0, {@link #screenHeight()},
 	 * {@link #screenWidth()}, -{@link #screenHeight()}), so that the origin is located in the
 	 * upper left corner of the window.
@@ -952,7 +953,7 @@ public class PSCamera implements Cloneable {
 	// 6. OPENGL MATRICES
 	
 	/**
-	 * Convenience function that simply returns {@code return return getProjectionMatrix(new PMatrix3D())}
+	 * Convenience function that simply returns {@code getProjectionMatrix(new PMatrix3D())}
 	 * 
 	 * @see #getProjectionMatrix(PMatrix3D)
 	 */
@@ -1043,7 +1044,7 @@ public class PSCamera implements Cloneable {
 
 	/**
 	 * Convenience function that simply returns
-	 * {@code return getModelViewMatrix(new PMatrix3D())}
+	 * {@code getModelViewMatrix(new PMatrix3D())}
 	 */
 	public PMatrix3D getModelViewMatrix() {
 		return getModelViewMatrix(new PMatrix3D());	
@@ -1199,8 +1200,8 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Convenience function that simply returns {@code return
-	 * projectedCoordinatesOf(src, null)}
+	 * Convenience function that simply returns
+	 * {@code projectedCoordinatesOf(src, null)}
 	 */
 	public final PVector projectedCoordinatesOf(PVector src) {
 		return projectedCoordinatesOf(src, null);
@@ -1217,6 +1218,7 @@ public class PSCamera implements Cloneable {
 	 * (0,0) being the upper left corner of the window. The z coordinate ranges
 	 * between 0.0 (near plane) and 1.0 (excluded, far plane). See the {@code
 	 * gluProject} man page for details.
+	 * <p>
 	 * <b>Attention:</b> This method only uses the intrinsic PSCamera parameters
 	 * (see {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
 	 * {@link #getViewport()}) and is completely independent of the processing
@@ -1300,8 +1302,8 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the PSCamera so that the sphere defined by {@code center}, {@code
-	 * radius}) is visible and fits the window. 
+	 * Moves the PSCamera so that the sphere defined by {@code center} and {@code
+	 * radius} is visible and fits the window. 
 	 * <p> 
 	 * The PSCamera is simply translated along its {@link #viewDirection()} so
 	 * that the sphere fits the screen. Its {@link #orientation()} and its
@@ -1520,7 +1522,25 @@ public class PSCamera implements Cloneable {
 	
 	// 14. Implementation of glu utility functions
 	
-	protected boolean project(float objx, float objy, float objz, PMatrix3D modelview,
+	/**
+	 * Similar to {@code gluProject}: map object coordinates to window coordinates.
+	 * 
+	 * @param objx
+	 *            Specify the object x coordinate.
+	 * @param objy
+	 *            Specify the object y coordinate.
+	 * @param objz
+	 *            Specify the object z coordinate.
+	 * @param modelview
+	 *            Specifies the current modelview matrix.
+	 * @param projection
+	 *            Specifies the current projection matrix.
+	 * @param viewport
+	 *            Specifies the current viewport.
+	 * @param windowCoordinate
+	 *            Return the computed window coordinates.                
+	 */
+	public boolean project(float objx, float objy, float objz, PMatrix3D modelview,
                                PMatrix3D projection, int []viewport, float []windowCoordinate) {
 		//Transformation vectors
 		float in[] = new float[4];
