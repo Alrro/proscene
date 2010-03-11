@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
@@ -87,10 +87,10 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
-	 * Calls {@link proscene.PSInteractiveFrame#clone()} and makes a deep
+	 * Calls {@link remixlab.proscene.PSInteractiveFrame#clone()} and makes a deep
 	 * copy of the remaining object attributes.
 	 *  
-	 * @see proscene.PSInteractiveFrame#clone()
+	 * @see remixlab.proscene.PSInteractiveFrame#clone()
 	 */	
 	public PSInteractiveCameraFrame clone() {
 		PSInteractiveCameraFrame clonedPSiCamFrame = (PSInteractiveCameraFrame) super.clone();
@@ -101,7 +101,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	}
 	
 	/**
-	 * Overloading of {@link proscene.PSInteractiveFrame#spin()}.
+	 * Overloading of {@link remixlab.proscene.PSInteractiveFrame#spin()}.
 	 * <p> 
 	 * Rotates the PSInteractiveCameraFrame around its #revolveAroundPoint()
 	 * instead of its origin.
@@ -119,9 +119,9 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
      * PSScene.MouseAction is proceeded.  
      * <p>   
      * <b>Attention:</b> When the PSInteractiveCameraFrame is set as the
-     * {@link proscene.PSCamera#frame()}, this value is set
-     * according to the {@link proscene.PScene#sceneRadius()} by
-     * {@link proscene.PScene#setSceneRadius(float)}.
+     * {@link remixlab.proscene.PSCamera#frame()}, this value is set
+     * according to the {@link remixlab.proscene.PScene#sceneRadius()} by
+     * {@link remixlab.proscene.PScene#setSceneRadius(float)}.
      */
     float flySpeed() { 
     	return flySpd; 
@@ -131,8 +131,8 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	 * Sets the flySpeed(), defined in processing scene units. 
 	 * <p> 
 	 * Default value is 0.0, but it is modified according to the
-	 * {@link proscene.PScene#sceneRadius()} when the PSInteractiveCameraFrame
-	 * is set as the {@link proscene.PSCamera#frame()}.
+	 * {@link remixlab.proscene.PScene#sceneRadius()} when the PSInteractiveCameraFrame
+	 * is set as the {@link remixlab.proscene.PSCamera#frame()}.
 	 */
     public void setFlySpeed(float speed) { 
     	flySpd = speed;
@@ -141,15 +141,15 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
     /**
      * Returns the up vector used in fly mode, expressed in the world coordinate system. 
      * <p> 
-     * Fly mode corresponds to the {@link proscene.PScene.MouseAction#MOVE_FORWARD} and 
-     * {@link proscene.PScene.MouseAction#MOVE_BACKWARD} proscene.PScene.MouseAction
+     * Fly mode corresponds to the {@link remixlab.proscene.PScene.MouseAction#MOVE_FORWARD} and 
+     * {@link remixlab.proscene.PScene.MouseAction#MOVE_BACKWARD} remixlab.proscene.PScene.MouseAction
      * bindings. In these modes, horizontal displacements of the
      * mouse rotate the PSInteractiveCameraFrame around this vector. Vertical
      * displacements rotate always around the PSCamera {@code X} axis. 
      * <p> 
      * Default value is (0,1,0), but it is updated by the PSCamera when set as its
-     * {@link proscene.PSCamera#frame()}. {@link proscene.PSCamera#setOrientation(PSQuaternion)}
-     * and {@link proscene.PSCamera#setUpVector(PVector)} modify this value and should be used
+     * {@link remixlab.proscene.PSCamera#frame()}. {@link remixlab.proscene.PSCamera#setOrientation(PSQuaternion)}
+     * and {@link remixlab.proscene.PSCamera#setUpVector(PVector)} modify this value and should be used
      * instead. 
      */
     public PVector flyUpVector() {
@@ -160,8 +160,8 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
      * Sets the {@link #flyUpVector()}, defined in the world coordinate system. 
      * <p> 
      * Default value is (0,1,0), but it is updated by the PSCamera when
-     * set as its {@link proscene.PSCamera#frame()}. Use
-     * {@link proscene.PSCamera#setUpVector(PVector)} instead in that case.
+     * set as its {@link remixlab.proscene.PSCamera#frame()}. Use
+     * {@link remixlab.proscene.PSCamera#setUpVector(PVector)} instead in that case.
      */
     public void setFlyUpVector(PVector up) { 
     	flyUpVec = up;
@@ -173,7 +173,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	 * It is defined in the world coordinate system. Default value is (0,0,0). 
 	 * <p> 
 	 * When the PSInteractiveCameraFrame is associated to a PSCamera,
-	 * {@link proscene.PSCamera#revolveAroundPoint()}
+	 * {@link remixlab.proscene.PSCamera#revolveAroundPoint()}
 	 * also returns this value.
 	 */	
 	public PVector revolveAroundPoint() {
@@ -242,7 +242,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 
 	/**
 	 * Overloading of
-	 * {@link proscene.PSInteractiveFrame#mouseMoveEvent(MouseEvent, PSCamera)}.
+	 * {@link remixlab.proscene.PSInteractiveFrame#mouseMoveEvent(MouseEvent, PSCamera)}.
 	 * 
 	 * <p>
 	 * 
@@ -390,7 +390,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	
 	/**
 	 * Overloading of
-	 * {@link proscene.PSInteractiveFrame#mouseReleaseEvent(MouseEvent, PSCamera)}.
+	 * {@link remixlab.proscene.PSInteractiveFrame#mouseReleaseEvent(MouseEvent, PSCamera)}.
 	 */	
 	public void mouseReleaseEvent(MouseEvent event, PSCamera camera) {		
 		if ((action == PScene.MouseAction.MOVE_FORWARD)  || 
@@ -412,7 +412,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	
 	/**
 	 * Overloading of
-	 * {@link proscene.PSInteractiveFrame#mouseWheelEvent(MouseWheelEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.PSInteractiveFrame#mouseWheelEvent(MouseWheelEvent, PSCamera)}. 
 	 * <p>  
 	 * The wheel behavior depends on the wheel binded action. Current possible actions are ZOOM, 
 	 * MOVE_FORWARD, MOVE_BACKWARD. ZOOM speed depends on #wheelSensitivity() MOVE_FORWARD and

@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
@@ -54,36 +54,14 @@ import javax.swing.event.*;
  * <p>
  * you would obtain full interactivity to manipulate your scene "for free".
  * <p>
- * If you derive from PScene, you should implement {@link #scene()} which defines the objects
- * in your scene. Then all you have to do is to call {@link #scene()} from {@link PApplet#draw()}, e.g.,
- * {@code public void draw() {scene.draw();}}
+ * If you derive from PScene instead, you should implement {@link #scene()} which
+ * defines the objects in your scene. Then all you have to do is to call {@link #draw()}
+ * from {@link PApplet#draw()}, e.g., {@code public void draw() {scene.draw();}}
+ * (supposing {@code scene} is an instance of the PScene derived class).
  * <p>
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
-public class PScene implements MouseWheelListener, MouseInputListener { 
-    /**
-     * This enum defines keyboard actions to be binded to the keyboard. 
-     */
-	/**
-    public enum KeyboardAction { DRAW_AXIS, DRAW_GRID, DISPLAY_FPS, ENABLE_TEXT, EXIT_VIEWER,
-		SAVE_SCREENSHOT, CAMERA_MODE, FULL_SCREEN, STEREO, ANIMATION, HELP, EDIT_CAMERA,
-		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN,
-		INCREASE_FLYSPEED, DECREASE_FLYSPEED, SNAPSHOT_TO_CLIPBOARD
-	};
-	*/
-	
-	/**
-	public enum MouseHandler { CAMERA, FRAME };
-	*/
-	
-	/**
-     * This enum defines mouse click actions to be binded to the mouse. 
-     */
-	/**
-	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, RAP_FROM_PIXEL, RAP_IS_CENTER,
-		CENTER_FRAME, CENTER_SCENE, SHOW_ENTIRE_SCENE, ALIGN_FRAME, ALIGN_CAMERA };
-	*/
-	
+public class PScene implements MouseWheelListener, MouseInputListener, PConstants {	
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
 	 */
@@ -103,8 +81,8 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	protected static PApplet parent;
 	protected PGraphics3D pg3d;
-	PMatrix3D pProjectionMatrix;
-	PMatrix3D pModelViewMatrix;
+	PMatrix3D projectionMatrix;
+	PMatrix3D modelviewMatrix;
 	
 	// O B J E C T S
 	protected PSCamera cam;
@@ -159,8 +137,8 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		cam = new PSCamera();
 		setCamera(camera());
 		
-		pProjectionMatrix = null;
-		pModelViewMatrix = null;
+		projectionMatrix = null;
+		modelviewMatrix = null;
 		
 		//setDefaultShortcuts();
 		//setDefaultMouseBindings();
@@ -238,7 +216,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	/**
 	 * Returns the current PSMouseGrabber, or {@code null} if none currently grabs mouse events.
 	 * <p> 
-	 * When {@link proscene.PSMouseGrabber#grabsMouse()}, the different mouse events are sent to it
+	 * When {@link remixlab.proscene.PSMouseGrabber#grabsMouse()}, the different mouse events are sent to it
 	 * instead of their usual targets ({@link #camera()} or {@link #interactiveFrame()}).
 	 */
 	public PSMouseGrabber mouseGrabber() {
@@ -249,7 +227,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	 * Directly defines the {@link #mouseGrabber()}.
 	 * <p> 
 	 * You should not call this method directly as it bypasses the 
-	 * {@link proscene.PSMouseGrabber#checkIfGrabsMouse(int, int, PSCamera)}
+	 * {@link remixlab.proscene.PSMouseGrabber#checkIfGrabsMouse(int, int, PSCamera)}
 	 * test performed by {@link #mouseMoved(MouseEvent)}.
 	 */
     protected void setMouseGrabber(PSMouseGrabber mouseGrabber) {
@@ -391,7 +369,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	 */
 	public void help() {
 		parent.textFont(font);
-		parent.textMode(PApplet.SCREEN);
+		parent.textMode(SCREEN);
 		
 		String textToDisplay = new String();
 		textToDisplay += "KEYBOARD\n";
@@ -411,8 +389,8 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		textToDisplay += "shift+left button: zoom on region\n";
 		textToDisplay += "ctrl+left button: rotate screen\n";
 		textToDisplay += "altgraph+left button: translate screen\n";
-		//parent.textAlign(PApplet.CENTER, PApplet.CENTER);
-		//parent.textAlign(PApplet.RIGHT);		
+		//parent.textAlign(CENTER, CENTER);
+		//parent.textAlign(RIGHT);		
 		parent.fill(0, 255, 0);		
 		parent.textLeading(20);
 		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));
@@ -554,7 +532,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	/**
 	 * Convenience wrapper function that simply calls {@code camera().showEntireScene()}
 	 * 
-	 * @see proscene.PSCamera#showEntireScene()
+	 * @see remixlab.proscene.PSCamera#showEntireScene()
 	 */
 	public void showEntireScene () {
 		camera().showEntireScene();
@@ -708,7 +686,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		
 		//parent.noLights();
 		
-		parent.beginShape(PApplet.LINES);
+		parent.beginShape(LINES);
 		// The X
 		parent.stroke(255, 178, 178);
 		parent.vertex(charShift,  charWidth, -charHeight);
@@ -741,14 +719,14 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		// X Axis
 		parent.fill(255, 178, 178);
 		parent.pushMatrix();		
-		parent.rotateY(PApplet.HALF_PI);
+		parent.rotateY(HALF_PI);
 		drawArrow(length, 0.01f*length);
 		parent.popMatrix();
 		
 		// Y Axis
 		parent.fill(178, 255, 178);
 		parent.pushMatrix();
-		parent.rotateX(-PApplet.HALF_PI);
+		parent.rotateX(-HALF_PI);
 		drawArrow(length, 0.01f*length);
 		parent.popMatrix();
 		
@@ -833,7 +811,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	public static void drawGrid(float size, int nbSubdivisions) {
 		//parent.noLights();		
 		parent.stroke(170, 170, 170);		
-		parent.beginShape(PApplet.LINES);
+		parent.beginShape(LINES);
 		for (int i=0; i<=nbSubdivisions; ++i) {
 			final float pos = size*(2.0f*i/nbSubdivisions-1.0f);
 			parent.vertex(pos, -size);
@@ -908,7 +886,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		parent.vertex(v2.x, v1.y, -z);
 		parent.vertex(v2.x, v2.y, -z);
 		parent.vertex(v1.x, v2.y, -z);		
-		parent.endShape(PApplet.CLOSE);
+		parent.endShape(CLOSE);
 		
 		parent.strokeWeight(1);
 		parent.noStroke();
@@ -959,7 +937,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		parent.noFill();		
 		
 		PVector pnt = camera().frame().coordinatesOf(camera().revolveAroundPoint());
-		parent.beginShape(PApplet.LINE);
+		parent.beginShape(LINE);
 		parent.vertex(v1.x, v1.y, -z);
 		parent.vertex(pnt.x, pnt.y, pnt.z);				
 		parent.endShape();
@@ -992,12 +970,12 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	public void mouseMoved(MouseEvent event) {
 		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
 		if ( readyToGo ) {
-		if((pProjectionMatrix != null) && (pModelViewMatrix != null)) {
+		if((projectionMatrix != null) && (modelviewMatrix != null)) {
 			//camera().computeProjectionMatrix();
 			//camera().computeModelViewMatrix();
 			//Same as the 2 previous lines but a lot more efficient:
-			camera().setProjectionMatrix(pProjectionMatrix);
-			camera().setModelViewMatrix(pModelViewMatrix);
+			camera().setProjectionMatrix(projectionMatrix);
+			camera().setModelViewMatrix(modelviewMatrix);
 		}		
 		//need in order to make mousewheel work properly 
 		setMouseGrabber(null);
@@ -1013,7 +991,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	/** Implementation of the MouseMotionListener interface method.
 	 * <p>
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
-	 * {@link proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)} is called.
+	 * {@link remixlab.proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)} is called.
 	 * Otherwise, the {@link #camera()} or the {@link #interactiveFrame()} interprets
 	 * the mouse displacements,	depending on mouse bindings.
 	 * 
@@ -1292,7 +1270,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()} (PSCamera).
 	 * Calls {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
-	 * {@link proscene.PSCamera#type()}. 
+	 * {@link remixlab.proscene.PSCamera#type()}. 
 	 */
 	protected void setPCameraProjection() {
 		switch (camera().type()) {
@@ -1305,7 +1283,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 			parent.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
-		pProjectionMatrix = pg3d.projection;		
+		projectionMatrix = pg3d.projection;		
 	}
 	
 	/**
@@ -1316,7 +1294,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		parent.camera(camera().position().x, camera().position().y, camera().position().z,
 				      camera().at().x, camera().at().y, camera().at().z,
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
-		pModelViewMatrix = pg3d.modelview;
+		modelviewMatrix = pg3d.modelview;
 	}
 	
 	// 11. Utility
@@ -1329,7 +1307,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 	public static void cylinder(float w,float h) {
 		  float px,py;
 
-		  parent.beginShape(PApplet.QUAD_STRIP);
+		  parent.beginShape(QUAD_STRIP);
 		  for(float i=0; i<13; i++) {
 			  px=PApplet.cos(PApplet.radians(i*30))*w;
 			  py=PApplet.sin(PApplet.radians(i*30))*w;
@@ -1338,7 +1316,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		  }
 		  parent.endShape();
 
-		  parent.beginShape(PApplet.TRIANGLE_FAN);
+		  parent.beginShape(TRIANGLE_FAN);
 		  parent.vertex(0,0,0);
 		  for(float i=12; i>-1; i--) {
 			  px=PApplet.cos(PApplet.radians(i*30))*w;
@@ -1347,7 +1325,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		  }
 		  parent.endShape();
 
-		  parent.beginShape(PApplet.TRIANGLE_FAN);
+		  parent.beginShape(TRIANGLE_FAN);
 		  parent.vertex(0,0,h);
 		  for(float i=0; i<13; i++) {
 			  px=PApplet.cos(PApplet.radians(i*30))*w;
@@ -1387,7 +1365,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		float unitConeY[] = new float[detail+1];
 		
 		for (int i = 0; i <= detail; i++) {
-			float a1 = PApplet.TWO_PI * i / detail;
+			float a1 = TWO_PI * i / detail;
 		    unitConeX[i] = (float)Math.cos(a1);
 		    unitConeY[i] = (float)Math.sin(a1);
 		}
@@ -1395,7 +1373,7 @@ public class PScene implements MouseWheelListener, MouseInputListener {
 		parent.pushMatrix();
 		parent.translate(x,y);
 		parent.scale(r,r);
-		parent.beginShape(PApplet.TRIANGLES);
+		parent.beginShape(TRIANGLES);
 		for (int i = 0; i < detail; i++) {
 			parent.vertex(unitConeX[i],unitConeY[i],0.0f);
 			parent.vertex(unitConeX[i+1],unitConeY[i+1],0.0f);

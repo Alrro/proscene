@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
@@ -33,15 +33,7 @@ import processing.core.*;
  * 
  */
 
-public class PSQuaternion {
-
-	final static float EPS10 = 1E-10f;
-	final static float EPS8 = 1E-8f;
-	final static float EPS6 = 1E-6f;
-	final static float EPS5 = 1E-5f;
-	final static float PI = 3.14159265359f;
-	final static float PIO2 = 1.57079632679f;
-
+public class PSQuaternion implements PConstants {
 	/**
 	 * The x coordinate, i.e., the x coordinate of the vector part of the
 	 * PSQuaternion.
@@ -477,7 +469,7 @@ public class PSQuaternion {
 	 */
 	public void fromAxisAngle(PVector axis, float angle) {
 		float norm = axis.mag();
-		if (norm < EPS8) {
+		if (norm < 1E-8f) {
 			// Null rotation
 			this.x = 0.0f;
 			this.y = 0.0f;
@@ -506,7 +498,7 @@ public class PSQuaternion {
 		float fromSqNorm = PSUtility.squaredNorm(from);
 		float toSqNorm = PSUtility.squaredNorm(to);
 		// Identity PSQuaternion when one vector is null
-		if ((fromSqNorm < EPS10) || (toSqNorm < EPS10)) {
+		if ((fromSqNorm < 1E-10f) || (toSqNorm < 1E-10f)) {
 			this.x = this.y = this.z = 0.0f;
 			this.w = 1.0f;
 		} else {
@@ -516,7 +508,7 @@ public class PSQuaternion {
 			float axisSqNorm = PSUtility.squaredNorm(axis);
 
 			// Aligned vectors, pick any axis, not aligned with from or to
-		    if (axisSqNorm < EPS10)
+		    if (axisSqNorm < 1E-10f)
 		    	axis = PSUtility.orthogonalVector(from);
 
 			float angle = PApplet.asin(PApplet.sqrt(axisSqNorm
@@ -546,7 +538,7 @@ public class PSQuaternion {
 		// Compute one plus the trace of the matrix
 		float onePlusTrace = 1.0f + m[0][0] + m[1][1] + m[2][2];
 
-		if (onePlusTrace > EPS5) {
+		if (onePlusTrace > 1E-5f) {
 			// Direct computation
 			float s = PApplet.sqrt(onePlusTrace) * 2.0f;
 			this.x = (m[2][1] - m[1][2]) / s;
@@ -631,9 +623,9 @@ public class PSQuaternion {
 	public final PVector axis() {
 		PVector res = new PVector(this.x, this.y, this.z);
 		float sinus = res.mag();
-		if (sinus > EPS8)
+		if (sinus > 1E-8f)
 			res.div(sinus);
-		if (PApplet.acos(this.w) <= PIO2)
+		if (PApplet.acos(this.w) <= HALF_PI)
 			return res;
 		else {
 			res.x = -res.x;
@@ -748,7 +740,7 @@ public class PSQuaternion {
 		float len = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z);
 
-		if (len < EPS6)
+		if (len < 1E-6f)
 			return new PSQuaternion(this.x, this.y, this.z, 0.0f, false);
 		else {
 			float coef = PApplet.acos(this.w) / len;
@@ -765,7 +757,7 @@ public class PSQuaternion {
 		float theta = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z);
 
-		if (theta < EPS6)
+		if (theta < 1E-6f)
 			return new PSQuaternion(this.x, this.y, this.z, PApplet.cos(theta));
 		else {
 			float coef = PApplet.sin(theta) / theta;
