@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import java.awt.event.*;
 import java.util.*;
@@ -41,7 +41,7 @@ import java.util.*;
  * if desired (method calls should actually be performed on concrete class instances
  * such as PSInteractiveFrame). 
  * <p> 
- * When a PSMouseGrabber {@link #grabsMouse()}, it becomes the {@link proscene.PScene#mouseGrabber()}.
+ * When a PSMouseGrabber {@link #grabsMouse()}, it becomes the {@link remixlab.proscene.PScene#mouseGrabber()}.
  * All the mouse events are then transmitted to it instead of being normally processed.
  * This continues while {@link #grabsMouse()} (updated using
  * {@link #checkIfGrabsMouse(int, int, PSCamera)}) returns {@code true}. 

@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
@@ -86,7 +86,7 @@ public class PSAxisPlaneConstraint extends PSConstraint {
 	 * forced to stay into a plane ({@link Type#PLANE}) or will not able to translate at
 	 * all ({@link Type#FORBIDDEN}). 
 	 * <p> 
-	 * Use {@link proscene.PSFrame#setPosition(PVector)} to define the
+	 * Use {@link remixlab.proscene.PSFrame#setPosition(PVector)} to define the
 	 * position of the constrained PSFrame before it gets constrained.
 	 */
 	public Type translationConstraintType() {
@@ -197,7 +197,7 @@ public class PSAxisPlaneConstraint extends PSConstraint {
 	 * only be able to rotate around an axis ({@link Type#AXIS}), or will not able to rotate
 	 * at all {@link Type#FORBIDDEN}. 
 	 * <p> 
-	 * Use {@link proscene.PSFrame#setOrientation(PSQuaternion)} to define the
+	 * Use {@link remixlab.proscene.PSFrame#setOrientation(PSQuaternion)} to define the
 	 * orientation of the constrained PSFrame before it gets constrained. 
 	 * <p> 
 	 * <b>Attention:</b> An {@link Type#PLANE} Type is not meaningful for rotational

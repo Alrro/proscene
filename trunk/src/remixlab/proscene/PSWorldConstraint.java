@@ -23,39 +23,22 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
 /**
- * A PSAxisPlaneConstraint defined in the camera coordinate system. 
+ * A PSAxisPlaneConstraint defined in the world coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
- * are expressed in the associated {@link #camera()} coordinate system.
+ * are expressed in the PSFrame world coordinate system (see
+ * {@link remixlab.proscene.PSFrame#referenceFrame()}). 
  */
-public class PSCameraConstraint extends PSAxisPlaneConstraint {
-
-	private PSCamera camera;
-
-	/**
-	 * Creates a PSCameraConstraint, whose constrained directions are defined in
-	 * the {@link #camera()} coordinate system.
-	 */
-	public PSCameraConstraint(PSCamera cam) {
-		super();
-		camera = cam;
-	}
-
-	/**
-	 * Returns the associated PSCamera. Set using the PSCameraConstraint constructor.
-	 */
-	public PSCamera camera() {
-		return camera;
-	}
+public class PSWorldConstraint extends PSAxisPlaneConstraint {
 
 	/**
 	 * Depending on {@link #translationConstraintType()}, {@code constrain} translation
-	 * to be along an axis or limited to a plane defined in the {@link #camera()} coordinate
+	 * to be along an axis or limited to a plane defined in the PSFrame world coordinate
 	 * system by {@link #translationConstraintDirection()}.
 	 */
 	public PVector constrainTranslation(PVector translation, PSFrame frame) {
@@ -65,18 +48,22 @@ public class PSCameraConstraint extends PSAxisPlaneConstraint {
 		case FREE:
 			break;
 		case PLANE:
-			proj = camera().frame().inverseTransformOf(
-					translationConstraintDirection());
-			if (frame.referenceFrame() != null)
-				proj = frame.referenceFrame().transformOf(proj);
-			res = PSUtility.projectVectorOnPlane(translation, proj);
+			if (frame.referenceFrame() != null) {
+				proj = frame.referenceFrame().transformOf(
+						translationConstraintDirection());
+				res = PSUtility.projectVectorOnPlane(translation, proj);
+			} else				
+				res = PSUtility.projectVectorOnPlane(translation,
+						translationConstraintDirection());
 			break;
 		case AXIS:
-			proj = camera().frame().inverseTransformOf(
-					translationConstraintDirection());
-			if (frame.referenceFrame() != null)
-				proj = frame.referenceFrame().transformOf(proj);
-			res = PSUtility.projectVectorOnAxis(translation, proj);
+			if (frame.referenceFrame() != null) {
+				proj = frame.referenceFrame().transformOf(
+						translationConstraintDirection());				
+				res = PSUtility.projectVectorOnAxis(translation, proj);
+			} else				
+				res = PSUtility.projectVectorOnAxis(translation,
+						translationConstraintDirection());
 			break;
 		case FORBIDDEN:
 			res = new PVector(0.0f, 0.0f, 0.0f);
@@ -87,7 +74,7 @@ public class PSCameraConstraint extends PSAxisPlaneConstraint {
 
 	/**
 	 * When {@link #rotationConstraintType()} is of type AXIS, constrain {@code rotation}
-	 * to be a rotation around an axis whose direction is defined in the {@link #camera()}
+	 * to be a rotation around an axis whose direction is defined in the PSFrame world
 	 * coordinate system by {@link #rotationConstraintDirection()}.
 	 */
 	public PSQuaternion constrainRotation(PSQuaternion rotation, PSFrame frame) {
@@ -98,13 +85,12 @@ public class PSCameraConstraint extends PSAxisPlaneConstraint {
 		case PLANE:
 			break;
 		case AXIS: {
-			PVector axis = frame.transformOf(camera().frame()
-					.inverseTransformOf(rotationConstraintDirection()));
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
+			PVector axis = frame.transformOf(rotationConstraintDirection());
 			quat = PSUtility.projectVectorOnAxis(quat, axis);
 			res = new PSQuaternion(quat, 2.0f * PApplet.acos(rotation.w));
-		}
 			break;
+		}
 		case FORBIDDEN:
 			res = new PSQuaternion(); // identity
 			break;

@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
@@ -124,11 +124,11 @@ public class PSInteractiveFrame extends PSFrame
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
-	 * Calls {@link proscene.PSFrame#clone()} and makes a deep
+	 * Calls {@link remixlab.proscene.PSFrame#clone()} and makes a deep
 	 * copy of the remaining object attributes except for
 	 * {@link #prevConstraint} (which is shallow copied).
 	 * 
-	 * @see proscene.PSFrame#clone()
+	 * @see remixlab.proscene.PSFrame#clone()
 	 */
 	public PSInteractiveFrame clone() {
 		PSInteractiveFrame clonedPSiFrame = (PSInteractiveFrame) super.clone();
@@ -158,7 +158,7 @@ public class PSInteractiveFrame extends PSFrame
 	}
 	
 	/**
-	 * See {@link proscene.PSMouseGrabber#getMouseGrabberPool()}.
+	 * See {@link remixlab.proscene.PSMouseGrabber#getMouseGrabberPool()}.
 	 */
 	public List<PSMouseGrabber> getMouseGrabberPool() {
 		return PSMouseGrabber.MouseGrabberPool;		
@@ -169,7 +169,7 @@ public class PSInteractiveFrame extends PSFrame
 	 * <p> 
 	 * The PSInteractiveFrame {@link #grabsMouse()} when the mouse is within a
 	 * 10 pixels region around its
-	 * {@link proscene.PSCamera#projectedCoordinatesOf(PVector)}
+	 * {@link remixlab.proscene.PSCamera#projectedCoordinatesOf(PVector)}
 	 * {@link #position()}.
 	 */
 	public void checkIfGrabsMouse(int x, int y, PSCamera camera) {
@@ -313,7 +313,7 @@ public class PSInteractiveFrame extends PSFrame
 	 * camera, it is the PSCamera.revolveAroundPoint() that exactly matches the
 	 * mouse displacement. Hence, instead of changing the
 	 * {@link #translationSensitivity()}, solve the problem by (temporarily) setting
-	 * the {@link proscene.PSCamera#revolveAroundPoint()} to a point
+	 * the {@link remixlab.proscene.PSCamera#revolveAroundPoint()} to a point
 	 * on the zoomed region).
 	 * 
 	 * @see #setTranslationSensitivity(float)
@@ -385,7 +385,7 @@ public class PSInteractiveFrame extends PSFrame
 	 * <p> 
 	 * The {@link #spinningQuaternion()} axis is defined in the PSInteractiveFrame
 	 * coordinate system. You can use
-	 * {@link proscene.PSFrame#transformOfFrom(PVector, PSFrame)} to
+	 * {@link remixlab.proscene.PSFrame#transformOfFrom(PVector, PSFrame)} to
 	 * convert this axis from an other PSFrame coordinate system.
 	 */
 	public final PSQuaternion spinningQuaternion() {
@@ -441,7 +441,7 @@ public class PSInteractiveFrame extends PSFrame
 	/**
 	 * Initiates the PSInteractiveFrame mouse manipulation. 
 	 * Overloading of
-	 * {@link proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)}.
+	 * {@link remixlab.proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)}.
 	 * 
 	 * The mouse behavior depends on which button is pressed.
 	 * 
@@ -462,9 +462,9 @@ public class PSInteractiveFrame extends PSFrame
 	 * <p> 
 	 * The {@code camera} is used to fit the mouse motion with the display parameters.
 	 * 
-	 * @see proscene.PSCamera#screenWidth()
-	 * @see proscene.PSCamera#screenHeight()
-	 * @see proscene.PSCamera#fieldOfView()
+	 * @see remixlab.proscene.PSCamera#screenWidth()
+	 * @see remixlab.proscene.PSCamera#screenHeight()
+	 * @see remixlab.proscene.PSCamera#fieldOfView()
 	*/
 	public void mouseMoveEvent(MouseEvent event, PSCamera camera) {
 		int deltaY;
@@ -587,7 +587,7 @@ public class PSInteractiveFrame extends PSFrame
 	 * Stops the PSInteractiveFrame mouse manipulation. 
 	 * <p> 
 	 * Overloading of
-	 * {@link proscene.PSMouseGrabber#mouseReleaseEvent(MouseEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.PSMouseGrabber#mouseReleaseEvent(MouseEvent, PSCamera)}. 
 	 * <p> 
 	 * If the action was ROTATE MouseAction, a continuous spinning is possible if the speed
 	 * of the mouse cursor is larger than {@link #spinningSensitivity()} when the button is
@@ -611,7 +611,7 @@ public class PSInteractiveFrame extends PSFrame
 	
 	/**
 	 * Overloading of
-	 * {@link proscene.PSMouseGrabber#mouseDoubleClickEvent(MouseEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.PSMouseGrabber#mouseDoubleClickEvent(MouseEvent, PSCamera)}. 
 	 * <p> 
 	 * Left button double click aligns the PSInteractiveFrame with the {@code camera} axis
 	 * (see {@link #alignWithFrame(PSFrame)}). Right button projects the PSInteractiveFrame
@@ -630,7 +630,7 @@ public class PSInteractiveFrame extends PSFrame
 
 	/**
 	 * Overloading of
-	 * {@link proscene.PSMouseGrabber#mouseWheelEvent(MouseWheelEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.PSMouseGrabber#mouseWheelEvent(MouseWheelEvent, PSCamera)}. 
 	 * <p> 
 	 * Using the wheel is equivalent to a ZOOM MouseAction.
 	 * 

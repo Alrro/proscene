@@ -23,7 +23,7 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
 
@@ -516,10 +516,10 @@ public class PSFrame implements Cloneable {
 	 * axis is defined in the PSFrame coordinate system. 
 	 * <p> 
 	 * If the PSFrame has a {@link #constraint()}, {@code rotation} is first constrained using
-	 * {@link proscene.PSConstraint#constrainRotation(PSQuaternion, PSFrame)}.
+	 * {@link remixlab.proscene.PSConstraint#constrainRotation(PSQuaternion, PSFrame)}.
 	 * The translation which results from the filtered rotation around {@code point} is then
 	 * computed and filtered using
-	 * {@link proscene.PSConstraint#constrainTranslation(PVector, PSFrame)}.
+	 * {@link remixlab.proscene.PSConstraint#constrainTranslation(PVector, PSFrame)}.
 	 */
 	public final void rotateAroundPoint(PSQuaternion rotation, PVector point) {
 		if (constraint() != null)
@@ -1079,7 +1079,7 @@ public class PSFrame implements Cloneable {
 	 * Returns a PSFrame representing the inverse of the PSFrame space transformation. 
 	 * <p> 
 	 * The {@link #rotation()} the new PSFrame is the
-	 * {@link proscene.PSQuaternion#inverse()} of the original rotation.
+	 * {@link remixlab.proscene.PSQuaternion#inverse()} of the original rotation.
 	 * Its {@link #translation()} is the negated inverse rotated image of the original
 	 * translation. 
 	 * <p> 
@@ -1107,7 +1107,7 @@ public class PSFrame implements Cloneable {
      * Returns the {@link #inverse()} of the PSFrame world transformation. 
      * <p> 
      * The {@link #orientation()} of the new PSFrame is the
-     * {@link proscene.PSQuaternion#inverse()} of the original orientation.
+     * {@link remixlab.proscene.PSQuaternion#inverse()} of the original orientation.
      * Its {@link #position()} is the negated and inverse rotated image of the
      * original position. 
      * <p> 

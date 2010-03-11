@@ -23,10 +23,10 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
 import processing.core.*;
-import proscene.PSInteractiveFrame.CoordinateSystemConvention;
+import remixlab.proscene.PSInteractiveFrame.CoordinateSystemConvention;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -131,11 +131,11 @@ public class PSCamera implements Cloneable {
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
-	 * Calls {@link proscene.PSFrame#clone()} and makes a deep
+	 * Calls {@link remixlab.proscene.PSFrame#clone()} and makes a deep
 	 * copy of the remaining object attributes except for
 	 * {@code prevConstraint} (which is shallow copied).
 	 * 
-	 * @see proscene.PSFrame#clone()
+	 * @see remixlab.proscene.PSFrame#clone()
 	 */
 	public PSCamera clone() {
 		try {
@@ -158,7 +158,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * Use {@link #setPosition(PVector)} to set the Camera position. Other
 	 * convenient methods are showEntireScene() or fitSphere(). Actually returns
-	 * {@link proscene.PSFrame#position()}. 
+	 * {@link remixlab.proscene.PSFrame#position()}. 
 	 * <p> 
 	 * This position corresponds to the projection center of a
 	 * PSCamera.PERSPECTIVE camera. It is not located in the image plane, which
@@ -184,7 +184,7 @@ public class PSCamera implements Cloneable {
 	 * It is orthogonal to {@link #viewDirection()} and to {@link #rightVector()}. 
 	 * <p> 
 	 * It corresponds to the Y axis of the associated {@link #frame()} (actually returns
-	 * {@link proscene.PSFrame#inverseTransformOf(PVector)})
+	 * {@link remixlab.proscene.PSFrame#inverseTransformOf(PVector)})
 	 */
 	public PVector upVector() {
 		return frame().inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
@@ -362,10 +362,10 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * Set by {@link #setType(Type)}. 
 	 * <p> 
-	 * A {@link proscene.PSCamera.Type#PERSPECTIVE} PSCamera uses a classical projection
+	 * A {@link remixlab.proscene.PSCamera.Type#PERSPECTIVE} PSCamera uses a classical projection
 	 * mainly defined by its {@link #fieldOfView()}. 
 	 * <p> 
-	 * With a {@link proscene.PSCamera.Type#ORTHOGRAPHIC} {@link #type()}, the {@link #fieldOfView()} is
+	 * With a {@link remixlab.proscene.PSCamera.Type#ORTHOGRAPHIC} {@link #type()}, the {@link #fieldOfView()} is
 	 * meaningless and the width and height of the PSCamera frustum are inferred
 	 * from the distance to the {@link #revolveAroundPoint()} using
 	 * {@link #getOrthoWidthHeight()}. 
@@ -403,7 +403,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * Value is set using {@link #setFieldOfView(float)}. Default value is pi/4
 	 * radians. This value is meaningless if the PSCamera {@link #type()} is
-	 * {@link proscene.PSCamera.Type#ORTHOGRAPHIC}. 
+	 * {@link remixlab.proscene.PSCamera.Type#ORTHOGRAPHIC}. 
 	 * <p> 
 	 * The field of view corresponds the one used in {@code gluPerspective} (see
 	 * manual). It sets the Y (vertical) aperture of the PSCamera. The X
@@ -430,8 +430,8 @@ public class PSCamera implements Cloneable {
 
 	/**
 	 * Changes the PSCamera {@link #fieldOfView()} so that the entire scene
-	 * (defined by {@link proscene.PScene#sceneCenter()} and
-	 * {@link proscene.PScene#sceneRadius()} is visible from the PSCamera
+	 * (defined by {@link remixlab.proscene.PScene#sceneCenter()} and
+	 * {@link remixlab.proscene.PScene#sceneRadius()} is visible from the PSCamera
 	 * {@link #position()}. 
 	 * <p> 
 	 * The {@link #position()} and {@link #orientation()} of the PSCamera are
@@ -663,7 +663,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * If you need a completely different zNear computation, overload the
 	 * {@link #zNear()} and {@link #zFar()} methods in a new class that publicly inherits from
-	 * Camera and use {@link proscene.PScene#setCamera(PSCamera)}. 
+	 * Camera and use {@link remixlab.proscene.PScene#setCamera(PSCamera)}. 
 	 * <p> 
 	 * <b>Attention:</b> The value is always positive although the clipping
 	 * plane is positioned at a negative z value in the Camera coordinate
@@ -838,10 +838,10 @@ public class PSCamera implements Cloneable {
 	 * clipping planes definition, and allows convenient positioning methods such as
 	 * {@link #showEntireScene()}. 
 	 * <p> 
-	 * Note that {@link proscene.PScene#sceneCenter()} (resp.
-	 * proscene.PScene{@link #setSceneCenter(PVector)})
+	 * Note that {@link remixlab.proscene.PScene#sceneCenter()} (resp.
+	 * remixlab.proscene.PScene{@link #setSceneCenter(PVector)})
 	 * simply call this method (resp. {@link #setSceneCenter(PVector)}) on its associated
-	 * {@link proscene.PScene#camera()}. Default value is (0,0,0) (world origin). Use
+	 * {@link remixlab.proscene.PScene#camera()}. Default value is (0,0,0) (world origin). Use
 	 * {@link #setSceneCenter(PVector)} to change it.
 	 * 
 	 * @see #setSceneBoundingBox(PVector, PVector)
@@ -885,7 +885,7 @@ public class PSCamera implements Cloneable {
 
 	/**
 	 * The point the PSCamera revolves around its
-	 * {@link proscene.PSInteractiveCameraFrame#revolveAroundPoint()}. 
+	 * {@link remixlab.proscene.PSInteractiveCameraFrame#revolveAroundPoint()}. 
 	 * <p> 
 	 * Default value is the {@link #sceneCenter()}. 
 	 * <p> 
@@ -1247,7 +1247,7 @@ public class PSCamera implements Cloneable {
 	 * Returns the fly speed of the PSCamera. 
 	 * <p> 
 	 * Simply returns {@code frame().flySpeed()}. See the
-	 * {@link proscene.PSInteractiveCameraFrame#flySpeed()}
+	 * {@link remixlab.proscene.PSInteractiveCameraFrame#flySpeed()}
 	 * documentation. This value is only meaningful when the MouseAction
 	 * bindings is PScene.MOVE_FORWARD or is PScene.MOVE_BACKWARD.
 	 * <p>
@@ -1407,7 +1407,7 @@ public class PSCamera implements Cloneable {
 	 * Simply calls {@link #fitSphere(PVector, float)} on a sphere defined by
 	 * {@link #sceneCenter()} and {@link #sceneRadius()}. 
 	 * <p> 
-	 * You will typically use this method in {@link proscene.PScene#init()} after you defined
+	 * You will typically use this method in {@link remixlab.proscene.PScene#init()} after you defined
 	 * a new {@link #sceneRadius()}.
 	 */
 	public void showEntireScene() {
@@ -1571,421 +1571,5 @@ public class PSCamera implements Cloneable {
 	    windowCoordinate[1]=in[1];
 	    windowCoordinate[2]=in[2];
 	    return true;
-	}	
-	
-	// 15. Future versions
-	
-	//TODO: check to see if it is worth implementing these methods
-	/**
-	    //Sets the PSCamera's {@link #position()} and {@link #orientation()} from an OpenGL
-		//ModelView matrix. 
-		//<p> 
-		//This enables a PSCamera initialisation from other application based on OpenGL.
-		//{@code modelView} is a 16 float vector representing a valid OpenGL ModelView matrix,
-		//<p> 
-		//After this method has been called, {@link #getModelViewMatrix()} returns a 
-		//PMatrix3D (processing matrix) equivalent to {@code modelView}. 
-		//<p> 
-		//Only the {@link #orientation()} and {@link #position()} of the PSCamera are modified.
-		// Get upper left (rotation) matrix
-	public void fromModelViewMatrix(float []modelViewMatrix) {		
-		float upperLeft[][] = new float[3][3];
-		for (int i=0; i<3; ++i)
-			for (int j=0; j<3; ++j)
-				upperLeft[i][j] = modelViewMatrix[i*4+j];
-		
-		// Transform upperLeft into the associated PSQuaternion
-		PSQuaternion q = new PSQuaternion();
-		q.fromRotationMatrix(upperLeft);
-		
-		setOrientation(q);
-		setPosition(PVector.mult(q.rotate(new PVector(modelViewMatrix[12], modelViewMatrix[13], modelViewMatrix[14])), -1));
 	}
-	
-	     //Returns the 6 plane equations of the PSCamera frustum. 
-		 //<p> 
-		 //The six 4-component vectors of {@code coef} respectively correspond to the left,
-		 //right, near, far, top and bottom PSCamera frustum planes. Each vector holds a plane
-		 //equation of the form:
-		 //<p>
-		 //{@code a*x + b*y + c*z + d = 0}
-		 //<p>
-		 //where {@code a}, {@code b}, {@code c} and {@code d} are the 4 components of each vector,
-		 //in that order. 
-		 //<p> 
-		 //This format is compatible with the {@code glClipPlane()} OpenGL function. One camera frustum
-		 //plane can hence be applied in an other viewer to visualize the culling results:
-		 //<p>
-		 //{@code // Retrieve place equations}<br>
-		 //{@code float [][] coef = mainViewer.camera().getFrustumPlanesCoefficients();}<br>
-		 //{@code // These two additional clipping planes (which must have been enabled)}<br>
-		 //{@code // will reproduce the mainViewer's near and far clipping.}<br>
-		 //{@code glClipPlane(GL_CLIP_PLANE0, coef[2]);}<br>
-		 //{@code glClipPlane(GL_CLIP_PLANE1, coef[3]);}<br>
-		 //Computed once and for all
-	public float[][] getFrustumPlanesCoefficients() {		 
-		float [][] coef = new float [6][4];
-		PVector pos          = position();
-		PVector viewDir      = viewDirection();
-		PVector up           = upVector();
-		PVector right        = rightVector();
-		float posViewDir = PVector.dot(pos, viewDir);
-		
-		switch (type()) {
-		case PERSPECTIVE : {
-			float hhfov = horizontalFieldOfView() / 2.0f;
-			float chhfov = PApplet.cos(hhfov);
-			float shhfov = PApplet.sin(hhfov);
-			normal[0] = PVector.mult(viewDir, -shhfov);
-			normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
-			normal[0] = PVector.sub(normal[0], PVector.mult(right, chhfov));
-			
-			normal[2] = PVector.mult(viewDir, -1);
-			normal[3] =  viewDir;
-			
-			float hfov = fieldOfView() / 2.0f;
-			float chfov = PApplet.cos(hfov);
-			float shfov = PApplet.sin(hfov);
-			normal[4] = PVector.mult(viewDir, -shfov);
-			normal[5] = PVector.sub(normal[4], PVector.mult(up, chfov));
-			normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
-			
-			for (int i=0; i<2; ++i)
-				dist[i] = PVector.dot(pos, normal[i]);
-			for (int j=4; j<6; ++j)
-				dist[j] = PVector.dot(pos, normal[j]);
-			
-			// Natural equations are:
-			// dist[0,1,4,5] = pos * normal[0,1,4,5];
-			// dist[2] = (pos + zNear() * viewDir) * normal[2];
-			// dist[3] = (pos + zFar()  * viewDir) * normal[3];
-			
-			// 2 times less computations using expanded/merged equations. Dir vectors are normalized.
-			
-			float posRightCosHH = PVector.dot(PVector.mult(pos, chhfov), right);
-			dist[0] = -shhfov * posViewDir;
-			dist[1] = dist[0] + posRightCosHH;
-			dist[0] = dist[0] - posRightCosHH;
-			float posUpCosH = PVector.dot(PVector.mult(pos, chfov), up);
-			dist[4] = - shfov * posViewDir;
-			dist[5] = dist[4] - posUpCosH;
-			dist[4] = dist[4] + posUpCosH;
-			
-			break;
-			}
-		
-		case ORTHOGRAPHIC :
-			normal[0] = PVector.mult(right, -1);
-			normal[1] =  right;
-			normal[4] =  up;
-			normal[5] = PVector.mult(up, -1);
-			
-			float [] wh = getOrthoWidthHeight();
-			
-			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])), normal[0]);
-			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])), normal[1]);
-			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])), normal[4]);
-			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])), normal[5]);
-			break;
-			}
-		
-		// Front and far planes are identical for both camera types.
-		normal[2] = PVector.mult(viewDir, -1);
-		normal[3] =  viewDir;
-		dist[2] = -posViewDir - zNear();
-		dist[3] =  posViewDir + zFar();
-		
-		for (int i=0; i<6; ++i) {
-			coef[i][0] = normal[i].x;
-			coef[i][1] = normal[i].y;
-			coef[i][2] = normal[i].z;
-			coef[i][3] = dist[i];
-		}
-		
-		return coef;
-	}
-	
-	//Convenience function that simply returns
-	//{@code return getModelViewProjectionMatrix(new float[16])}
-	public float[] getModelViewProjectionMatrix() {	
-		return getModelViewProjectionMatrix(new float[16]);	
-	}
-	
-	//Fills {@code m} m with the product of the ModelView and Projection matrices and returns it.
-	//If {@code m} is {@code null} (or not the correct size), a new array will created.  
-	//<p>  
-	//Calls {@link #getModelViewMatrix()} and {@link #getProjectionMatrix()} and then fills
-	//{@code m} with the product of these two matrices.
-	public float[] getModelViewProjectionMatrix(float[] m) {
-		float mv[] = getModelViewMatrix(); 
-		float proj[] = getProjectionMatrix();
-		
-		for (int i=0; i<4; ++i)	{
-			for (int j=0; j<4; ++j) {
-				float sum = 0.0f;
-				for (int k=0; k<4; ++k)
-					sum += proj[i+4*k]*mv[k+4*j];
-				m[i+4*j] = sum;
-			}
-		}
-		return m;
-	}
-	
-	* Utility function that does the same as {@code gluProject()} using float precision
-	 * numbers instead of doubles. See the {@code gluProject()} documentation for details. 
-	 * <p> 
-	 * Code adapted from mesa: http://www.mesa3d.org/
-	protected boolean gluProjectf(float objx, float objy, float objz, float []modelview,
-			                  float []projection, int []viewport, float []windowCoordinate) {
-		//Transformation vectors
-		float in[] = new float[4];
-	    float out[] = new float[4];
-
-	    in[0]=objx;
-	    in[1]=objy;
-	    in[2]=objz;
-	    in[3]=1.0f;
-	    gluMultMatrixVecf(modelview, in, out);
-	    gluMultMatrixVecf(projection, out, in);
-	    if (in[3] == 0.0) return false;
-	    in[0] /= in[3];
-	    in[1] /= in[3];
-	    in[2] /= in[3];
-	    // Map x, y and z to range 0-1
-	    in[0] = in[0] * 0.5f + 0.5f;
-	    in[1] = in[1] * 0.5f + 0.5f;
-	    in[2] = in[2] * 0.5f + 0.5f;
-
-	    // Map x,y to viewport
-	    in[0] = in[0] * viewport[2] + viewport[0];
-	    in[1] = in[1] * viewport[3] + viewport[1];
-
-	    windowCoordinate[0]=in[0];
-	    windowCoordinate[1]=in[1];
-	    windowCoordinate[2]=in[2];
-	    return true;
-	 }
-	
-	* utility function need for
-	 * {@link #gluProjectf(float, float, float, float[], float[], int[], float[])} and
-	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
-	 * <p> 
-	 * Code adapted from mesa: http://www.mesa3d.org/
-	protected void gluMultMatrixVecf(float matrix[], float in[], float out[]) {
-		//matrix should be [16]; in and out [4]
-		int i;
-		for (i=0; i<4; i++) {
-			out[i] = in[0] * matrix[0*4+i] +
-			         in[1] * matrix[1*4+i] +
-			         in[2] * matrix[2*4+i] +
-			         in[3] * matrix[3*4+i];
-		}
-	}
-	
-     * Convenience function that simply returns {@code return
-	 * unprojectedCoordinatesOf(src, null)}
-	public final PVector unprojectedCoordinatesOf(PVector src) {
-		return this.unprojectedCoordinatesOf(src, null);
-	}
-
-	 * Returns the world unprojected coordinates of a point {@code src} defined
-	 * in the screen coordinate system. 
-	 * <p> 
-	 * The {@code src.x} and {@code src.y} input values are expressed in pixels,
-	 * (0,0) being the upper left corner of the window. {@code src.z} is a depth
-	 * value ranging in [0..1] (near and far plane respectively). See the
-	 * {@code gluUnProject} man page for details. 
-	 * <p> 
-	 * The result is expressed in the {@code frame} coordinate system. When
-	 * {@code frame} is {@code null}, the result is expressed in the world
-	 * coordinates system. The possible {@code frame}
-	 * {@link proscene.PSFrame#referenceFrame()} are taken into
-	 * account. 
-	 * <p> 
-	 * {@link #projectedCoordinatesOf(PVector, PSFrame)} performs the inverse
-	 * transformation. 
-	 * <p> 
-	 * This method only uses the intrinsic PSCamera parameters (see
-	 * {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
-	 * {@link #getViewport()}) and is completely independent of the processing
-	 * matrices. You can hence define a virtual PSCamera and use this method to
-	 * compute un-projections out of a classical rendering context. 
-	 * <p> 
-	 * <b>Attention:</b> However, if your PSCamera is not attached to a
-	 * PScene (used for offscreen computations for instance), make sure the
-	 * PSCamera matrices are updated before calling this method (use
-	 * {@link #computeModelViewMatrix()}, {@link #computeProjectionMatrix()}).
-	 * <p> 
-	 * This method is not computationally optimized. If you call it several
-	 * times with no change in the matrices, you should buffer the entire
-	 * inverse projection matrix (modelview, projection and then viewport) to
-	 * speed-up the queries. See the gluUnProject man page for details.
-	 * 
-	 * @see #setScreenWidthAndHeight(int, int)
-	public final PVector unprojectedCoordinatesOf(PVector src, PSFrame frame) {
-		//Warning:
-		//it is responsible of the caller to check coordinateSystemConvention on src
-		float xyz[] = new float[3];
-		viewport = getViewport();
-		
-		//TODO: implement glu* functions that convey processing matrix conventions
-		//instead of that found in OpenGL		
-		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
-		modelViewMatT.transpose();
-		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
-		projectionMatT.transpose();		
-		float[] modelview = new float[16];
-		float[] projection = new float[16];
-		modelViewMatT.get(modelview);
-		projectionMatT.get(projection);
-		
-		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			gluUnProjectf(src.x, (screenHeight() - src.y), src.z, modelview, projection, viewport, xyz);
-		else
-			gluUnProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);		
-		if (frame != null)
-			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]));
-		else
-			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
-	}
-	
-		 * Utility function that does the same as {@code gluUnProject()} using float precision
-	 * numbers instead of doubles. See the {@code gluUnProject()} documentation for details. 
-	 * <p> 
-	 * Code adapted from mesa: http://www.mesa3d.org/
-	boolean gluUnProjectf(float winx, float winy, float winz, float modelview[],
-			             float projection[], int viewport[], float []objCoordinate)	{		
-        float finalMatrix[] = new float [16];
-	    float in[] = new float [4];
-	    float out[]  = new float [4];
-
-	    gluMultMatricesf(modelview, projection, finalMatrix);
-	    if (!gluInvertMatrixf(finalMatrix, finalMatrix)) return false;
-
-	    in[0]=winx;
-	    in[1]=winy;
-	    in[2]=winz;
-	    in[3]=1.0f;
-
-	    // Map x and y from window coordinates
-	    in[0] = (in[0] - viewport[0]) / viewport[2];
-	    in[1] = (in[1] - viewport[1]) / viewport[3];
-
-	    // Map to range -1 to 1
-	    in[0] = in[0] * 2 - 1;
-	    in[1] = in[1] * 2 - 1;
-	    in[2] = in[2] * 2 - 1;
-
-	    gluMultMatrixVecf(finalMatrix, in, out);
-	    if (out[3] == 0.0) return false;
-	    
-	    out[0] /= out[3];
-	    out[1] /= out[3];
-	    out[2] /= out[3];
-	    
-	    objCoordinate[0] = out[0];
-	    objCoordinate[1] = out[1];
-	    objCoordinate[2] = out[2];
-	    
-	    return true;
-	}
-	
-	* utility function need for
-	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
-	 * <p> 
-	 * Code adapted from mesa: http://www.mesa3d.org/
-	protected boolean gluInvertMatrixf(float m[], float invOut[]) {
-		//m and invOut should be [16]!
-		float inv[] = new float[16]; 
-	    float det;
-	    int i;
-
-	    inv[0] =   m[5]*m[10]*m[15] - m[5]*m[11]*m[14] - m[9]*m[6]*m[15]
-	             + m[9]*m[7]*m[14] + m[13]*m[6]*m[11] - m[13]*m[7]*m[10];
-	    inv[4] =  -m[4]*m[10]*m[15] + m[4]*m[11]*m[14] + m[8]*m[6]*m[15]
-	             - m[8]*m[7]*m[14] - m[12]*m[6]*m[11] + m[12]*m[7]*m[10];
-	    inv[8] =   m[4]*m[9]*m[15] - m[4]*m[11]*m[13] - m[8]*m[5]*m[15]
-	             + m[8]*m[7]*m[13] + m[12]*m[5]*m[11] - m[12]*m[7]*m[9];
-	    inv[12] = -m[4]*m[9]*m[14] + m[4]*m[10]*m[13] + m[8]*m[5]*m[14]
-	             - m[8]*m[6]*m[13] - m[12]*m[5]*m[10] + m[12]*m[6]*m[9];
-	    inv[1] =  -m[1]*m[10]*m[15] + m[1]*m[11]*m[14] + m[9]*m[2]*m[15]
-	             - m[9]*m[3]*m[14] - m[13]*m[2]*m[11] + m[13]*m[3]*m[10];
-	    inv[5] =   m[0]*m[10]*m[15] - m[0]*m[11]*m[14] - m[8]*m[2]*m[15]
-	             + m[8]*m[3]*m[14] + m[12]*m[2]*m[11] - m[12]*m[3]*m[10];
-	    inv[9] =  -m[0]*m[9]*m[15] + m[0]*m[11]*m[13] + m[8]*m[1]*m[15]
-	             - m[8]*m[3]*m[13] - m[12]*m[1]*m[11] + m[12]*m[3]*m[9];
-	    inv[13] =  m[0]*m[9]*m[14] - m[0]*m[10]*m[13] - m[8]*m[1]*m[14]
-	             + m[8]*m[2]*m[13] + m[12]*m[1]*m[10] - m[12]*m[2]*m[9];
-	    inv[2] =   m[1]*m[6]*m[15] - m[1]*m[7]*m[14] - m[5]*m[2]*m[15]
-	             + m[5]*m[3]*m[14] + m[13]*m[2]*m[7] - m[13]*m[3]*m[6];
-	    inv[6] =  -m[0]*m[6]*m[15] + m[0]*m[7]*m[14] + m[4]*m[2]*m[15]
-	             - m[4]*m[3]*m[14] - m[12]*m[2]*m[7] + m[12]*m[3]*m[6];
-	    inv[10] =  m[0]*m[5]*m[15] - m[0]*m[7]*m[13] - m[4]*m[1]*m[15]
-	             + m[4]*m[3]*m[13] + m[12]*m[1]*m[7] - m[12]*m[3]*m[5];
-	    inv[14] = -m[0]*m[5]*m[14] + m[0]*m[6]*m[13] + m[4]*m[1]*m[14]
-	             - m[4]*m[2]*m[13] - m[12]*m[1]*m[6] + m[12]*m[2]*m[5];
-	    inv[3] =  -m[1]*m[6]*m[11] + m[1]*m[7]*m[10] + m[5]*m[2]*m[11]
-	             - m[5]*m[3]*m[10] - m[9]*m[2]*m[7] + m[9]*m[3]*m[6];
-	    inv[7] =   m[0]*m[6]*m[11] - m[0]*m[7]*m[10] - m[4]*m[2]*m[11]
-	             + m[4]*m[3]*m[10] + m[8]*m[2]*m[7] - m[8]*m[3]*m[6];
-	    inv[11] = -m[0]*m[5]*m[11] + m[0]*m[7]*m[9] + m[4]*m[1]*m[11]
-	             - m[4]*m[3]*m[9] - m[8]*m[1]*m[7] + m[8]*m[3]*m[5];
-	    inv[15] =  m[0]*m[5]*m[10] - m[0]*m[6]*m[9] - m[4]*m[1]*m[10]
-	             + m[4]*m[2]*m[9] + m[8]*m[1]*m[6] - m[8]*m[2]*m[5];
-
-	    det = m[0]*inv[0] + m[1]*inv[4] + m[2]*inv[8] + m[3]*inv[12];
-	    if (det == 0)
-	        return false;
-
-	    det = 1.0f / det;
-
-	    for (i = 0; i < 16; i++)
-	        invOut[i] = inv[i] * det;
-
-	    return true;
-	}
-	
-	* utility function need for
-	 * {@link #gluUnProject(float, float, float, float[], float[], int[], float[])} 
-	 * <p> 
-	 * Code adapted from mesa: http://www.mesa3d.org/
-	protected void gluMultMatricesf(float a[], float b[], float r[]) {
-		//a, b, and r should be [16]!
-		int i, j;
-		
-		for (i = 0; i < 4; i++) {
-			for (j = 0; j < 4; j++) {
-				r[i*4+j] =	a[i*4+0]*b[0*4+j] +
-				            a[i*4+1]*b[1*4+j] +
-				            a[i*4+2]*b[2*4+j] +
-				            a[i*4+3]*b[3*4+j];
-			}
-		}
-	}
-	
-	public final PVector projectedCoordinatesOf(PVector src, PSFrame frame) {		
-		float xyz[] = new float[3];		
-		viewport = getViewport();
-				
-		PMatrix3D modelViewMatT = new PMatrix3D(modelViewMat);
-		modelViewMatT.transpose();
-		PMatrix3D projectionMatT = new PMatrix3D(projectionMat);
-		projectionMatT.transpose();		
-		float[] modelview = new float[16];
-		float[] projection = new float[16];
-		modelViewMatT.get(modelview);
-		projectionMatT.get(projection);
-		
-		if (frame != null) {
-			PVector tmp = frame.inverseCoordinatesOf(src);
-			gluProjectf(tmp.x, tmp.y, tmp.z, modelview, projection, viewport, xyz);
-		} else
-			gluProjectf(src.x, src.y, src.z, modelview, projection, viewport, xyz);
-		
-		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			xyz[1] = screenHeight() - xyz[1];
-
-		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
-	}
-    */
 }

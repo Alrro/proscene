@@ -23,24 +23,14 @@
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
  */
 
-package proscene;
+package remixlab.proscene;
 
-import processing.core.PApplet;
-import processing.core.PMatrix3D;
-import processing.core.PVector;
+import processing.core.*;
 
 /**
  * Utility class that complements the PVector and PMatrix classes.
  */
-public class PSUtility {
-	
-	final static float EPS10 = 1E-10f;
-	final static float EPS8 = 1E-8f;
-	final static float EPS6 = 1E-6f;
-	final static float EPS5 = 1E-5f;
-	final static float PI = 3.14159265359f;
-	final static float PIO2 = 1.57079632679f;
-	
+public class PSUtility implements PConstants {	
 	/**
 	 * Utility function that simply projects {@code src} on the axis
 	 * of direction {@code direction} that passes through the origin.
@@ -49,7 +39,7 @@ public class PSUtility {
 	 */
 	public static PVector projectVectorOnAxis(PVector src, PVector direction) {
 		float directionSquaredNorm = squaredNorm(direction);
-		if (directionSquaredNorm < EPS10)
+		if (directionSquaredNorm < 1E-10f)
 			//TODO needs exception to tell: axis direction is not normalized
 			return null;
 		
@@ -65,7 +55,7 @@ public class PSUtility {
 	 */
 	public static PVector projectVectorOnPlane(PVector src, PVector normal)	{
 		float normalSquaredNorm = squaredNorm(normal);
-		if (normalSquaredNorm < EPS10)
+		if (normalSquaredNorm < 1E-10f)
 			//TODO needs exception to tell: plane normal is not normalized
 			return null;
 		
