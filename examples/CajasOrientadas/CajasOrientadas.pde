@@ -27,8 +27,8 @@ void setup() {
   scene = new Scene(this);		
   scene.setGridIsDrawn(true);		
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setSceneRadius(2);		
-  scene.showEntireScene();
+  scene.setRadius(2);		
+  scene.showAll();
 		
   esfera = new Esfera(this);
   esfera.setPosition(new PVector(0.0f, 1.0f, 0.0f));

@@ -44,7 +44,7 @@ class MyScene extends Scene {
     setAxisIsDrawn(true);
   }
 		
-  public void scene() {
+  public void proscenium() {
     fill(204, 102, 0);
     box(0.2f, 0.3f, 0.5f);
   }

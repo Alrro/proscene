@@ -23,8 +23,8 @@ void setup() {
   scene = new Scene(this);		
   scene.setGridIsDrawn(true);		
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setSceneRadius(2);		
-  scene.showEntireScene();
+  scene.setRadius(2);		
+  scene.showAll();
 		
   boxes = new Box[6];
   for (int i = 0; i < 6; i++) {

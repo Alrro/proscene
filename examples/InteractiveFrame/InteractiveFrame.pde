@@ -23,13 +23,13 @@ void setup()	{
   size(640, 360, OPENGL);
   scene = new Scene(this); 
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setSceneRadius(scene.radius()*1.3f);
-  scene.showEntireScene();
+  scene.setRadius(scene.radius()*1.3f);
+  scene.showAll();
   scene.setGridIsDrawn(true);
   scene.setAxisIsDrawn(true);
   // A Scene have a single InteractiveFrame (null by default).
   // We set it here. 
-  scene.setInteractiveFrame(new InteractiveFrame());
+  scene.setInteractiveFrame(new remixlab.proscene.InteractiveFrame());
   scene.interactiveFrame().translate(new PVector(0.2f, 0.2f, 0));
   scene.setDrawInteractiveFrame(true);
 }
