@@ -12,29 +12,29 @@
  * hence always be fixed on the screen; and, 3. The blue lines starting points are
  * defined in the world coordinate system, and will hence move in camera motion.
  *
- * A very nice Moire pattern can be obtained when rotating the camera.
+ * A nice Moire pattern can be obtained when rotating the camera.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 
-PScene scene;
+Scene scene;
 	
 void setup() {
   size(640, 360, OPENGL);
-  scene = new PScene(this);
+  scene = new Scene(this);
   scene.setAxisIsDrawn(true);
   scene.setSceneRadius(1.5f);		
   scene.showEntireScene();
 }
 
 // Your actual scene drawing should be enclosed between the
-// PScene.beginDraw() and PScene.endDraw() pair.
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before PScene.beginDraw()
+  // Should always be defined before Scene.beginDraw()
   background(0);
   scene.beginDraw();
 		
@@ -67,7 +67,7 @@ void draw() {
 }	
 	
 // To take full advantage of proscene 3d navigation power this
-// method should always call PScene.defaultKeyBindings()
+// method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }

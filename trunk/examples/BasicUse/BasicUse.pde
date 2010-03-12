@@ -3,28 +3,28 @@
  * by Jean Pierre Charalambos.
  * 
  * This example illustrates a direct approach to using proscene
- * by proscene.PScene proper instantiation.
+ * by Scene proper instantiation.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
-import proscene.*;
+import remixlab.proscene.*;
 import processing.opengl.*;
 
-PScene scene;
+Scene scene;
 	
 void setup() {
   size(640, 360, OPENGL);
-  // PScene instantiation
-  scene = new PScene(this);
+  // Scene instantiation
+  scene = new Scene(this);
   scene.setGridIsDrawn(true);
   scene.setAxisIsDrawn(true);
 }
 
 // Your actual scene drawing should be enclosed between the
-// PScene.beginDraw() and PScene.endDraw() pair.
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before PScene.beginDraw()
+  // Should always be defined before Scene.beginDraw()
   background(0);
   scene.beginDraw();
   // Actual scene
@@ -34,7 +34,7 @@ void draw() {
 }
 
 // To take full advantage of proscene 3d navigation power this
-// method should always call PScene.defaultKeyBindings()
+// method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }

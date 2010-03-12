@@ -33,35 +33,35 @@ import processing.core.*;
  * 
  */
 
-public class PSQuaternion implements PConstants {
+public class Quaternion implements PConstants {
 	/**
 	 * The x coordinate, i.e., the x coordinate of the vector part of the
-	 * PSQuaternion.
+	 * Quaternion.
 	 */
 	public float x;
 
 	/**
 	 * The y coordinate, i.e., the y coordinate of the vector part of the
-	 * PSQuaternion.
+	 * Quaternion.
 	 */
 	public float y;
 
 	/**
 	 * The z coordinate, i.e., the z coordinate of the vector part of the
-	 * PSQuaternion.
+	 * Quaternion.
 	 */
 	public float z;
 
 	/**
-	 * The w coordinate which corresponds to the scalar part of the PSQuaternion.
+	 * The w coordinate which corresponds to the scalar part of the Quaternion.
 	 */
 	public float w;
 
 	/**
-	 * Constructs and initializes a PSQuaternion to (0.0,0.0,0.0,1.0), i.e., an
+	 * Constructs and initializes a Quaternion to (0.0,0.0,0.0,1.0), i.e., an
 	 * identity rotation.
 	 */
-	public PSQuaternion() {
+	public Quaternion() {
 		this.x = 0;
 		this.y = 0;
 		this.z = 0;
@@ -69,16 +69,16 @@ public class PSQuaternion implements PConstants {
 	}
 	
 	/**
-	 * Default constructor for PSQuaternion(float x, float y, float z, float w,
+	 * Default constructor for Quaternion(float x, float y, float z, float w,
 	 * boolean normalize), with {@code normalize=true}.  
 	 * 
 	 */
-	public PSQuaternion(float x, float y, float z, float w) {
+	public Quaternion(float x, float y, float z, float w) {
 		this(x, y, z, w, true);
 	}
 
 	/**
-	 * Constructs and initializes a PSQuaternion from the specified xyzw
+	 * Constructs and initializes a Quaternion from the specified xyzw
 	 * coordinates.
 	 * 
 	 * @param x
@@ -90,9 +90,9 @@ public class PSQuaternion implements PConstants {
 	 * @param w
 	 *            the w scalar component
 	 * @param normalize
-	 *            tells whether or not the constructed PSQuaternion should be normalized.
+	 *            tells whether or not the constructed Quaternion should be normalized.
 	 */
-	public PSQuaternion(float x, float y, float z, float w, boolean normalize) {
+	public Quaternion(float x, float y, float z, float w, boolean normalize) {
 		if (normalize) {
 			float mag = PApplet.sqrt(x * x + y * y + z * z + w * w);
 			if (mag > 0.0f) {
@@ -115,21 +115,21 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Default constructor for PSQuaternion(float[] q, boolean normalize)
+	 * Default constructor for Quaternion(float[] q, boolean normalize)
 	 * with {@code normalize=true}.  
 	 * 
 	 */
-	public PSQuaternion(float[] q) {
+	public Quaternion(float[] q) {
 		this(q, true);
 	}
 		
 	/**
-	 * Constructs and initializes a PSQuaternion from the array of length 4.
+	 * Constructs and initializes a Quaternion from the array of length 4.
 	 * 
 	 * @param q
 	 *            the array of length 4 containing xyzw in order
 	 */
-	public PSQuaternion(float[] q, boolean normalize) {
+	public Quaternion(float[] q, boolean normalize) {
 		if (normalize) {
 			float mag = PApplet.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2]
 					+ q[3] * q[3]);
@@ -156,9 +156,9 @@ public class PSQuaternion implements PConstants {
 	 * Copy constructor.
 	 * 
 	 * @param q1
-	 *            the PSQuaternion containing the initialization x y z w data
+	 *            the Quaternion containing the initialization x y z w data
 	 */
-	public PSQuaternion(PSQuaternion q1) {
+	public Quaternion(Quaternion q1) {
 		this.x = q1.x;
 		this.y = q1.y;
 		this.z = q1.z;
@@ -167,7 +167,7 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Constructs and initializes a PSQuaternion from the specified
+	 * Constructs and initializes a Quaternion from the specified
 	 * rotation {@link #axis() axis} (non null) and {@link #angle() angle} (in radians).
 	 * 
 	 * @param axis
@@ -177,12 +177,12 @@ public class PSQuaternion implements PConstants {
 	 *            
 	 * @see #fromAxisAngle(PVector, float)
 	 */
-	public PSQuaternion(PVector axis, float angle) {
+	public Quaternion(PVector axis, float angle) {
 		fromAxisAngle(axis, angle);
 	}
 
 	/**
-	 * Constructs a PSQuaternion that will rotate from the
+	 * Constructs a Quaternion that will rotate from the
 	 * {@code from} direction to the {@code to} direction.
 	 * 
 	 * @param from
@@ -192,12 +192,12 @@ public class PSQuaternion implements PConstants {
 	 *
 	 * @see #fromTo(PVector, PVector)
 	 */
-	public PSQuaternion(PVector from, PVector to) {
+	public Quaternion(PVector from, PVector to) {
 		fromTo(from, to);
 	}
 
 	/**
-	 * Sets the value of this PSQuaternion to the conjugate of itself.
+	 * Sets the value of this Quaternion to the conjugate of itself.
 	 */
 	public final void conjugate() {
 		this.x = -this.x;
@@ -206,12 +206,12 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Sets the value of this PSQuaternion to the conjugate of PSQuaternion q1.
+	 * Sets the value of this Quaternion to the conjugate of Quaternion q1.
 	 * 
 	 * @param q1
 	 *            the source vector
 	 */
-	public final void conjugate(PSQuaternion q1) {
+	public final void conjugate(Quaternion q1) {
 		this.x = -q1.x;
 		this.y = -q1.y;
 		this.z = -q1.z;
@@ -219,7 +219,7 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Negates all the coefficients of the PSQuaternion.
+	 * Negates all the coefficients of the Quaternion.
 	 */
 	public final void negate() {
 		this.x = -this.x;
@@ -229,14 +229,14 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Returns the "dot" product of this PSQuaternion and {@code b}:
+	 * Returns the "dot" product of this Quaternion and {@code b}:
 	 * <p> 
 	 * {@code this.x * b.x + this.y * b.y + this.z * b.z + this.w * b.w}
 	 * 
 	 * @param b
-	 *            the PSQuaternion    
+	 *            the Quaternion    
 	 */
-	public final float dotProduct(PSQuaternion b) {
+	public final float dotProduct(Quaternion b) {
 		return this.x * b.x + this.y * b.y + this.z * b.z + this.w * b.w;
 	}
 
@@ -246,22 +246,22 @@ public class PSQuaternion implements PConstants {
 	 * {@code a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w}
 	 * 
 	 * @param a
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param b
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 */
-	public final static float dotProduct(PSQuaternion a, PSQuaternion b) {
+	public final static float dotProduct(Quaternion a, Quaternion b) {
 		return a.x * b.x + a.y * b.y + a.z * b.z + a.w * b.w;
 	}
 
 	/**
-	 * Sets the value of this PSQuaternion to the PSQuaternion product of itself and
+	 * Sets the value of this Quaternion to the Quaternion product of itself and
 	 * {@code q1}, (i.e., {@code this = this * q1}).
 	 * 
 	 * @param q1
-	 *            the other PSQuaternion
+	 *            the other Quaternion
 	 */
-	public final void multiply(PSQuaternion q1) {
+	public final void multiply(Quaternion q1) {
 		float x, y, w;
 
 		w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z;
@@ -274,20 +274,20 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Returns the PSQuaternion which is product of quaternions {@code q1} and {@code q2}.
+	 * Returns the Quaternion which is product of quaternions {@code q1} and {@code q2}.
 	 * 
 	 * @param q1
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param q2
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 */
-	public final static PSQuaternion multiply(PSQuaternion q1, PSQuaternion q2) {
+	public final static Quaternion multiply(Quaternion q1, Quaternion q2) {
 		float x, y, z, w;
 		w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
 		x = q1.w * q2.x + q2.w * q1.x + q1.y * q2.z - q1.z * q2.y;
 		y = q1.w * q2.y + q2.w * q1.y - q1.x * q2.z + q1.z * q2.x;
 		z = q1.w * q2.z + q2.w * q1.z + q1.x * q2.y - q1.y * q2.x;
-		return new PSQuaternion(x, y, z, w);
+		return new Quaternion(x, y, z, w);
 	}
 
 	/**
@@ -308,7 +308,7 @@ public class PSQuaternion implements PConstants {
 	 * Returns the image of {@code v} by the rotation {@code q1}. Same as {@code q1.rotate(v).}
 	 * 
 	 * @param q1
-	 *            the PSQuaternion
+	 *            the Quaternion
 	 * 
 	 * @param v
 	 *            the PVector
@@ -316,60 +316,60 @@ public class PSQuaternion implements PConstants {
 	 * @see #rotate(PVector)
 	 * @see #inverseRotate(PVector)
 	 */
-	public static final PVector multiply(PSQuaternion q1, PVector v) {
+	public static final PVector multiply(Quaternion q1, PVector v) {
 		return q1.rotate(v);
 	}
 
 	/**
-	 * Multiplies this PSQuaternion by the inverse of PSQuaternion {@code q1} and places the
-	 * value into this PSQuaternion (i.e., {@code this = this * q^-1}). The value of the
-	 * argument PSQuaternion is preserved.
+	 * Multiplies this Quaternion by the inverse of Quaternion {@code q1} and places the
+	 * value into this Quaternion (i.e., {@code this = this * q^-1}). The value of the
+	 * argument Quaternion is preserved.
 	 * 
 	 * @param q1
-	 *            the other PSQuaternion
+	 *            the other Quaternion
 	 */
-	public final void multiplyInverse(PSQuaternion q1) {
-		PSQuaternion tempQuat = new PSQuaternion(q1);
+	public final void multiplyInverse(Quaternion q1) {
+		Quaternion tempQuat = new Quaternion(q1);
 		tempQuat.invert();
 		this.multiply(tempQuat);
 	}
 
 	/**
-	 * Returns the product of PSQuaternion {@code q1} by the inverse of PSQuaternion {@code q2}
+	 * Returns the product of Quaternion {@code q1} by the inverse of Quaternion {@code q2}
 	 * (i.e., {@code q1 * q2^-1}). The value of both argument quaternions is preserved.
 	 * 
 	 * @param q1
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param q2
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 */
-	public static final PSQuaternion multiplyInverse(PSQuaternion q1,
-			PSQuaternion q2) {
-		PSQuaternion tempQuat = new PSQuaternion(q2);
+	public static final Quaternion multiplyInverse(Quaternion q1,
+			Quaternion q2) {
+		Quaternion tempQuat = new Quaternion(q2);
 		tempQuat.invert();
-		return PSQuaternion.multiply(q1, tempQuat);
+		return Quaternion.multiply(q1, tempQuat);
 	}
 
 	/**
-	 * Returns the inverse PSQuaternion (inverse rotation). 
+	 * Returns the inverse Quaternion (inverse rotation). 
 	 * <p>  
 	 * The result has a negated {@link #axis()} direction and the
 	 * same {@link #angle()}. 
 	 * <p> 
-	 * A composition of a PSQuaternion and its {@link #inverse()} results in
+	 * A composition of a Quaternion and its {@link #inverse()} results in
 	 * an identity function. Use {@link #invert()} to actually
-	 * modify the PSQuaternion.
+	 * modify the Quaternion.
 	 * 
 	 * @see #invert()
 	 */
-	public final PSQuaternion inverse() {
-		PSQuaternion tempQuat = new PSQuaternion(this);
+	public final Quaternion inverse() {
+		Quaternion tempQuat = new Quaternion(this);
 		tempQuat.invert();
 		return tempQuat;
 	}
 
 	/**
-	 * Sets the value of this PSQuaternion to the inverse of itself.
+	 * Sets the value of this Quaternion to the inverse of itself.
 	 * 
 	 * @see #inverse()
 	 */
@@ -382,12 +382,12 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Sets the value of this PSQuaternion to the PSQuaternion inverse of {@code q1}.
+	 * Sets the value of this Quaternion to the Quaternion inverse of {@code q1}.
 	 * 
 	 * @param q1
-	 *            the PSQuaternion to be inverted
+	 *            the Quaternion to be inverted
 	 */
-	public final void invert(PSQuaternion q1) {
+	public final void invert(Quaternion q1) {
 		float sqNorm = squaredNorm(q1);
 		this.w = q1.w / sqNorm;
 		this.x = -q1.x / sqNorm;
@@ -396,7 +396,7 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Normalizes the value of this PSQuaternion in place and return its {@code norm}.
+	 * Normalizes the value of this Quaternion in place and return its {@code norm}.
 	 */
 	public final float normalize() {
 		float norm = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
@@ -416,7 +416,7 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Returns the image of {@code v} by the PSQuaternion rotation.
+	 * Returns the image of {@code v} by the Quaternion rotation.
 	 * 
 	 * @param v
 	 *            the PVector
@@ -442,7 +442,7 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Returns the image of {@code v} by the PSQuaternion {@link #inverse()} rotation. 
+	 * Returns the image of {@code v} by the Quaternion {@link #inverse()} rotation. 
 	 * <p> 
 	 * {@link #rotate(PVector)} performs an inverse transformation.
 	 * 
@@ -450,17 +450,17 @@ public class PSQuaternion implements PConstants {
 	 *            the PVector
 	 */
 	public final PVector inverseRotate(PVector v) {
-		PSQuaternion tempQuat = new PSQuaternion(x, y, z, w);
+		Quaternion tempQuat = new Quaternion(x, y, z, w);
 		tempQuat.invert();
 		return tempQuat.rotate(v);
 	}
 
 	/**
-	 * Sets the PSQuaternion as a rotation of {@link #axis() axis} and {@link #angle() angle}
+	 * Sets the Quaternion as a rotation of {@link #axis() axis} and {@link #angle() angle}
 	 * (in radians).
 	 * <p> 
 	 * The {@code axis} does not need to be normalized. A null {@code axis}
-	 * will result in an identity PSQuaternion.
+	 * will result in an identity Quaternion.
 	 * 
 	 * @param axis
 	 *            the PVector representing the axis
@@ -485,7 +485,7 @@ public class PSQuaternion implements PConstants {
 	}
 	
 	/**
-	 * Sets the PSQuaternion as a rotation from the {@code from} direction to
+	 * Sets the Quaternion as a rotation from the {@code from} direction to
 	 * the {@code to} direction.
 	 * <p>
 	 * <b>Attention:</b> this rotation is not uniquely defined. The selected axis
@@ -495,9 +495,9 @@ public class PSQuaternion implements PConstants {
 	 * @see #fromAxisAngle(PVector, float)
 	 */
 	public void fromTo(PVector from, PVector to) {
-		float fromSqNorm = PSUtility.squaredNorm(from);
-		float toSqNorm = PSUtility.squaredNorm(to);
-		// Identity PSQuaternion when one vector is null
+		float fromSqNorm = Utility.squaredNorm(from);
+		float toSqNorm = Utility.squaredNorm(to);
+		// Identity Quaternion when one vector is null
 		if ((fromSqNorm < 1E-10f) || (toSqNorm < 1E-10f)) {
 			this.x = this.y = this.z = 0.0f;
 			this.w = 1.0f;
@@ -505,11 +505,11 @@ public class PSQuaternion implements PConstants {
 
 			PVector axis = from.cross(to);
 
-			float axisSqNorm = PSUtility.squaredNorm(axis);
+			float axisSqNorm = Utility.squaredNorm(axis);
 
 			// Aligned vectors, pick any axis, not aligned with from or to
 		    if (axisSqNorm < 1E-10f)
-		    	axis = PSUtility.orthogonalVector(from);
+		    	axis = Utility.orthogonalVector(from);
 
 			float angle = PApplet.asin(PApplet.sqrt(axisSqNorm
 					/ (fromSqNorm * toSqNorm)));
@@ -522,12 +522,12 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Set the PSQuaternion from a (supposedly correct) 3x3 rotation matrix. 
+	 * Set the Quaternion from a (supposedly correct) 3x3 rotation matrix. 
 	 * <p> 
 	 * The matrix is expressed in European format: its three columns are the
 	 * images by the rotation of the three vectors of an orthogonal basis.
 	 * <p>
-	 * {@link #fromRotatedBasis(PVector, PVector, PVector)} sets a PSQuaternion
+	 * {@link #fromRotatedBasis(PVector, PVector, PVector)} sets a Quaternion
 	 * from the three axis of a rotated frame. It actually fills the three
 	 * columns of a matrix with these rotated basis vectors and calls this method.
 	 * 
@@ -571,17 +571,17 @@ public class PSQuaternion implements PConstants {
 	}
 	
 	/**
-	 * Set the PSQuaternion from a (supposedly correct) 3x3 rotation matrix given in the
+	 * Set the Quaternion from a (supposedly correct) 3x3 rotation matrix given in the
 	 * upper left 3x3 sub-matrix of the PMatrix3D.
 	 * 
 	 * @see #fromRotationMatrix(float[][])
 	 */
 	public final void fromMatrix(PMatrix3D pM) {
-		fromRotationMatrix(PSUtility.get3x3UpperLeftMatrixFromPMatrix3D(pM));
+		fromRotationMatrix(Utility.get3x3UpperLeftMatrixFromPMatrix3D(pM));
 	}
 
 	/**
-	 * Sets the PSQuaternion from the three rotated vectors of an orthogonal basis. 
+	 * Sets the Quaternion from the three rotated vectors of an orthogonal basis. 
 	 * <p> 
 	 * The three vectors do not have to be normalized but must be orthogonal and
 	 * direct (i,e., {@code X^Y=k*Z, with k>0}).
@@ -594,7 +594,7 @@ public class PSQuaternion implements PConstants {
 	 *            the third PVector
 	 *            
 	 * @see #fromRotationMatrix(float[][])
-	 * @see #PSQuaternion(PVector, PVector)
+	 * @see #Quaternion(PVector, PVector)
 	 * 
 	 */
 	public final void fromRotatedBasis(PVector X, PVector Y, PVector Z) {
@@ -614,9 +614,9 @@ public class PSQuaternion implements PConstants {
 
 	/**
 	 * Returns the normalized axis direction of the rotation represented by the
-	 * PSQuaternion. 
+	 * Quaternion. 
 	 * <p> 
-	 * The result is null for an identity PSQuaternion.
+	 * The result is null for an identity Quaternion.
 	 * 
 	 * @see #angle()
 	 */
@@ -637,7 +637,7 @@ public class PSQuaternion implements PConstants {
 
 	/**
 	 * Returns the {@code angle} (in radians) of the rotation represented by the
-	 * PSQuaternion. 
+	 * Quaternion. 
 	 * <p> 
 	 * This value is always in the range {@code [0-pi]}. Larger rotational angles are
 	 * obtained by inverting the {@link #axis()} direction.
@@ -650,7 +650,7 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Returns the 3x3 rotation matrix associated with the PSQuaternion. 
+	 * Returns the 3x3 rotation matrix associated with the Quaternion. 
 	 * <p> 
 	 * <b>Attention:</b> The method returns the European mathematical representation of
 	 * the rotation matrix.
@@ -659,12 +659,12 @@ public class PSQuaternion implements PConstants {
 	 * 
 	 */
 	public final float[][] rotationMatrix() {
-		return PSUtility.get3x3UpperLeftMatrixFromPMatrix3D(matrix());
+		return Utility.get3x3UpperLeftMatrixFromPMatrix3D(matrix());
 	}
 	
 	/**
 	 * Returns the PMatrix3D (processing matrix) which represents the rotation
-	 * matrix associated with the PSQuaternion. 
+	 * matrix associated with the Quaternion. 
 	 *  
 	 * @see #rotationMatrix()
 	 */
@@ -716,83 +716,83 @@ public class PSQuaternion implements PConstants {
 	 * (as in {@code applyMatrix(q.inverseMatrix())}).
 	 */
 	public final PMatrix3D inverseMatrix() {
-		PSQuaternion tempQuat = new PSQuaternion(x, y, z, w);
+		Quaternion tempQuat = new Quaternion(x, y, z, w);
 		tempQuat.invert();
 		return tempQuat.matrix();
 	}
 
 	/**
-	 * Returns the 3x3 inverse rotation matrix associated with the PSQuaternion. 
+	 * Returns the 3x3 inverse rotation matrix associated with the Quaternion. 
 	 * <p> 
 	 * <b>Attention:</b> This is the classical mathematical rotation matrix.
 	 */
 	public final float[][] inverseRotationMatrix() {
-		return PSUtility.get3x3UpperLeftMatrixFromPMatrix3D(inverseMatrix());
+		return Utility.get3x3UpperLeftMatrixFromPMatrix3D(inverseMatrix());
 	}
 	
 	/**
-	 * Returns the logarithm of the PSQuaternion.
+	 * Returns the logarithm of the Quaternion.
 	 * 
 	 * @see #exp()
 	 */
-	public final PSQuaternion log() {
-		//Warning: this method should not normalize the PSQuaternion
+	public final Quaternion log() {
+		//Warning: this method should not normalize the Quaternion
 		float len = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z);
 
 		if (len < 1E-6f)
-			return new PSQuaternion(this.x, this.y, this.z, 0.0f, false);
+			return new Quaternion(this.x, this.y, this.z, 0.0f, false);
 		else {
 			float coef = PApplet.acos(this.w) / len;
-			return new PSQuaternion(this.x * coef, this.y * coef, this.z * coef, 0.0f, false);
+			return new Quaternion(this.x * coef, this.y * coef, this.z * coef, 0.0f, false);
 		}
 	}
 
 	/**
-	 * Returns the exponential of the PSQuaternion.
+	 * Returns the exponential of the Quaternion.
 	 * 
 	 * @see #log()
 	 */
-	public final PSQuaternion exp() {
+	public final Quaternion exp() {
 		float theta = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z);
 
 		if (theta < 1E-6f)
-			return new PSQuaternion(this.x, this.y, this.z, PApplet.cos(theta));
+			return new Quaternion(this.x, this.y, this.z, PApplet.cos(theta));
 		else {
 			float coef = PApplet.sin(theta) / theta;
-			return new PSQuaternion(this.x * coef, this.y * coef,
+			return new Quaternion(this.x * coef, this.y * coef,
 					this.z * coef, PApplet.cos(theta));
 		}
 	}
 
 	/**
-	 * Returns a random unit PSQuaternion. 
+	 * Returns a random unit Quaternion. 
 	 * <p> 
 	 * You can create a randomly directed unit vector using: 
 	 * <p> 
 	 * {@code PVector randomDir = new PVector(1.0f, 0.0f, 0.0f);} <br> 
-	 * {@code randomDir = PSQuaternion.multiply(PSQuaternion.randomQuaternion(), randomDir);} 
+	 * {@code randomDir = Quaternion.multiply(Quaternion.randomQuaternion(), randomDir);} 
 	 */
-	public final static PSQuaternion randomQuaternion() {
+	public final static Quaternion randomQuaternion() {
 		float seed = (float) Math.random();
 		float r1 = PApplet.sqrt(1.0f - seed);
 		float r2 = PApplet.sqrt(seed);
 		float t1 = 2.0f * PI * (float) Math.random();
 		float t2 = 2.0f * PI * (float) Math.random();
 
-		return new PSQuaternion(PApplet.sin(t1) * r1, PApplet.cos(t1) * r1,
+		return new Quaternion(PApplet.sin(t1) * r1, PApplet.cos(t1) * r1,
 				PApplet.sin(t2) * r2, PApplet.cos(t2) * r2);
 	}
 
 	/**
 	 * Wrapper function that simply calls {@code slerp(a, b, t, true)}. 
 	 * <p> 
-	 * See {@link #slerp(PSQuaternion, PSQuaternion, float, boolean)} for details.
+	 * See {@link #slerp(Quaternion, Quaternion, float, boolean)} for details.
 	 */
-	public static final PSQuaternion slerp(PSQuaternion a, PSQuaternion b,
+	public static final Quaternion slerp(Quaternion a, Quaternion b,
 			float t) {
-		return PSQuaternion.slerp(a, b, t, true);
+		return Quaternion.slerp(a, b, t, true);
 	}
 
 	/**
@@ -804,21 +804,21 @@ public class PSQuaternion implements PConstants {
 	 * <p> 
 	 * When {@code allowFlip} is true (default) the slerp interpolation will always use
 	 * the "shortest path" between the quaternions' orientations, by "flipping"
-	 * the source PSQuaternion if needed (see {@link #negate()}).
+	 * the source Quaternion if needed (see {@link #negate()}).
 	 * 
 	 * @param a
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param b
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 * @param t
 	 *            the t interpolation parameter
 	 * @param allowFlip
 	 *            tells whether or not the interpolation allows axis flip
 	 */
-	public static final PSQuaternion slerp(PSQuaternion a, PSQuaternion b,
+	public static final Quaternion slerp(Quaternion a, Quaternion b,
 			float t, boolean allowFlip) {
-		//Warning: this method should not normalize the PSQuaternion
-		float cosAngle = PSQuaternion.dotProduct(a, b);
+		//Warning: this method should not normalize the Quaternion
+		float cosAngle = Quaternion.dotProduct(a, b);
 
 		float c1, c2;
 		// Linear interpolation for close orientations
@@ -837,7 +837,7 @@ public class PSQuaternion implements PConstants {
 		if (allowFlip && (cosAngle < 0.0))
 			c1 = -c1;
 
-		return new PSQuaternion(c1 * a.x + c2 * b.x, c1 * a.y + c2 * b.y, c1
+		return new Quaternion(c1 * a.x + c2 * b.x, c1 * a.y + c2 * b.y, c1
 				* a.z + c2 * b.z, c1 * a.w + c2 * b.w, false);
 	}
 
@@ -845,43 +845,43 @@ public class PSQuaternion implements PConstants {
 	 * Returns the slerp interpolation of the two quaternions {@code a} and {@code b}, 
 	 * at time {@code t}, using tangents {@code tgA} and {@code tgB}. 
 	 * <p> 
-	 * The resulting PSQuaternion is "between" {@code a} and {@code b} (result is {@code a}
+	 * The resulting Quaternion is "between" {@code a} and {@code b} (result is {@code a}
 	 * when {@code t=0} and {@code b} for {@code t=1}). 
 	 * <p> 
-	 * Use {@link #squadTangent(PSQuaternion, PSQuaternion, PSQuaternion)} to
-	 * define the PSQuaternion tangents {@code tgA} and {@code tgB}.
+	 * Use {@link #squadTangent(Quaternion, Quaternion, Quaternion)} to
+	 * define the Quaternion tangents {@code tgA} and {@code tgB}.
 	 * 
 	 * @param a
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param tgA
-	 *            the first tangent PSQuaternion
+	 *            the first tangent Quaternion
 	 * @param tgB
-	 *            the second tangent PSQuaternion
+	 *            the second tangent Quaternion
 	 * @param b
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 * @param t
 	 *            the t interpolation parameter
 	 */
-	public static final PSQuaternion squad(PSQuaternion a, PSQuaternion tgA,
-			PSQuaternion tgB, PSQuaternion b, float t) {
-		PSQuaternion ab = PSQuaternion.slerp(a, b, t);
-		PSQuaternion tg = PSQuaternion.slerp(tgA, tgB, t, false);
-		return PSQuaternion.slerp(ab, tg, 2.0f * t * (1.0f - t), false);
+	public static final Quaternion squad(Quaternion a, Quaternion tgA,
+			Quaternion tgB, Quaternion b, float t) {
+		Quaternion ab = Quaternion.slerp(a, b, t);
+		Quaternion tg = Quaternion.slerp(tgA, tgB, t, false);
+		return Quaternion.slerp(ab, tg, 2.0f * t * (1.0f - t), false);
 	}
 	
 
 	/**
 	 * Simply returns {@code log(a. inverse() * b)}. 
 	 * <p> 
-	 * Useful for {@link #squadTangent(PSQuaternion, PSQuaternion, PSQuaternion)}.
+	 * Useful for {@link #squadTangent(Quaternion, Quaternion, Quaternion)}.
 	 * 
 	 * @param a
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param b
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 */
-	public static final PSQuaternion lnDif(PSQuaternion a, PSQuaternion b) {
-	  PSQuaternion dif = a.inverse();
+	public static final Quaternion lnDif(Quaternion a, Quaternion b) {
+	  Quaternion dif = a.inverse();
 	  dif.multiply(b);
 	  
 	  dif.normalize();
@@ -889,33 +889,33 @@ public class PSQuaternion implements PConstants {
 	}
 
 	/**
-	 * Returns a tangent PSQuaternion for {@code center}, defined by {@code before} 
+	 * Returns a tangent Quaternion for {@code center}, defined by {@code before} 
 	 * and {@code after} quaternions.
 	 * 
 	 * @param before
-	 *            the first PSQuaternion
+	 *            the first Quaternion
 	 * @param center
-	 *            the second PSQuaternion
+	 *            the second Quaternion
 	 * @param after
-	 *            the third PSQuaternion
+	 *            the third Quaternion
 	 */
-	public static final PSQuaternion squadTangent(PSQuaternion before, PSQuaternion center, PSQuaternion after) {
-	  PSQuaternion l1 = PSQuaternion.lnDif(center,before);
-	  PSQuaternion l2 = PSQuaternion.lnDif(center,after);
-	  PSQuaternion e = new PSQuaternion();
+	public static final Quaternion squadTangent(Quaternion before, Quaternion center, Quaternion after) {
+	  Quaternion l1 = Quaternion.lnDif(center,before);
+	  Quaternion l2 = Quaternion.lnDif(center,after);
+	  Quaternion e = new Quaternion();
 	  
 	  e.x = -0.25f * (l1.x + l2.x);
 	  e.y = -0.25f * (l1.y + l2.y);
 	  e.z = -0.25f * (l1.z + l2.z);
 	  e.w = -0.25f * (l1.w + l2.w);
 	  
-	  return PSQuaternion.multiply(center, e.exp());
+	  return Quaternion.multiply(center, e.exp());
 	}
 	
 	/**
-	 * Utility function that returns the squared norm of the PSQuaternion.
+	 * Utility function that returns the squared norm of the Quaternion.
 	 */
-	public static float squaredNorm(PSQuaternion q) {
+	public static float squaredNorm(Quaternion q) {
 		return (q.x * q.x) + (q.y * q.y) + (q.z * q.z) + (q.w * q.w);
 	}
 }

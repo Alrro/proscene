@@ -26,7 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import remixlab.proscene.PSInteractiveFrame.CoordinateSystemConvention;
+import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -34,14 +34,14 @@ import java.awt.Rectangle;
 /**
  * A perspective or orthographic camera.
  * <p>
- * A PSCamera defines some intrinsic parameters ({@link #fieldOfView()},
+ * A Camera defines some intrinsic parameters ({@link #fieldOfView()},
  * {@link #position()}, {@link #viewDirection()}, {@link #upVector()}...)
  * and useful positioning tools that ease its placement
  * ({@link #showEntireScene()}, {@link #fitSphere(PVector, float)},
  * {@link #lookAt(PVector)}...). It exports its associated projection and
  * modelview matrices and can interactively be modified using the mouse.
  */
-public class PSCamera implements Cloneable {
+public class Camera implements Cloneable {
 	static int viewport[] = new int [4];
 	//next variables are needed for frustrum plan coefficients
 	static PVector normal[] = new PVector[6];
@@ -58,7 +58,7 @@ public class PSCamera implements Cloneable {
 	};
 	
 	// F r a m e
-	private PSInteractiveCameraFrame frm;
+	private InteractiveCameraFrame frm;
 
 	// C a m e r a p a r a m e t e r s
 	private int scrnWidth, scrnHeight; // size of the window, in pixels
@@ -82,16 +82,16 @@ public class PSCamera implements Cloneable {
 	 * Default constructor. 
 	 * <p> 
 	 * {@link #sceneCenter()} is set to (0,0,0) and {@link #sceneRadius()} is
-	 * set to 1.0. {@link #type()} PSCamera.PERSPECTIVE, with a {@code PI/4}
+	 * set to 1.0. {@link #type()} Camera.PERSPECTIVE, with a {@code PI/4}
 	 * {@link #fieldOfView()}. 
 	 * <p> 
 	 * See {@link #IODistance()}, {@link #physicalDistanceToScreen()},
 	 * {@link #physicalScreenWidth()} and {@link #focusDistance()}
 	 * documentations for default stereo parameter values.
 	 */
-	public PSCamera() {		
-		fldOfView = PSQuaternion.PI / 4.0f;
-		setFrame(new PSInteractiveCameraFrame());
+	public Camera() {		
+		fldOfView = Quaternion.PI / 4.0f;
+		setFrame(new InteractiveCameraFrame());
 
 		// Requires fieldOfView() to define focusDistance()
 		setSceneRadius(1.0f);
@@ -104,7 +104,7 @@ public class PSCamera implements Cloneable {
 
 		// Requires fieldOfView() when called with ORTHOGRAPHIC. Attention to
 		// projectionMat below.
-		setType(PSCamera.Type.PERSPECTIVE);
+		setType(Camera.Type.PERSPECTIVE);
 
 		setZNearCoefficient(0.005f);
 		setZClippingCoefficient(PApplet.sqrt(3.0f));
@@ -131,15 +131,15 @@ public class PSCamera implements Cloneable {
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
-	 * Calls {@link remixlab.proscene.PSFrame#clone()} and makes a deep
+	 * Calls {@link remixlab.proscene.Frame#clone()} and makes a deep
 	 * copy of the remaining object attributes except for
 	 * {@code prevConstraint} (which is shallow copied).
 	 * 
-	 * @see remixlab.proscene.PSFrame#clone()
+	 * @see remixlab.proscene.Frame#clone()
 	 */
-	public PSCamera clone() {
+	public Camera clone() {
 		try {
-			PSCamera clonedCam = (PSCamera) super.clone();
+			Camera clonedCam = (Camera) super.clone();
 			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);			
 			clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
 			clonedCam.projectionMat = new PMatrix3D(projectionMat);
@@ -153,15 +153,15 @@ public class PSCamera implements Cloneable {
 	// 1. POSITION AND ORIENTATION
 
 	/**
-	 * Returns the PSCamera position (the eye), defined in the world coordinate
+	 * Returns the Camera position (the eye), defined in the world coordinate
 	 * system. 
 	 * <p> 
 	 * Use {@link #setPosition(PVector)} to set the Camera position. Other
 	 * convenient methods are showEntireScene() or fitSphere(). Actually returns
-	 * {@link remixlab.proscene.PSFrame#position()}. 
+	 * {@link remixlab.proscene.Frame#position()}. 
 	 * <p> 
 	 * This position corresponds to the projection center of a
-	 * PSCamera.PERSPECTIVE camera. It is not located in the image plane, which
+	 * Camera.PERSPECTIVE camera. It is not located in the image plane, which
 	 * is at a zNear() distance ahead.
 	 */
 	public final PVector position() {
@@ -169,7 +169,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Sets the PSCamera {@link #position()} (the eye), defined in the world
+	 * Sets the Camera {@link #position()} (the eye), defined in the world
 	 * coordinate system.
 	 */
 	public void setPosition(PVector pos) {
@@ -177,14 +177,14 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the normalized up vector of the PSCamera, defined in the world
+	 * Returns the normalized up vector of the Camera, defined in the world
 	 * coordinate system. 
 	 * <p> 
-	 * Set using {@link #setUpVector(PVector)} or {@link #setOrientation(PSQuaternion)}.
+	 * Set using {@link #setUpVector(PVector)} or {@link #setOrientation(Quaternion)}.
 	 * It is orthogonal to {@link #viewDirection()} and to {@link #rightVector()}. 
 	 * <p> 
 	 * It corresponds to the Y axis of the associated {@link #frame()} (actually returns
-	 * {@link remixlab.proscene.PSFrame#inverseTransformOf(PVector)})
+	 * {@link remixlab.proscene.Frame#inverseTransformOf(PVector)})
 	 */
 	public PVector upVector() {
 		return frame().inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
@@ -200,33 +200,33 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Rotates the PSCamera so that its {@link #upVector()} becomes {@code up}
+	 * Rotates the Camera so that its {@link #upVector()} becomes {@code up}
 	 * (defined in the world coordinate system). 
 	 * <p> 
-	 * The PSCamera is rotated around an axis orthogonal to {@code up} and to
+	 * The Camera is rotated around an axis orthogonal to {@code up} and to
 	 * the current {@link #upVector()} direction. 
 	 * <p> 
-	 * Use this method in order to define the PSCamera horizontal plane.
+	 * Use this method in order to define the Camera horizontal plane.
 	 * <p> 
 	 * When {@code noMove} is set to {@code false}, the orientation modification
 	 * is compensated by a translation, so that the
 	 * {@link #revolveAroundPoint()} stays projected at the same position on
-	 * screen. This is especially useful when the PSCamera is an observer of the
+	 * screen. This is especially useful when the Camera is an observer of the
 	 * scene (default mouse binding). 
 	 * <p> 
-	 * When {@code noMove} is true, the PSCamera {@link #position()} is left
-	 * unchanged, which is an intuitive behavior when the PSCamera is in a
+	 * When {@code noMove} is true, the Camera {@link #position()} is left
+	 * unchanged, which is an intuitive behavior when the Camera is in a
 	 * walkthrough fly mode.
 	 * 
 	 * See also setViewDirection(), lookAt() and setOrientation().
 	 */
 	public void setUpVector(PVector up, boolean noMove) {
-		PSQuaternion q = new PSQuaternion(new PVector(0.0f, 1.0f, 0.0f),
+		Quaternion q = new Quaternion(new PVector(0.0f, 1.0f, 0.0f),
 				frame().transformOf(up));
 
 		if (!noMove)
 			frame().setPosition(
-					PVector.sub(revolveAroundPoint(), (PSQuaternion.multiply(
+					PVector.sub(revolveAroundPoint(), (Quaternion.multiply(
 							frame().orientation(), q)).rotate(frame()
 							.coordinatesOf(revolveAroundPoint()))));
 
@@ -237,11 +237,11 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the normalized view direction of the PSCamera, defined in the
+	 * Returns the normalized view direction of the Camera, defined in the
 	 * world coordinate system. 
 	 * <p> 
 	 * Change this value using {@link #setViewDirection(PVector)}, {@link #lookAt(PVector)}
-	 * or {@link #setOrientation(PSQuaternion)}. It is orthogonal to {@link #upVector()} and
+	 * or {@link #setOrientation(Quaternion)}. It is orthogonal to {@link #upVector()} and
 	 * to {@link #rightVector()}.
 	 * <p> 
 	 * This corresponds to the negative Z axis of the {@link #frame()} ( {@code
@@ -252,41 +252,41 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Rotates the PSCamera so that its {@link #viewDirection()} is {@code
+	 * Rotates the Camera so that its {@link #viewDirection()} is {@code
 	 * direction} (defined in the world coordinate system). 
 	 * <p> 
-	 * The PSCamera {@link #position()} is not modified. The PSCamera is rotated
+	 * The Camera {@link #position()} is not modified. The Camera is rotated
 	 * so that the horizon (defined by its {@link #upVector()}) is preserved.
 	 * 
 	 * @see #lookAt(PVector)
 	 * @see #setUpVector(PVector)
 	 */
 	public void setViewDirection(PVector direction) {
-		if (PSUtility.squaredNorm(direction) < 1E-10)
+		if (Utility.squaredNorm(direction) < 1E-10)
 			return;
 
 		PVector xAxis = direction.cross(upVector());
-		if (PSUtility.squaredNorm(xAxis) < 1E-10) {
+		if (Utility.squaredNorm(xAxis) < 1E-10) {
 			// target is aligned with upVector, this means a rotation around X
 			// axis
 			// X axis is then unchanged, let's keep it !
 			xAxis = frame().inverseTransformOf(new PVector(1.0f, 0.0f, 0.0f));
 		}
 
-		PSQuaternion q = new PSQuaternion();
+		Quaternion q = new Quaternion();
 		q.fromRotatedBasis(xAxis, xAxis.cross(direction), PVector.mult(
 				direction, -1));
 		frame().setOrientationWithConstraint(q);
 	}
 
 	/**
-	 * Returns the normalized right vector of the PSCamera, defined in the world
+	 * Returns the normalized right vector of the Camera, defined in the world
 	 * coordinate system. 
 	 * <p> 
-	 * This vector lies in the PSCamera horizontal plane, directed along the X
+	 * This vector lies in the Camera horizontal plane, directed along the X
 	 * axis (orthogonal to {@link #upVector()} and to {@link #viewDirection()}.
 	 * Set using {@link #setUpVector(PVector)}, {@link #lookAt(PVector)} or
-	 * {@link #setOrientation(PSQuaternion)}.
+	 * {@link #setOrientation(Quaternion)}.
 	 * <p> 
 	 * Simply returns {@code frame().inverseTransformOf(new PVector(1.0f, 0.0f,
 	 * 0.0f))}.
@@ -296,45 +296,45 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the PSCamera orientation, defined in the world coordinate system.
+	 * Returns the Camera orientation, defined in the world coordinate system.
 	 * <p> 
 	 * Actually returns {@code frame().orientation()}. 
-	 * Use {@link #setOrientation(PSQuaternion)}, {@link #setUpVector(PVector)}
-	 * or {@link #lookAt(PVector)} to set the PSCamera orientation.
+	 * Use {@link #setOrientation(Quaternion)}, {@link #setUpVector(PVector)}
+	 * or {@link #lookAt(PVector)} to set the Camera orientation.
 	 */
-	public PSQuaternion orientation() {
+	public Quaternion orientation() {
 		return frame().orientation();
 	}
 
 	/**
-	 * Sets the {@link #orientation()} of the PSCamera using polar coordinates. 
+	 * Sets the {@link #orientation()} of the Camera using polar coordinates. 
 	 * <p> 
-	 * {@code theta} rotates the PSCamera around its Y axis, and then {@code
+	 * {@code theta} rotates the Camera around its Y axis, and then {@code
 	 * phi} rotates it around its X axis. 
 	 * <p> 
 	 * The polar coordinates are defined in the world coordinates system:
-	 * {@code theta = phi = 0} means that the PSCamera is directed towards the
+	 * {@code theta = phi = 0} means that the Camera is directed towards the
 	 * world Z axis. Both angles are expressed in radians.
 	 * <p> 
-	 * The {@link #position()} of the PSCamera is unchanged, you may want to call
-	 * {@link #showEntireScene()} after this method to move the PSCamera.
+	 * The {@link #position()} of the Camera is unchanged, you may want to call
+	 * {@link #showEntireScene()} after this method to move the Camera.
 	 * 
 	 * @see #setUpVector(PVector)
 	 */
 	public void setOrientation(float theta, float phi) {
 		//TODO: check coordinate system convention
 		PVector axis = new PVector(0.0f, 1.0f, 0.0f);
-		PSQuaternion rot1 = new PSQuaternion(axis, theta);
+		Quaternion rot1 = new Quaternion(axis, theta);
 		axis.set(-PApplet.cos(theta), 0.0f, PApplet.sin(theta));
-		PSQuaternion rot2 = new PSQuaternion(axis, phi);
-		setOrientation(PSQuaternion.multiply(rot1, rot2));
+		Quaternion rot2 = new Quaternion(axis, phi);
+		setOrientation(Quaternion.multiply(rot1, rot2));
 	}
 
 	/**
-	 * Sets the PSCamera {@link #orientation()}, defined in the world coordinate
+	 * Sets the Camera {@link #orientation()}, defined in the world coordinate
 	 * system.
 	 */
-	public void setOrientation(PSQuaternion q) {
+	public void setOrientation(Quaternion q) {
 		frame().setOrientation(q);
 		frame().updateFlyUpVector();
 	}
@@ -358,15 +358,15 @@ public class PSCamera implements Cloneable {
 	// 2. FRUSTUM
 
 	/**
-	 * Returns the PSCamera.Type of the PSCamera. 
+	 * Returns the Camera.Type of the Camera. 
 	 * <p> 
 	 * Set by {@link #setType(Type)}. 
 	 * <p> 
-	 * A {@link remixlab.proscene.PSCamera.Type#PERSPECTIVE} PSCamera uses a classical projection
+	 * A {@link remixlab.proscene.Camera.Type#PERSPECTIVE} Camera uses a classical projection
 	 * mainly defined by its {@link #fieldOfView()}. 
 	 * <p> 
-	 * With a {@link remixlab.proscene.PSCamera.Type#ORTHOGRAPHIC} {@link #type()}, the {@link #fieldOfView()} is
-	 * meaningless and the width and height of the PSCamera frustum are inferred
+	 * With a {@link remixlab.proscene.Camera.Type#ORTHOGRAPHIC} {@link #type()}, the {@link #fieldOfView()} is
+	 * meaningless and the width and height of the Camera frustum are inferred
 	 * from the distance to the {@link #revolveAroundPoint()} using
 	 * {@link #getOrthoWidthHeight()}. 
 	 * <p> 
@@ -378,9 +378,9 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Defines the PSCamera {@link #type()}. 
+	 * Defines the Camera {@link #type()}. 
 	 * <p> 
-	 * Changing the PSCamera Type alters the viewport and the objects' size can
+	 * Changing the Camera Type alters the viewport and the objects' size can
 	 * be changed. This method guarantees that the two frustum match in a plane
 	 * normal to {@link #viewDirection()}, passing through the Revolve Around
 	 * Point (RAP).
@@ -391,22 +391,22 @@ public class PSCamera implements Cloneable {
 		// through RAP). Done only when CHANGING type since orthoCoef may have
 		// been changed with a
 		// setRevolveAroundPoint() in the meantime.
-		if ((type == PSCamera.Type.ORTHOGRAPHIC)
-				&& (type() == PSCamera.Type.PERSPECTIVE))
+		if ((type == Camera.Type.ORTHOGRAPHIC)
+				&& (type() == Camera.Type.PERSPECTIVE))
 			orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
 
 		this.tp = type;
 	}
 
 	/**
-	 * Returns the vertical field of view of the PSCamera (in radians). 
+	 * Returns the vertical field of view of the Camera (in radians). 
 	 * <p> 
 	 * Value is set using {@link #setFieldOfView(float)}. Default value is pi/4
-	 * radians. This value is meaningless if the PSCamera {@link #type()} is
-	 * {@link remixlab.proscene.PSCamera.Type#ORTHOGRAPHIC}. 
+	 * radians. This value is meaningless if the Camera {@link #type()} is
+	 * {@link remixlab.proscene.Camera.Type#ORTHOGRAPHIC}. 
 	 * <p> 
 	 * The field of view corresponds the one used in {@code gluPerspective} (see
-	 * manual). It sets the Y (vertical) aperture of the PSCamera. The X
+	 * manual). It sets the Y (vertical) aperture of the Camera. The X
 	 * (horizontal) angle is inferred from the window aspect ratio (see
 	 * {@link #aspectRatio()} and {@link #horizontalFieldOfView()}).
 	 * <p> 
@@ -418,7 +418,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Sets the vertical {@link #fieldOfView()} of the PSCamera (in radians). 
+	 * Sets the vertical {@link #fieldOfView()} of the Camera (in radians). 
 	 * <p> 
 	 * Note that {@link #focusDistance()} is set to {@link #sceneRadius()} /
 	 * tan( {@link #fieldOfView()}/2) by this method.
@@ -429,19 +429,19 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Changes the PSCamera {@link #fieldOfView()} so that the entire scene
-	 * (defined by {@link remixlab.proscene.PScene#sceneCenter()} and
-	 * {@link remixlab.proscene.PScene#sceneRadius()} is visible from the PSCamera
+	 * Changes the Camera {@link #fieldOfView()} so that the entire scene
+	 * (defined by {@link remixlab.proscene.Scene#center()} and
+	 * {@link remixlab.proscene.Scene#radius()} is visible from the Camera
 	 * {@link #position()}. 
 	 * <p> 
-	 * The {@link #position()} and {@link #orientation()} of the PSCamera are
-	 * not modified and you first have to orientate the PSCamera in order to
+	 * The {@link #position()} and {@link #orientation()} of the Camera are
+	 * not modified and you first have to orientate the Camera in order to
 	 * actually see the scene (see {@link #lookAt(PVector)},
 	 * {@link #showEntireScene()} or {@link #fitSphere(PVector, float)}). 
 	 * <p> 
 	 * This method is especially useful for <i>shadow maps</i> computation. Use
-	 * the PSCamera positioning tools ({@link #setPosition(PVector)},
-	 * {@link #lookAt(PVector)}) to position a PSCamera at the light position.
+	 * the Camera positioning tools ({@link #setPosition(PVector)},
+	 * {@link #lookAt(PVector)}) to position a Camera at the light position.
 	 * Then use this method to define the {@link #fieldOfView()} so that the
 	 * shadow map resolution is optimally used: 
 	 * <p> 
@@ -455,7 +455,7 @@ public class PSCamera implements Cloneable {
 	 * {@code lightCamera.setFOVToFitScene();} <br>
 	 * <p> 
 	 * <b>Attention:</b> The {@link #fieldOfView()} is clamped to M_PI/2.0. This
-	 * happens when the PSCamera is at a distance lower than sqrt(2.0) *
+	 * happens when the Camera is at a distance lower than sqrt(2.0) *
 	 * sceneRadius() from the sceneCenter(). It optimizes the shadow map
 	 * resolution, although it may miss some parts of the scene.
 	 */
@@ -464,7 +464,7 @@ public class PSCamera implements Cloneable {
 			setFieldOfView(2.0f * PApplet.asin(sceneRadius()
 					/ distanceToSceneCenter()));
 		else
-			setFieldOfView(PSQuaternion.PI / 2.0f);
+			setFieldOfView(Quaternion.PI / 2.0f);
 	}
 
 	/**
@@ -477,17 +477,17 @@ public class PSCamera implements Cloneable {
 
 	/**
 	 * Fills in {@code target} with the {@code halfWidth} and {@code halfHeight}
-	 * of the PSCamera orthographic frustum and returns it. 
+	 * of the Camera orthographic frustum and returns it. 
 	 * <p> 
 	 * While {@code target[0]} holds {@code halfWidth}, {@code target[1]} holds
 	 * {@code halfHeight}. 
 	 * <p> 
-	 * These values are only valid and used when the PSCamera is of {@link #type()}
+	 * These values are only valid and used when the Camera is of {@link #type()}
 	 * ORTHOGRAPHIC and they are expressed in processing scene units.
 	 * <p> 
-	 * These values are proportional to the PSCamera (z projected) distance to
+	 * These values are proportional to the Camera (z projected) distance to
 	 * the {@link #revolveAroundPoint()}. When zooming on the object, the
-	 * PSCamera is translated forward \e and its frustum is narrowed, making the
+	 * Camera is translated forward \e and its frustum is narrowed, making the
 	 * object appear bigger on screen, as intuitively expected. 
 	 * <p> 
 	 * Overload this method to change this behavior if desired.
@@ -509,7 +509,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the horizontal field of view of the PSCamera (in radians). 
+	 * Returns the horizontal field of view of the Camera (in radians). 
 	 * <p> 
 	 * Value is set using {@link #setHorizontalFieldOfView(float)} or
 	 * {@link #setFieldOfView(float)}. These values are always linked by:
@@ -522,7 +522,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Sets the {@link #horizontalFieldOfView()} of the PSCamera (in radians). 
+	 * Sets the {@link #horizontalFieldOfView()} of the Camera (in radians). 
 	 * <p> 
 	 * {@link #horizontalFieldOfView()} and {@link #fieldOfView()} are linked by
 	 * the {@link #aspectRatio()}. This method actually calls {@code
@@ -535,10 +535,10 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the PSCamera aspect ratio defined by {@link #screenWidth()} /
+	 * Returns the Camera aspect ratio defined by {@link #screenWidth()} /
 	 * {@link #screenHeight()}. 
 	 * <p> 
-	 * When the PSCamera is attached to a PSCene, these values and hence the
+	 * When the Camera is attached to a Scene, these values and hence the
 	 * aspectRatio() are automatically fitted to the viewer's window aspect
 	 * ratio using setScreenWidthAndHeight().
 	 */
@@ -547,14 +547,14 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Defines the PSCamera {@link #aspectRatio()}. 
+	 * Defines the Camera {@link #aspectRatio()}. 
 	 * <p> 
 	 * This value is actually inferred from the {@link #screenWidth()} /
 	 * {@link #screenHeight()} ratio. You should use
 	 * {@link #setScreenWidthAndHeight(int, int)} instead. 
 	 * <p> 
-	 * This method might however be convenient when the PSCamera is not
-	 * associated with a PScene. It actually sets the
+	 * This method might however be convenient when the Camera is not
+	 * associated with a Scene. It actually sets the
 	 * {@link #screenHeight()} to 100 and the {@link #screenWidth()}
 	 * accordingly. See also {@link #setFOVToFitScene()}.
 	 */
@@ -563,17 +563,17 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Sets PSCamera {@link #screenWidth()} and {@link #screenHeight()}
+	 * Sets Camera {@link #screenWidth()} and {@link #screenHeight()}
 	 * (expressed in pixels). 
 	 * <p> 
-	 * You should not call this method when the PSCamera is associated with a
-	 * PScene, since the latter automatically updates these values when it
+	 * You should not call this method when the Camera is associated with a
+	 * Scene, since the latter automatically updates these values when it
 	 * is resized (hence overwriting your values). 
 	 * <p> 
 	 * Non-positive dimension are silently replaced by a 1 pixel value to ensure
 	 * frustrum coherence. 
 	 * <p> 
-	 * If your PSCamera is used without a PScene (offscreen rendering,
+	 * If your Camera is used without a Scene (offscreen rendering,
 	 * shadow maps), use {@link #setAspectRatio(float)} instead to define the
 	 * projection matrix.
 	 */
@@ -585,20 +585,20 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the width (in pixels) of the PSCamera screen. 
+	 * Returns the width (in pixels) of the Camera screen. 
 	 * <p> 
 	 * Set using {@link #setScreenWidthAndHeight(int, int)}. This value is automatically fitted
-	 * to the PScene's window dimensions when the PSCamera is attached to a PScene.
+	 * to the Scene's window dimensions when the Camera is attached to a Scene.
 	 */
 	public final int screenWidth() {
 		return scrnWidth;
 	}
 
 	/**
-	 * Returns the height (in pixels) of the PSCamera screen. 
+	 * Returns the height (in pixels) of the Camera screen. 
 	 * <p> 
 	 * Set using {@link #setScreenWidthAndHeight(int, int)}. This value is automatically fitted
-	 * to the PScene's window dimensions when the PSCamera is attached to a PScene.
+	 * to the Scene's window dimensions when the Camera is attached to a Scene.
 	 */
 	public final int screenHeight() {
 		return scrnHeight;
@@ -613,7 +613,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Fills {@code viewport} with the PSCamera viewport and returns it.
+	 * Fills {@code viewport} with the Camera viewport and returns it.
 	 * If viewport is null (or not the correct size), a new array will be
 	 * created. 
 	 * <p>
@@ -635,7 +635,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Returns the near clipping plane distance used by the PSCamera projection
+	 * Returns the near clipping plane distance used by the Camera projection
 	 * matrix. 
 	 * <p> 
 	 * The clipping planes' positions depend on the {@link #sceneRadius()} and
@@ -650,7 +650,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * In order to prevent negative or too small {@link #zNear()} values (which would
 	 * degrade the z precision), {@link #zNearCoefficient()} is used when the
-	 * PSCamera is inside the {@link #sceneRadius()} sphere:
+	 * Camera is inside the {@link #sceneRadius()} sphere:
 	 * <p>
 	 * {@code zMin = zNearCoefficient() * zClippingCoefficient() *
 	 * sceneRadius();}<br>
@@ -663,7 +663,7 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * If you need a completely different zNear computation, overload the
 	 * {@link #zNear()} and {@link #zFar()} methods in a new class that publicly inherits from
-	 * Camera and use {@link remixlab.proscene.PScene#setCamera(PSCamera)}. 
+	 * Camera and use {@link remixlab.proscene.Scene#setCamera(Camera)}. 
 	 * <p> 
 	 * <b>Attention:</b> The value is always positive although the clipping
 	 * plane is positioned at a negative z value in the Camera coordinate
@@ -706,7 +706,7 @@ public class PSCamera implements Cloneable {
 
 	/**
 	 * Returns the coefficient which is used to set {@link #zNear()} when the
-	 * PSCamera is inside the sphere defined by {@link #sceneCenter()} and
+	 * Camera is inside the sphere defined by {@link #sceneCenter()} and
 	 * {@link #zClippingCoefficient()} * {@link #sceneRadius()}. 
 	 * <p> 
 	 * In that case, the {@link #zNear()} value is set to {@code
@@ -718,7 +718,7 @@ public class PSCamera implements Cloneable {
 	 * value (~0.1). A lower value will prevent clipping of very close objects
 	 * at the expense of a worst Z precision. 
 	 * <p> 
-	 * Only meaningful when PSCamera type is PERSPECTIVE.
+	 * Only meaningful when Camera type is PERSPECTIVE.
 	 */
 	public float zNearCoefficient() {
 		return zNearCoef;
@@ -763,7 +763,7 @@ public class PSCamera implements Cloneable {
 	/**
 	 * Returns the ratio between pixel and processing scene units at {@code position}. 
 	 * <p> 
-	 * A line of {@code n * pixelPSRatio()} processing scene units, located at {@code position} in
+	 * A line of {@code n * pixelRatio()} processing scene units, located at {@code position} in
 	 * the world coordinates system, will be projected with a length of {@code n} pixels on screen. 
 	 * <p> 
 	 * Use this method to scale objects so that they have a constant pixel size on screen.
@@ -772,11 +772,11 @@ public class PSCamera implements Cloneable {
 	 * <p>
 	 * {@code beginShape(LINES);}<br>
 	 * {@code vertex(sceneCenter().x, sceneCenter().y, sceneCenter().z);}<br>
-	 * {@code PVector v = PVector.add(sceneCenter(), PVector.mult(upVector(), 20 * pixelPSRatio(sceneCenter())));}<br>
+	 * {@code PVector v = PVector.add(sceneCenter(), PVector.mult(upVector(), 20 * pixelRatio(sceneCenter())));}<br>
 	 * {@code vertex(v.x, v.y, v.z);}<br>
 	 * {@code endShape();}<br>
 	 */
-	public float pixelPSRatio(PVector position) {
+	public float pixelRatio(PVector position) {
 		switch (type()) {
 	    case PERSPECTIVE :
 	    	return 2.0f * PApplet.abs((frame().coordinatesOf(position)).z) * PApplet.tan(fieldOfView()/2.0f) / screenHeight();
@@ -797,8 +797,8 @@ public class PSCamera implements Cloneable {
 	 * the Camera can adapt its {@link #zNear()} and {@link #zFar()} values. See the
 	 * {@link #sceneCenter()} documentation. 
 	 * <p> 
-	 * Note that PScene.sceneRadius() (resp. PScene.setSceneRadius()) simply call this
-	 * method on its associated PSCamera.
+	 * Note that Scene.sceneRadius() (resp. Scene.setSceneRadius()) simply call this
+	 * method on its associated Camera.
 	 * 
 	 * @see #setSceneBoundingBox(PVector, PVector)
 	 */
@@ -832,16 +832,16 @@ public class PSCamera implements Cloneable {
 	 * Returns the position of the scene center, defined in the world coordinate
 	 * system. 
 	 * <p> 
-	 * The scene observed by the PSCamera should be roughly centered on this
+	 * The scene observed by the Camera should be roughly centered on this
 	 * position, and included in a {@link #sceneRadius()} sphere. This approximate
 	 * description of the scene permits a {@link #zNear()} and {@link #zFar()}
 	 * clipping planes definition, and allows convenient positioning methods such as
 	 * {@link #showEntireScene()}. 
 	 * <p> 
-	 * Note that {@link remixlab.proscene.PScene#sceneCenter()} (resp.
-	 * remixlab.proscene.PScene{@link #setSceneCenter(PVector)})
+	 * Note that {@link remixlab.proscene.Scene#center()} (resp.
+	 * remixlab.proscene.Scene{@link #setSceneCenter(PVector)})
 	 * simply call this method (resp. {@link #setSceneCenter(PVector)}) on its associated
-	 * {@link remixlab.proscene.PScene#camera()}. Default value is (0,0,0) (world origin). Use
+	 * {@link remixlab.proscene.Scene#camera()}. Default value is (0,0,0) (world origin). Use
 	 * {@link #setSceneCenter(PVector)} to change it.
 	 * 
 	 * @see #setSceneBoundingBox(PVector, PVector)
@@ -884,8 +884,8 @@ public class PSCamera implements Cloneable {
 	// 4. REVOLVE AROUND POINT
 
 	/**
-	 * The point the PSCamera revolves around its
-	 * {@link remixlab.proscene.PSInteractiveCameraFrame#revolveAroundPoint()}. 
+	 * The point the Camera revolves around its
+	 * {@link remixlab.proscene.InteractiveCameraFrame#revolveAroundPoint()}. 
 	 * <p> 
 	 * Default value is the {@link #sceneCenter()}. 
 	 * <p> 
@@ -919,31 +919,31 @@ public class PSCamera implements Cloneable {
 	// 5. ASSOCIATED FRAME
 
 	/**
-	 * Returns the PSInteractiveCameraFrame attached to the PSCamera. 
+	 * Returns the InteractiveCameraFrame attached to the Camera. 
 	 * <p> 
-	 * This PSInteractiveCameraFrame defines its {@link #position()} and
-	 * {@link #orientation()} and can translate mouse events into PSCamera
-	 * displacement. Set using {@link #setFrame(PSInteractiveCameraFrame)}.
+	 * This InteractiveCameraFrame defines its {@link #position()} and
+	 * {@link #orientation()} and can translate mouse events into Camera
+	 * displacement. Set using {@link #setFrame(InteractiveCameraFrame)}.
 	 */
-	public PSInteractiveCameraFrame frame() {
+	public InteractiveCameraFrame frame() {
 		return frm;
 	}
 
 	/**
-	 * Sets the PSCamera {@link #frame()}. 
+	 * Sets the Camera {@link #frame()}. 
 	 * <p> 
-	 * If you want to move the PSCamera, use {@link #setPosition(PVector)} and
-	 * {@link #setOrientation(PSQuaternion)} or one of the PSCamera positioning
+	 * If you want to move the Camera, use {@link #setPosition(PVector)} and
+	 * {@link #setOrientation(Quaternion)} or one of the Camera positioning
 	 * methods ({@link #lookAt(PVector)}, {@link #fitSphere(PVector, float)},
 	 * {@link #showEntireScene()}...) instead.
 	 * <p> 
 	 * This method is actually mainly useful if you derive the
-	 * PSInteractiveCameraFrame class and want to use an instance of your new
-	 * class to move the PSCamera. 
+	 * InteractiveCameraFrame class and want to use an instance of your new
+	 * class to move the Camera. 
 	 * <p> 
 	 * A {@code null} {@code icf} reference will silently be ignored.
 	 */
-	public final void setFrame(PSInteractiveCameraFrame icf) {
+	public final void setFrame(InteractiveCameraFrame icf) {
 		if (icf == null)
 			return;
 
@@ -962,10 +962,10 @@ public class PSCamera implements Cloneable {
 	}
 	
 	/**
-	 * Fills {@code m} with the PSCamera projection matrix values and returns it. If
+	 * Fills {@code m} with the Camera projection matrix values and returns it. If
 	 * {@code m} is {@code null} a new PMatrix3D will be created. 
 	 * <p> 
-	 * Calls {@link #computeProjectionMatrix()} to define the PSCamera projection matrix.
+	 * Calls {@link #computeProjectionMatrix()} to define the Camera projection matrix.
 	 * <p>
 	 * 
 	 * @see #getModelViewMatrix()
@@ -981,7 +981,7 @@ public class PSCamera implements Cloneable {
 	}	
 
 	/**
-	 * Computes the projection matrix associated with the PSCamera. 
+	 * Computes the projection matrix associated with the Camera. 
 	 * <p> 
 	 * If {@link #type()} is PERSPECTIVE, defines a GL_PROJECTION matrix similar to what
 	 * would {@code perspective()} do using the {@link #fieldOfView()}, window
@@ -997,8 +997,8 @@ public class PSCamera implements Cloneable {
 	 * <p> 
 	 * Use {@link #getProjectionMatrix()} to retrieve this matrix.
 	 * <p> 
-	 * <b>Note:</b> You must call this method if your PSCamera is not associated
-	 * with a PScene and is used for offscreen computations
+	 * <b>Note:</b> You must call this method if your Camera is not associated
+	 * with a Scene and is used for offscreen computations
 	 * (using {@code projectedCoordinatesOf()} for instance).
 	 * 
 	 * @see #setProjectionMatrix(PMatrix3D)
@@ -1034,7 +1034,7 @@ public class PSCamera implements Cloneable {
 	}
 	
 	/**
-	 * Sets the projection matrix associated with the PSCamera directly from a PCamera.
+	 * Sets the projection matrix associated with the Camera directly from a PCamera.
 	 * 
 	 * @see #computeProjectionMatrix()
 	 */
@@ -1054,7 +1054,7 @@ public class PSCamera implements Cloneable {
 	 * Fills {@code m} with the Camera modelView matrix values and returns it. If
 	 * {@code m} is {@code null} a new PMatrix3D will be created.
 	 * <p> 
-	 * First calls {@link #computeModelViewMatrix()} to define the PSCamera modelView matrix.
+	 * First calls {@link #computeModelViewMatrix()} to define the Camera modelView matrix.
 	 *  
 	 * @see #getProjectionMatrix(PMatrix3D)
 	 */
@@ -1071,18 +1071,18 @@ public class PSCamera implements Cloneable {
 	 * Computes the modelView matrix associated with the Camera's {@link #position()}
 	 * and {@link #orientation()}.
 	 * <p> 
-	 * This matrix converts from the world coordinates system to the PSCamera
+	 * This matrix converts from the world coordinates system to the Camera
 	 * coordinates system, so that coordinates can then be projected on screen
 	 * using the projection matrix (see {@link #computeProjectionMatrix()}).
 	 * <p>
 	 * Use {@link #getModelViewMatrix()} to retrieve this matrix.
 	 * <p> 
-	 * <b>Note:</b> You must call this method if your PSCamera is not associated with a
-	 * PScene and is used for offscreen computations
+	 * <b>Note:</b> You must call this method if your Camera is not associated with a
+	 * Scene and is used for offscreen computations
 	 * (using {@code projectedCoordinatesOf()} for instance).
 	 */
 	public void computeModelViewMatrix() {
-		PSQuaternion q = frame().orientation();
+		Quaternion q = frame().orientation();
 		
 		float q00 = 2.0f * q.x * q.x;
 		float q11 = 2.0f * q.y * q.y;
@@ -1120,7 +1120,7 @@ public class PSCamera implements Cloneable {
 	}
 	
 	/**
-	 * Sets the modelview matrix associated with the PSCamera directly from a PCamera.
+	 * Sets the modelview matrix associated with the Camera directly from a PCamera.
 	 * 
 	 * @see #computeModelViewMatrix()
 	 */
@@ -1131,14 +1131,14 @@ public class PSCamera implements Cloneable {
 	// 7. WORLD -> CAMERA
 
 	/**
-	 * Returns the PSCamera frame coordinates of a point {@code src} defined in
+	 * Returns the Camera frame coordinates of a point {@code src} defined in
 	 * world coordinates. 
 	 * <p> 
 	 * {@link #worldCoordinatesOf(PVector)} performs the inverse transformation. 
 	 * <p> 
 	 * Note that the point coordinates are simply converted in a different
 	 * coordinate system. They are not projected on screen. Use
-	 * {@link #projectedCoordinatesOf(PVector, PSFrame)} for that.
+	 * {@link #projectedCoordinatesOf(PVector, Frame)} for that.
 	 */
 	public final PVector cameraCoordinatesOf(PVector src) {
 		return frame().coordinatesOf(src);
@@ -1146,7 +1146,7 @@ public class PSCamera implements Cloneable {
 
 	/**
 	 * Returns the world coordinates of the point whose position {@code src} is
-	 * defined in the PSCamera coordinate system. 
+	 * defined in the Camera coordinate system. 
 	 * <p> 
 	 * {@link #cameraCoordinatesOf(PVector)} performs the inverse
 	 * transformation.
@@ -1158,7 +1158,7 @@ public class PSCamera implements Cloneable {
 	// 8. 2D -> 3D
 
 	/**
-	 * Gives the coefficients of a 3D half-line passing through the PSCamera eye
+	 * Gives the coefficients of a 3D half-line passing through the Camera eye
 	 * and pixel (x,y). 
 	 * <p> 
 	 * The origin of the half line (eye position) is stored in {@code orig},
@@ -1219,13 +1219,13 @@ public class PSCamera implements Cloneable {
 	 * between 0.0 (near plane) and 1.0 (excluded, far plane). See the {@code
 	 * gluProject} man page for details.
 	 * <p>
-	 * <b>Attention:</b> This method only uses the intrinsic PSCamera parameters
+	 * <b>Attention:</b> This method only uses the intrinsic Camera parameters
 	 * (see {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
 	 * {@link #getViewport()}) and is completely independent of the processing
-	 * matrices. You can hence define a virtual PSCamera and use this method to
+	 * matrices. You can hence define a virtual Camera and use this method to
 	 * compute projections out of a classical rendering context.
 	 */
-	public final PVector projectedCoordinatesOf(PVector src, PSFrame frame) {		
+	public final PVector projectedCoordinatesOf(PVector src, Frame frame) {		
 		float xyz[] = new float[3];		
 		viewport = getViewport();
 		
@@ -1244,12 +1244,12 @@ public class PSCamera implements Cloneable {
 	// 9. FLYSPEED
 
 	/**
-	 * Returns the fly speed of the PSCamera. 
+	 * Returns the fly speed of the Camera. 
 	 * <p> 
 	 * Simply returns {@code frame().flySpeed()}. See the
-	 * {@link remixlab.proscene.PSInteractiveCameraFrame#flySpeed()}
+	 * {@link remixlab.proscene.InteractiveCameraFrame#flySpeed()}
 	 * documentation. This value is only meaningful when the MouseAction
-	 * bindings is PScene.MOVE_FORWARD or is PScene.MOVE_BACKWARD.
+	 * bindings is Scene.MOVE_FORWARD or is Scene.MOVE_BACKWARD.
 	 * <p>
 	 * Set to 0.5% of the {@link #sceneRadius()} by
 	 * {@link #setSceneRadius(float)}.
@@ -1261,7 +1261,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Sets the PSCamera {@link #flySpeed()}.
+	 * Sets the Camera {@link #flySpeed()}.
 	 * <p>
 	 * <b>Attention:</b> This value is modified by
 	 * {@link #setSceneRadius(float)}.
@@ -1273,7 +1273,7 @@ public class PSCamera implements Cloneable {
 	// 10. POSITION TOOLS
 
 	/**
-	 * Sets the PSCamera {@link #orientation()}, so that it looks at point
+	 * Sets the Camera {@link #orientation()}, so that it looks at point
 	 * {@code target} (defined in the world coordinate system). 
 	 * <p> 
 	 * The Camera {@link #position()} is not modified. Simply
@@ -1281,7 +1281,7 @@ public class PSCamera implements Cloneable {
 	 * 
 	 * @see #at()
 	 * @see #setUpVector(PVector)
-	 * @see #setOrientation(PSQuaternion)
+	 * @see #setOrientation(Quaternion)
 	 * @see #showEntireScene()
 	 * @see #fitSphere(PVector, float)
 	 * @see #fitBoundingBox(PVector, PVector)
@@ -1302,17 +1302,17 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the PSCamera so that the sphere defined by {@code center} and {@code
+	 * Moves the Camera so that the sphere defined by {@code center} and {@code
 	 * radius} is visible and fits the window. 
 	 * <p> 
-	 * The PSCamera is simply translated along its {@link #viewDirection()} so
+	 * The Camera is simply translated along its {@link #viewDirection()} so
 	 * that the sphere fits the screen. Its {@link #orientation()} and its
 	 * {@link #fieldOfView()} are unchanged. 
 	 * <p> 
-	 * You should therefore orientate the PSCamera before you call this method.
+	 * You should therefore orientate the Camera before you call this method.
 	 * 
 	 * @see #lookAt(PVector)
-	 * @see #setOrientation(PSQuaternion)
+	 * @see #setOrientation(Quaternion)
 	 * @see #setUpVector(PVector, boolean)
 	 */
 	public void fitSphere(PVector center, float radius) {
@@ -1338,7 +1338,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the PSCamera so that the (world axis aligned) bounding box ({@code
+	 * Moves the Camera so that the (world axis aligned) bounding box ({@code
 	 * min}, {@code max}) is entirely visible, using
 	 * {@link #fitSphere(PVector, float)}.
 	 */
@@ -1350,11 +1350,11 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the PSCamera so that the rectangular screen region defined by {@code
+	 * Moves the Camera so that the rectangular screen region defined by {@code
 	 * rectangle} (pixel units, with origin in the upper left corner) fits the
 	 * screen. 
 	 * <p> 
-	 * The PSCamera is translated (its orientation() is unchanged) so that
+	 * The Camera is translated (its orientation() is unchanged) so that
 	 * {@code rectangle} is entirely visible. Since the pixel coordinates only
 	 * define a <i>frustum</i> in 3D, it's the intersection of this frustum with
 	 * a plane (orthogonal to the viewDirection() and passing through the
@@ -1402,12 +1402,12 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the PSCamera so that the entire scene is visible. 
+	 * Moves the Camera so that the entire scene is visible. 
 	 * <p> 
 	 * Simply calls {@link #fitSphere(PVector, float)} on a sphere defined by
 	 * {@link #sceneCenter()} and {@link #sceneRadius()}. 
 	 * <p> 
-	 * You will typically use this method in {@link remixlab.proscene.PScene#init()} after you defined
+	 * You will typically use this method in {@link remixlab.proscene.Scene#init()} after you defined
 	 * a new {@link #sceneRadius()}.
 	 */
 	public void showEntireScene() {
@@ -1415,7 +1415,7 @@ public class PSCamera implements Cloneable {
 	}
 
 	/**
-	 * Moves the PSCamera so that its {@link #sceneCenter()} is projected on the
+	 * Moves the Camera so that its {@link #sceneCenter()} is projected on the
 	 * center of the window. The {@link #orientation()} and
 	 * {@link #fieldOfView()} are unchanged. 
 	 * <p> 
@@ -1503,7 +1503,7 @@ public class PSCamera implements Cloneable {
 	 * This distance is the virtual world equivalent of the real-world
 	 * {@link #physicalDistanceToScreen()}. 
 	 * <p> 
-	 * <b>attention:</b> This value is modified by PScene.setSceneRadius(),
+	 * <b>attention:</b> This value is modified by Scene.setSceneRadius(),
 	 * setSceneRadius() and {@link #setFieldOfView(float)}. When one of these
 	 * values is modified, {@link #focusDistance()} is set to
 	 * {@link #sceneRadius()} / tan({@link #fieldOfView()}/2), which provides

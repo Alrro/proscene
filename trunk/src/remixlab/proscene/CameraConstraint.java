@@ -28,32 +28,55 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * A PSAxisPlaneConstraint defined in the PSFrame local coordinate system. 
+ * A AxisPlaneConstraint defined in the camera coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
- * are expressed in the PSFrame local coordinate system (see
- * {@link remixlab.proscene.PSFrame#referenceFrame()}).
+ * are expressed in the associated {@link #camera()} coordinate system.
  */
-public class PSLocalConstraint extends PSAxisPlaneConstraint {
+public class CameraConstraint extends AxisPlaneConstraint {
+
+	private Camera camera;
+
+	/**
+	 * Creates a CameraConstraint, whose constrained directions are defined in
+	 * the {@link #camera()} coordinate system.
+	 */
+	public CameraConstraint(Camera cam) {
+		super();
+		camera = cam;
+	}
+
+	/**
+	 * Returns the associated Camera. Set using the CameraConstraint constructor.
+	 */
+	public Camera camera() {
+		return camera;
+	}
 
 	/**
 	 * Depending on {@link #translationConstraintType()}, {@code constrain} translation
-	 * to be along an axis or limited to a plane defined in the PSFrame local coordinate
+	 * to be along an axis or limited to a plane defined in the {@link #camera()} coordinate
 	 * system by {@link #translationConstraintDirection()}.
 	 */
-	public PVector constrainTranslation(PVector translation, PSFrame frame) {
+	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
 		PVector proj;
 		switch (translationConstraintType()) {
 		case FREE:
 			break;
 		case PLANE:
-			proj = frame.rotation().rotate(translationConstraintDirection());
-			res = PSUtility.projectVectorOnPlane(translation, proj);
+			proj = camera().frame().inverseTransformOf(
+					translationConstraintDirection());
+			if (frame.referenceFrame() != null)
+				proj = frame.referenceFrame().transformOf(proj);
+			res = Utility.projectVectorOnPlane(translation, proj);
 			break;
 		case AXIS:
-			proj = frame.rotation().rotate(translationConstraintDirection());
-			res = PSUtility.projectVectorOnAxis(translation, proj);
+			proj = camera().frame().inverseTransformOf(
+					translationConstraintDirection());
+			if (frame.referenceFrame() != null)
+				proj = frame.referenceFrame().transformOf(proj);
+			res = Utility.projectVectorOnAxis(translation, proj);
 			break;
 		case FORBIDDEN:
 			res = new PVector(0.0f, 0.0f, 0.0f);
@@ -63,26 +86,27 @@ public class PSLocalConstraint extends PSAxisPlaneConstraint {
 	}
 
 	/**
-	 * When {@link #rotationConstraintType()} is of Type AXIS, constrain {@code rotation}
-	 * to be a rotation around an axis whose direction is defined in the PSFrame local
+	 * When {@link #rotationConstraintType()} is of type AXIS, constrain {@code rotation}
+	 * to be a rotation around an axis whose direction is defined in the {@link #camera()}
 	 * coordinate system by {@link #rotationConstraintDirection()}.
 	 */
-	public PSQuaternion constrainRotation(PSQuaternion rotation, PSFrame frame) {
-		PSQuaternion res = new PSQuaternion(rotation);
+	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
+		Quaternion res = new Quaternion(rotation);
 		switch (rotationConstraintType()) {
 		case FREE:
 			break;
 		case PLANE:
 			break;
 		case AXIS: {
-			PVector axis = rotationConstraintDirection();
+			PVector axis = frame.transformOf(camera().frame()
+					.inverseTransformOf(rotationConstraintDirection()));
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
-			quat = PSUtility.projectVectorOnAxis(quat, axis);
-			res = new PSQuaternion(quat, 2.0f * PApplet.acos(rotation.w));
+			quat = Utility.projectVectorOnAxis(quat, axis);
+			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
 		}
 			break;
 		case FORBIDDEN:
-			res = new PSQuaternion(); // identity
+			res = new Quaternion(); // identity
 			break;
 		}
 		return res;

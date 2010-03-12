@@ -28,42 +28,42 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * A PSFrame is a 3D coordinate system, represented by a {@link #position()} and an
+ * A Frame is a 3D coordinate system, represented by a {@link #position()} and an
  * {@link #orientation()}. The order of these transformations is important:
- * the PSFrame is first translated and then rotated around the new translated origin.
+ * the Frame is first translated and then rotated around the new translated origin.
  */
 
-public class PSFrame implements Cloneable {
+public class Frame implements Cloneable {
 	protected PVector trans;
-	protected PSQuaternion rot;
-	protected PSFrame refFrame;
-	protected PSConstraint constr;
+	protected Quaternion rot;
+	protected Frame refFrame;
+	protected Constraint constr;
 
 	/**
-	 * Creates a default PSFrame. 
+	 * Creates a default Frame. 
 	 * <p> 
 	 * Its {@link #position()} is (0,0,0) and it has an identity
-	 * {@link #orientation()} PSQuaternion. The {@link #referenceFrame()} and 
+	 * {@link #orientation()} Quaternion. The {@link #referenceFrame()} and 
 	 * the {@link #constraint()} are {@code null}.
 	 */
-	public PSFrame() {
+	public Frame() {
 		trans = new PVector(0, 0, 0);
-		rot = new PSQuaternion();
+		rot = new Quaternion();
 		refFrame = null;
 		constr = null;
 	}
 
 	/**
-	 * Creates a PSFrame with a {@link #position()} and an {@link #orientation()}. 
+	 * Creates a Frame with a {@link #position()} and an {@link #orientation()}. 
 	 * <p> 
-	 * See the PVector and PSQuaternion documentations for convenient constructors and methods. 
+	 * See the PVector and Quaternion documentations for convenient constructors and methods. 
 	 * <p> 
-	 * The PSFrame is defined in the world coordinate system (its {@link #referenceFrame()}
+	 * The Frame is defined in the world coordinate system (its {@link #referenceFrame()}
 	 * is {@code null}). It has a {@code null} associated {@link #constraint()}.
 	 */ 
-	public PSFrame(PVector p, PSQuaternion r) {
+	public Frame(PVector p, Quaternion r) {
 		trans = new PVector (p.x, p.y, p.z);
-		rot = new PSQuaternion(r);
+		rot = new Quaternion(r);
 		refFrame = null;
 		constr = null;
 	}
@@ -72,48 +72,48 @@ public class PSFrame implements Cloneable {
 	 * Copy constructor.
 	 * 
 	 * @param other
-	 *            the PSFrame containing the data where to copy from
+	 *            the Frame containing the data where to copy from
 	 */
-	protected PSFrame(PSFrame other) {
+	protected Frame(Frame other) {
 		trans = new PVector (other.translation().x, other.translation().y, other.translation().z);
-		rot = new PSQuaternion(other.rotation());
+		rot = new Quaternion(other.rotation());
 		refFrame = other.referenceFrame();
 		constr = other.constraint();
 	}
 	
 	/**
-	 * Calls {@link #PSFrame(PSFrame)} (which is private) and returns a copy
+	 * Calls {@link #Frame(Frame)} (which is private) and returns a copy
 	 * of {@code this} object.
 	 * 
-	 * @see #PSFrame(PSFrame)
+	 * @see #Frame(Frame)
 	 */
-	public PSFrame copy() {
-        return new PSFrame(this);
+	public Frame copy() {
+        return new Frame(this);
     }
 	
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
 	 * The method performs a deep copy of the {@link #translation()} and 
-	 * {@link #rotation()} objects of the PSFrame, and a shallow copy of
+	 * {@link #rotation()} objects of the Frame, and a shallow copy of
 	 * its {@link #referenceFrame()} and {@link #constraint()} objects.
 	 * 
 	 * @see #copy()
 	 */
-	//public PSFrame clone() throws CloneNotSupportedException {
-	public PSFrame clone() {
+	//public Frame clone() throws CloneNotSupportedException {
+	public Frame clone() {
         try {
-            PSFrame clonedPSFrame = (PSFrame) super.clone();
-            clonedPSFrame.trans = new PVector (translation().x, translation().y, translation().z);
-            clonedPSFrame.rot = new PSQuaternion(rotation());
-            return clonedPSFrame;
+            Frame clonedFrame = (Frame) super.clone();
+            clonedFrame.trans = new PVector (translation().x, translation().y, translation().z);
+            clonedFrame.rot = new Quaternion(rotation());
+            return clonedFrame;
         } catch (CloneNotSupportedException e) {
             throw new Error("Is too");
         }
     }
 
     /**
-     * Returns the PSFrame translation, defined with respect to
+     * Returns the Frame translation, defined with respect to
      * the {@link #referenceFrame()}. 
      * <p>
      * Use {@link #position()} to get the result in the world coordinates.
@@ -128,55 +128,55 @@ public class PSFrame implements Cloneable {
 	}
 
     /**
-     * Returns the PSFrame rotation, defined with respect
+     * Returns the Frame rotation, defined with respect
      * to the {@link #referenceFrame()} (i.e, the current
-     * PSQuaternion orientation). 
+     * Quaternion orientation). 
      * <p> 
      * Use {@link #orientation()} to get the result in the world coordinates.
      * These two values are identical when the {@link #referenceFrame()}
      * is {@code null} (default).
      * 
-     * @see #setRotation(PSQuaternion)
-     * @see #setRotationWithConstraint(PSQuaternion)
+     * @see #setRotation(Quaternion)
+     * @see #setRotationWithConstraint(Quaternion)
      */
-	public final PSQuaternion rotation() {
+	public final Quaternion rotation() {
 		return rot;
 	}
 
     /**
-     * Returns the reference PSFrame, in which coordinates system the PSFrame is defined. 
+     * Returns the reference Frame, in which coordinates system the Frame is defined. 
      * <p> 
-     * The {@link #translation()} {@link #rotation()} of the PSFrame are defined with
-     * respect to the reference PSFrame coordinate system. A {@code null}
-     * reference PSFrame (default value) means that the PSFrame is defined in
+     * The {@link #translation()} {@link #rotation()} of the Frame are defined with
+     * respect to the reference Frame coordinate system. A {@code null}
+     * reference Frame (default value) means that the Frame is defined in
      * the world coordinate system.  
      * <p> 
      * Use {@link #position()} and {@link #orientation()} to recursively convert values
-     * along the reference PSFrame chain and to get values expressed in the world
-     * coordinate system. The values match when the reference PSFrame {@code null}.  
+     * along the reference Frame chain and to get values expressed in the world
+     * coordinate system. The values match when the reference Frame {@code null}.  
      * <p>  
-     * Use {@link #setReferenceFrame(PSFrame)} to set this value and create a Frame hierarchy.
-     * Convenient functions allow you to convert 3D coordinates from one PSFrame
+     * Use {@link #setReferenceFrame(Frame)} to set this value and create a Frame hierarchy.
+     * Convenient functions allow you to convert 3D coordinates from one Frame
      * to another: see {@link #coordinatesOf(PVector)}, {@link #localCoordinatesOf(PVector)} ,
-     * {@link #coordinatesOfIn(PVector, PSFrame)} and their inverse functions.  
+     * {@link #coordinatesOfIn(PVector, Frame)} and their inverse functions.  
      * <p>  
      * Vectors can also be converted using {@link #transformOf(PVector)},
-     * {@link #transformOfIn(PVector, PSFrame)}, {@link #localTransformOf(PVector)} and
+     * {@link #transformOfIn(PVector, Frame)}, {@link #localTransformOf(PVector)} and
      * their inverse functions.
      */
-	public final PSFrame referenceFrame() {
+	public final Frame referenceFrame() {
 		return refFrame;
 	}
 	
 	/**
-	 * Returns the current constraint applied to the PSFrame. 
+	 * Returns the current constraint applied to the Frame. 
 	 * <p> 
-	 * A {@code null} value (default) means that no PSConstraint is used to
-	 * filter the PSFrame translation and rotation. 
+	 * A {@code null} value (default) means that no Constraint is used to
+	 * filter the Frame translation and rotation. 
 	 * <p> 
-	 * See the PSConstraint class documentation for details.
+	 * See the Constraint class documentation for details.
 	 */
-	public PSConstraint constraint() {
+	public Constraint constraint() {
 		return constr;
 	}
 
@@ -186,7 +186,7 @@ public class PSFrame implements Cloneable {
      * <p> 
      * Use {@link #setPosition(PVector)} to define the world coordinates {@link #position()}.
      * Use {@link #setTranslationWithConstraint(PVector)} to take into account the potential
-     * {@link #constraint()} of the PSFrame.
+     * {@link #constraint()} of the Frame.
      */
 	public final void setTranslation(PVector t) {
 		this.trans = t;
@@ -204,7 +204,7 @@ public class PSFrame implements Cloneable {
 	 * {@link #constraint()} it is satisfied (without modifying
 	 * {@code translation}).
 	 * 
-	 * @see #setRotationWithConstraint(PSQuaternion)
+	 * @see #setRotationWithConstraint(Quaternion)
 	 * @see #setPositionWithConstraint(PVector)
 	 */
 	public final void setTranslationWithConstraint(PVector translation) {
@@ -222,48 +222,48 @@ public class PSFrame implements Cloneable {
 	}
 
     /**
-     * Set the current rotation PSQuaternion. See the different
-     * PSQuaternion constructors. 
+     * Set the current rotation Quaternion. See the different
+     * Quaternion constructors. 
      * <p> 
      * Sets the {@link #rotation()} of the Frame, locally defined
      * with respect to the {@link #referenceFrame()}. 
      * <p> 
-     * Use {@link #setOrientation(PSQuaternion)} to define the world
+     * Use {@link #setOrientation(Quaternion)} to define the world
      * coordinates {@link #orientation()}. The potential 
-     * {@link #constraint()} of the PSFrame is not taken into account,
-     * use {@link #setRotationWithConstraint(PSQuaternion)} instead.
+     * {@link #constraint()} of the Frame is not taken into account,
+     * use {@link #setRotationWithConstraint(Quaternion)} instead.
      *      
-     * @see #setRotationWithConstraint(PSQuaternion)
+     * @see #setRotationWithConstraint(Quaternion)
      * @see #rotation()
      * @see #setTranslation(PVector)
      */
-	public final void setRotation(PSQuaternion r) {
+	public final void setRotation(Quaternion r) {
 		this.rot = r;
 	}
 
 	/**
-	 * Same as {@link #setRotation(PSQuaternion)} but with {@code float}
-	 * PSQuaternion parameters.
+	 * Same as {@link #setRotation(Quaternion)} but with {@code float}
+	 * Quaternion parameters.
 	 */
 	public final void setRotation(float x, float y, float z, float w) {
-		setRotation(new PSQuaternion(x, y, z, w));
+		setRotation(new Quaternion(x, y, z, w));
 	}
 
 	/**
-	 * Same as {@link #setRotation(PSQuaternion)}, if there's a {@link #constraint()}
+	 * Same as {@link #setRotation(Quaternion)}, if there's a {@link #constraint()}
 	 * it's satisfied (without modifying {@code rotation}).
 	 * 
 	 * @see #setTranslationWithConstraint(PVector)
-	 * @see #setOrientationWithConstraint(PSQuaternion)
+	 * @see #setOrientationWithConstraint(Quaternion)
 	 */
-	public final void setRotationWithConstraint(PSQuaternion rotation) {
-		PSQuaternion deltaQ = PSQuaternion.multiply(this.rotation().inverse(), rotation);
+	public final void setRotationWithConstraint(Quaternion rotation) {
+		Quaternion deltaQ = Quaternion.multiply(this.rotation().inverse(), rotation);
 		if (constraint() != null)
 			deltaQ = constraint().constrainRotation(deltaQ, this);
 
 	    deltaQ.normalize(); // Prevent numerical drift
 
-	    setRotation(PSQuaternion.multiply(this.rotation(), deltaQ));
+	    setRotation(Quaternion.multiply(this.rotation(), deltaQ));
 	    rot.normalize();
 	    //rotation.x = this.rotation().x;
 	    //rotation.y = this.rotation().y;
@@ -272,9 +272,9 @@ public class PSFrame implements Cloneable {
 	}
 	
 	/**
-	 * Sets the {@link #referenceFrame()} of the PSFrame.
+	 * Sets the {@link #referenceFrame()} of the Frame.
 	 * <p> 
-	 * The PSFrame {@link #translation()} and {@link #rotation()} are then defined
+	 * The Frame {@link #translation()} and {@link #rotation()} are then defined
 	 * in the {@link #referenceFrame()} coordinate system. 
 	 * <p> 
 	 * Use {@link #position()} and {@link #orientation()} to express these in
@@ -284,25 +284,25 @@ public class PSFrame implements Cloneable {
 	 * to be a tree, which root is the world coordinate system (i.e.,
 	 * {@code null} {@link #referenceFrame()}). No action is performed if setting
 	 * {@code refFrame} as the {@link #referenceFrame()} would create a loop in the
-	 * PSFrame hierarchy.
+	 * Frame hierarchy.
 	 * 
-	 * @see #settingAsReferenceFrameWillCreateALoop(PSFrame)
+	 * @see #settingAsReferenceFrameWillCreateALoop(Frame)
 	 */ 
-	public final void setReferenceFrame(PSFrame rFrame) {
+	public final void setReferenceFrame(Frame rFrame) {
 		if (!settingAsReferenceFrameWillCreateALoop(rFrame))
 			this.refFrame = rFrame;
 	}
 	
-	public void setConstraint(PSConstraint c) {
+	public void setConstraint(Constraint c) {
 		this.constr = c;
 	}
 
 	/**
-	 * Returns {@code true} if setting {@code frame} as the PSFrame's {@link #referenceFrame()}
-	 * would create a loop in the PSFrame hierarchy.
+	 * Returns {@code true} if setting {@code frame} as the Frame's {@link #referenceFrame()}
+	 * would create a loop in the Frame hierarchy.
 	 */
-	public final boolean settingAsReferenceFrameWillCreateALoop(PSFrame frame) {
-		PSFrame f = frame;
+	public final boolean settingAsReferenceFrameWillCreateALoop(Frame frame) {
+		Frame f = frame;
 		while (f != null) {
 			if (f == this)
 				return true;
@@ -312,28 +312,28 @@ public class PSFrame implements Cloneable {
 	}
 
 	/** 
-	 * Returns the orientation of the PSFrame, defined in the world coordinate system.
+	 * Returns the orientation of the Frame, defined in the world coordinate system.
 	 * 
 	 * @see #position()
-	 * @see #setOrientation(PSQuaternion)
+	 * @see #setOrientation(Quaternion)
 	 * @see #rotation()
 	 */
-	public final PSQuaternion orientation() {
-		PSQuaternion res = rotation();
-		PSFrame fr = referenceFrame();
+	public final Quaternion orientation() {
+		Quaternion res = rotation();
+		Frame fr = referenceFrame();
 		while (fr != null) {
-			res = PSQuaternion.multiply(fr.rotation(), res);
+			res = Quaternion.multiply(fr.rotation(), res);
 			fr = fr.referenceFrame();
 		}
 		return res;
 	}
 
 	/**
-	 * Sets the {@link #position()} of the PSFrame, defined in the world coordinate system. 
+	 * Sets the {@link #position()} of the Frame, defined in the world coordinate system. 
 	 * <p> 
-	 * Use  {@link #setTranslation(PVector)} to define the local PSframe translation
+	 * Use  {@link #setTranslation(PVector)} to define the local Frame translation
 	 * (with respect to the {@link #referenceFrame()}). The potential {@link #constraint()}
-	 * of the PSFrame is not taken into account, use
+	 * of the Frame is not taken into account, use
 	 * {@link #setPositionWithConstraint(PVector)} instead.
 	 */
 	public final void setPosition(PVector p) {
@@ -355,7 +355,7 @@ public class PSFrame implements Cloneable {
 	 * {@link #constraint()} it is satisfied (without modifying
 	 * {@code position}).
 	 * 
-	 * @see #setOrientationWithConstraint(PSQuaternion)
+	 * @see #setOrientationWithConstraint(Quaternion)
 	 * @see #setTranslationWithConstraint(PVector)
 	 */
 	public final void setPositionWithConstraint(PVector position) {
@@ -366,44 +366,44 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Sets the {@link #orientation()} of the PSFrame, defined in the world coordinate system. 
+	 * Sets the {@link #orientation()} of the Frame, defined in the world coordinate system. 
 	 * <p> 
-	 * Use {@link #setRotation(PSQuaternion)}to define the local frame rotation
+	 * Use {@link #setRotation(Quaternion)}to define the local frame rotation
 	 * (with respect to the {@link #referenceFrame()}).  The potential
-	 * {@link #constraint()} of the PSFrame is not taken into account, use
-	 * {@link #setOrientationWithConstraint(PSQuaternion)} instead.
+	 * {@link #constraint()} of the Frame is not taken into account, use
+	 * {@link #setOrientationWithConstraint(Quaternion)} instead.
 	 */	 
-	public final void setOrientation(PSQuaternion q) {
+	public final void setOrientation(Quaternion q) {
 		if (referenceFrame() != null)
-			setRotation(PSQuaternion.multiply(referenceFrame().orientation().inverse(), q));
+			setRotation(Quaternion.multiply(referenceFrame().orientation().inverse(), q));
 		else
 			setRotation(q);
 	}
 
 	/**
-	 * Same as {@link #setOrientation(PSQuaternion)}, but with {@code float} parameters.
+	 * Same as {@link #setOrientation(Quaternion)}, but with {@code float} parameters.
 	 */
 	public final void setOrientation(float x, float y, float z, float w) {
-		setOrientation(new PSQuaternion(x, y, z, w));
+		setOrientation(new Quaternion(x, y, z, w));
 	}
 	
 	/**
-	 * Same as {@link #setOrientation(PSQuaternion)}, but if there's a
+	 * Same as {@link #setOrientation(Quaternion)}, but if there's a
 	 * {@link #constraint()} it is satisfied (without modifying
 	 * {@code orientation}).
 	 * 
 	 * @see #setPositionWithConstraint(PVector)
-	 * @see #setRotationWithConstraint(PSQuaternion)
+	 * @see #setRotationWithConstraint(Quaternion)
 	 */
-	public final void setOrientationWithConstraint(PSQuaternion orientation) {		
+	public final void setOrientationWithConstraint(Quaternion orientation) {		
 		if (referenceFrame() != null)
-		    orientation = PSQuaternion.multiply(referenceFrame().orientation().inverse(), orientation);
+		    orientation = Quaternion.multiply(referenceFrame().orientation().inverse(), orientation);
 
 		  setRotationWithConstraint(orientation);
 	}
 
 	/**
-	 * Returns the position of the PSFrame, defined in the world coordinate system.
+	 * Returns the position of the Frame, defined in the world coordinate system.
 	 * 
 	 * @see #orientation()
 	 * @see #setPosition(PVector)
@@ -414,16 +414,16 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Translates the PSFrame of {@code t} (defined in the PSFrame coordinate system).
+	 * Translates the Frame of {@code t} (defined in the Frame coordinate system).
 	 * <p> 
 	 * If there's a {@link #constraint()} it is satisfied without modifying {@code t}:
-	 * The translation actually applied to the PSFrame may differ from {@code t} 
+	 * The translation actually applied to the Frame may differ from {@code t} 
 	 * since it can be filtered by the {@link #constraint()}. Use
 	 * {@link #translateModifyingArgument(PVector)} to retrieve the filtered
 	 * translation value. Use {@link #setTranslation(PVector)} to directly translate
-	 * the PSFrame without taking the {@link #constraint()} into account.
+	 * the Frame without taking the {@link #constraint()} into account.
 	 * 
-	 * @see #rotate(PSQuaternion)
+	 * @see #rotate(Quaternion)
 	 */
 	public final void translate(PVector t) {		
 		if (constraint() != null)
@@ -463,19 +463,19 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Rotates the PSFrame by {@code q} (defined in the PSFrame coordinate system):
+	 * Rotates the Frame by {@code q} (defined in the Frame coordinate system):
 	 * {@code R = R*q}.
 	 * <p> 
 	 * If there's a {@link #constraint()} it is satisfied without modifying {@code q}:
-	 * The rotation actually applied to the PSFrame may differ from {@code q} since it
+	 * The rotation actually applied to the Frame may differ from {@code q} since it
 	 * can be filtered by the {@link #constraint()}. Use
-	 * {@link #rotateModifyingArgument(PSQuaternion)} to retrieve the filtered rotation
-	 * value. Use {@link #setRotation(PSQuaternion)} to directly rotate the PSFrame
+	 * {@link #rotateModifyingArgument(Quaternion)} to retrieve the filtered rotation
+	 * value. Use {@link #setRotation(Quaternion)} to directly rotate the Frame
 	 * without taking the {@link #constraint()} into account.
 	 * 
 	 * @see #translate(PVector)
 	 */
-	public final void rotate(PSQuaternion q) {
+	public final void rotate(Quaternion q) {
 		if (constraint()!= null)
 			rot.multiply(constraint().constrainRotation(q, this));
 		else
@@ -485,13 +485,13 @@ public class PSFrame implements Cloneable {
 	}
 	
 	/**
-	 * Same as {@link #rotate(PSQuaternion)} but if there's a {@link #constraint()} 
+	 * Same as {@link #rotate(Quaternion)} but if there's a {@link #constraint()} 
 	 * {@code q} is modified to satisfy it.
 	 */
-	public final void rotateModifyingArgument(PSQuaternion q) {
+	public final void rotateModifyingArgument(Quaternion q) {
 		//TODO this may be overkill: check if this function can be discarded
 		if (constraint() != null) {
-			PSQuaternion o = constraint().constrainRotation(q, this);		    
+			Quaternion o = constraint().constrainRotation(q, this);		    
 		    q.x = o.x;
 		    q.y = o.y;
 		    q.z = o.z;
@@ -503,32 +503,32 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Same as {@link #rotate(PSQuaternion)} but with {@code float} PSQuaternion parameters.
+	 * Same as {@link #rotate(Quaternion)} but with {@code float} Quaternion parameters.
 	 */
 	public final void rotate(float x, float y, float z, float w) {
-		rotate(new PSQuaternion(x, y, z, w));
+		rotate(new Quaternion(x, y, z, w));
 	}
 
 	/**
-	 * Makes the PSFrame {@link #rotate(PSQuaternion)} by {@code rotation} around {@code point}. 
+	 * Makes the Frame {@link #rotate(Quaternion)} by {@code rotation} around {@code point}. 
 	 * <p> 
 	 * {@code point} is defined in the world coordinate system, while the {@code rotation}
-	 * axis is defined in the PSFrame coordinate system. 
+	 * axis is defined in the Frame coordinate system. 
 	 * <p> 
-	 * If the PSFrame has a {@link #constraint()}, {@code rotation} is first constrained using
-	 * {@link remixlab.proscene.PSConstraint#constrainRotation(PSQuaternion, PSFrame)}.
+	 * If the Frame has a {@link #constraint()}, {@code rotation} is first constrained using
+	 * {@link remixlab.proscene.Constraint#constrainRotation(Quaternion, Frame)}.
 	 * The translation which results from the filtered rotation around {@code point} is then
 	 * computed and filtered using
-	 * {@link remixlab.proscene.PSConstraint#constrainTranslation(PVector, PSFrame)}.
+	 * {@link remixlab.proscene.Constraint#constrainTranslation(PVector, Frame)}.
 	 */
-	public final void rotateAroundPoint(PSQuaternion rotation, PVector point) {
+	public final void rotateAroundPoint(Quaternion rotation, PVector point) {
 		if (constraint() != null)
 			rotation = constraint().constrainRotation(rotation, this);
 		
 		this.rot.multiply(rotation);		
 		this.rot.normalize(); // Prevents numerical drift
 		
-		PSQuaternion q = new PSQuaternion(inverseTransformOf(rotation.axis()), rotation.angle());		
+		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());		
 		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
 		t.sub(trans);
 		
@@ -539,13 +539,13 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Same as {@link #rotateAroundPoint(PSQuaternion, PVector)} but if there's a
+	 * Same as {@link #rotateAroundPoint(Quaternion, PVector)} but if there's a
 	 * {@link #constraint()} {@code rotation} is modified to satisfy it.
 	*/
-	public final void rotateAroundPointModifyingArgument(PSQuaternion rotation, PVector point) {
+	public final void rotateAroundPointModifyingArgument(Quaternion rotation, PVector point) {
 		//TODO this may be overkill: check if this function can be discarded
 		if (constraint() != null) {
-			PSQuaternion q = constraint().constrainRotation(rotation, this);
+			Quaternion q = constraint().constrainRotation(rotation, this);
 			rotation.x = q.x;
 			rotation.y = q.y;
 			rotation.z = q.z;
@@ -555,7 +555,7 @@ public class PSFrame implements Cloneable {
 		this.rot.multiply(rotation);		
 		this.rot.normalize(); // Prevents numerical drift
 		
-		PSQuaternion q = new PSQuaternion(inverseTransformOf(rotation.axis()), rotation.angle());		
+		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());		
 		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
 		t.sub(trans);
 		
@@ -568,29 +568,29 @@ public class PSFrame implements Cloneable {
 	/**
 	 * Convenience function that simply calls {@code alignWithFrame(frame, false, 0.85f)}
 	 */
-	public final void alignWithFrame(PSFrame frame) {
+	public final void alignWithFrame(Frame frame) {
 		alignWithFrame(frame, false, 0.85f);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code alignWithFrame(frame, move, 0.85f)}
 	 */
-	public final void alignWithFrame(PSFrame frame, boolean move) {
+	public final void alignWithFrame(Frame frame, boolean move) {
 		alignWithFrame(frame, move, 0.85f);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code alignWithFrame(frame, false, threshold)}
 	 */
-	public final void alignWithFrame(PSFrame frame, float threshold) {
+	public final void alignWithFrame(Frame frame, float threshold) {
 		alignWithFrame(frame, false, threshold);
 	}
 
 	/**
-	 * Aligns the PSFrame with {@code frame}, so that two of their axis are parallel. 
+	 * Aligns the Frame with {@code frame}, so that two of their axis are parallel. 
 	 * <p> 
-	 * If one of the X, Y and Z axis of the PSFrame is almost parallel to any of the
-	 * X, Y, or Z axis of {@code frame}, the PSFrame is rotated so that these two
+	 * If one of the X, Y and Z axis of the Frame is almost parallel to any of the
+	 * X, Y, or Z axis of {@code frame}, the Frame is rotated so that these two
 	 * axis actually become parallel. 
 	 * <p> 
 	 * If, after this first rotation, two other axis are also almost parallel, a
@@ -600,15 +600,15 @@ public class PSFrame implements Cloneable {
 	 * {@code threshold} measures how close two axis must be to be considered parallel.
 	 * It is compared with the absolute values of the dot product of the normalized axis. 
 	 * <p> 
-	 * When {@code move} is set to {@code true}, the PSFrame {@link #position()} is
-	 * also affected by the alignment. The new PSFrame {@link #position()} is such that
+	 * When {@code move} is set to {@code true}, the Frame {@link #position()} is
+	 * also affected by the alignment. The new Frame {@link #position()} is such that
 	 * the {@code frame} frame position (computed with {@link #coordinatesOf(PVector)},
-	 * in the PSFrame coordinates system) does not change. 
+	 * in the Frame coordinates system) does not change. 
 	 * <p> 
 	 * {@code frame} may be {@code null} and then represents the world coordinate system
 	 * (same convention than for the {@link #referenceFrame()}).
 	 */
-	public final void alignWithFrame(PSFrame frame, boolean move, float threshold) {
+	public final void alignWithFrame(Frame frame, boolean move, float threshold) {
 		PVector[][] directions = new PVector[2][3];
 		for (int d = 0; d < 3; ++d) {
 			PVector dir = new PVector((d == 0) ? 1.0f : 0.0f, (d == 1) ? 1.0f
@@ -638,8 +638,8 @@ public class PSFrame implements Cloneable {
 			}
 		}
 
-		//PSFrame old = new PSFrame(this);
-		PSFrame old = this.clone();
+		//Frame old = new Frame(this);
+		Frame old = this.clone();
 
 		vec.set(directions[0][index[0]]);
 		float coef = vec.dot(directions[1][index[1]]);
@@ -651,9 +651,9 @@ public class PSFrame implements Cloneable {
 			if (coef >= 0.0)
 				angle = -angle;
 			// setOrientation(Quaternion(axis, angle) * orientation());
-			PSQuaternion q = new PSQuaternion(axis, angle);
-			q = PSQuaternion.multiply(rotation().inverse(), q);
-			q = PSQuaternion.multiply(q, orientation());
+			Quaternion q = new Quaternion(axis, angle);
+			q = Quaternion.multiply(rotation().inverse(), q);
+			q = Quaternion.multiply(q, orientation());
 			rotate(q);
 
 			// Try to align an other axis direction
@@ -681,8 +681,8 @@ public class PSFrame implements Cloneable {
 					angle = -angle;
 				// setOrientation(Quaternion(axis, angle) * orientation());
 				q.fromAxisAngle(axis, angle);
-				q = PSQuaternion.multiply(rotation().inverse(), q);
-				q = PSQuaternion.multiply(q, orientation());
+				q = Quaternion.multiply(rotation().inverse(), q);
+				q = Quaternion.multiply(q, orientation());
 				rotate(q);
 			}
 		}
@@ -699,7 +699,7 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Translates the PSFrame so that its {@link #position()} lies on the line
+	 * Translates the Frame so that its {@link #position()} lies on the line
 	 * defined by {@code origin} and {@code direction} (defined in the world
 	 * coordinate system). 
 	 * <p> 
@@ -712,12 +712,12 @@ public class PSFrame implements Cloneable {
 		//float directionSquaredNorm = (direction.x * direction.x) + (direction.y * direction.y) + (direction.z * direction.z);
 		//float modulation = proj.dot(direction) / directionSquaredNorm; 
 		//proj = PVector.mult(direction, modulation);
-		proj = PSUtility.projectVectorOnAxis(proj, direction);
+		proj = Utility.projectVectorOnAxis(proj, direction);
 		translate(PVector.sub(shift, proj));	
 	}
 
 	/**
-	 * Returns the PSFrame coordinates of a point {@code src} defined in the world
+	 * Returns the Frame coordinates of a point {@code src} defined in the world
 	 * coordinate system (converts from world to Frame).
 	 * <p>  
 	 * {@link #inverseCoordinatesOf(PVector)} performs the inverse conversion.
@@ -731,7 +731,7 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the world coordinates of the point whose position in the PSFrame
+	 * Returns the world coordinates of the point whose position in the Frame
 	 * coordinate system is {@code src} (converts from Frame to world). 
 	 * <p> 
 	 * {@link #coordinatesOf(PVector)} performs the inverse conversion. Use
@@ -739,7 +739,7 @@ public class PSFrame implements Cloneable {
 	 * of 3D coordinates.
 	 */
 	public final PVector inverseCoordinatesOf(PVector src) {
-		PSFrame fr = this;
+		Frame fr = this;
 		PVector res = src;
 		while (fr != null) {
 			res = fr.localInverseCoordinatesOf(res);
@@ -749,7 +749,7 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the PSFrame coordinates of a point {@code src} defined in the
+	 * Returns the Frame coordinates of a point {@code src} defined in the
 	 * {@link #referenceFrame()} coordinate system (converts from {@link #referenceFrame()}
 	 * to Frame). 
 	 * <p> 
@@ -763,7 +763,7 @@ public class PSFrame implements Cloneable {
 
 	/**
 	 * Returns the {@link #referenceFrame()} coordinates of a point {@code src} defined
-	 * in the PSFrame coordinate system (converts from Frame to {@link #referenceFrame()}). 
+	 * in the Frame coordinate system (converts from Frame to {@link #referenceFrame()}). 
 	 * <p> 
 	 * {@link #localCoordinatesOf(PVector)} performs the inverse conversion.
 	 * 
@@ -774,12 +774,12 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the PSFrame coordinates of the point whose position in the {@code from}
-	 * coordinate system is {@code src} (converts from {@code from} to PSFrame). 
+	 * Returns the Frame coordinates of the point whose position in the {@code from}
+	 * coordinate system is {@code src} (converts from {@code from} to Frame). 
 	 * <p> 
-	 * {@link #coordinatesOfIn(PVector, PSFrame)} performs the inverse transformation.
+	 * {@link #coordinatesOfIn(PVector, Frame)} performs the inverse transformation.
 	 */
-	public final PVector coordinatesOfFrom(PVector src, PSFrame from) {
+	public final PVector coordinatesOfFrom(PVector src, Frame from) {
 		if (this == from)
 			return src;
 		else if (referenceFrame() != null)
@@ -790,13 +790,13 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the {@code in} coordinates of the point whose position in the PSFrame
-	 * coordinate system is {@code src} (converts from PSFrame to {@code in}). 
+	 * Returns the {@code in} coordinates of the point whose position in the Frame
+	 * coordinate system is {@code src} (converts from Frame to {@code in}). 
 	 * <p> 
-	 * {@link #coordinatesOfFrom(PVector, PSFrame)} performs the inverse transformation.
+	 * {@link #coordinatesOfFrom(PVector, Frame)} performs the inverse transformation.
 	 */
-	public final PVector coordinatesOfIn(PVector src, PSFrame in) {
-		PSFrame fr = this;
+	public final PVector coordinatesOfIn(PVector src, Frame in) {
+		Frame fr = this;
 		PVector res = src;
 		while ((fr != null) && (fr != in)) {
 			res = fr.localInverseCoordinatesOf(res);
@@ -813,7 +813,7 @@ public class PSFrame implements Cloneable {
 	}
 	
 	/**
-	 * Returns the PSFrame transform of a vector {@code src} defined in the world
+	 * Returns the Frame transform of a vector {@code src} defined in the world
 	 * coordinate system (converts vectors from world to Frame). 
 	 * <p> 
 	 * {@link #inverseTransformOf(PVector)} performs the inverse transformation.
@@ -829,7 +829,7 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the world transform of the vector whose coordinates in the PSFrame
+	 * Returns the world transform of the vector whose coordinates in the Frame
 	 * coordinate system is {@code src} (converts vectors from Frame to world). 
 	 * <p> 
 	 * {@link #transformOf(PVector)} performs the inverse transformation. Use
@@ -837,7 +837,7 @@ public class PSFrame implements Cloneable {
 	 * of 3D vectors.
 	 */
 	public final PVector inverseTransformOf(PVector src) {
-		PSFrame fr = this;
+		Frame fr = this;
 		PVector res = src;
 		while (fr != null) {
 			res = fr.localInverseTransformOf(res);
@@ -847,9 +847,9 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the PSFrame transform of a vector {@code src} defined in the
+	 * Returns the Frame transform of a vector {@code src} defined in the
 	 * {@link #referenceFrame()} coordinate system (converts vectors from
-	 * {@link #referenceFrame()} to PSFrame). 
+	 * {@link #referenceFrame()} to Frame). 
 	 * <p> 
 	 * {@link #localInverseTransformOf(PVector)} performs the inverse transformation.
 	 * 
@@ -861,7 +861,7 @@ public class PSFrame implements Cloneable {
 
 	/**
 	 * Returns the {@link #referenceFrame()} transform of a vector {@code src}
-	 * defined in the PSFrame coordinate system (converts vectors from PSFrame
+	 * defined in the Frame coordinate system (converts vectors from Frame
 	 * to {@link #referenceFrame()}). 
 	 * <p> 
 	 * {@link #localTransformOf(PVector)} performs the inverse transformation.
@@ -873,12 +873,12 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the PSFrame transform of the vector whose coordinates in the {@code from}
-	 * coordinate system is {@code src} (converts vectors from {@code from} to PSFrame). 
+	 * Returns the Frame transform of the vector whose coordinates in the {@code from}
+	 * coordinate system is {@code src} (converts vectors from {@code from} to Frame). 
 	 * <p> 
-	 * {@link #transformOfIn(PVector, PSFrame)} performs the inverse transformation.
+	 * {@link #transformOfIn(PVector, Frame)} performs the inverse transformation.
 	 */
-	public final PVector transformOfFrom(PVector src, PSFrame from) {
+	public final PVector transformOfFrom(PVector src, Frame from) {
 		if (this == from)
 			return src;
 		else if (referenceFrame() != null)
@@ -888,13 +888,13 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the {@code in} transform of the vector whose coordinates in the PSFrame
-	 * coordinate system is {@code src} (converts vectors from PSFrame to {@code in}). 
+	 * Returns the {@code in} transform of the vector whose coordinates in the Frame
+	 * coordinate system is {@code src} (converts vectors from Frame to {@code in}). 
 	 * <p> 
-	 * {@link #transformOfFrom(PVector, PSFrame)} performs the inverse transformation.
+	 * {@link #transformOfFrom(PVector, Frame)} performs the inverse transformation.
 	 */
-	public final PVector transformOfIn(PVector src, PSFrame in) {
-		PSFrame fr = this;
+	public final PVector transformOfIn(PVector src, Frame in) {
+		Frame fr = this;
 		PVector res = src;
 		while ((fr != null) && (fr != in)) {
 			res = fr.localInverseTransformOf(res);
@@ -911,15 +911,15 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the PMatrix3D associated with this PSFrame. 
+	 * Returns the PMatrix3D associated with this Frame. 
 	 * <p> 
 	 * This method should be used in conjunction with {@code applyMatrix()}
-	 * to modify the processing modelview matrix from a PSFrame hierarchy. For example
-	 * with this PSFrame hierarchy: 
+	 * to modify the processing modelview matrix from a Frame hierarchy. For example
+	 * with this Frame hierarchy: 
 	 * <p> 
-	 * {@code PSFrame body = new PSFrame();} <br>
-	 * {@code PSFrame leftArm = new PSFrame();} <br>
-	 * {@code PSFrame rightArm = new PSFrame();} <br>
+	 * {@code Frame body = new Frame();} <br>
+	 * {@code Frame leftArm = new Frame();} <br>
+	 * {@code Frame rightArm = new Frame();} <br>
 	 * {@code leftArm.setReferenceFrame(body);} <br>
 	 * {@code rightArm.setReferenceFrame(body);} <br> 
 	 * <p> 
@@ -942,9 +942,9 @@ public class PSFrame implements Cloneable {
 	 * blocks to represent the frame hierarchy: {@code leftArm} and {@code rightArm}
 	 * are both correctly drawn with respect to the {@code body} coordinate system. 
 	 * <p> 
-	 * This matrix only represents the local PSFrame transformation (i.e., with respect
+	 * This matrix only represents the local Frame transformation (i.e., with respect
 	 * to the {@link #referenceFrame()}). Use {@link #worldMatrix()} to get the full 
-	 * PSFrame transformation matrix (i.e., from the world to the Frame coordinate system).
+	 * Frame transformation matrix (i.e., from the world to the Frame coordinate system).
 	 * These two match when the {@link #referenceFrame()} is {@code null}. 
 	 * <p>
 	 * The result is only valid until the next call to {@code matrix()} or
@@ -965,7 +965,7 @@ public class PSFrame implements Cloneable {
 	}
 	
 	/**
-	 * Apply the transformation defined by this PSFrame to {@code p}. The PSFrame is
+	 * Apply the transformation defined by this Frame to {@code p}. The Frame is
 	 * first translated and then rotated around the new translated origin.
 	 * <p>
 	 * Same as:
@@ -977,7 +977,7 @@ public class PSFrame implements Cloneable {
 	 * <p>
 	 * This method should be used whenever possible.
 	 * <p>
-	 * <b>Attention:</b> In order to apply the PSFrame transformation one can also call
+	 * <b>Attention:</b> In order to apply the Frame transformation one can also call
 	 * {@code p.applyMatrix(this.pMatrix())}. However, {@code p.applyMatrix} is very
 	 * slow because it will try to calculate the inverse of the transform, so it should
 	 * be avoided whenever possible. 
@@ -990,22 +990,22 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Returns the processing transformation matrix represented by the PSFrame. 
+	 * Returns the processing transformation matrix represented by the Frame. 
 	 * <p> 
 	 * This method should be used in conjunction with {@code applyMatrix()}
-	 * to modify the processing modelview matrix from a PSFrame: 
+	 * to modify the processing modelview matrix from a Frame: 
 	 * <p> 
 	 * {@code // The modelview here corresponds to the world coordinate system.}
-	 * {@code PSFrame fr = new PSFrame(pos, PSQuaternion(from, to));} <br>
+	 * {@code Frame fr = new Frame(pos, Quaternion(from, to));} <br>
 	 * {@code pushMatrix();} <br>
 	 * {@code applyMatrix(worldMatrix());} <br>
 	 * {@code // draw object in the fr coordinate system.} <br>
 	 * {@code popMatrix();} <br> 
 	 * <p>
-	 * This matrix represents the global PSFrame transformation: the entire
+	 * This matrix represents the global Frame transformation: the entire
 	 * {@link #referenceFrame()} hierarchy is taken into account to define the
-	 * PSFrame transformation from the world coordinate system.
-	 * Use {@link #matrix()} to get the local PSFrame transformation matrix
+	 * Frame transformation from the world coordinate system.
+	 * Use {@link #matrix()} to get the local Frame transformation matrix
 	 * (i.e. defined with respect to the referenceFrame()).
 	 * These two match when the {@link #referenceFrame()} is {@code null}. 
 	 * <p> 
@@ -1017,7 +1017,7 @@ public class PSFrame implements Cloneable {
 	 */	
 	public final PMatrix3D worldMatrix() {
 		if (referenceFrame() != null) {
-			final PSFrame fr = new PSFrame();
+			final Frame fr = new Frame();
 			fr.setTranslation(position());
 			fr.setRotation(orientation());
 			return fr.matrix();
@@ -1026,7 +1026,7 @@ public class PSFrame implements Cloneable {
 	}
 
 	/**
-	 * Sets the PSFrame from an PMatrix3D (processing matrix) representation (rotation
+	 * Sets the Frame from an PMatrix3D (processing matrix) representation (rotation
 	 * in the upper left 3x3 matrix and translation on the last column). 
 	 * <p>
 	 * Hence, if a code fragment looks like: 
@@ -1036,18 +1036,18 @@ public class PSFrame implements Cloneable {
 	 * <p> 
 	 * It is equivalent to write: 
 	 * <p> 
-	 * {@code PSFrame fr = new PSFrame();} <br>
+	 * {@code Frame fr = new Frame();} <br>
 	 * {@code fr.fromMatrix(m);} <br>
 	 * {@code applyMatrix(fr.matrix());} <br>
 	 * <p> 
-	 * Using this conversion, you can benefit from the powerful PSFrame
+	 * Using this conversion, you can benefit from the powerful Frame
 	 * transformation methods to translate points and vectors to and from
-	 * the PSFrame coordinate system to any other PSFrame coordinate system
+	 * the Frame coordinate system to any other Frame coordinate system
 	 * (including the world coordinate system). See {@link #coordinatesOf(PVector)}
 	 * and {@link #transformOf(PVector)}. 
 	 * <p> 
-	 * <b>Attention:</b> A PSFrame does not contain a scale factor. The possible scaling
-	 * in {@code m} will not be	converted into the PSFrame by this method.
+	 * <b>Attention:</b> A Frame does not contain a scale factor. The possible scaling
+	 * in {@code m} will not be	converted into the Frame by this method.
 	 */
 	public final void fromMatrix(PMatrix3D pM) {
 		// m should be of size [4][4]
@@ -1076,27 +1076,27 @@ public class PSFrame implements Cloneable {
 	}
 	
 	/**
-	 * Returns a PSFrame representing the inverse of the PSFrame space transformation. 
+	 * Returns a Frame representing the inverse of the Frame space transformation. 
 	 * <p> 
-	 * The {@link #rotation()} the new PSFrame is the
-	 * {@link remixlab.proscene.PSQuaternion#inverse()} of the original rotation.
+	 * The {@link #rotation()} the new Frame is the
+	 * {@link remixlab.proscene.Quaternion#inverse()} of the original rotation.
 	 * Its {@link #translation()} is the negated inverse rotated image of the original
 	 * translation. 
 	 * <p> 
-	 * If a PSFrame is considered as a space rigid transformation (translation and
-	 * rotation), the inverse() PSFrame performs the inverse transformation. 
+	 * If a Frame is considered as a space rigid transformation (translation and
+	 * rotation), the inverse() Frame performs the inverse transformation. 
 	 * <p> 
-	 * Only the local PSFrame transformation (i.e., defined with respect to the
+	 * Only the local Frame transformation (i.e., defined with respect to the
 	 * {@link #referenceFrame()}) is inverted. Use {@link #worldInverse()} for a
 	 * global inverse. 
 	 * <p> 
-	 * The resulting PSFrame has the same  {@link #referenceFrame()} as the PSFrame
+	 * The resulting Frame has the same  {@link #referenceFrame()} as the Frame
 	 * and a {@code null} {@link #constraint()}. 
 	 * <p> 
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 */
-	public final PSFrame inverse() {
-		PSFrame fr = new PSFrame(PVector.mult(rot.inverseRotate(trans), -1),
+	public final Frame inverse() {
+		Frame fr = new Frame(PVector.mult(rot.inverseRotate(trans), -1),
 				rot.inverse());
 		fr.setReferenceFrame(referenceFrame());
 		return fr;
@@ -1104,20 +1104,20 @@ public class PSFrame implements Cloneable {
 
     /**
      * 
-     * Returns the {@link #inverse()} of the PSFrame world transformation. 
+     * Returns the {@link #inverse()} of the Frame world transformation. 
      * <p> 
-     * The {@link #orientation()} of the new PSFrame is the
-     * {@link remixlab.proscene.PSQuaternion#inverse()} of the original orientation.
+     * The {@link #orientation()} of the new Frame is the
+     * {@link remixlab.proscene.Quaternion#inverse()} of the original orientation.
      * Its {@link #position()} is the negated and inverse rotated image of the
      * original position. 
      * <p> 
-     * The result PSFrame has a {@code null} {@link #referenceFrame()} and a
+     * The result Frame has a {@code null} {@link #referenceFrame()} and a
      * {@code null} {@link #constraint()}. 
      * <p> 
      * Use {@link #inverse()} for a local (i.e., with respect to {@link #referenceFrame()})
      * transformation inverse.
      */
-	public final PSFrame worldInverse() {
-		return (new PSFrame( PVector.mult(orientation().inverseRotate(position()), -1), orientation().inverse()) );		
+	public final Frame worldInverse() {
+		return (new Frame( PVector.mult(orientation().inverseRotate(position()), -1), orientation().inverse()) );		
 	}
 }

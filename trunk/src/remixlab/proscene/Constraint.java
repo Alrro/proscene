@@ -30,27 +30,27 @@ import processing.core.*;
 /**
  * An interface class for Frame constraints. 
  * <p> 
- * This class defines the interface for the PSConstraints that can be applied
- * to a PSFrame to limit its motion. Use
- * {@link remixlab.proscene.PSFrame#setConstraint(PSConstraint)} to
- * associate a PSConstraint to a PSFrame (default is a {@code null}
- * {@link remixlab.proscene.PSFrame#constraint()}.
+ * This class defines the interface for the constraint that can be applied
+ * to a Frame to limit its motion. Use
+ * {@link remixlab.proscene.Frame#setConstraint(Constraint)} to
+ * associate a Constraint to a Frame (default is a {@code null}
+ * {@link remixlab.proscene.Frame#constraint()}.
  */
-public class PSConstraint {
+public class Constraint {
 	/**
-	 * Filters the translation applied to the PSframe. This default implementation
+	 * Filters the translation applied to the Frame. This default implementation
 	 * is empty (no filtering). 
 	 * <p> 
-	 * Overload this method in your own PSConstraint class to define a new 
-	 * translation constraint. {@code frame} is the PSFrame to which is applied the
-	 * translation. Use its {@link remixlab.proscene.PSFrame#position()} and
+	 * Overload this method in your own Constraint class to define a new 
+	 * translation constraint. {@code frame} is the Frame to which is applied the
+	 * translation. Use its {@link remixlab.proscene.Frame#position()} and
 	 * update the translation accordingly instead. 
 	 * <p> 
-	 * {@code translation} is expressed in the local PSFrame coordinate system.
-	 * Use {@link remixlab.proscene.PSFrame#inverseTransformOf(PVector)} to 
+	 * {@code translation} is expressed in the local Frame coordinate system.
+	 * Use {@link remixlab.proscene.Frame#inverseTransformOf(PVector)} to 
 	 * express it in the world coordinate system if needed. 
 	 */
-    public PVector constrainTranslation(PVector translation, PSFrame frame) {
+    public PVector constrainTranslation(PVector translation, Frame frame) {
     	return new PVector(translation.x, translation.y, translation.z);
     }
 	
@@ -58,14 +58,14 @@ public class PSConstraint {
      * Filters the rotation applied to the {@code frame}. This default implementation
      * is empty (no filtering). 
      * <p> 
-     * Overload this method in your own PSConstraint class to define a new rotation
-     * constraint. See {@link #constrainTranslation(PVector, PSFrame)} for details. 
+     * Overload this method in your own Constraint class to define a new rotation
+     * constraint. See {@link #constrainTranslation(PVector, Frame)} for details. 
      * <p> 
-     * Use {@link remixlab.proscene.PSFrame#inverseTransformOf(PVector)} on the
-     * {@code rotation} {@link remixlab.proscene.PSQuaternion#axis()} to express
+     * Use {@link remixlab.proscene.Frame#inverseTransformOf(PVector)} on the
+     * {@code rotation} {@link remixlab.proscene.Quaternion#axis()} to express
      * {@code rotation} in the world coordinate system if needed.
      */
-	public PSQuaternion constrainRotation(PSQuaternion rotation, PSFrame frame) {
-		return new PSQuaternion(rotation);
+	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
+		return new Quaternion(rotation);
 	}
 }
