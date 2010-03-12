@@ -32,19 +32,19 @@ import java.awt.event.*;
 import javax.swing.event.*; 
 
 /**
- * A processing 3D interactive scene. A PScene provides a default interactivity for your scene through
+ * A processing 3D interactive scene. A Scene provides a default interactivity for your scene through
  * the mouse and keyboard in the hope that it should fit most user needs. For those users whose needs
  * are not completely fulfill by default, proscene main interactivity mechanisms can easily be extended
  * to fit them. 
  * <p>
- * A PScene has a full reach PSCamera, an two means to manipulate objects: an {@link #interactiveFrame()}
+ * A Scene has a full reach Camera, an two means to manipulate objects: an {@link #interactiveFrame()}
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
  * <p>
- * To use a PScene, you can instantiate a PScene object directly or you can implement your own derived PScene
+ * To use a Scene, you can instantiate a Scene object directly or you can implement your own derived Scene
  * class. You also need to call {@link #defaultKeyBindings()} from your PApplet.keyPressed() function.
  * That's all there is to it.
  * <p>
- * If you instantiate your own PScene object you should implement your {@link PApplet#draw()} as usual,
+ * If you instantiate your own Scene object you should implement your {@link PApplet#draw()} as usual,
  * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus, for instance,
  * if the following code define the body of your {@link PApplet#draw()}:
  * <p>
@@ -54,14 +54,14 @@ import javax.swing.event.*;
  * <p>
  * you would obtain full interactivity to manipulate your scene "for free".
  * <p>
- * If you derive from PScene instead, you should implement {@link #scene()} which
+ * If you derive from Scene instead, you should implement {@link #scene()} which
  * defines the objects in your scene. Then all you have to do is to call {@link #draw()}
  * from {@link PApplet#draw()}, e.g., {@code public void draw() {scene.draw();}}
- * (supposing {@code scene} is an instance of the PScene derived class).
+ * (supposing {@code scene} is an instance of the Scene derived class).
  * <p>
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
-public class PScene implements MouseWheelListener, MouseInputListener, PConstants {	
+public class Scene implements MouseWheelListener, MouseInputListener, PConstants {	
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
 	 */
@@ -85,8 +85,8 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	PMatrix3D modelviewMatrix;
 	
 	// O B J E C T S
-	protected PSCamera cam;
-	protected PSInteractiveFrame glIFrame;
+	protected Camera cam;
+	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsACam;
 	boolean iFrameIsDrwn;
 	
@@ -95,7 +95,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	Point lCorner;
 	
 	// M o u s e   G r a b b e r
-	PSMouseGrabber mouseGrbbr;
+	MouseGrabber mouseGrbbr;
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsAnICamFrame;
 	
@@ -116,7 +116,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
 	 * See the associated documentation.
 	 */
-	public PScene(PApplet p) {
+	public Scene(PApplet p) {
 		parent = p;	
 		parent.addMouseListener(this);
 		parent.addMouseMotionListener(this);
@@ -134,7 +134,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 		rotateScreen = false;
 		translateScreen = false;
 		
-		cam = new PSCamera();
+		cam = new Camera();
 		setCamera(camera());
 		
 		projectionMatrix = null;
@@ -170,56 +170,56 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	// 1. Associated objects
 		
 	/**
-	 * Returns the associated PSCamera, never {@code null}.
+	 * Returns the associated Camera, never {@code null}.
 	 */
-	public PSCamera camera() {		
+	public Camera camera() {		
 		return cam;
 	}
 	
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
 	 */
-	public void setCamera (PSCamera camera) {
+	public void setCamera (Camera camera) {
 		if (camera == null)
 			return;
 		
-		camera.setSceneRadius(sceneRadius());
-		camera.setSceneCenter(sceneCenter());		
+		camera.setSceneRadius(radius());
+		camera.setSceneCenter(center());		
 		
 		camera.setScreenWidthAndHeight(parent.width, parent.height);
 		cam = camera;
 	}
 	
 	/**
-	 * Returns the PSInteractiveFrame associated to this PScene. It could be
-	 * null if there's no PSInteractiveFrame associated to this PScene. 
+	 * Returns the InteractiveFrame associated to this Scene. It could be
+	 * null if there's no InteractiveFrame associated to this Scene. 
 	 * 
-	 * @see #setInteractiveFrame(PSInteractiveFrame)
+	 * @see #setInteractiveFrame(InteractiveFrame)
 	 */
-	public PSInteractiveFrame interactiveFrame() {
+	public InteractiveFrame interactiveFrame() {
 		return glIFrame;
 	} 
 	
 	/**
-	 * Sets {@code frame} as the PSInteractiveFrame associated to this PScene.
+	 * Sets {@code frame} as the InteractiveFrame associated to this Scene.
 	 * 
 	 * @see #interactiveFrame()
 	 */
-	public void setInteractiveFrame (PSInteractiveFrame frame) {
+	public void setInteractiveFrame (InteractiveFrame frame) {
 		glIFrame = frame;		
 		interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) &&
-				                  (interactiveFrame() instanceof PSInteractiveCameraFrame));
+				                  (interactiveFrame() instanceof InteractiveCameraFrame));
 		if (glIFrame == null)
 			iFrameIsDrwn = false;
 	}
 	
 	/**
-	 * Returns the current PSMouseGrabber, or {@code null} if none currently grabs mouse events.
+	 * Returns the current MouseGrabber, or {@code null} if none currently grabs mouse events.
 	 * <p> 
-	 * When {@link remixlab.proscene.PSMouseGrabber#grabsMouse()}, the different mouse events are sent to it
+	 * When {@link remixlab.proscene.MouseGrabber#grabsMouse()}, the different mouse events are sent to it
 	 * instead of their usual targets ({@link #camera()} or {@link #interactiveFrame()}).
 	 */
-	public PSMouseGrabber mouseGrabber() {
+	public MouseGrabber mouseGrabber() {
 		return mouseGrbbr;
 	}
 	
@@ -227,15 +227,15 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	 * Directly defines the {@link #mouseGrabber()}.
 	 * <p> 
 	 * You should not call this method directly as it bypasses the 
-	 * {@link remixlab.proscene.PSMouseGrabber#checkIfGrabsMouse(int, int, PSCamera)}
+	 * {@link remixlab.proscene.MouseGrabber#checkIfGrabsMouse(int, int, Camera)}
 	 * test performed by {@link #mouseMoved(MouseEvent)}.
 	 */
-    protected void setMouseGrabber(PSMouseGrabber mouseGrabber) {
+    protected void setMouseGrabber(MouseGrabber mouseGrabber) {
 		mouseGrbbr = mouseGrabber;
 		
-		mouseGrabberIsAnIFrame = mouseGrabber instanceof PSInteractiveFrame;
+		mouseGrabberIsAnIFrame = mouseGrabber instanceof InteractiveFrame;
 		mouseGrabberIsAnICamFrame = (( mouseGrabber != camera().frame()) &&
-			                         ( mouseGrabber instanceof PSInteractiveCameraFrame ));		
+			                         ( mouseGrabber instanceof InteractiveCameraFrame ));		
 	}
 	
 	// 2. State of the viewer
@@ -302,10 +302,10 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	 * Toggles the {@link #camera()} type between PERSPECTIVE and ORTHOGRAPHIC.
 	 */
 	public void toggleCameraType() {
-		if ( camera().type() == PSCamera.Type.PERSPECTIVE )
-			setCameraType(PSCamera.Type.ORTHOGRAPHIC);
+		if ( camera().type() == Camera.Type.PERSPECTIVE )
+			setCameraType(Camera.Type.ORTHOGRAPHIC);
 		else
-			setCameraType(PSCamera.Type.PERSPECTIVE);		
+			setCameraType(Camera.Type.PERSPECTIVE);		
 	}
 	
 	/**
@@ -403,7 +403,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	 * not initialized in {@code PApplet.setup()}. The default implementation is empty.
 	 * <p>
 	 * Typical usage include {@link #camera()} initialization ({@link #showEntireScene()}) and
-	 * PScene state setup ({@link #setAxisIsDrawn(boolean)}, {@link #setGridIsDrawn(boolean)}
+	 * Scene state setup ({@link #setAxisIsDrawn(boolean)}, {@link #setGridIsDrawn(boolean)}
 	 * {@link #setHelpIsDrawn(boolean)}).
 	 */
 	public void init() {}
@@ -411,7 +411,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	/** Main paint method.
 	 * <p>
 	 * Calls the following methods, in that order:<br>
-	 * {@link #beginDraw()}: Sets processing camera parameters from the PSCamera and displays
+	 * {@link #beginDraw()}: Sets processing camera parameters from the Camera and displays
 	 * axis and grid accordingly to user flags. <br>
 	 * {@link #scene()}: Main drawing method that could be overloaded.  <br>
 	 * {@link #endDraw()}: Displays some visual hints, such the {@link #help()} text.
@@ -438,8 +438,8 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	
 	/** The method that actually defines the scene.
 	 * <p>
-	 * If you build a class that inherits from PScene, this is the method you should overload,
-	 * but no if you instantiate your own PScene object (in this case you should just overload
+	 * If you build a class that inherits from Scene, this is the method you should overload,
+	 * but no if you instantiate your own Scene object (in this case you should just overload
 	 * {@code PApplet.draw()} to define your scene).
 	 * <p> 
 	 * The processing camera set in {@link #beginDraw()} converts from the world to the camera
@@ -476,9 +476,9 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	 * Convenience wrapper function that simply calls {@code camera().sceneRadius()}
 	 * 
 	 * @see #setSceneRadius(float)
-	 * @see #sceneCenter()
+	 * @see #center()
 	 */
-	public float sceneRadius () {
+	public float radius () {
 		return camera().sceneRadius();
 	} 
 	
@@ -488,14 +488,14 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	 * Convenience wrapper function that simply calls {@code camera().sceneCenter()}
 	 * 
 	 * @see #setSceneCenter(PVector)
-	 * {@link #sceneRadius()}
+	 * {@link #radius()}
 	 */
-	public PVector sceneCenter () {
+	public PVector center () {
 		return camera().sceneCenter();
 	} 
 	
 	/**
-	 * Sets the {@link #sceneRadius()} of the PScene. 
+	 * Sets the {@link #radius()} of the Scene. 
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code camera().setSceneRadius(radius)}
 	 * 
@@ -506,7 +506,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	}
 	
 	/**
-	 * Sets the {@link #sceneCenter()} of the PScene. 
+	 * Sets the {@link #center()} of the Scene. 
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code }
 	 * 
@@ -517,7 +517,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	}
 	
 	/**
-	 * Sets the {@link #sceneCenter()} and {@link #sceneRadius()} of the PScene from the
+	 * Sets the {@link #center()} and {@link #radius()} of the Scene from the
 	 * {@code min} and {@code max} PVectors. 
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code camera().setSceneBoundingBox(min,max)}
@@ -532,7 +532,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	/**
 	 * Convenience wrapper function that simply calls {@code camera().showEntireScene()}
 	 * 
-	 * @see remixlab.proscene.PSCamera#showEntireScene()
+	 * @see remixlab.proscene.Camera#showEntireScene()
 	 */
 	public void showEntireScene () {
 		camera().showEntireScene();
@@ -543,14 +543,14 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	/**
 	 * Returns the current {@link #camera()} type.
 	 */
-	public final PSCamera.Type cameraType() {
+	public final Camera.Type cameraType() {
 		return camera().type();
 	}
 	
 	/**
 	 * Sets the {@link #camera()} type.
 	 */
-	public void setCameraType(PSCamera.Type type) {
+	public void setCameraType(Camera.Type type) {
 		if ( type != camera().type() ) {
 			camera().setType(type);		
 		}
@@ -651,7 +651,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	}
 	
 	/**
-	 * Sets the interactivity to the PScene {@link #interactiveFrame()} instance according to {@code draw}
+	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance according to {@code draw}
 	 */
     public void setDrawInteractiveFrame(boolean draw) {
     	if (draw && (glIFrame == null))
@@ -769,7 +769,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	public static void drawArrow(PVector from, PVector to, float radius) {
 		parent.pushMatrix();
 		parent.translate(from.x,from.y,from.z);		
-		parent.applyMatrix(new PSQuaternion(new PVector(0,0,1), PVector.sub(to, from)).matrix());		
+		parent.applyMatrix(new Quaternion(new PVector(0,0,1), PVector.sub(to, from)).matrix());		
 		drawArrow(PVector.sub(to, from).mag(), radius);
 		parent.popMatrix();
 	}
@@ -835,7 +835,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 		PVector v2 = new PVector();		
 		float halfWidthSpace;
 		float halfHeightSpace;		
-		if( camera().type() == PSCamera.Type.PERSPECTIVE ) {							
+		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
 			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * z;
 			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * z;
 		}
@@ -904,7 +904,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 		PVector v1 = new PVector();
 		float halfWidthSpace;
 		float halfHeightSpace;
-		if( camera().type() == PSCamera.Type.PERSPECTIVE ) {
+		if( camera().type() == Camera.Type.PERSPECTIVE ) {
 			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * z;
 			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * z;
 		} else {
@@ -962,9 +962,9 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	/**
 	 * Implementation of the MouseMotionListener interface method.
 	 * <p>
-	 * Sets the PSCamera from processing camera parameters.
+	 * Sets the Camera from processing camera parameters.
 	 * <p>
-	 * {@link #setMouseGrabber(PSMouseGrabber)} to the PSMouseGrabber that grabs
+	 * {@link #setMouseGrabber(MouseGrabber)} to the MouseGrabber that grabs
 	 * the mouse (or to {@code null} if none of them grab it).
 	 */
 	public void mouseMoved(MouseEvent event) {
@@ -980,7 +980,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 		//need in order to make mousewheel work properly 
 		setMouseGrabber(null);
 		
-		for (PSMouseGrabber mg: PSMouseGrabber.MouseGrabberPool) {
+		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
 			mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if(mg.grabsMouse())
 				setMouseGrabber(mg);
@@ -991,7 +991,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	/** Implementation of the MouseMotionListener interface method.
 	 * <p>
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
-	 * {@link remixlab.proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)} is called.
+	 * {@link remixlab.proscene.MouseGrabber#mousePressEvent(MouseEvent, Camera)} is called.
 	 * Otherwise, the {@link #camera()} or the {@link #interactiveFrame()} interprets
 	 * the mouse displacements,	depending on mouse bindings.
 	 * 
@@ -1005,23 +1005,23 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	    	fCorner = event.getPoint();
 	    	lCorner = event.getPoint();
 			zoomOnRegion = true;
-			camera().frame().startAction(PScene.MouseAction.ZOOM_ON_REGION, withConstraint);			
+			camera().frame().startAction(Scene.MouseAction.ZOOM_ON_REGION, withConstraint);			
 		}
 	    if (event.isControlDown()) {
 	    	fCorner = event.getPoint();
 	    	rotateScreen = true;
-	    	camera().frame().startAction(PScene.MouseAction.SCREEN_ROTATE, withConstraint);
+	    	camera().frame().startAction(Scene.MouseAction.SCREEN_ROTATE, withConstraint);
 	    }
 	    if (event.isAltGraphDown()) {
 	    	translateScreen = true;
-	    	camera().frame().startAction(PScene.MouseAction.SCREEN_TRANSLATE, withConstraint);
+	    	camera().frame().startAction(Scene.MouseAction.SCREEN_TRANSLATE, withConstraint);
 	    }
 	    camera().frame().mousePressEvent(event, camera());
 	    }
 		else
 		if ( mouseGrabber() != null ) {
 			if ( mouseGrabberIsAnIFrame ) {				
-				PSInteractiveFrame iFrame = (PSInteractiveFrame)(mouseGrabber());
+				InteractiveFrame iFrame = (InteractiveFrame)(mouseGrabber());
 				if ( mouseGrabberIsAnICamFrame ) {
 					//TODO: implement me
 					//iFrame.startAction(action);
@@ -1114,7 +1114,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 				if ( mouseGrabberIsAnICamFrame )
 					//TODO: implement me
 					//mouseGrabber().mouseMoveEvent(event, camera());
-					((PSInteractiveFrame)mouseGrabber()).mouseMoveEvent(event, camera());
+					((InteractiveFrame)mouseGrabber()).mouseMoveEvent(event, camera());
 				else
 					mouseGrabber().mouseMoveEvent(event, camera());
 			else
@@ -1148,7 +1148,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 		if (mouseGrabber() != null ) {
     		if ( mouseGrabberIsAnICamFrame )
     			//mouseGrabber().mouseReleaseEvent(event, camera());
-    			((PSInteractiveFrame)mouseGrabber()).mouseReleaseEvent(event, camera());
+    			((InteractiveFrame)mouseGrabber()).mouseReleaseEvent(event, camera());
     		else
     			mouseGrabber().mouseReleaseEvent(event, camera());
     		mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() , camera());
@@ -1235,7 +1235,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 		if ( readyToGo ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
-				PSInteractiveFrame iFrame = (PSInteractiveFrame)mouseGrabber();
+				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
 				if ( mouseGrabberIsAnICamFrame ) {
 					//TODO: implement me
 				}
@@ -1268,9 +1268,9 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	// 10. Processing objects
 	
 	/**
-	 * Sets the processing camera projection matrix from {@link #camera()} (PSCamera).
+	 * Sets the processing camera projection matrix from {@link #camera()} (Camera).
 	 * Calls {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
-	 * {@link remixlab.proscene.PSCamera#type()}. 
+	 * {@link remixlab.proscene.Camera#type()}. 
 	 */
 	protected void setPCameraProjection() {
 		switch (camera().type()) {
@@ -1287,7 +1287,7 @@ public class PScene implements MouseWheelListener, MouseInputListener, PConstant
 	}
 	
 	/**
-	 * Sets the processing camera matrix from {@link #camera()} (PSCamera).
+	 * Sets the processing camera matrix from {@link #camera()} (Camera).
 	 * Simply calls {@code PApplet.camera()}.
 	 */
 	protected void setPCameraMatrix() {

@@ -5,16 +5,16 @@
  * This class is part of the Mouse Grabber example.
  *
  * Any object that needs to be "pickable" (such as the Box), should be
- * attached to its own PSInteractiveFrame. That's all there is to it.
+ * attached to its own InteractiveFrame. That's all there is to it.
  *
  * The built-in picking proscene mechanism actually works as follows. At
- * instantiation time all PSInteractiveFrame objects are added to a mouse
- * grabber pool. PScene parses this pool every frame to check if the mouse
- * grabs a PSInteractiveFrame by projecting its origin onto the screen.
+ * instantiation time all InteractiveFrame objects are added to a mouse
+ * grabber pool. Scene parses this pool every frame to check if the mouse
+ * grabs a InteractiveFrame by projecting its origin onto the screen.
  * If the mouse position is close enough to that projection (default
  * implementation gives a 10 pixel tolerance), the object will be picked. 
  *
- * Override PSInteractiveFrame.checkIfGrabsMouse if you need a more
+ * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
@@ -22,22 +22,22 @@
 
 public class Box {
   PApplet parent;
-  PSInteractiveFrame psIFrame;
+  InteractiveFrame iFrame;
 	
   Box(PApplet p) {
     parent = p;
-    psIFrame = new PSInteractiveFrame();
+    iFrame = new InteractiveFrame();
   }
 	
   public void draw() {
     pushMatrix();
 		
-    //parent.applyMatrix( psIFrame.matrix() );
+    //parent.applyMatrix( iFrame.matrix() );
     //Same as the previous commented line, but a lot more efficient:
-    psIFrame.applyTransformation(parent);
+    iFrame.applyTransformation(parent);
 		
-    PScene.drawAxis(0.3f);
-    if (psIFrame.grabsMouse())
+    Scene.drawAxis(0.3f);
+    if (iFrame.grabsMouse())
       fill(255, 0, 0);
     else
       fill(0,0,255);	  		
@@ -48,6 +48,6 @@ public class Box {
   }
 	
   public void setPosition(PVector pos) {
-    psIFrame.setPosition(pos);
+    iFrame.setPosition(pos);
   }
 }

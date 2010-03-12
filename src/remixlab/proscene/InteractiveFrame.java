@@ -33,19 +33,19 @@ import java.awt.Point;
 import javax.swing.Timer;
 
 /**
- * A PSInteractiveFrame is a PSFrame that can be rotated and translated using the mouse.
+ * A InteractiveFrame is a Frame that can be rotated and translated using the mouse.
  * <p>
  * It converts the mouse motion into a translation and an orientation updates.
- * A PSInteractiveFrame is used to move an object in the scene. Combined with
- * object selection, its PSMouseGrabber properties and a dynamic update of the
- * scene, the PSInteractiveFrame introduces a great reactivity in your
+ * A InteractiveFrame is used to move an object in the scene. Combined with
+ * object selection, its MouseGrabber properties and a dynamic update of the
+ * scene, the InteractiveFrame introduces a great reactivity in your
  * processing applications. 
  */
 
-public class PSInteractiveFrame extends PSFrame
-                                implements PSMouseGrabber, Cloneable {
+public class InteractiveFrame extends Frame
+                                implements MouseGrabber, Cloneable {
 	
-	static boolean horiz = true;//Two simultaneous PSInteractiveFrame require two mice!
+	static boolean horiz = true;//Two simultaneous InteractiveFrame require two mice!
 	
 	/**
 	 * This enum defines the coordinate system convention which is defined as {@code LEFT_HANDED}
@@ -68,17 +68,17 @@ public class PSInteractiveFrame extends PSFrame
 	private int delay;
 	private ActionListener taskPerformer;
 
-	private PSQuaternion spngQuat;
+	private Quaternion spngQuat;
 
 	// Whether the SCREEN_TRANS direction (horizontal or vertical) is fixed or
 	// not.
 	private boolean dirIsFixed;
 
-	// PSMouseGrabber
+	// MouseGrabber
 	private boolean keepsGrabbingMouse;
 
-	protected PScene.MouseAction action;
-	protected PSConstraint prevConstraint; // When manipulation is without
+	protected Scene.MouseAction action;
+	protected Constraint prevConstraint; // When manipulation is without
 	// Constraint.
 	// Previous mouse position (used for incremental updates) and mouse press
 	// position.
@@ -90,14 +90,14 @@ public class PSInteractiveFrame extends PSFrame
 	 * Default constructor.
 	 * <p> 
 	 * The {@link #translation()} is set to (0,0,0), with an identity {@link #rotation()}
-	 * (0,0,0,1) (see PSFrame constructor for details). The different sensitivities are
+	 * (0,0,0,1) (see Frame constructor for details). The different sensitivities are
 	 * set to their default values (see {@link #rotationSensitivity()} ,
 	 * {@link #translationSensitivity()}, {@link #spinningSensitivity()} and
 	 * {@link #wheelSensitivity()}).
 	 */
-	public PSInteractiveFrame() {
+	public InteractiveFrame() {
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
-		action = PScene.MouseAction.NO_MOUSE_ACTION;
+		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		
 		addInMouseGrabberPool();
 		grbsMouse = false;
@@ -124,22 +124,22 @@ public class PSInteractiveFrame extends PSFrame
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
-	 * Calls {@link remixlab.proscene.PSFrame#clone()} and makes a deep
+	 * Calls {@link remixlab.proscene.Frame#clone()} and makes a deep
 	 * copy of the remaining object attributes except for
 	 * {@link #prevConstraint} (which is shallow copied).
 	 * 
-	 * @see remixlab.proscene.PSFrame#clone()
+	 * @see remixlab.proscene.Frame#clone()
 	 */
-	public PSInteractiveFrame clone() {
-		PSInteractiveFrame clonedPSiFrame = (PSInteractiveFrame) super.clone();
-		clonedPSiFrame.prevPos = new Point(prevPos.x, prevPos.y);
-		clonedPSiFrame.pressPos = new Point(pressPos.x, pressPos.y);
-		clonedPSiFrame.spngTimer = new Timer(10, taskPerformer);
-		return clonedPSiFrame;
+	public InteractiveFrame clone() {
+		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
+		clonedIFrame.prevPos = new Point(prevPos.x, prevPos.y);
+		clonedIFrame.pressPos = new Point(pressPos.x, pressPos.y);
+		clonedIFrame.spngTimer = new Timer(10, taskPerformer);
+		return clonedIFrame;
 	}
 	
 	/**
-	 * Returns the coordinate system convention used by this PSInteractiveFrame.
+	 * Returns the coordinate system convention used by this InteractiveFrame.
 	 * 
 	 * @see #setCoordinateSystemConvention(CoordinateSystemConvention)
 	 */
@@ -148,7 +148,7 @@ public class PSInteractiveFrame extends PSFrame
 	}
 	
 	/**
-	 * Defines the coordinate system convention of this PSInteractiveFrame, i.e.,
+	 * Defines the coordinate system convention of this InteractiveFrame, i.e.,
 	 * how mouse displacements are mapped into the virtual world.
 	 * 
 	 * @see #coordinateSystemConvention()
@@ -158,21 +158,21 @@ public class PSInteractiveFrame extends PSFrame
 	}
 	
 	/**
-	 * See {@link remixlab.proscene.PSMouseGrabber#getMouseGrabberPool()}.
+	 * See {@link remixlab.proscene.MouseGrabber#getMouseGrabberPool()}.
 	 */
-	public List<PSMouseGrabber> getMouseGrabberPool() {
-		return PSMouseGrabber.MouseGrabberPool;		
+	public List<MouseGrabber> getMouseGrabberPool() {
+		return MouseGrabber.MouseGrabberPool;		
 	}
 	
 	/**
-	 * Implementation of the PSMouseGrabber main method. 
+	 * Implementation of the MouseGrabber main method. 
 	 * <p> 
-	 * The PSInteractiveFrame {@link #grabsMouse()} when the mouse is within a
+	 * The InteractiveFrame {@link #grabsMouse()} when the mouse is within a
 	 * 10 pixels region around its
-	 * {@link remixlab.proscene.PSCamera#projectedCoordinatesOf(PVector)}
+	 * {@link remixlab.proscene.Camera#projectedCoordinatesOf(PVector)}
 	 * {@link #position()}.
 	 */
-	public void checkIfGrabsMouse(int x, int y, PSCamera camera) {
+	public void checkIfGrabsMouse(int x, int y, Camera camera) {
 		int threshold = 10;
 		PVector proj = camera.projectedCoordinatesOf(position());
 		
@@ -181,10 +181,10 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Returns {@code true} when the PSMouseGrabber grabs the PScene's mouse events. 
+	 * Returns {@code true} when the MouseGrabber grabs the Scene's mouse events. 
 	 * <p> 
 	 * This flag is set with {@link #setGrabsMouse(boolean)} by the
-	 * {@link #checkIfGrabsMouse(int, int, PSCamera)} method.
+	 * {@link #checkIfGrabsMouse(int, int, Camera)} method.
 	 */
 	public boolean grabsMouse() {
 		return grbsMouse;
@@ -192,62 +192,62 @@ public class PSInteractiveFrame extends PSFrame
 	
 	/**
 	 * Sets the {@link #grabsMouse()} flag. Normally used by
-	 * {@link #checkIfGrabsMouse(int, int, PSCamera)}.
+	 * {@link #checkIfGrabsMouse(int, int, Camera)}.
 	 */
 	public void setGrabsMouse(boolean grabs) {
 		grbsMouse = grabs;
 	}
 	
 	/**
-	 * Returns {@code true} if the PSMouseGrabber is currently in the
+	 * Returns {@code true} if the MouseGrabber is currently in the
 	 * {@link #mouseGrabberPool()} list. 
 	 * <p> 
 	 * Default value is {@code true}. When set to {@code false} using
-	 * {@link #removeFromMouseGrabberPool()}, the PScene no longer
-	 * {@link #checkIfGrabsMouse(int, int, PSCamera)} on this PSMouseGrabber.
+	 * {@link #removeFromMouseGrabberPool()}, the Scene no longer
+	 * {@link #checkIfGrabsMouse(int, int, Camera)} on this MouseGrabber.
 	 * Use {@link #addInMouseGrabberPool()} to insert it back.
 	 */
     public boolean isInMouseGrabberPool() {
-		return PSMouseGrabber.MouseGrabberPool.contains(this);
+		return MouseGrabber.MouseGrabberPool.contains(this);
     }
     
 	/**
-	 * Adds the PSMouseGrabber in the {@link #mouseGrabberPool()}. 
+	 * Adds the MouseGrabber in the {@link #mouseGrabberPool()}. 
 	 * <p> 
-	 * All created PSMouseGrabber are automatically added in the
+	 * All created MouseGrabber are automatically added in the
 	 * {@link #mouseGrabberPool()} by the constructor. Trying to add a
-	 * PSMouseGrabber that already {@link #isInMouseGrabberPool()} has no effect. 
+	 * MouseGrabber that already {@link #isInMouseGrabberPool()} has no effect. 
 	 * <p> 
-	 * Use {@link #removeFromMouseGrabberPool()} to remove the PSMouseGrabber
+	 * Use {@link #removeFromMouseGrabberPool()} to remove the MouseGrabber
 	 * from the list, so that it is no longer tested with
-	 * {@link #checkIfGrabsMouse(int, int, PSCamera)} by the PScene, and hence
+	 * {@link #checkIfGrabsMouse(int, int, Camera)} by the Scene, and hence
 	 * can no longer grab mouse focus. Use {@link #isInMouseGrabberPool()} to know
-	 * the current state of the PSMouseGrabber.
+	 * the current state of the MouseGrabber.
 	 */
     public void addInMouseGrabberPool() {    	
 		if (!isInMouseGrabberPool())
-			PSMouseGrabber.MouseGrabberPool.add(this);
+			MouseGrabber.MouseGrabberPool.add(this);
     }
     
 	/**
-	 * Removes the PSMouseGrabber from the {@link #mouseGrabberPool()}. 
+	 * Removes the MouseGrabber from the {@link #mouseGrabberPool()}. 
 	 * <p> 
-	 * See {@link #addInMouseGrabberPool()} for details. Removing a PSMouseGrabber
+	 * See {@link #addInMouseGrabberPool()} for details. Removing a MouseGrabber
 	 * that is not in {@link #mouseGrabberPool()} has no effect.
 	 */
     public void removeFromMouseGrabberPool() {
-    	PSMouseGrabber.MouseGrabberPool.remove(this);
+    	MouseGrabber.MouseGrabberPool.remove(this);
     }
     
 	/**
 	 * Clears the {@link #mouseGrabberPool()}. 
 	 * <p> 
 	 * Use this method only if it is faster to clear the {@link #mouseGrabberPool()}
-	 * and then to add back a few PSMouseGrabbers than to remove each one independently.
-	 * Use PScene.setMouseTracking(false) instead if you want to disable mouse grabbing.
+	 * and then to add back a few MouseGrabbers than to remove each one independently.
+	 * Use Scene.setMouseTracking(false) instead if you want to disable mouse grabbing.
 	 */
     public void clearMouseGrabberPool() {
-		PSMouseGrabber.MouseGrabberPool.clear();
+		MouseGrabber.MouseGrabberPool.clear();
     }
     
 	/**
@@ -279,12 +279,12 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Returns the influence of a mouse displacement on the PSInteractiveFrame
+	 * Returns the influence of a mouse displacement on the InteractiveFrame
 	 * rotation. 
 	 * <p> 
 	 * Default value is 8.0. With an identical mouse displacement, a higher
 	 * value will generate a larger rotation (and inversely for lower values). A
-	 * 0.0 value will forbid PSInteractiveFrame mouse rotation (see also 
+	 * 0.0 value will forbid InteractiveFrame mouse rotation (see also 
 	 * {@link #constraint()}).
 	 * 
 	 * @see #setRotationSensitivity(float)
@@ -297,23 +297,23 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Returns the influence of a mouse displacement on the PSInteractiveFrame
+	 * Returns the influence of a mouse displacement on the InteractiveFrame
 	 * translation. 
 	 * <p> 
 	 * Default value is 1.0. You should not have to modify this value, since
-	 * with 1.0 the PSInteractiveFrame precisely stays under the mouse cursor. 
+	 * with 1.0 the InteractiveFrame precisely stays under the mouse cursor. 
 	 * <p> 
 	 * With an identical mouse displacement, a higher value will generate a
 	 * larger translation (and inversely for lower values). A 0.0 value will
-	 * forbid PSInteractiveFrame mouse translation (see also {@link #constraint()}). 
+	 * forbid InteractiveFrame mouse translation (see also {@link #constraint()}). 
 	 * <p> 
-	 * <b>Note:</b> When the PSInteractiveFrame is used to move a <i>Camera</i>
-	 * (see the PSInteractiveCameraFrame class documentation), after zooming on
+	 * <b>Note:</b> When the InteractiveFrame is used to move a <i>Camera</i>
+	 * (see the InteractiveCameraFrame class documentation), after zooming on
 	 * a small region of your scene, the camera may translate too fast. For a
-	 * camera, it is the PSCamera.revolveAroundPoint() that exactly matches the
+	 * camera, it is the Camera.revolveAroundPoint() that exactly matches the
 	 * mouse displacement. Hence, instead of changing the
 	 * {@link #translationSensitivity()}, solve the problem by (temporarily) setting
-	 * the {@link remixlab.proscene.PSCamera#revolveAroundPoint()} to a point
+	 * the {@link remixlab.proscene.Camera#revolveAroundPoint()} to a point
 	 * on the zoomed region).
 	 * 
 	 * @see #setTranslationSensitivity(float)
@@ -327,7 +327,7 @@ public class PSInteractiveFrame extends PSFrame
 
 	/**
 	 * Returns the minimum mouse speed required (at button release) to make the
-	 * PSInteractiveFrame {@link #spin()}.
+	 * InteractiveFrame {@link #spin()}.
 	 * <p> 
 	 * See {@link #spin()}, {@link #spinningQuaternion()} and
 	 * {@link #startSpinning(int)} for details. 
@@ -363,10 +363,10 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Returns {@code true} when the PSInteractiveFrame is spinning. 
+	 * Returns {@code true} when the InteractiveFrame is spinning. 
 	 * <p> 
-	 * During spinning, {@link #spin()} rotates the PSInteractiveFrame by its
-	 * {@link #spinningQuaternion()} at a frequency defined when the PSInteractiveFrame
+	 * During spinning, {@link #spin()} rotates the InteractiveFrame by its
+	 * {@link #spinningQuaternion()} at a frequency defined when the InteractiveFrame
 	 * {@link #startSpinning(int)}. 
 	 * <p> 
 	 * Use {@link #startSpinning(int)} and {@link #stopSpinning()} to change this state.
@@ -378,34 +378,34 @@ public class PSInteractiveFrame extends PSFrame
 
 	/**
 	 * Returns the incremental rotation that is applied by {@link #spin()} to the
-	 * PSInteractiveFrame orientation when it {@link #isSpinning()}. 
+	 * InteractiveFrame orientation when it {@link #isSpinning()}. 
 	 * <p> 
-	 * Default value is a {@code null} rotation (identity PSQuaternion). Use
-	 * {@link #setSpinningQuaternion(PSQuaternion)} to change this value. 
+	 * Default value is a {@code null} rotation (identity Quaternion). Use
+	 * {@link #setSpinningQuaternion(Quaternion)} to change this value. 
 	 * <p> 
-	 * The {@link #spinningQuaternion()} axis is defined in the PSInteractiveFrame
+	 * The {@link #spinningQuaternion()} axis is defined in the InteractiveFrame
 	 * coordinate system. You can use
-	 * {@link remixlab.proscene.PSFrame#transformOfFrom(PVector, PSFrame)} to
-	 * convert this axis from an other PSFrame coordinate system.
+	 * {@link remixlab.proscene.Frame#transformOfFrom(PVector, Frame)} to
+	 * convert this axis from an other Frame coordinate system.
 	 */
-	public final PSQuaternion spinningQuaternion() {
+	public final Quaternion spinningQuaternion() {
 		return spngQuat;
 	}
 
 	/**
 	 * Defines the {@link #spinningQuaternion()}. Its axis is defined in the
-	 * PSInteractiveFrame coordinate system.
+	 * InteractiveFrame coordinate system.
 	 */
-	public final void setSpinningQuaternion(PSQuaternion spinningQuaternion) {
+	public final void setSpinningQuaternion(Quaternion spinningQuaternion) {
 		spngQuat = spinningQuaternion;
 	}
 	
 	/**
-	 * Returns {@code true} when the PSInteractiveFrame is being manipulated with the mouse.
+	 * Returns {@code true} when the InteractiveFrame is being manipulated with the mouse.
 	 * Can be used to change the display of the manipulated object during manipulation.
 	 */
 	boolean isInInteraction() {
-		return action != PScene.MouseAction.NO_MOUSE_ACTION;
+		return action != Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 
 	/**
@@ -418,10 +418,10 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Starts the spinning of the PSInteractiveFrame. 
+	 * Starts the spinning of the InteractiveFrame. 
 	 * <p> 
 	 * This method starts a timer that will call {@link #spin()} every {@code
-	 * updateInterval} milliseconds. The PSInteractiveFrame
+	 * updateInterval} milliseconds. The InteractiveFrame
 	 * {@link #isSpinning()} until you call {@link #stopSpinning()}.
 	 */
 	public void startSpinning(int updateInterval) {
@@ -431,24 +431,24 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Rotates the PSInteractiveFrame by its {@link #spinningQuaternion()}.
-	 * Called by a timer when the PSInteractiveFrame {@link #isSpinning()}.
+	 * Rotates the InteractiveFrame by its {@link #spinningQuaternion()}.
+	 * Called by a timer when the InteractiveFrame {@link #isSpinning()}.
 	 */
 	public void spin() {
 		rotate(spinningQuaternion());
 	}
 	
 	/**
-	 * Initiates the PSInteractiveFrame mouse manipulation. 
+	 * Initiates the InteractiveFrame mouse manipulation. 
 	 * Overloading of
-	 * {@link remixlab.proscene.PSMouseGrabber#mousePressEvent(MouseEvent, PSCamera)}.
+	 * {@link remixlab.proscene.MouseGrabber#mousePressEvent(MouseEvent, Camera)}.
 	 * 
 	 * The mouse behavior depends on which button is pressed.
 	 * 
-	 * @see #mouseMoveEvent(MouseEvent, PSCamera)
-	 * @see #mouseReleaseEvent(MouseEvent, PSCamera)
+	 * @see #mouseMoveEvent(MouseEvent, Camera)
+	 * @see #mouseReleaseEvent(MouseEvent, Camera)
 	 */	
-	public void mousePressEvent(MouseEvent event, PSCamera camera) {		
+	public void mousePressEvent(MouseEvent event, Camera camera) {		
 		if (grabsMouse())
 			keepsGrabbingMouse = true;
 		
@@ -456,17 +456,17 @@ public class PSInteractiveFrame extends PSFrame
 	}
 
 	/**
-	 * Modifies the PSInteractiveFrame according to the mouse motion. 
+	 * Modifies the InteractiveFrame according to the mouse motion. 
 	 * <p>  
-	 * Actual behavior depends on mouse bindings. See the PScene documentation for details. 
+	 * Actual behavior depends on mouse bindings. See the Scene documentation for details. 
 	 * <p> 
 	 * The {@code camera} is used to fit the mouse motion with the display parameters.
 	 * 
-	 * @see remixlab.proscene.PSCamera#screenWidth()
-	 * @see remixlab.proscene.PSCamera#screenHeight()
-	 * @see remixlab.proscene.PSCamera#fieldOfView()
+	 * @see remixlab.proscene.Camera#screenWidth()
+	 * @see remixlab.proscene.Camera#screenHeight()
+	 * @see remixlab.proscene.Camera#fieldOfView()
 	*/
-	public void mouseMoveEvent(MouseEvent event, PSCamera camera) {
+	public void mouseMoveEvent(MouseEvent event, Camera camera) {
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 			deltaY = prevPos.y - event.getY();
@@ -515,11 +515,11 @@ public class PSInteractiveFrame extends PSFrame
 			float prev_angle = PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
 			float angle = PApplet.atan2(event.getY()-trans.y, event.getX()-trans.x);
 			PVector axis = transformOf(camera.frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f)));
-			PSQuaternion rot;
+			Quaternion rot;
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
-				rot = new PSQuaternion(axis, prev_angle-angle);
+				rot = new Quaternion(axis, prev_angle-angle);
 			else
-				rot = new PSQuaternion(axis, angle-prev_angle);
+				rot = new Quaternion(axis, angle-prev_angle);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
 			computeMouseSpeed(event);
 			setSpinningQuaternion(rot);
@@ -558,7 +558,7 @@ public class PSInteractiveFrame extends PSFrame
 		
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(position());
-			PSQuaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
+			Quaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
 			trans.set(-rot.x, -rot.y, -rot.z);
 			trans = camera.frame().orientation().rotate(trans);
 			trans = transformOf(trans);
@@ -573,21 +573,21 @@ public class PSInteractiveFrame extends PSFrame
 			}
 		
 		case NO_MOUSE_ACTION:
-			// Possible when the PSInteractiveFrame is a PSMouseGrabber. This method is then called without startAction
+			// Possible when the InteractiveFrame is a MouseGrabber. This method is then called without startAction
 			// because of mouseTracking.
 			break;
 			}
 		
-		if (action != PScene.MouseAction.NO_MOUSE_ACTION) {
+		if (action != Scene.MouseAction.NO_MOUSE_ACTION) {
 			prevPos = event.getPoint();
 		}
 	}
 
 	/**
-	 * Stops the PSInteractiveFrame mouse manipulation. 
+	 * Stops the InteractiveFrame mouse manipulation. 
 	 * <p> 
 	 * Overloading of
-	 * {@link remixlab.proscene.PSMouseGrabber#mouseReleaseEvent(MouseEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.MouseGrabber#mouseReleaseEvent(MouseEvent, Camera)}. 
 	 * <p> 
 	 * If the action was ROTATE MouseAction, a continuous spinning is possible if the speed
 	 * of the mouse cursor is larger than {@link #spinningSensitivity()} when the button is
@@ -596,28 +596,28 @@ public class PSInteractiveFrame extends PSFrame
 	 * @see #startSpinning(int)
 	 * @see #isSpinning() 
 	 */
-	public void mouseReleaseEvent(MouseEvent event, PSCamera camera) {		
+	public void mouseReleaseEvent(MouseEvent event, Camera camera) {		
 		keepsGrabbingMouse = false;
 
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		if (((action == PScene.MouseAction.ROTATE) || (action == PScene.MouseAction.SCREEN_ROTATE))
+		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE))
 				&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
 
-		action = PScene.MouseAction.NO_MOUSE_ACTION;
+		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.PSMouseGrabber#mouseDoubleClickEvent(MouseEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.MouseGrabber#mouseDoubleClickEvent(MouseEvent, Camera)}. 
 	 * <p> 
-	 * Left button double click aligns the PSInteractiveFrame with the {@code camera} axis
-	 * (see {@link #alignWithFrame(PSFrame)}). Right button projects the PSInteractiveFrame
+	 * Left button double click aligns the InteractiveFrame with the {@code camera} axis
+	 * (see {@link #alignWithFrame(Frame)}). Right button projects the InteractiveFrame
 	 * on the {@code camera} view direction.
 	 */
-	public void mouseDoubleClickEvent(MouseEvent event, PSCamera camera) {
+	public void mouseDoubleClickEvent(MouseEvent event, Camera camera) {
 		//TODO needs to test: event.getModifiers
 		if ( !event.isAltDown() && !event.isAltGraphDown() && !event.isControlDown() && !event.isMetaDown() && !event.isShiftDown() ); 
 		//if (event.getModifiers() == 0)
@@ -630,14 +630,14 @@ public class PSInteractiveFrame extends PSFrame
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.PSMouseGrabber#mouseWheelEvent(MouseWheelEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.MouseGrabber#mouseWheelEvent(MouseWheelEvent, Camera)}. 
 	 * <p> 
 	 * Using the wheel is equivalent to a ZOOM MouseAction.
 	 * 
 	 * @see #setWheelSensitivity(float)
 	 */
-	public void mouseWheelEvent(MouseWheelEvent event, PSCamera camera) {
-		if (action == PScene.MouseAction.ZOOM) {
+	public void mouseWheelEvent(MouseWheelEvent event, Camera camera) {
+		if (action == Scene.MouseAction.ZOOM) {
 			float wheelSensitivityCoef = 8E-4f;
 			// PVector trans(0.0, 0.0,
 			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
@@ -656,16 +656,16 @@ public class PSInteractiveFrame extends PSFrame
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		action = PScene.MouseAction.NO_MOUSE_ACTION;
+		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 
 	/**
 	 * Protected method that simply calls {@code startAction(action, true)}.
 	 * 
-	 * @see #startAction(PScene.MouseAction, boolean)
+	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
 	protected void startAction(
-			PScene.MouseAction action) {
+			Scene.MouseAction action) {
 		startAction(action, true);
 	}
 
@@ -673,7 +673,7 @@ public class PSInteractiveFrame extends PSFrame
 	 * Protected internal method used to handle mouse events.
 	 */
 	protected void startAction(
-			PScene.MouseAction act,
+			Scene.MouseAction act,
 			boolean withConstraint) {
 		
 		action = act;
@@ -704,7 +704,7 @@ public class PSInteractiveFrame extends PSFrame
 	/**
 	 * Updates mouse speed, measured in pixels/milliseconds. Should be called by
 	 * any method which wants to use mouse speed. Currently used to trigger
-	 * spinning in {@link #mouseReleaseEvent(MouseEvent, PSCamera)}.
+	 * spinning in {@link #mouseReleaseEvent(MouseEvent, Camera)}.
 	 */
 	protected void computeMouseSpeed(MouseEvent event) {		
 		float dist = (float) Point.distance(event.getX(), event.getY(), prevPos.getX(), prevPos.getY());
@@ -746,11 +746,11 @@ public class PSInteractiveFrame extends PSFrame
 	}
 	
 	/**
-	 * Returns a PSQuaternion computed according to the mouse motion.
+	 * Returns a Quaternion computed according to the mouse motion.
 	 * Mouse positions are projected on a deformed ball, centered on
 	 * ({@code cx}, {@code cy}).
 	 */
-	protected PSQuaternion deformedBallQuaternion(int x, int y, float cx, float cy, PSCamera camera) {
+	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy, Camera camera) {
 		// Points on the deformed ball
 		float px = rotationSensitivity() * (prevPos.x - cx) / camera.screenWidth();
 		float py = rotationSensitivity() * (cy - prevPos.y)  / camera.screenHeight();
@@ -763,14 +763,14 @@ public class PSInteractiveFrame extends PSFrame
 		// Should be divided by the projectOnBall size, but it is 1.0
 		PVector axis = p2.cross(p1);
 		 
-		float angle = 2.0f * PApplet.asin(PApplet.sqrt(PSUtility.squaredNorm(axis) / PSUtility.squaredNorm(p1) / PSUtility.squaredNorm(p2)));
+		float angle = 2.0f * PApplet.asin(PApplet.sqrt(Utility.squaredNorm(axis) / Utility.squaredNorm(p1) / Utility.squaredNorm(p2)));
 		
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED) {
 			axis.y = -axis.y;
 			angle=-angle;
 		}
 		
-		return new PSQuaternion(axis, angle);
+		return new Quaternion(axis, angle);
 	}
 	
 	/**
@@ -791,9 +791,9 @@ public class PSInteractiveFrame extends PSFrame
 	
 	/**
 	 * Static version of {@link #getMouseGrabberPool()}. 
-	 * @return {@link PSMouseGrabber#MouseGrabberPool}
+	 * @return {@link MouseGrabber#MouseGrabberPool}
 	 */
-	public static List<PSMouseGrabber> mouseGrabberPool() {
-		return PSMouseGrabber.MouseGrabberPool;
+	public static List<MouseGrabber> mouseGrabberPool() {
+		return MouseGrabber.MouseGrabberPool;
 	}
 }

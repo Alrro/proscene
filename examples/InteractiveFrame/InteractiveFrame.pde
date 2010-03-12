@@ -3,7 +3,7 @@
  * by Jean Pierre Charalambos.
  * 
  * This example illustrates how to add and manipulate and interactive
- * frame to your PScene, which represents one of the three interactive
+ * frame to your Scene, which represents one of the three interactive
  * mechanisms built-in proscene (camera and mouse grabber, being the
  * other two).
  *
@@ -15,29 +15,29 @@
 
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 
-PScene scene;
+Scene scene;
 	
 void setup()	{
   size(640, 360, OPENGL);
-  scene = new PScene(this); 
-  scene.setCameraType(PSCamera.Type.ORTHOGRAPHIC);
-  scene.setSceneRadius(scene.sceneRadius()*1.3f);
+  scene = new Scene(this); 
+  scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+  scene.setSceneRadius(scene.radius()*1.3f);
   scene.showEntireScene();
   scene.setGridIsDrawn(true);
   scene.setAxisIsDrawn(true);
-  // A PScene have a single PSInteractiveFrame (null by default).
+  // A Scene have a single InteractiveFrame (null by default).
   // We set it here. 
-  scene.setInteractiveFrame(new PSInteractiveFrame());
+  scene.setInteractiveFrame(new InteractiveFrame());
   scene.interactiveFrame().translate(new PVector(0.2f, 0.2f, 0));
   scene.setDrawInteractiveFrame(true);
 }
 
 // Your actual scene drawing should be enclosed between the
-// PScene.beginDraw() and PScene.endDraw() pair.
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before PScene.beginDraw()
+  // Should always be defined before Scene.beginDraw()
   background(0);
   scene.beginDraw();
   // Here we are in the world coordinate system.
@@ -51,7 +51,7 @@ void draw() {
   //Same as the previous commented line, but a lot more efficient:
   scene.interactiveFrame().applyTransformation(this);
   // Draw an axis using the GLScene static function
-  PScene.drawAxis();
+  Scene.drawAxis();
   // Draw a second box. This is box is the one attached to the
   // interactive frame
   fill(255, 0, 0);
@@ -61,8 +61,7 @@ void draw() {
 }	
 
 // To take full advantage of proscene 3d navigation power this
-// method should always call PScene.defaultKeyBindings()
+// method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }
-	

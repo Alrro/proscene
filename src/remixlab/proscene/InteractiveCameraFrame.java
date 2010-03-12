@@ -33,23 +33,23 @@ import java.awt.Point;
 import javax.swing.Timer;
 
 /**
- * The PSInteractiveCameraFrame class represents a PSInteractiveFrame with Camera
+ * The InteractiveCameraFrame class represents a InteractiveFrame with Camera
  * specific mouse bindings.
  * <p>
- * A PSInteractiveCameraFrame is a specialization of a PSInteractiveFrame, designed to be set as the
- * {@link PSCamera#frame()}. Mouse motions are basically interpreted in a negated way: when the
- * mouse goes to the right, the PSInteractiveFrame translation goes to the right, while the
- * PSInteractiveCameraCameraFrame has to go to the <i>left</i>, so that the <i>scene</i> seems
+ * A InteractiveCameraFrame is a specialization of a InteractiveFrame, designed to be set as the
+ * {@link Camera#frame()}. Mouse motions are basically interpreted in a negated way: when the
+ * mouse goes to the right, the InteractiveFrame translation goes to the right, while the
+ * InteractiveCameraFrame has to go to the <i>left</i>, so that the <i>scene</i> seems
  * to move to the right.
  * <p>
- * A PSInteractiveCameraFrame rotates around its {@link #revolveAroundPoint()}, which corresponds
- * to the associated {@link PSCamera#revolveAroundPoint()}.
+ * A InteractiveCameraFrame rotates around its {@link #revolveAroundPoint()}, which corresponds
+ * to the associated {@link Camera#revolveAroundPoint()}.
  * <p>
- * A PSInteractiveCameraFrame can also "fly" in the scene. It basically moves forward, and turns
+ * A InteractiveCameraFrame can also "fly" in the scene. It basically moves forward, and turns
  * according to the mouse motion. See {@link #flySpeed()}, {@link #flyUpVector()} and the
- * {@link PScene.MouseAction#MOVE_FORWARD} and {@link PScene.MouseAction#MOVE_BACKWARD}.
+ * {@link Scene.MouseAction#MOVE_FORWARD} and {@link Scene.MouseAction#MOVE_BACKWARD}.
  */
-public class PSInteractiveCameraFrame extends PSInteractiveFrame {
+public class InteractiveCameraFrame extends InteractiveFrame {
 	
 	static PVector flyDisp = new PVector(0.0f, 0.0f, 0.0f);
 	
@@ -68,7 +68,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	 * <p> 
 	 * <b>Attention:</b> Created object is {@link #removeFromMouseGrabberPool()}.
 	 */
-	public PSInteractiveCameraFrame() {
+	public InteractiveCameraFrame() {
 		drvSpd = 0.0f;
 		flyUpVec = new PVector(0.0f, 1.0f, 0.0f);
 		revAroundPnt = new PVector(0.0f, 0.0f, 0.0f);
@@ -87,23 +87,23 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	/**
 	 * Implementation of the clone method. 
 	 * <p> 
-	 * Calls {@link remixlab.proscene.PSInteractiveFrame#clone()} and makes a deep
+	 * Calls {@link remixlab.proscene.InteractiveFrame#clone()} and makes a deep
 	 * copy of the remaining object attributes.
 	 *  
-	 * @see remixlab.proscene.PSInteractiveFrame#clone()
+	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */	
-	public PSInteractiveCameraFrame clone() {
-		PSInteractiveCameraFrame clonedPSiCamFrame = (PSInteractiveCameraFrame) super.clone();
-		clonedPSiCamFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
-		clonedPSiCamFrame.revAroundPnt = new PVector(revAroundPnt.x, revAroundPnt.y, revAroundPnt.z);
-		clonedPSiCamFrame.flyTimer = new Timer(10, taskFlyPerformer);
-		return clonedPSiCamFrame;
+	public InteractiveCameraFrame clone() {
+		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
+		clonedICamFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
+		clonedICamFrame.revAroundPnt = new PVector(revAroundPnt.x, revAroundPnt.y, revAroundPnt.z);
+		clonedICamFrame.flyTimer = new Timer(10, taskFlyPerformer);
+		return clonedICamFrame;
 	}
 	
 	/**
-	 * Overloading of {@link remixlab.proscene.PSInteractiveFrame#spin()}.
+	 * Overloading of {@link remixlab.proscene.InteractiveFrame#spin()}.
 	 * <p> 
-	 * Rotates the PSInteractiveCameraFrame around its #revolveAroundPoint()
+	 * Rotates the InteractiveCameraFrame around its #revolveAroundPoint()
 	 * instead of its origin.
 	 */
 	public void spin() {
@@ -114,14 +114,14 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
      * Returns the fly speed, expressed in processing scene units. 
      * <p> 
      * It corresponds to the incremental displacement that is periodically
-     * applied to the PSInteractiveCameraFrame position when a 
-     * PSGraphcis.MOVE_FORWARD or PSGraphcis.MOVE_BACKWARD
-     * PSScene.MouseAction is proceeded.  
+     * applied to the InteractiveCameraFrame position when a 
+     * Scene.MOVE_FORWARD or Scene.MOVE_BACKWARD
+     * Scene.MouseAction is proceeded.  
      * <p>   
-     * <b>Attention:</b> When the PSInteractiveCameraFrame is set as the
-     * {@link remixlab.proscene.PSCamera#frame()}, this value is set
-     * according to the {@link remixlab.proscene.PScene#sceneRadius()} by
-     * {@link remixlab.proscene.PScene#setSceneRadius(float)}.
+     * <b>Attention:</b> When the InteractiveCameraFrame is set as the
+     * {@link remixlab.proscene.Camera#frame()}, this value is set
+     * according to the {@link remixlab.proscene.Scene#radius()} by
+     * {@link remixlab.proscene.Scene#setSceneRadius(float)}.
      */
     float flySpeed() { 
     	return flySpd; 
@@ -131,8 +131,8 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	 * Sets the flySpeed(), defined in processing scene units. 
 	 * <p> 
 	 * Default value is 0.0, but it is modified according to the
-	 * {@link remixlab.proscene.PScene#sceneRadius()} when the PSInteractiveCameraFrame
-	 * is set as the {@link remixlab.proscene.PSCamera#frame()}.
+	 * {@link remixlab.proscene.Scene#radius()} when the InteractiveCameraFrame
+	 * is set as the {@link remixlab.proscene.Camera#frame()}.
 	 */
     public void setFlySpeed(float speed) { 
     	flySpd = speed;
@@ -141,15 +141,15 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
     /**
      * Returns the up vector used in fly mode, expressed in the world coordinate system. 
      * <p> 
-     * Fly mode corresponds to the {@link remixlab.proscene.PScene.MouseAction#MOVE_FORWARD} and 
-     * {@link remixlab.proscene.PScene.MouseAction#MOVE_BACKWARD} remixlab.proscene.PScene.MouseAction
+     * Fly mode corresponds to the {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD} and 
+     * {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD} remixlab.proscene.Scene.MouseAction
      * bindings. In these modes, horizontal displacements of the
-     * mouse rotate the PSInteractiveCameraFrame around this vector. Vertical
-     * displacements rotate always around the PSCamera {@code X} axis. 
+     * mouse rotate the InteractiveCameraFrame around this vector. Vertical
+     * displacements rotate always around the Camera {@code X} axis. 
      * <p> 
-     * Default value is (0,1,0), but it is updated by the PSCamera when set as its
-     * {@link remixlab.proscene.PSCamera#frame()}. {@link remixlab.proscene.PSCamera#setOrientation(PSQuaternion)}
-     * and {@link remixlab.proscene.PSCamera#setUpVector(PVector)} modify this value and should be used
+     * Default value is (0,1,0), but it is updated by the Camera when set as its
+     * {@link remixlab.proscene.Camera#frame()}. {@link remixlab.proscene.Camera#setOrientation(Quaternion)}
+     * and {@link remixlab.proscene.Camera#setUpVector(PVector)} modify this value and should be used
      * instead. 
      */
     public PVector flyUpVector() {
@@ -159,21 +159,21 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
     /**
      * Sets the {@link #flyUpVector()}, defined in the world coordinate system. 
      * <p> 
-     * Default value is (0,1,0), but it is updated by the PSCamera when
-     * set as its {@link remixlab.proscene.PSCamera#frame()}. Use
-     * {@link remixlab.proscene.PSCamera#setUpVector(PVector)} instead in that case.
+     * Default value is (0,1,0), but it is updated by the Camera when
+     * set as its {@link remixlab.proscene.Camera#frame()}. Use
+     * {@link remixlab.proscene.Camera#setUpVector(PVector)} instead in that case.
      */
     public void setFlyUpVector(PVector up) { 
     	flyUpVec = up;
     }
 	
 	/**
-	 * Returns the point the PSInteractiveCameraFrame revolves around when rotated. 
+	 * Returns the point the InteractiveCameraFrame revolves around when rotated. 
 	 * <p> 
 	 * It is defined in the world coordinate system. Default value is (0,0,0). 
 	 * <p> 
-	 * When the PSInteractiveCameraFrame is associated to a PSCamera,
-	 * {@link remixlab.proscene.PSCamera#revolveAroundPoint()}
+	 * When the InteractiveCameraFrame is associated to a Camera,
+	 * {@link remixlab.proscene.Camera#revolveAroundPoint()}
 	 * also returns this value.
 	 */	
 	public PVector revolveAroundPoint() {
@@ -181,7 +181,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	}
 	
 	/**
-	 * Called for continuous frame motion in fly mode (see PSScene.MOVE_FORWARD).
+	 * Called for continuous frame motion in fly mode (see Scene.MOVE_FORWARD).
 	 */	
 	public void flyUpdate()	{		
 		flyDisp.set(0.0f, 0.0f, 0.0f);
@@ -206,17 +206,17 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	/**
 	 * Protected method that simply calls {@code startAction(action, true)}.
 	 * 
-	 * @see #startAction(PScene.MouseAction, boolean)
+	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
 	protected void startAction(
-			PScene.MouseAction action) {
+			Scene.MouseAction action) {
 		startAction(action, true);
 	}
 	
 	/**
 	 * Protected internal method used to handle mouse events.
 	 */
-	protected void startAction(PScene.MouseAction a, boolean withConstraint) {
+	protected void startAction(Scene.MouseAction a, boolean withConstraint) {
 		super.startAction(a, withConstraint);
 		
 		switch (action) {
@@ -242,14 +242,14 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.PSInteractiveFrame#mouseMoveEvent(MouseEvent, PSCamera)}.
+	 * {@link remixlab.proscene.InteractiveFrame#mouseMoveEvent(MouseEvent, Camera)}.
 	 * 
 	 * <p>
 	 * 
 	 * Motion depends on mouse binding. The resulting displacements are basically inverted
-	 * from those of an PSInteractiveFrame.
+	 * from those of an InteractiveFrame.
 	 */
-	public void mouseMoveEvent(MouseEvent event, PSCamera camera) {		
+	public void mouseMoveEvent(MouseEvent event, Camera camera) {		
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 			deltaY = event.getY() - prevPos.y;
@@ -278,7 +278,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			}
 		
 		case MOVE_FORWARD: {
-			PSQuaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
+			Quaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
 			rotate(rot);
 			//#CONNECTION# wheelEvent MOVE_FORWARD case
 			// actual translation is made in flyUpdate().
@@ -287,7 +287,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			}
 		
 		case MOVE_BACKWARD: {
-			PSQuaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
+			Quaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
 			rotate(rot);
 			// actual translation is made in flyUpdate().
 			//translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
@@ -296,7 +296,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 		
 		case DRIVE: {
 			//TODO: perhaps needs more testing
-			PSQuaternion rot = turnQuaternion(event.getX(), camera);
+			Quaternion rot = turnQuaternion(event.getX(), camera);
 			rotate(rot);
 			// actual translation is made in flyUpdate().
 			drvSpd = 0.01f * -deltaY;
@@ -313,14 +313,14 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			}
 		
 		case LOOK_AROUND: {
-			PSQuaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
+			Quaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
 			rotate(rot);
 			break;
 			}
 		
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(revolveAroundPoint());
-			PSQuaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
+			Quaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
 			computeMouseSpeed(event);
 			setSpinningQuaternion(rot);
@@ -333,7 +333,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			float angle = PApplet.atan2(event.getY() - trans.y, event.getX() - trans.x) - PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 				angle = -angle;
-			PSQuaternion rot = new PSQuaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
+			Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
 			computeMouseSpeed(event);
 			setSpinningQuaternion(rot);
@@ -343,10 +343,10 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			}
 		
 		case ROLL: {
-			float angle = PSQuaternion.PI * (event.getX() - prevPos.x) / camera.screenWidth();
+			float angle = Quaternion.PI * (event.getX() - prevPos.x) / camera.screenWidth();
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 				angle = -angle;
-			PSQuaternion rot = new PSQuaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
+			Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 			rotate(rot);
 			setSpinningQuaternion(rot);
 			updateFlyUpVector();
@@ -383,22 +383,22 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 			break;		
 		}
 		
-		if (action != PScene.MouseAction.NO_MOUSE_ACTION) {
+		if (action != Scene.MouseAction.NO_MOUSE_ACTION) {
 			prevPos = event.getPoint();
 		}
 	}
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.PSInteractiveFrame#mouseReleaseEvent(MouseEvent, PSCamera)}.
+	 * {@link remixlab.proscene.InteractiveFrame#mouseReleaseEvent(MouseEvent, Camera)}.
 	 */	
-	public void mouseReleaseEvent(MouseEvent event, PSCamera camera) {		
-		if ((action == PScene.MouseAction.MOVE_FORWARD)  || 
-			(action == PScene.MouseAction.MOVE_BACKWARD) || 
-			(action == PScene.MouseAction.DRIVE))
+	public void mouseReleaseEvent(MouseEvent event, Camera camera) {		
+		if ((action == Scene.MouseAction.MOVE_FORWARD)  || 
+			(action == Scene.MouseAction.MOVE_BACKWARD) || 
+			(action == Scene.MouseAction.DRIVE))
 		    flyTimer.stop();
 
-		  if (action == PScene.MouseAction.ZOOM_ON_REGION) {
+		  if (action == Scene.MouseAction.ZOOM_ON_REGION) {
 			  //the rectangle needs to be normalized!
 			  int w = PApplet.abs(event.getX() - pressPos.x);			  
 			  int tlX = pressPos.x < event.getX() ? pressPos.x : event.getX();
@@ -412,13 +412,13 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.PSInteractiveFrame#mouseWheelEvent(MouseWheelEvent, PSCamera)}. 
+	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelEvent(MouseWheelEvent, Camera)}. 
 	 * <p>  
 	 * The wheel behavior depends on the wheel binded action. Current possible actions are ZOOM, 
 	 * MOVE_FORWARD, MOVE_BACKWARD. ZOOM speed depends on #wheelSensitivity() MOVE_FORWARD and
 	 * MOVE_BACKWARD depend on #flySpeed().
 	 */
-	public void mouseWheelEvent(MouseWheelEvent event, PSCamera camera) {
+	public void mouseWheelEvent(MouseWheelEvent event, Camera camera) {
 		switch (action) {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
@@ -452,7 +452,7 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 		  flyTimer.setDelay(finalDrawAfterWheelEventDelay);
 		  flyTimer.start();
 
-		  action = PScene.MouseAction.NO_MOUSE_ACTION;
+		  action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 	
 	/**
@@ -465,26 +465,26 @@ public class PSInteractiveCameraFrame extends PSInteractiveFrame {
 	}
 	
 	/**
-	 * Returns a PSQuaternion that is a rotation around current camera Y,
+	 * Returns a Quaternion that is a rotation around current camera Y,
 	 * proportional to the horizontal mouse position.
 	 */
-	private final PSQuaternion turnQuaternion(int x, PSCamera camera)	{
-	  return new PSQuaternion(new PVector(0.0f, 1.0f, 0.0f), rotationSensitivity()*(prevPos.x-x)/camera.screenWidth());
+	private final Quaternion turnQuaternion(int x, Camera camera)	{
+	  return new Quaternion(new PVector(0.0f, 1.0f, 0.0f), rotationSensitivity()*(prevPos.x-x)/camera.screenWidth());
 	}
 
 	/**
-	 * Returns a PSQuaternion that is the composition of two rotations, inferred
+	 * Returns a Quaternion that is the composition of two rotations, inferred
 	 * from the mouse pitch (X axis) and yaw ({@link #flyUpVector()} axis).
 	 */
-	private final PSQuaternion pitchYawQuaternion(int x, int y, PSCamera camera) {
+	private final Quaternion pitchYawQuaternion(int x, int y, Camera camera) {
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 			deltaY = y-prevPos.y;
 		else
 			deltaY = prevPos.y-y;
 		
-		PSQuaternion rotX = new PSQuaternion(new PVector(1.0f, 0.0f, 0.0f), rotationSensitivity()*deltaY/camera.screenHeight());
-	    PSQuaternion rotY = new PSQuaternion(transformOf(flyUpVector()), rotationSensitivity()*(prevPos.x-x)/camera.screenWidth());
-	    return PSQuaternion.multiply(rotY, rotX);
+		Quaternion rotX = new Quaternion(new PVector(1.0f, 0.0f, 0.0f), rotationSensitivity()*deltaY/camera.screenHeight());
+	    Quaternion rotY = new Quaternion(transformOf(flyUpVector()), rotationSensitivity()*(prevPos.x-x)/camera.screenWidth());
+	    return Quaternion.multiply(rotY, rotX);
 	}
 }

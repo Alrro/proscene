@@ -2,7 +2,7 @@
  * Constrained Camera. 
  * by Jean Pierre Charalambos.
  * 
- * This example illustrates how to add constrains (see PSConstraint
+ * This example illustrates how to add constrains (see Constraint
  * related classes) to your frames to limit their motion. All possible
  * constraints are tested here. They can be defined respect to the
  * world or camera frames. Try all the possibilities following the on
@@ -14,13 +14,13 @@
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PVector;
-import proscene.*;
+import remixlab.proscene.*;
 
-PScene scene;
+Scene scene;
 PFont myFont;
 private int transDir;
 private int rotDir;
-PSAxisPlaneConstraint constraints[] = new PSAxisPlaneConstraint[2];
+AxisPlaneConstraint constraints[] = new AxisPlaneConstraint[2];
 int activeConstraint;
 	
 void setup()	{
@@ -29,12 +29,12 @@ void setup()	{
   textFont(myFont);
   textMode(SCREEN);
 		
-  scene = new PScene(this);		
+  scene = new Scene(this);		
 		
-  constraints[0] = new PSWorldConstraint();
-  // Note that a PSCameraConstraint(camera) would produce the same results:
-  // A PSCameraConstraint is a PSLocalConstraint when applied to the camera frame !
-  constraints[1] = new PSLocalConstraint();		
+  constraints[0] = new WorldConstraint();
+  // Note that a CameraConstraint(camera) would produce the same results:
+  // A CameraConstraint is a LocalConstraint when applied to the camera frame!
+  constraints[1] = new LocalConstraint();		
   transDir = 0;
   rotDir   = 0;
   activeConstraint = 0;
@@ -43,26 +43,26 @@ void setup()	{
   scene.setAxisIsDrawn(true);
 }
 	
-static PSAxisPlaneConstraint.Type nextTranslationConstraintType(PSAxisPlaneConstraint.Type type) {
-  PSAxisPlaneConstraint.Type rType;
+static AxisPlaneConstraint.Type nextTranslationConstraintType(AxisPlaneConstraint.Type type) {
+  AxisPlaneConstraint.Type rType;
   switch (type) {
-    case FREE  : rType = PSAxisPlaneConstraint.Type.PLANE; break;
-    case PLANE : rType = PSAxisPlaneConstraint.Type.AXIS;  break;
-    case AXIS  : rType =  PSAxisPlaneConstraint.Type.FORBIDDEN;  break;
-    case FORBIDDEN   : rType = PSAxisPlaneConstraint.Type.FREE; break;
-    default : rType = PSAxisPlaneConstraint.Type.FREE;
+    case FREE  : rType = AxisPlaneConstraint.Type.PLANE; break;
+    case PLANE : rType = AxisPlaneConstraint.Type.AXIS;  break;
+    case AXIS  : rType =  AxisPlaneConstraint.Type.FORBIDDEN;  break;
+    case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
+    default : rType = AxisPlaneConstraint.Type.FREE;
   }
   return rType;
 }
 	
-static PSAxisPlaneConstraint.Type nextRotationConstraintType(PSAxisPlaneConstraint.Type type) {
-  PSAxisPlaneConstraint.Type rType;
+static AxisPlaneConstraint.Type nextRotationConstraintType(AxisPlaneConstraint.Type type) {
+  AxisPlaneConstraint.Type rType;
   switch (type) {
-    case FREE  : rType = PSAxisPlaneConstraint.Type.AXIS; break;
-    case PLANE : rType = PSAxisPlaneConstraint.Type.FREE;  break;
-    case AXIS  : rType =  PSAxisPlaneConstraint.Type.FORBIDDEN;  break;
-    case FORBIDDEN   : rType = PSAxisPlaneConstraint.Type.FREE; break;
-    default : rType = PSAxisPlaneConstraint.Type.FREE;
+    case FREE  : rType = AxisPlaneConstraint.Type.AXIS; break;
+    case PLANE : rType = AxisPlaneConstraint.Type.FREE;  break;
+    case AXIS  : rType =  AxisPlaneConstraint.Type.FORBIDDEN;  break;
+    case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
+    default : rType = AxisPlaneConstraint.Type.FREE;
   }
   return rType;
 }
@@ -80,9 +80,9 @@ void changeConstraint() {
 }
 
 // Your actual scene drawing should be enclosed between the
-// PScene.beginDraw() and PScene.endDraw() pair.
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before PScene.beginDraw()
+  // Should always be defined before Scene.beginDraw()
   background(0);
   scene.beginDraw();
   fill(204, 102, 0);
@@ -92,7 +92,7 @@ void draw() {
   scene.endDraw();
 }	
 	
-void displayType(PSAxisPlaneConstraint.Type type, int x, int y, char c)	{
+void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{
   String textToDisplay = new String();
   switch (type) {
     case FREE:  textToDisplay = "FREE (";
@@ -150,7 +150,7 @@ void displayText() {
 }
 
 // To take full advantage of proscene 3d navigation power this
-// method should always call PScene.defaultKeyBindings()
+// method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 		
@@ -187,4 +187,3 @@ void keyPressed() {
   }
   constraints[activeConstraint].setRotationConstraintDirection(dir);
 }
-	

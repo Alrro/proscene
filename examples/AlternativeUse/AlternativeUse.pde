@@ -10,14 +10,14 @@
 
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 
-Scene scene;	
+MyScene scene;	
 	
 void setup() {
   size(640, 360, OPENGL);
-  // We instantiate our Scene class defined below
-  scene = new Scene(this);			  
+  // We instantiate our MyScene class defined below
+  scene = new MyScene(this);			  
 }
 
 void draw() {
@@ -26,14 +26,14 @@ void draw() {
 }	
   	
 // To take full advantage of proscene 3d navigation power this
-// method should always call PScene.defaultKeyBindings()
+// method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }
 	
-class Scene extends PScene {
+class MyScene extends Scene {
   // We need to call super(p) to instantiate the base class
-  public Scene(PApplet p) {
+  public MyScene(PApplet p) {
     super(p);
   }
 

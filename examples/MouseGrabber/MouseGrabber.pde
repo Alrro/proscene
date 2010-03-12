@@ -13,16 +13,16 @@
 
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 
-PScene scene;
+Scene scene;
 Box [] boxes;
 	
 void setup() {
   size(640, 360, OPENGL);
-  scene = new PScene(this);		
+  scene = new Scene(this);		
   scene.setGridIsDrawn(true);		
-  scene.setCameraType(PSCamera.Type.ORTHOGRAPHIC);
+  scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setSceneRadius(2);		
   scene.showEntireScene();
 		
@@ -34,9 +34,9 @@ void setup() {
 }
 
 // Your actual scene drawing should be enclosed between the
-// PScene.beginDraw() and PScene.endDraw() pair.
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before PScene.beginDraw()
+  // Should always be defined before Scene.beginDraw()
   background(0);
 			
   scene.beginDraw();
@@ -49,7 +49,7 @@ void draw() {
 }
 	
 // To take full advantage of proscene 3d navigation power this
-// method should always call PScene.defaultKeyBindings()
+// method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }
