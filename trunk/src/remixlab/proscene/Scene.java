@@ -54,7 +54,7 @@ import javax.swing.event.*;
  * <p>
  * you would obtain full interactivity to manipulate your scene "for free".
  * <p>
- * If you derive from Scene instead, you should implement {@link #scene()} which
+ * If you derive from Scene instead, you should implement {@link #proscenium()} which
  * defines the objects in your scene. Then all you have to do is to call {@link #draw()}
  * from {@link PApplet#draw()}, e.g., {@code public void draw() {scene.draw();}}
  * (supposing {@code scene} is an instance of the Scene derived class).
@@ -153,7 +153,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		withConstraint = true;
 		
-		showEntireScene();
+		showAll();
 		
 		setAxisIsDrawn(false);
 		setGridIsDrawn(false);
@@ -357,7 +357,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			toggleDrawInteractiveFrame();
 		}
 		if (parent.key == 's' || parent.key == 'S') {
-			showEntireScene();
+			showAll();
 		}
 		if (parent.key == 'w' || parent.key == 'W') {
 			toggleDrawWithConstraint();
@@ -402,7 +402,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * This method is called before the first drawing and should be overloaded to initialize stuff
 	 * not initialized in {@code PApplet.setup()}. The default implementation is empty.
 	 * <p>
-	 * Typical usage include {@link #camera()} initialization ({@link #showEntireScene()}) and
+	 * Typical usage include {@link #camera()} initialization ({@link #showAll()}) and
 	 * Scene state setup ({@link #setAxisIsDrawn(boolean)}, {@link #setGridIsDrawn(boolean)}
 	 * {@link #setHelpIsDrawn(boolean)}).
 	 */
@@ -413,12 +413,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Calls the following methods, in that order:<br>
 	 * {@link #beginDraw()}: Sets processing camera parameters from the Camera and displays
 	 * axis and grid accordingly to user flags. <br>
-	 * {@link #scene()}: Main drawing method that could be overloaded.  <br>
+	 * {@link #proscenium()}: Main drawing method that could be overloaded.  <br>
 	 * {@link #endDraw()}: Displays some visual hints, such the {@link #help()} text.
 	 */
     public void draw() {
 		beginDraw();
-		scene();
+		proscenium();
 		endDraw();
 	}
     
@@ -429,8 +429,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	public void beginDraw() {
 		pg3d = (PGraphics3D) parent.g;  // g may change
 		//TODO would be nice to check if the background was set and set if not (no not set it if yes).
-		setPCameraProjection();
-		setPCameraMatrix();
+		setPProjectionMatrix();
+		setPModelViewMatrix();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());		
@@ -448,7 +448,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * This representation is much more	intuitive than a camera-centric system (which for 
 	 * instance is the standard in OpenGL).
 	 */
-	public void scene() {}
+	public void proscenium() {}
 	
 	/**
 	 * Displays some visual hints, such the {@link #help()} text.
@@ -475,7 +475,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code camera().sceneRadius()}
 	 * 
-	 * @see #setSceneRadius(float)
+	 * @see #setRadius(float)
 	 * @see #center()
 	 */
 	public float radius () {
@@ -487,7 +487,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code camera().sceneCenter()}
 	 * 
-	 * @see #setSceneCenter(PVector)
+	 * @see #setCenter(PVector)
 	 * {@link #radius()}
 	 */
 	public PVector center () {
@@ -499,9 +499,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code camera().setSceneRadius(radius)}
 	 * 
-	 * @see #setSceneCenter(PVector)
+	 * @see #setCenter(PVector)
 	 */
-	public void setSceneRadius (float radius) {
+	public void setRadius (float radius) {
 		camera().setSceneRadius(radius);
 	}
 	
@@ -510,9 +510,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code }
 	 * 
-	 * @see #setSceneRadius(float)
+	 * @see #setRadius(float)
 	 */
-	public void setSceneCenter (PVector center) {
+	public void setCenter (PVector center) {
 		camera().setSceneCenter(center);
 	}
 	
@@ -522,10 +522,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code camera().setSceneBoundingBox(min,max)}
 	 * 
-	 * @see #setSceneRadius(float)
-	 * @see #setSceneCenter(PVector)
+	 * @see #setRadius(float)
+	 * @see #setCenter(PVector)
 	 */
-	public void setSceneBoundingBox (PVector min, PVector max) {
+	public void setBoundingBox (PVector min, PVector max) {
 		camera().setSceneBoundingBox(min,max);
 	}
 	
@@ -534,7 +534,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * 
 	 * @see remixlab.proscene.Camera#showEntireScene()
 	 */
-	public void showEntireScene () {
+	public void showAll () {
 		camera().showEntireScene();
 	}
 	
@@ -1272,7 +1272,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Calls {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
 	 * {@link remixlab.proscene.Camera#type()}. 
 	 */
-	protected void setPCameraProjection() {
+	protected void setPProjectionMatrix() {
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			parent.perspective(camera().fieldOfView(), camera().aspectRatio(),
@@ -1290,7 +1290,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Sets the processing camera matrix from {@link #camera()} (Camera).
 	 * Simply calls {@code PApplet.camera()}.
 	 */
-	protected void setPCameraMatrix() {
+	protected void setPModelViewMatrix() {
 		parent.camera(camera().position().x, camera().position().y, camera().position().z,
 				      camera().at().x, camera().at().y, camera().at().z,
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);

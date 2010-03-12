@@ -121,7 +121,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
      * <b>Attention:</b> When the InteractiveCameraFrame is set as the
      * {@link remixlab.proscene.Camera#frame()}, this value is set
      * according to the {@link remixlab.proscene.Scene#radius()} by
-     * {@link remixlab.proscene.Scene#setSceneRadius(float)}.
+     * {@link remixlab.proscene.Scene#setRadius(float)}.
      */
     float flySpeed() { 
     	return flySpd; 

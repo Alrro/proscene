@@ -27,8 +27,8 @@ void setup() {
   size(640, 360, OPENGL);
   scene = new Scene(this);
   scene.setAxisIsDrawn(true);
-  scene.setSceneRadius(1.5f);		
-  scene.showEntireScene();
+  scene.setRadius(1.5f);		
+  scene.showAll();
 }
 
 // Your actual scene drawing should be enclosed between the
