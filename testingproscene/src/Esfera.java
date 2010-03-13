@@ -1,21 +1,21 @@
 import processing.core.*;
-import proscene.*;
+import remixlab.proscene.*;
 
 public class Esfera {
 	PApplet parent;
-	PSInteractiveFrame psIFrame;
+	remixlab.proscene.InteractiveFrame iFrame;
 	
 	Esfera(PApplet p) {
 		parent = p;
-		psIFrame = new PSInteractiveFrame();
+		iFrame = new remixlab.proscene.InteractiveFrame();
 	}
 	
 	public void draw() {
 		parent.pushMatrix();
-		psIFrame.applyTransformation(parent);
+		iFrame.applyTransformation(parent);
 		
-		PScene.drawAxis(0.3f);
-		if (psIFrame.grabsMouse()) {
+		Scene.drawAxis(0.3f);
+		if (iFrame.grabsMouse()) {
 			parent.fill(255, 0, 0);
 			parent.sphere(0.15f);
 		}
@@ -27,10 +27,10 @@ public class Esfera {
 	}
 	
 	public void setPosition(PVector pos) {
-		psIFrame.setPosition(pos);
+		iFrame.setPosition(pos);
 	}
 	
 	public PVector getPosition() {
-		return psIFrame.position();
+		return iFrame.position();
 	}
 }

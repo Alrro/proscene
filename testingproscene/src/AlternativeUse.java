@@ -1,17 +1,14 @@
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
 public class AlternativeUse extends PApplet {
-	Scene scene;	
+	MyScene scene;	
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
-		//size(640, 360, P3D);
-		//size(300, 200, OPENGL);
-		//size(300, 200, P3D);
-		scene = new Scene(this);			  
+		scene = new MyScene(this);			  
 	}
 
 	public void draw() {
@@ -23,8 +20,8 @@ public class AlternativeUse extends PApplet {
 		scene.defaultKeyBindings();
 	}
 	
-	class Scene extends PScene {
-		public Scene(PApplet p) {
+	class MyScene extends Scene {
+		public MyScene(PApplet p) {
 			super(p);
 		}
 

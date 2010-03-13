@@ -1,18 +1,14 @@
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
-//import codeanticode.glgraphics.*;
+import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
 public class BasicUse extends PApplet {
-	PScene scene;
+	Scene scene;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
-		//size(640, 360, P3D);
-		//size(300, 200, OPENGL);
-		//size(300, 200, P3D);
-		scene = new PScene(this); 
+		scene = new Scene(this); 
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);
 	}

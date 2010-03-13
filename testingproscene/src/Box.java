@@ -1,13 +1,13 @@
 import processing.core.*;
-import proscene.*;
+import remixlab.proscene.*;
 
 public class Box {
 	PApplet parent;
-	PSInteractiveFrame psIFrame;
+	remixlab.proscene.InteractiveFrame iFrame;
 	
 	Box(PApplet p) {
 		parent = p;
-		psIFrame = new PSInteractiveFrame();
+		iFrame = new remixlab.proscene.InteractiveFrame();
 	}
 	
 	public void draw() {
@@ -15,10 +15,10 @@ public class Box {
 		
 		//parent.applyMatrix( glIFrame.pMatrix() );
 		//Same as the previous commented line, but a lot more efficient:
-		psIFrame.applyTransformation(parent);
+		iFrame.applyTransformation(parent);
 		
-		PScene.drawAxis(0.3f);
-		if (psIFrame.grabsMouse())
+		Scene.drawAxis(0.3f);
+		if (iFrame.grabsMouse())
 			parent.fill(255, 0, 0);
 		else
 			parent.fill(0,0,255);		
@@ -29,7 +29,6 @@ public class Box {
 	}
 	
 	public void setPosition(PVector pos) {
-		psIFrame.setPosition(pos);
+		iFrame.setPosition(pos);
 	}
-
 }

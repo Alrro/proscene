@@ -1,11 +1,11 @@
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 //import codeanticode.glgraphics.*;
 
 @SuppressWarnings("serial")
 public class CajasOrientadas extends PApplet {
-	PScene scene;
+	Scene scene;
 	Caja [] cajas;
 	Esfera esfera;
 	
@@ -15,11 +15,11 @@ public class CajasOrientadas extends PApplet {
 		//size(640, 360, P3D);
 		//size(300, 200, OPENGL);
 		//size(300, 200, P3D);
-		scene = new PScene(this);		
+		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
-		scene.setCameraType(PSCamera.Type.ORTHOGRAPHIC);
-		scene.setSceneRadius(2);		
-		scene.showEntireScene();
+		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		scene.setRadius(2);		
+		scene.showAll();
 		
 		esfera = new Esfera(this);
 		esfera.setPosition(new PVector(0.0f, 1.0f, 0.0f));

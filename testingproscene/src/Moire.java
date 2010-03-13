@@ -1,18 +1,18 @@
 import processing.core.PApplet;
 import processing.core.PVector;
-import proscene.*;
+import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
 public class Moire extends PApplet  {
-PScene scene;
+Scene scene;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
 		//size(640, 360, P3D);
-		scene = new PScene(this);
+		scene = new Scene(this);
 		scene.setAxisIsDrawn(true);
-		scene.setSceneRadius(1.5f);		
-		scene.showEntireScene();
+		scene.setRadius(1.5f);		
+		scene.showAll();
 	}
 
 	public void draw() {

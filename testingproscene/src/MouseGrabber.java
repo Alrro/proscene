@@ -1,20 +1,20 @@
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
+import remixlab.proscene.*;
 //import codeanticode.glgraphics.*;
 
 @SuppressWarnings("serial")
 public class MouseGrabber extends PApplet {
-	PScene scene;
+	Scene scene;
 	Box [] boxes;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
-		scene = new PScene(this);		
+		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
-		scene.setCameraType(PSCamera.Type.ORTHOGRAPHIC);
-		scene.setSceneRadius(2);		
-		scene.showEntireScene();
+		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		scene.setRadius(2);		
+		scene.showAll();
 		
 		boxes = new Box[6];
 		for (int i = 0; i < 6; i++) {

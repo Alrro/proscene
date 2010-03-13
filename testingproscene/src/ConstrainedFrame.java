@@ -1,16 +1,16 @@
 import processing.core.PApplet;
 import processing.core.PFont;
 import processing.core.PVector;
-import proscene.*;
+import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
 public class ConstrainedFrame extends PApplet  {
-	PScene scene;
+	Scene scene;
 	PFont myFont;
 	private int transDir;
 	private int rotDir;
-	PSInteractiveFrame frame;
-	PSAxisPlaneConstraint constraints[] = new PSAxisPlaneConstraint[3];
+	remixlab.proscene.InteractiveFrame frame;
+	AxisPlaneConstraint constraints[] = new AxisPlaneConstraint[3];
 	int activeConstraint;
 	
 	public void setup()	{
@@ -19,46 +19,46 @@ public class ConstrainedFrame extends PApplet  {
 		textFont(myFont);
 		textMode(SCREEN);
 		
-		scene = new PScene(this);
-		scene.setCameraType(PSCamera.Type.ORTHOGRAPHIC);
+		scene = new Scene(this);
+		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setAxisIsDrawn(true);
 		
-		constraints[0] = new PSLocalConstraint();
+		constraints[0] = new LocalConstraint();
 		// Note that a CameraConstraint(camera) would produce the same results:
 		// A CameraConstraint is a LocalConstraint when applied to the camera frame !
-		constraints[1] = new PSWorldConstraint();
-		constraints[2] = new PSCameraConstraint(scene.camera());
+		constraints[1] = new WorldConstraint();
+		constraints[2] = new CameraConstraint(scene.camera());
 		transDir = 0;
 		rotDir   = 0;
 		activeConstraint = 0;
 		
-		frame = new PSInteractiveFrame();
+		frame = new remixlab.proscene.InteractiveFrame();
 		frame.translate(new PVector(0.2f, 0.2f, 0));
 		scene.setInteractiveFrame(frame);			
 		frame.setConstraint(constraints[activeConstraint]);
 		scene.setDrawInteractiveFrame(true);	
 	}
 	
-	public static PSAxisPlaneConstraint.Type nextTranslationConstraintType(PSAxisPlaneConstraint.Type type) {
-		PSAxisPlaneConstraint.Type rType;
+	public static AxisPlaneConstraint.Type nextTranslationConstraintType(AxisPlaneConstraint.Type type) {
+		AxisPlaneConstraint.Type rType;
 		switch (type) {
-		case FREE  : rType = PSAxisPlaneConstraint.Type.PLANE; break;
-	    case PLANE : rType = PSAxisPlaneConstraint.Type.AXIS;  break;
-	    case AXIS  : rType =  PSAxisPlaneConstraint.Type.FORBIDDEN;  break;
-	    case FORBIDDEN   : rType = PSAxisPlaneConstraint.Type.FREE; break;
-	    default : rType = PSAxisPlaneConstraint.Type.FREE;
+		case FREE  : rType = AxisPlaneConstraint.Type.PLANE; break;
+	    case PLANE : rType = AxisPlaneConstraint.Type.AXIS;  break;
+	    case AXIS  : rType = AxisPlaneConstraint.Type.FORBIDDEN;  break;
+	    case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
+	    default : rType = AxisPlaneConstraint.Type.FREE;
 	    }
 		return rType;
 	}
 	
-	public static PSAxisPlaneConstraint.Type nextRotationConstraintType(PSAxisPlaneConstraint.Type type) {
-		PSAxisPlaneConstraint.Type rType;
+	public static AxisPlaneConstraint.Type nextRotationConstraintType(AxisPlaneConstraint.Type type) {
+		AxisPlaneConstraint.Type rType;
 		switch (type) {
-		case FREE  : rType = PSAxisPlaneConstraint.Type.AXIS; break;	    
-	    case AXIS  : rType =  PSAxisPlaneConstraint.Type.FORBIDDEN;  break;
+		case FREE  : rType = AxisPlaneConstraint.Type.AXIS; break;	    
+	    case AXIS  : rType = AxisPlaneConstraint.Type.FORBIDDEN;  break;
 	    case PLANE : 
-	    case FORBIDDEN   : rType = PSAxisPlaneConstraint.Type.FREE; break;
-	    default : rType = PSAxisPlaneConstraint.Type.FREE;
+	    case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
+	    default : rType = AxisPlaneConstraint.Type.FREE;
 	    }
 		return rType;
 	}
@@ -83,7 +83,7 @@ public class ConstrainedFrame extends PApplet  {
 		//applyMatrix( frame.pMatrix() );
 		//Same as the previous commented line, but a lot more efficient:
 		frame.applyTransformation(this);		
-		PScene.drawAxis(0.4f);		
+		Scene.drawAxis(0.4f);		
 		fill(204, 102, 0);
 		box(0.2f, 0.3f, 0.2f);				
 		popMatrix();
@@ -93,7 +93,7 @@ public class ConstrainedFrame extends PApplet  {
 		scene.endDraw();
 	}	
 
-	protected void displayType(PSAxisPlaneConstraint.Type type, int x, int y, char c)	{
+	protected void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{
 		String textToDisplay = new String();
 		switch (type) {
 	    case FREE:  textToDisplay = "FREE (";

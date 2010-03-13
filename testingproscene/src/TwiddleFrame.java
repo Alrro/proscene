@@ -1,22 +1,22 @@
 import processing.core.*;
 import processing.opengl.*;
-import proscene.*;
-//import codeanticode.glgraphics.*;
+import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
-public class InteractiveFrame extends PApplet {
-	PScene scene;
+public class TwiddleFrame extends PApplet {
+	Scene scene;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
-		scene = new PScene(this); 
-		scene.setCameraType(PSCamera.Type.ORTHOGRAPHIC);
-		scene.setSceneRadius(scene.sceneRadius()*1.3f);
-		scene.showEntireScene();
+		scene = new Scene(this); 
+		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		scene.setRadius(scene.radius()*1.3f);
+		scene.showAll();
 		scene.setGridIsDrawn(true);
-		scene.setAxisIsDrawn(true);
-		scene.setInteractiveFrame(new PSInteractiveFrame());
+		scene.setAxisIsDrawn(true);		
+		scene.setInteractiveFrame(new InteractiveFrame());
 		scene.interactiveFrame().translate(new PVector(0.2f, 0.2f, 0));
+		scene.setDrawInteractiveFrame(true);
 	}
 
 	public void draw() {
@@ -35,7 +35,7 @@ public class InteractiveFrame extends PApplet {
 		//Same as the previous commented line, but a lot more efficient:
 		scene.interactiveFrame().applyTransformation(this);
 		// Draw an axis using the GLScene static function
-		PScene.drawAxis();
+		Scene.drawAxis();
 		// Draw a second box
 		fill(255, 0, 0);
 		box(0.1f, 0.15f, 0.25f);
@@ -48,6 +48,6 @@ public class InteractiveFrame extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.InteractiveFrame" });
+		PApplet.main(new String[] { "--present", "test.TwiddleFrame" });
 	}
 }
