@@ -3,7 +3,7 @@ import processing.opengl.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
-public class TwiddleFrame extends PApplet {
+public class MovableFrame extends PApplet {
 	Scene scene;
 	
 	public void setup()	{
@@ -48,6 +48,6 @@ public class TwiddleFrame extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.TwiddleFrame" });
+		PApplet.main(new String[] { "--present", "test.MovableFrame" });
 	}
 }
