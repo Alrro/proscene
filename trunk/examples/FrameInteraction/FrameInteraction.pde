@@ -1,14 +1,13 @@
 /**
- * Movable Frame. 
+ * Frame Interaction. 
  * by Jean Pierre Charalambos.
  * 
- * This example illustrates how to add and manipulate and interactive
- * frame to your Scene, which represents one of the three interactive
- * mechanisms built-in proscene (camera and mouse grabber, being the
- * other two).
+ * This example illustrates the three interactive frame mechanisms
+ * built-in proscene: Camera, InteractiveFrame and MouseGrabber.
  *
  * Press 'i' to switch the interaction between the camera frame and
- * the interactive (movable) frame.
+ * the interactive frame. You can also manipulate the interactive frame
+ * by picking the blue box passing the mouse next its axis origin.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
@@ -19,19 +18,16 @@ import remixlab.proscene.*;
 
 Scene scene;
 
-void setup() {
+void setup() {  
   size(640, 360, OPENGL);
   scene = new Scene(this); 
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setRadius(scene.radius()*1.3f);
-  scene.showAll();
   scene.setGridIsDrawn(true);
   scene.setAxisIsDrawn(true);
-  // A Scene have a single InteractiveFrame (null by default). We set
+  // A Scene has a single InteractiveFrame (null by default). We set
   // it here.
   scene.setInteractiveFrame(new InteractiveFrame());
-  scene.interactiveFrame().translate(new PVector(0.2f, 0.2f, 0));
-  scene.setDrawInteractiveFrame(true);
+  scene.interactiveFrame().translate(new PVector(0.3f, 0.3f, 0));
 }
 
 // Your actual scene drawing should be enclosed between the
@@ -43,19 +39,27 @@ void draw() {
   // Here we are in the world coordinate system.
   // Draw your scene here.
   fill(204, 102, 0);
-  box(0.2f, 0.3f, 0.5f);
+  box(0.2f, 0.3f, 0.4f);
   // Save the current model view matrix
   pushMatrix();
   // Multiply matrix to get in the frame coordinate system.
-  //applyMatrix( scene.interactiveFrame().matrix() );
-  //Same as the previous commented line, but a lot more efficient:
-  scene.interactiveFrame().applyTransformation(this);
-  // Draw an axis using the GLScene static function
-  Scene.drawAxis();
-  // Draw a second box. This is box is the one attached to the
-  // interactive frame
-  fill(255, 0, 0);
-  box(0.1f, 0.15f, 0.25f);
+  // applyMatrix(scene.interactiveFrame().matrix()) is handy but inefficient 
+  scene.interactiveFrame().applyTransformation(this); //optimum
+  // Draw an axis using the Scene static function
+  Scene.drawAxis(0.7f);
+  // Draw a second box attached to the interactive frame
+  if (scene.interactiveFrame().grabsMouse()) {
+    fill(255, 0, 0);
+    box(0.12f, 0.17f, 0.22f);
+  }
+  else if (scene.interactiveFrameIsDrawn()) {
+    fill(0, 255, 255);
+    box(0.12f, 0.17f, 0.22f);
+  }
+  else {
+    fill(0, 0, 255);
+    box(0.1f, 0.15f, 0.2f);
+  }		
   popMatrix();
   scene.endDraw();
 }
