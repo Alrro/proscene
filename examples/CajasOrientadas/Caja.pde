@@ -32,9 +32,9 @@ public class Caja {
   public void draw(PVector v) {
     setOrientation(v);
     parent.pushMatrix();
-    //parent.applyMatrix( iFrame.matrix() );
-    //Same as the previous commented line, but a lot more efficient:	
-    iFrame.applyTransformation(parent);
+    // Multiply matrix to get in the frame coordinate system.
+    // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
+    iFrame.applyTransformation(parent); //optimum
     Scene.drawAxis(0.3f);
 
     if (iFrame.grabsMouse()) {
