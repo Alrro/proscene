@@ -12,7 +12,7 @@ import remixlab.proscene.*;
 import processing.opengl.*;
 
 Scene scene;
-	
+
 void setup() {
   size(640, 360, OPENGL);
   // Scene instantiation

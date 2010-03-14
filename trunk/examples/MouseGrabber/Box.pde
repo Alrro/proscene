@@ -23,30 +23,30 @@
 public class Box {
   PApplet parent;
   InteractiveFrame iFrame;
-	
+
   Box(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
   }
-	
+
   public void draw() {
     pushMatrix();
-		
+
     //parent.applyMatrix( iFrame.matrix() );
     //Same as the previous commented line, but a lot more efficient:
     iFrame.applyTransformation(parent);
-		
+
     Scene.drawAxis(0.3f);
     if (iFrame.grabsMouse())
       fill(255, 0, 0);
     else
-      fill(0,0,255);	  		
-    //Draw a box		
+      fill(0,0,255);
+    //Draw a box
     box(0.3f);
-		
+
     popMatrix();
   }
-	
+
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
   }

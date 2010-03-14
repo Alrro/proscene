@@ -40,8 +40,7 @@ public class Utility implements PConstants {
 	public static PVector projectVectorOnAxis(PVector src, PVector direction) {
 		float directionSquaredNorm = squaredNorm(direction);
 		if (directionSquaredNorm < 1E-10f)
-			//TODO needs exception to tell: axis direction is not normalized
-			return null;
+			throw new RuntimeException("Direction squared norm is nearly 0");
 		
 		float modulation = src.dot(direction) / directionSquaredNorm;
 		return PVector.mult(direction, modulation);
@@ -56,8 +55,7 @@ public class Utility implements PConstants {
 	public static PVector projectVectorOnPlane(PVector src, PVector normal)	{
 		float normalSquaredNorm = squaredNorm(normal);
 		if (normalSquaredNorm < 1E-10f)
-			//TODO needs exception to tell: plane normal is not normalized
-			return null;
+			throw new RuntimeException("Normal squared norm is nearly 0");
 		
 		float modulation = src.dot(normal) / normalSquaredNorm;	    
 	    return PVector.sub(src, PVector.mult(normal, modulation));

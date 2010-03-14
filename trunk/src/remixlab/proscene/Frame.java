@@ -414,18 +414,12 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Translates the Frame of {@code t} (defined in the Frame coordinate system).
-	 * <p> 
-	 * If there's a {@link #constraint()} it is satisfied without modifying {@code t}:
-	 * The translation actually applied to the Frame may differ from {@code t} 
-	 * since it can be filtered by the {@link #constraint()}. Use
-	 * {@link #translateModifyingArgument(PVector)} to retrieve the filtered
-	 * translation value. Use {@link #setTranslation(PVector)} to directly translate
-	 * the Frame without taking the {@link #constraint()} into account.
+	 * Same as {@code translate(t, true)}.
 	 * 
+	 * @see #translate(PVector, boolean)
 	 * @see #rotate(Quaternion)
 	 */
-	public final void translate(PVector t) {		
+	public final void translate(PVector t) {	
 		if (constraint() != null)
 		    trans.add(constraint().constrainTranslation(t, this));
 		else
@@ -433,26 +427,29 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	//it can also be:
-	public final void translate(PVector t) {
-		PVector oV = new PVector(t.x, t.y, t.z);
-		translateModifyArgument(oV);
-	}
-	*/
-	
-	/**
-	 * Same as {@link #translate(PVector)} but if there's a {@link #constraint()} 
-	 * {@code t} is modified to satisfy it.
+	 * Translates the Frame according to {@code t} (which is defined in the Frame
+	 * coordinate system).
+	 * <p> 
+	 * If there's a {@link #constraint()} it is satisfied. Hence the translation actually
+	 * applied to the Frame may differ from {@code t} (since it can be filtered by the
+	 * {@link #constraint()}). Use {@code translate(t, false)} to retrieve the filtered
+	 * translation value and {@code translate(t, true)} to keep the original value of
+	 * {@code t}. Use {@link #setTranslation(PVector)} to directly translate the Frame
+	 * without taking the {@link #constraint()} into account.
+	 * 
+	 * @see #rotate(Quaternion)
 	 */
-	public final void translateModifyingArgument(PVector t) {
-		//TODO this may be overkill: check if this function can be discarded
+	public final void translate(PVector t, boolean keepArg) {
+		PVector o = new PVector(t.x, t.y, t.z);
 		if (constraint() != null) {
-			PVector o = constraint().constrainTranslation(t, this);		    
-		    t.x = o.x;
-		    t.y = o.y;
-		    t.z = o.z;		    
+			o = constraint().constrainTranslation(t, this);
+			if (!keepArg) {
+				t.x = o.x;
+				t.y = o.y;
+				t.z = o.z;
+		    }    
 		}
-		trans.add(t);
+		trans.add(o);
 	}
 	
 	/**
@@ -463,16 +460,9 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Rotates the Frame by {@code q} (defined in the Frame coordinate system):
-	 * {@code R = R*q}.
-	 * <p> 
-	 * If there's a {@link #constraint()} it is satisfied without modifying {@code q}:
-	 * The rotation actually applied to the Frame may differ from {@code q} since it
-	 * can be filtered by the {@link #constraint()}. Use
-	 * {@link #rotateModifyingArgument(Quaternion)} to retrieve the filtered rotation
-	 * value. Use {@link #setRotation(Quaternion)} to directly rotate the Frame
-	 * without taking the {@link #constraint()} into account.
+	 * Same as @ {@code rotate(q, true)}.
 	 * 
+	 * @see #rotate(Quaternion, boolean)
 	 * @see #translate(PVector)
 	 */
 	public final void rotate(Quaternion q) {
@@ -485,19 +475,30 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	 * Same as {@link #rotate(Quaternion)} but if there's a {@link #constraint()} 
-	 * {@code q} is modified to satisfy it.
+	 * Rotates the Frame by {@code q} (defined in the Frame coordinate system):
+	 * {@code R = R*q}.
+	 * <p> 
+	 * If there's a {@link #constraint()} it is satisfied. Hence the rotation actually
+	 * applied to the Frame may differ from {@code q} (since it can be filtered by the
+	 * {@link #constraint()}). Use {@code rotate(q, false)} to retrieve the filtered
+	 * rotation value and {@code rotate(q, true)} to keep the original value of {@code q}.
+	 * Use {@link #setRotation(Quaternion)} to directly rotate the Frame without taking
+	 * the {@link #constraint()} into account.
+	 * 
+	 * @see #translate(PVector)
 	 */
-	public final void rotateModifyingArgument(Quaternion q) {
-		//TODO this may be overkill: check if this function can be discarded
+	public final void rotate(Quaternion q, boolean keepArg) {
+		Quaternion o = new Quaternion(q);
 		if (constraint() != null) {
-			Quaternion o = constraint().constrainRotation(q, this);		    
-		    q.x = o.x;
-		    q.y = o.y;
-		    q.z = o.z;
-		    q.w = o.w;
+			o = constraint().constrainRotation(q, this);
+			if (!keepArg) {
+				q.x = o.x;
+				q.y = o.y;
+				q.z = o.z;
+				q.w = o.w;
+		    }
 		}
-		rot.multiply(q);
+		rot.multiply(o);
 		
 		rot.normalize(); // Prevents numerical drift
 	}
@@ -510,16 +511,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Makes the Frame {@link #rotate(Quaternion)} by {@code rotation} around {@code point}. 
-	 * <p> 
-	 * {@code point} is defined in the world coordinate system, while the {@code rotation}
-	 * axis is defined in the Frame coordinate system. 
-	 * <p> 
-	 * If the Frame has a {@link #constraint()}, {@code rotation} is first constrained using
-	 * {@link remixlab.proscene.Constraint#constrainRotation(Quaternion, Frame)}.
-	 * The translation which results from the filtered rotation around {@code point} is then
-	 * computed and filtered using
-	 * {@link remixlab.proscene.Constraint#constrainTranslation(PVector, Frame)}.
+	 * Same as {@code rotateAroundPoint(rotation, point, true)}. 
 	 */
 	public final void rotateAroundPoint(Quaternion rotation, PVector point) {
 		if (constraint() != null)
@@ -542,20 +534,39 @@ public class Frame implements Cloneable {
 	 * Same as {@link #rotateAroundPoint(Quaternion, PVector)} but if there's a
 	 * {@link #constraint()} {@code rotation} is modified to satisfy it.
 	*/
-	public final void rotateAroundPointModifyingArgument(Quaternion rotation, PVector point) {
-		//TODO this may be overkill: check if this function can be discarded
+	
+	/**
+	 * Makes the Frame {@link #rotate(Quaternion)} by {@code rotation} around {@code point}. 
+	 * <p> 
+	 * {@code point} is defined in the world coordinate system, while the {@code rotation}
+	 * axis is defined in the Frame coordinate system.
+	 * <p> 
+	 * If the Frame has a {@link #constraint()}, {@code rotation} is first constrained using
+	 * {@link remixlab.proscene.Constraint#constrainRotation(Quaternion, Frame)}. Hence the
+	 * rotation actually applied to the Frame may differ from {@code rotation} (since it can be
+	 * filtered by the {@link #constraint()}). Use {@code rotateAroundPoint(rotation, point, false)}
+	 * to retrieve the filtered rotation value and {@code rotateAroundPoint(rotation, point, true)}
+	 * to keep the original value of {@code rotation}.
+	 * <p>
+	 * The translation which results from the filtered rotation around {@code point} is then
+	 * computed and filtered using
+	 * {@link remixlab.proscene.Constraint#constrainTranslation(PVector, Frame)}.
+	 */
+	public final void rotateAroundPoint(Quaternion rotation, PVector point, boolean keepArg) {
+		Quaternion q = new Quaternion(rotation);
 		if (constraint() != null) {
-			Quaternion q = constraint().constrainRotation(rotation, this);
-			rotation.x = q.x;
-			rotation.y = q.y;
-			rotation.z = q.z;
-			rotation.w = q.w;
-		}
-		
-		this.rot.multiply(rotation);		
+			q = constraint().constrainRotation(rotation, this);
+			if (!keepArg) {
+				rotation.x = q.x;
+				rotation.y = q.y;
+				rotation.z = q.z;
+				rotation.w = q.w;
+			}
+		}		
+		this.rot.multiply(q);		
 		this.rot.normalize(); // Prevents numerical drift
 		
-		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());		
+		q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());		
 		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
 		t.sub(trans);
 		

@@ -22,12 +22,12 @@ import processing.opengl.*;
 import remixlab.proscene.*;
 
 Scene scene;
-	
+
 void setup() {
   size(640, 360, OPENGL);
   scene = new Scene(this);
   scene.setAxisIsDrawn(true);
-  scene.setRadius(1.5f);		
+  scene.setRadius(1.5f);
   scene.showAll();
 }
 
@@ -37,35 +37,35 @@ void draw() {
   // Should always be defined before Scene.beginDraw()
   background(0);
   scene.beginDraw();
-		
+
   final float nbLines = 50.0f;
-	
-  beginShape(LINES);		
+
+  beginShape(LINES);
   for (float i=0; i<nbLines; ++i) {
     float angle = 2.0f*PI*i/nbLines;
-			
+
     stroke(204, 51, 51);
     // These lines will never be seen as they are always aligned with the viewing direction.
     // They can only be seen if you change the camera projection to ORTHOGRAPHIC.
     vertex(scene.camera().position().x, scene.camera().position().y, scene.camera().position().z);
-    vertex(cos(angle), sin(angle), 0.0f);			
-			
+    vertex(cos(angle), sin(angle), 0.0f);
+
     stroke(55, 204, 55);
     // World Coordinates are inferred from the camera, and seem to be motionless in the screen.
-    PVector tmp = scene.camera().worldCoordinatesOf(new PVector(.3f*cos(angle), .3f*sin(angle), -2.0f));			
+    PVector tmp = scene.camera().worldCoordinatesOf(new PVector(.3f*cos(angle), .3f*sin(angle), -2.0f));
     vertex(tmp.x, tmp.y, tmp.z);
     vertex(cos(angle), sin(angle), 0.0f);
-			
+
     stroke(55, 55, 204);
     // These lines are defined in the world coordinate system and will move with the camera.
     vertex(1.5f*cos(angle), 1.5f*sin(angle), -1.0f);
-    vertex(cos(angle), sin(angle), 0.0f);		    
-  }	
+    vertex(cos(angle), sin(angle), 0.0f);
+  }
   endShape();
   
   scene.endDraw();
-}	
-	
+}
+
 // To take full advantage of proscene 3d navigation power this
 // method should always call Scene.defaultKeyBindings()
 void keyPressed() {
