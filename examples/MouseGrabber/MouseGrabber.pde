@@ -17,19 +17,19 @@ import remixlab.proscene.*;
 
 Scene scene;
 Box [] boxes;
-	
+
 void setup() {
   size(640, 360, OPENGL);
-  scene = new Scene(this);		
-  scene.setGridIsDrawn(true);		
+  scene = new Scene(this);
+  scene.setGridIsDrawn(true);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setRadius(2);		
+  scene.setRadius(2);
   scene.showAll();
-		
+
   boxes = new Box[6];
   for (int i = 0; i < 6; i++) {
-	boxes[i] = new Box(this);
-	boxes[i].setPosition(new PVector((-1.0f + (i*0.4f )), 0.0f, 0.0f));
+    boxes[i] = new Box(this);
+    boxes[i].setPosition(new PVector((-1.0f + (i*0.4f )), 0.0f, 0.0f));
   }
 }
 
@@ -38,19 +38,18 @@ void setup() {
 void draw() {
   // Should always be defined before Scene.beginDraw()
   background(0);
-			
+
   scene.beginDraw();
   // Here we are in the world coordinate system.
   // Draw your scene here.
   for (int i = 0; i < 6; i++) {
-	boxes[i].draw();
-  }		    
+    boxes[i].draw();
+  }
   scene.endDraw();
 }
-	
+
 // To take full advantage of proscene 3d navigation power this
 // method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }
-	

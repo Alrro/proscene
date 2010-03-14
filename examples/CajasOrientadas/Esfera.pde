@@ -23,18 +23,18 @@
 public class Esfera {
   PApplet parent;
   InteractiveFrame iFrame;
-	
+
   Esfera(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
   }
-	
+
   public void draw() {
     pushMatrix();
     //parent.applyMatrix( iFrame.matrix() );
     //Same as the previous commented line, but a lot more efficient:
     iFrame.applyTransformation(parent);
-		
+
     Scene.drawAxis(0.3f);
     if (iFrame.grabsMouse()) {
       fill(255, 0, 0);
@@ -46,11 +46,11 @@ public class Esfera {
     }
     popMatrix();
   }
-	
+
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
   }
-	
+
   // We need to retrieve the Esfera's position for the Cajas to orient towards it. 
   public PVector getPosition() {
     return iFrame.position();

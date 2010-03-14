@@ -22,51 +22,51 @@ private int transDir;
 private int rotDir;
 AxisPlaneConstraint constraints[] = new AxisPlaneConstraint[2];
 int activeConstraint;
-	
-void setup()	{
-  size(640, 360, P3D);				
+
+void setup() {
+  size(640, 360, P3D);
   myFont = createFont("Arial", 12);
   textFont(myFont);
   textMode(SCREEN);
-		
-  scene = new Scene(this);		
-		
+
+  scene = new Scene(this);
+
   constraints[0] = new WorldConstraint();
   // Note that a CameraConstraint(camera) would produce the same results:
   // A CameraConstraint is a LocalConstraint when applied to the camera frame!
-  constraints[1] = new LocalConstraint();		
+  constraints[1] = new LocalConstraint();
   transDir = 0;
   rotDir   = 0;
   activeConstraint = 0;
   scene.camera().frame().setConstraint(constraints[activeConstraint]);
-		
+
   scene.setAxisIsDrawn(true);
 }
-	
+
 static AxisPlaneConstraint.Type nextTranslationConstraintType(AxisPlaneConstraint.Type type) {
   AxisPlaneConstraint.Type rType;
   switch (type) {
     case FREE  : rType = AxisPlaneConstraint.Type.PLANE; break;
     case PLANE : rType = AxisPlaneConstraint.Type.AXIS;  break;
-    case AXIS  : rType =  AxisPlaneConstraint.Type.FORBIDDEN;  break;
+    case AXIS  : rType = AxisPlaneConstraint.Type.FORBIDDEN;  break;
     case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
     default : rType = AxisPlaneConstraint.Type.FREE;
   }
   return rType;
 }
-	
+
 static AxisPlaneConstraint.Type nextRotationConstraintType(AxisPlaneConstraint.Type type) {
   AxisPlaneConstraint.Type rType;
   switch (type) {
     case FREE  : rType = AxisPlaneConstraint.Type.AXIS; break;
     case PLANE : rType = AxisPlaneConstraint.Type.FREE;  break;
-    case AXIS  : rType =  AxisPlaneConstraint.Type.FORBIDDEN;  break;
+    case AXIS  : rType = AxisPlaneConstraint.Type.FORBIDDEN;  break;
     case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
     default : rType = AxisPlaneConstraint.Type.FREE;
   }
   return rType;
 }
-	
+
 void changeConstraint() {
   int previous = activeConstraint;
   activeConstraint = (activeConstraint+1)%2;
@@ -90,9 +90,9 @@ void draw() {
   fill(0, 0, 255);
   displayText();
   scene.endDraw();
-}	
-	
-void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{
+}
+
+void displayType(AxisPlaneConstraint.Type type, int x, int y, char c) {
   String textToDisplay = new String();
   switch (type) {
     case FREE:  textToDisplay = "FREE (";
@@ -114,7 +114,7 @@ void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{
   }
   text(textToDisplay, x, y);
 }
-	
+
 void displayDir(int dir, int x, int y, char c) {
   String textToDisplay = new String();
   switch (dir) {
@@ -138,12 +138,12 @@ void displayText() {
   text("TRANSLATION :", 350, height-30);
   displayDir(transDir, (350+90), height-30, 'F');
   displayType(constraints[activeConstraint].translationConstraintType(), 350, height-60, 'T');
-		
-  text("ROTATION :", width-120,height-30);		
-  displayDir(rotDir, width-50, height-30, 'D');		
+
+  text("ROTATION :", width-120,height-30);
+  displayDir(rotDir, width-50, height-30, 'D');
   displayType(constraints[activeConstraint].rotationConstraintType(), width-120, height-60, 'R');
-		
-  switch (activeConstraint) {	
+
+  switch (activeConstraint) {
     case 0 : text("Constraint direction defined w/r to WORLD (L)", 370,20); break;
     case 1 : text("Constraint direction defined w/r to CAMERA (L)", 370,20); break;
   }
@@ -153,7 +153,7 @@ void displayText() {
 // method should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
-		
+
   if (key == 'd' || key == 'D') {
     rotDir   = (rotDir+1)%3;
   }
@@ -169,14 +169,14 @@ void keyPressed() {
   if (key == 'r' || key == 'R') {
     constraints[activeConstraint].setRotationConstraintType(nextRotationConstraintType(constraints[activeConstraint].rotationConstraintType()));
   }
-		
+
   PVector dir = new PVector(0.0f, 0.0f, 0.0f);
   switch (transDir) {
     case 0 : dir.x = 1.0f; break;
     case 1 : dir.y = 1.0f; break;
     case 2 : dir.z = 1.0f; break;
   }
-	
+
   constraints[activeConstraint].setTranslationConstraintDirection(dir);
 
   dir.set(0.0f, 0.0f, 0.0f);

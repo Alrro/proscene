@@ -815,8 +815,7 @@ public class Camera implements Cloneable {
 	 */
 	public void setSceneRadius(float radius) {
 		if (radius <= 0.0f) {
-			// TODO: tell a warning:
-			// "Scene radius must be positive - Ignoring value"
+			PApplet.println("Warning: Scene radius must be positive - Ignoring value");
 			return;
 		}
 

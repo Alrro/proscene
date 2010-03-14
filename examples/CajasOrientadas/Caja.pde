@@ -23,12 +23,12 @@
 public class Caja {
   PApplet parent;
   InteractiveFrame iFrame;
-	
+
   Caja(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
   }
-	
+
   public void draw(PVector v) {
     setOrientation(v);
     parent.pushMatrix();
@@ -44,14 +44,14 @@ public class Caja {
     else {
       parent.fill(0,255,255);
       parent.box(0.3f);
-    }			
+    }
     parent.popMatrix();
   }
-	
+
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
   }
-	
+
   // We orient the Caja's y axis according to the Esfera's position that
   // should be defined in v.
   public void setOrientation(PVector v) {
