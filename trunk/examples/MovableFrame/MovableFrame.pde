@@ -1,5 +1,5 @@
 /**
- * Interactive Frame. 
+ * Movable Frame. 
  * by Jean Pierre Charalambos.
  * 
  * This example illustrates how to add and manipulate and interactive
@@ -8,7 +8,7 @@
  * other two).
  *
  * Press 'i' to switch the interaction between the camera frame and
- * the interactive frame.
+ * the interactive (movable) frame.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
