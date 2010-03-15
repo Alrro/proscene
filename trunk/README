@@ -13,7 +13,7 @@ library which provides classes to ease the creation of interactive 3D scenes in 
 
 Proscene has been pretty much inspired in the Qt's OpenGL libqglviewer C ++ library
 (http://www.libqglviewer.com/). Proscene has a very similar functionality and API
-reference to that found in libqglviewer, both of which have been ported from to Java.
+reference to that found in libqglviewer, both of which have been ported to Java.
 Most of the examples found in the current release (v-0.7.1) are implementations of the
 libqglviewer counterparts.
 
