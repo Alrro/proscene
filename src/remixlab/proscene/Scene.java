@@ -1300,7 +1300,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// 11. Utility
 	
 	/**
-	 * Draws a cylinder of width {@code w} and height {@code h}.
+	 * Draws a cylinder of width {@code w} and height {@code h}, along the
+	 * positive {@code z} axis.
 	 * <p>
 	 * Code adapted from http://www.processingblogs.org/category/processing-java/
 	 */	
@@ -1354,8 +1355,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Places a cone with it's base centered at {@code (x,y)}, height {@code h}
-	 * in positive {@code z}, radius {@code r}.
+	 * Draws a cone along the positive {@code z} axis, with its base centered at
+	 * {@code (x,y)}, height {@code h}, and radius {@code r}.
 	 * <p>
 	 * The code of this function was taken from http://processinghacks.com/hacks:cone
 	 * Thanks to Tom Carden
