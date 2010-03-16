@@ -924,9 +924,9 @@ public class Frame implements Cloneable {
 	/**
 	 * Returns the PMatrix3D associated with this Frame. 
 	 * <p> 
-	 * This method should be used in conjunction with {@code applyMatrix()}
-	 * to modify the processing modelview matrix from a Frame hierarchy. For example
-	 * with this Frame hierarchy: 
+	 * This method could be used in conjunction with {@code applyMatrix()}
+	 * to modify the processing modelview matrix from a Frame hierarchy.
+	 * For example, with this Frame hierarchy: 
 	 * <p> 
 	 * {@code Frame body = new Frame();} <br>
 	 * {@code Frame leftArm = new Frame();} <br>
@@ -936,22 +936,26 @@ public class Frame implements Cloneable {
 	 * <p> 
 	 * The associated processing drawing code should look like: 
 	 * <p> 
-	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(body.matrix());} <br>
+	 * {@code p.pushMatrix();}//Supposing p is the PApplet instance <br>
+	 * {@code p.applyMatrix(body.matrix());} <br>
 	 * {@code drawBody();} <br>
-	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(leftArm.matrix());} <br>
+	 * {@code p.pushMatrix();} <br>
+	 * {@code p.applyMatrix(leftArm.matrix());} <br>
 	 * {@code drawArm();} <br>
-	 * {@code popMatrix();} <br>
-	 * {@code pushMatrix();} <br>
-	 * {@code applyMatrix(rightArm.matrix());} <br>
+	 * {@code p.popMatrix();} <br>
+	 * {@code p.pushMatrix();} <br>
+	 * {@code p.applyMatrix(rightArm.matrix());} <br>
 	 * {@code drawArm();} <br>
-	 * {@code popMatrix();} <br>
-	 * {@code popMatrix();} <br> 
+	 * {@code p.popMatrix();} <br>
+	 * {@code p.popMatrix();} <br> 
 	 * <p> 
 	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()}
 	 * blocks to represent the frame hierarchy: {@code leftArm} and {@code rightArm}
 	 * are both correctly drawn with respect to the {@code body} coordinate system. 
+	 * <p>
+	 * <b>Attention:</b> This technique is inefficient because {@code p.applyMatrix}
+	 * will try to calculate the inverse of the transform. Avoid it whenever possible
+	 * and instead use {@link #applyTransformation(PApplet)} which is very efficient.
 	 * <p> 
 	 * This matrix only represents the local Frame transformation (i.e., with respect
 	 * to the {@link #referenceFrame()}). Use {@link #worldMatrix()} to get the full 
@@ -961,7 +965,9 @@ public class Frame implements Cloneable {
 	 * The result is only valid until the next call to {@code matrix()} or
 	 * {@link #worldMatrix()}. Use it immediately (as above). 
 	 * <p> 
-	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
+	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0. 
+	 * 
+	 * @see #applyTransformation(PApplet)
 	 */
 	public final PMatrix3D matrix() {
 		PMatrix3D pM = new PMatrix3D(); 
@@ -986,12 +992,39 @@ public class Frame implements Cloneable {
 	 * rotation().axis().y, 
 	 * rotation().axis().z);} <br>
 	 * <p>
-	 * This method should be used whenever possible.
+	 * This method should be used in conjunction with PApplet to modify the
+	 * processing modelview matrix from a Frame hierarchy. For example,
+	 * with this Frame hierarchy: 
+	 * <p> 
+	 * {@code Frame body = new Frame();} <br>
+	 * {@code Frame leftArm = new Frame();} <br>
+	 * {@code Frame rightArm = new Frame();} <br>
+	 * {@code leftArm.setReferenceFrame(body);} <br>
+	 * {@code rightArm.setReferenceFrame(body);} <br> 
+	 * <p> 
+	 * The associated processing drawing code should look like: 
+	 * <p> 
+	 * {@code p.pushMatrix();//p is the PApplet instance} <br>
+	 * {@code body.applyTransformation(p);} <br>
+	 * {@code drawBody();} <br>
+	 * {@code p.pushMatrix();} <br>
+	 * {@code leftArm.applyTransformation(p);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code p.popMatrix();} <br>
+	 * {@code p.pushMatrix();} <br>
+	 * {@code rightArm.applyTransformation(p);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code p.popMatrix();} <br>
+	 * {@code p.popMatrix();} <br> 
+	 * <p> 
+	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()}
+	 * blocks to represent the frame hierarchy: {@code leftArm} and {@code rightArm}
+	 * are both correctly drawn with respect to the {@code body} coordinate system.
 	 * <p>
-	 * <b>Attention:</b> In order to apply the Frame transformation one can also call
-	 * {@code p.applyMatrix(this.pMatrix())}. However, {@code p.applyMatrix} is very
-	 * slow because it will try to calculate the inverse of the transform, so it should
-	 * be avoided whenever possible. 
+	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method should
+	 * be used whenever possible (one can also use {@link #matrix()} instead).
+	 * 
+	 * @see #matrix() 
 	 */
 	public void applyTransformation(PApplet p) {
 		p.translate(translation().x, translation().y, translation().z);
