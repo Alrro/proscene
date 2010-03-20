@@ -41,7 +41,7 @@
 	<property name="libraryName"  value="proscene"/>
 	
 <!-- #### (8) give your library a name. edit value.   #### -->
-	<property name="versionNumber"  value="0.7.1"/>
+	<property name="versionNumber"  value="0.8.0"/>
 	
 <!-- #### (9) your contact url. edit value. #### -->
 	<property name="yourLink"  value="http://code.google.com/p/proscene" />
@@ -56,7 +56,7 @@
 	<property name="tested:processingVersion"  value="1.0.9" />
 	
 <!-- #### (13) does the library depend on any other library, dll, jnilib, etc. edit value. #### -->
-	<property name="tested:dependencies"  value="" />
+	<property name="tested:dependencies"  value="none" />
 	
 <!-- #### (14) where can the source code be found? edit value. #### -->
 	<property name="source:host"  value="google code" />
