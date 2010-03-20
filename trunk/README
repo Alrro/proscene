@@ -1,7 +1,7 @@
 
                                   proscene
 
-	      	            Version 0.7.1 March, 2010
+	      	            Version 0.8.0 March, 2010
 
 
   Copyright (C) 2010 Jean Pierre Charalambos. All rights reserved.
@@ -29,7 +29,9 @@ previous releases of Proscene (such as v-0.7.0) along side his fantastic GLGraph
 Processing library (http://users.design.ucla.edu/~acolubri/processing/glgraphics/home/).
 Proscene actually started as a GLGraphics component and thanks to Andres contributions it
 became a stand-alone library (you may read the whole story here: 
-http://codeanticode.wordpress.com/2010/03/04/glgraphics-0-9-3-3/).   
+http://codeanticode.wordpress.com/2010/03/04/glgraphics-0-9-3-3/).
+
+CHANGELOG   
  
 DOWNLOAD
 

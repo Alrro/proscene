@@ -1201,6 +1201,8 @@ public class Camera implements Cloneable {
 	/**
 	 * Convenience function that simply returns
 	 * {@code projectedCoordinatesOf(src, null)}
+	 * 
+	 * @see #projectedCoordinatesOf(PVector, Frame)
 	 */
 	public final PVector projectedCoordinatesOf(PVector src) {
 		return projectedCoordinatesOf(src, null);
@@ -1223,6 +1225,8 @@ public class Camera implements Cloneable {
 	 * {@link #getViewport()}) and is completely independent of the processing
 	 * matrices. You can hence define a virtual Camera and use this method to
 	 * compute projections out of a classical rendering context.
+	 * 
+	 * @see #unprojectedCoordinatesOf(PVector, Frame)
 	 */
 	public final PVector projectedCoordinatesOf(PVector src, Frame frame) {		
 		float xyz[] = new float[3];		
@@ -1238,6 +1242,65 @@ public class Camera implements Cloneable {
 			xyz[1] = screenHeight() - xyz[1];
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
+	}
+	
+	/**
+	 * Convenience function that simply returns {@code return
+	 * unprojectedCoordinatesOf(src, null)}
+	 * 
+	 * #see {@link #unprojectedCoordinatesOf(PVector, Frame)}
+	 */
+	public final PVector unprojectedCoordinatesOf(PVector src) {
+		return this.unprojectedCoordinatesOf(src, null);
+	}
+	
+	/**
+	 * Returns the world unprojected coordinates of a point {@code src} defined
+	 * in the screen coordinate system. 
+	 * <p> 
+	 * The {@code src.x} and {@code src.y} input values are expressed in pixels,
+	 * (0,0) being the upper left corner of the window. {@code src.z} is a depth
+	 * value ranging in [0..1] (near and far plane respectively). See the
+	 * {@code gluUnProject} man page for details. 
+	 * <p> 
+	 * The result is expressed in the {@code frame} coordinate system. When
+	 * {@code frame} is {@code null}, the result is expressed in the world
+	 * coordinates system. The possible {@code frame}
+	 * {@link remixlab.proscene.Frame#referenceFrame()} are taken into account. 
+	 * <p> 
+	 * {@link #projectedCoordinatesOf(PVector, Frame)} performs the inverse
+	 * transformation. 
+	 * <p> 
+	 * This method only uses the intrinsic Camera parameters (see
+	 * {@link #getModelViewMatrix()}, {@link #getProjectionMatrix()} and
+	 * {@link #getViewport()}) and is completely independent of the Processing
+	 * matrices. You can hence define a virtual Camera and use this method to
+	 * compute un-projections out of a classical rendering context. 
+	 * <p> 
+	 * <b>Attention:</b> However, if your Camera is not attached to a
+	 * Scene (used for offscreen computations for instance), make sure the
+	 * Camera matrices are updated before calling this method (use
+	 * {@link #computeModelViewMatrix()}, {@link #computeProjectionMatrix()}).
+	 * <p> 
+	 * This method is not computationally optimized. If you call it several
+	 * times with no change in the matrices, you should buffer the entire
+	 * inverse projection matrix (modelview, projection and then viewport) to
+	 * speed-up the queries. See the gluUnProject man page for details.
+	 * 
+	 * @see #projectedCoordinatesOf(PVector, Frame)
+	 * @see #setScreenWidthAndHeight(int, int)
+	 */
+	public final PVector unprojectedCoordinatesOf(PVector src, Frame frame) {
+		float xyz[] = new float[3];
+		viewport = getViewport();
+		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat, projectionMat, viewport, xyz);
+		else
+			unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);		
+		if (frame != null)
+			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]));
+		else
+			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
 	// 9. FLYSPEED
@@ -1571,4 +1634,60 @@ public class Camera implements Cloneable {
 	    windowCoordinate[2]=in[2];
 	    return true;
 	}
+	
+	/**
+	 * Similar to {@code gluUnProject}: map window coordinates to object coordinates.
+	 * 
+	 * @param winx
+	 *            Specify the window x coordinate.
+	 * @param winy
+	 *            Specify the window y coordinate.
+	 * @param winz
+	 *            Specify the window z coordinate.
+	 * @param modelview
+	 *            Specifies the current modelview matrix.
+	 * @param projection
+	 *            Specifies the current projection matrix.
+	 * @param viewport
+	 *            Specifies the current viewport.
+	 * @param objCoordinate
+	 *            Return the computed object coordinates.                
+	 */
+	boolean unproject(float winx, float winy, float winz, PMatrix3D modelview,
+			              PMatrix3D projection, int viewport[], float []objCoordinate)	{
+        PMatrix3D finalMatrix = new PMatrix3D(projection);
+	    float in[] = new float [4];
+	    float out[]  = new float [4];	    
+	    
+	    finalMatrix.apply(modelview);
+	    
+	    if(!finalMatrix.invert()) return false;
+
+	    in[0]=winx;
+	    in[1]=winy;
+	    in[2]=winz;
+	    in[3]=1.0f;
+
+	    /* Map x and y from window coordinates */
+	    in[0] = (in[0] - viewport[0]) / viewport[2];
+	    in[1] = (in[1] - viewport[1]) / viewport[3];
+
+	    /* Map to range -1 to 1 */
+	    in[0] = in[0] * 2 - 1;
+	    in[1] = in[1] * 2 - 1;
+	    in[2] = in[2] * 2 - 1;
+
+	    finalMatrix.mult(in, out);
+	    if (out[3] == 0.0) return false;
+	    
+	    out[0] /= out[3];
+	    out[1] /= out[3];
+	    out[2] /= out[3];
+	    
+	    objCoordinate[0] = out[0];
+	    objCoordinate[1] = out[1];
+	    objCoordinate[2] = out[2];
+	    
+	    return true;
+	}		
 }

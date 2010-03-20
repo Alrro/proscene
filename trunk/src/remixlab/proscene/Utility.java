@@ -87,29 +87,32 @@ public class Utility implements PConstants {
 	
 	/**
 	 * Utility function that returns the PMatrix3D representation of the 4x4
+	 * {@code m} given in European format.
+	 */
+	public static final PMatrix3D fromMatrix(float[][] m) {		
+		return new PMatrix3D(m[0][0],m[0][1],m[0][2],m[0][3],
+	                         m[1][0],m[1][1],m[1][2],m[1][3],
+	                         m[2][0],m[2][1],m[2][2],m[2][3],
+	                         m[3][0],m[3][1],m[3][2],m[3][3]);
+	}
+	
+	/**
+	 * Utility function that returns the PMatrix3D representation of the 4x4
 	 * {@code matrix} given in OpenGL format.
 	 */
-	public static final PMatrix3D fromOpenGLToPMatrix3D(float[][] matrix) {
-		float [][] m = transpose4x4Matrix(matrix);
-		
-		float m00 = m[0][0];
-        float m01 = m[0][1];
-        float m02 = m[0][2];
-        float m03 = m[0][3];
-        float m10 = m[1][0];
-        float m11 = m[1][1];
-        float m12 = m[1][2];
-        float m13 = m[1][3];
-        float m20 = m[2][0];
-        float m21 = m[2][1];
-        float m22 = m[2][2];
-        float m23 = m[2][3];
-        float m30 = m[3][0];
-        float m31 = m[3][1];
-        float m32 = m[3][2];
-        float m33 = m[3][3];
-        
-		return new PMatrix3D(m00,m01,m02,m03,m10,m11,m12,m13,m20,m21,m22,m23,m30,m31,m32,m33);
+	public static final PMatrix3D fromOpenGLMatrix(float[][] matrix) {
+		return fromMatrix(transpose4x4Matrix(matrix));
+	}
+	
+	/**
+	 * Utility function that returns the PMatrix3D representation of the 16
+	 * {@code array} given in European format.
+	 */
+	public static final PMatrix3D fromArray(float[] a) {	      
+	      return new PMatrix3D(a[0], a[1], a[2], a[3],
+	    		               a[4], a[5], a[6], a[7],
+	    		               a[8], a[9], a[10],a[11],
+	    		               a[12],a[13],a[14],a[15]);
 	}
 	
 	/**
@@ -117,49 +120,33 @@ public class Utility implements PConstants {
 	 * {@code array} given in OpenGL format.
 	 */	
 	public static final PMatrix3D fromOpenGLArray(float[] array) {
-		//TODO: this function needs test
-		float[][] matrix = new float[4][4];
-		
-		int count = 0;
-		for (int i = 0; i < 4; ++i)
-			for (int j = 0; j < 4; ++j)
-				matrix[i][j] = array[count++];
-		
-		return fromOpenGLToPMatrix3D(matrix);
+		return fromArray(from4x4MatrixToArray(transpose4x4Matrix(fromArrayTo4x4Matrix(array))));
 	}
 	
 	/**
 	 * Utility function that returns the [4][4]float matrix representation
 	 * (European format) of the given PMatrix3D.
 	 */
-	public static final float[][] fromPMatrix3DToMatrix(PMatrix3D pM) {
-		float [][] m = new float[4][4];
-		m[0][0] = pM.m00;
-		m[0][1] = pM.m01;
-		m[0][2] = pM.m02;
-		m[0][3] = pM.m03;
-		m[1][0] = pM.m10;
-		m[1][1] = pM.m11;
-		m[1][2] = pM.m12;
-		m[1][3] = pM.m13;
-		m[2][0] = pM.m20;
-		m[2][1] = pM.m21;
-		m[2][2] = pM.m22;
-		m[2][3] = pM.m23;
-		m[3][0] = pM.m30;
-		m[3][1] = pM.m31;
-		m[3][2] = pM.m32;
-		m[3][0] = pM.m33;
-        
-		return m;
+	public static final float[][] toMatrix(PMatrix3D pM) {
+		float [] array = new float[16];
+		pM.get(array);
+		return fromArrayTo4x4Matrix(array);
+	}
+	
+	/**
+	 * Utility function that returns the [16]array representation
+	 * (OpenGL format) of the given PMatrix3D.
+	 */
+	public static final float[] toOpenGLArray(PMatrix3D pM) {
+		return from4x4MatrixToArray(toOpenGLMatrix(pM));
 	}
 	
 	/**
 	 * Utility function that returns the [4][4]float matrix representation
 	 * (OpenGL format) of the given PMatrix3D.
 	 */
-	public static final float[][] fromPMatrix3DToOpenGL(PMatrix3D pM) {
-		return transpose4x4Matrix(fromPMatrix3DToMatrix(pM));
+	public static final float[][] toOpenGLMatrix(PMatrix3D pM) {
+		return transpose4x4Matrix(toMatrix(pM));
 	}
 	
 	/**
@@ -187,7 +174,7 @@ public class Utility implements PConstants {
 	/**
 	 * Utility function that returns the [4][4] float matrix version of the given {@code m} array.
 	 */
-	public static final float [][] fromArray4x4ToMatrix(float[] m) {
+	public static final float [][] fromArrayTo4x4Matrix(float[] m) {
 		// m should be of size [16]
 		float[][] mat = new float[4][4];
 		for (int i = 0; i < 4; ++i)
