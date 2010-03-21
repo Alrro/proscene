@@ -914,6 +914,29 @@ public class Camera implements Cloneable {
 		if ((prevDist > 1E-9) && (newDist > 1E-9))
 			orthoCoef *= prevDist / newDist;
 	}
+	
+	/**
+	 * The {@link #revolveAroundPoint()} is set to the point located under {@code pixel}
+	 * on screen.
+	 * <p>
+	 * Override this method in your jogl-based camera.
+	 * <p>
+	 * Current implementation is empty. 
+	 */
+	//TODO: need to check if it works on jogl-based derived class
+	public boolean setRevolveAroundPointFromPixel(Point p) {
+		return false;
+	}
+	
+	/**
+	 * {@link #setSceneCenter(PVector)} to the result of pointUnderPixel(Point)
+	 * which should be implemented on a jogl-based derived class.
+	 * <p>
+	 */
+	//TODO: need to check if it works on jogl-based derived class
+	public boolean setSceneCenterFromPixel(Point pixel) {
+		return false;
+	}
 
 	// 5. ASSOCIATED FRAME
 

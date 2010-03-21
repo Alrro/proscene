@@ -106,7 +106,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// C O N S T R A I N T S
 	boolean withConstraint;
 	//TODO: find a better way than this hack!
-	boolean readyToGo;
+	protected boolean readyToGo;
 	
 	//O N L I N E   H E L P
 	boolean helpIsDrwn;
@@ -1165,7 +1165,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     }
 	
 	/**
-	 * Implementation of the MouseMotionListener interface method.
+	 * Implementation of the MouseListener interface method.
 	 * <p>
 	 * Implements mouse double click events: left button aligns scene,
 	 * middle button shows entire scene, and right button centers scene.
