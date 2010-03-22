@@ -27,7 +27,6 @@ package remixlab.proscene;
 
 import processing.core.*;
 import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
-
 import java.awt.Point;
 import java.awt.Rectangle;
 
@@ -42,6 +41,14 @@ import java.awt.Rectangle;
  * modelview matrices and can interactively be modified using the mouse.
  */
 public class Camera implements Cloneable {
+	public class WorldPoint {
+		public WorldPoint(PVector p, boolean f) {
+			point = p;
+			found = f;
+		}
+		public PVector point;
+		public boolean found;
+	}
 	static int viewport[] = new int [4];
 	//next variables are needed for frustrum plan coefficients
 	static PVector normal[] = new PVector[6];
@@ -917,25 +924,49 @@ public class Camera implements Cloneable {
 	
 	/**
 	 * The {@link #revolveAroundPoint()} is set to the point located under {@code pixel}
-	 * on screen.
+	 * on screen. Returns {@code true} if a point was found under {@code pixel} and
+	 * {@code false} if none was found (in this case no {@link #revolveAroundPoint()}
+	 * is set).
 	 * <p>
-	 * Override this method in your jogl-based camera.
+	 * Override {@link #pointUnderPixel(Point)} in your jogl-based camera class.
 	 * <p>
-	 * Current implementation is empty. 
-	 */
-	//TODO: need to check if it works on jogl-based derived class
-	public boolean setRevolveAroundPointFromPixel(Point p) {
-		return false;
+	 * Current implementation always returns {@code false}, meaning that no point was
+	 * set. 
+	 */	
+	public boolean setRevolveAroundPointFromPixel(Point pixel) {
+		WorldPoint wP = pointUnderPixel(pixel);
+		if ( wP.found )
+			setRevolveAroundPoint( wP.point);		
+		return wP.found;
 	}
 	
 	/**
-	 * {@link #setSceneCenter(PVector)} to the result of pointUnderPixel(Point)
-	 * which should be implemented on a jogl-based derived class.
+	 * The {@link #setSceneCenter(PVector)} is set to the point located under {@code pixel}
+	 * on screen. Returns {@code true} if a point was found under {@code pixel} and
+	 * {@code false} if none was found (in this case no {@link #sceneCenter()} is set).
 	 * <p>
+	 * Override {@link #pointUnderPixel(Point)} in your jogl-based camera class.
+	 * <p>
+	 * Current implementation always returns {@code false}, meaning that no point was
+	 * set.
 	 */
-	//TODO: need to check if it works on jogl-based derived class
 	public boolean setSceneCenterFromPixel(Point pixel) {
-		return false;
+		WorldPoint wP = pointUnderPixel(pixel);
+		if ( wP.found )
+			setSceneCenter( wP.point );
+		return wP.found;
+	}
+	
+	/**
+	 * Returns the coordinates of the 3D point located at {@code pixel} (x,y) on screen.
+	 * <p>
+	 * Override this method in your jogl-based camera class.
+	 * <p>
+	 * Current implementation always returns {@code WorlPoint.found = false} (dummy value),
+	 * meaning that no point was found under pixel. 
+	 */
+	protected WorldPoint pointUnderPixel(Point pixel) {
+		return new WorldPoint(new PVector(0,0,0), false);
 	}
 
 	// 5. ASSOCIATED FRAME

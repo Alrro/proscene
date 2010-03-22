@@ -29,7 +29,9 @@ import processing.core.*;
 
 import java.awt.Point;
 import java.awt.event.*;
-import javax.swing.event.*; 
+
+import javax.swing.event.*;
+import javax.swing.Timer;
 
 /**
  * A processing 3D interactive scene. A Scene provides a default interactivity for your scene through
@@ -77,6 +79,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean zoomOnRegion;
 	boolean rotateScreen;
 	boolean translateScreen;
+	boolean rap;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	protected static PApplet parent;
@@ -93,6 +96,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// Z O O M _ O N _ R E G I O N
 	Point fCorner;//also used for SCREEN_ROTATE
 	Point lCorner;
+	
+	// R E V O L V E   A R O U N D   P O I N T
+	private Timer rapTimer;
+    private ActionListener taskRapPerformer;
 	
 	// M o u s e   G r a b b e r
 	MouseGrabber mouseGrbbr;
@@ -133,6 +140,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		zoomOnRegion = false;
 		rotateScreen = false;
 		translateScreen = false;
+		rap = false;
 		
 		cam = new Camera();
 		setCamera(camera());
@@ -162,6 +170,14 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		readyToGo = false;
 		
 		font = parent.createFont("Arial", 12);
+		
+		taskRapPerformer = new ActionListener() {
+        	public void actionPerformed(ActionEvent evt) {
+        		unSetRapFlag();
+        	}
+        };
+        rapTimer = new Timer(1000, taskRapPerformer);
+        rapTimer.setRepeats(false);
 		
 		//called only once
 		init();
@@ -362,6 +378,18 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if (parent.key == 'w' || parent.key == 'W') {
 			toggleDrawWithConstraint();
 		}
+		if (parent.key == 'm' || parent.key == 'M') {
+			if (!helpIsDrawn())
+				if (setRevolveAroundPointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+					rap = true;
+					rapTimer.start();
+				}
+		}
+		if (parent.key == 'n' || parent.key == 'n') {
+			camera().setRevolveAroundPoint(new PVector(0,0,0));
+			rap = true;
+			rapTimer.start();
+		}
 	}
 	
 	/**
@@ -381,6 +409,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		textToDisplay += "i: Toggle interactivity between camera and interactiv frame (if any)\n";
 		textToDisplay += "s: Show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";
+		textToDisplay += "n/m: (un)set revolve around point (implement Camera.pointUnderPixel)\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
 		textToDisplay += "Arcball mode: motate, zoom and translate\n";
 		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
@@ -456,8 +485,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	public void endDraw() {
 		if(readyToGo) {
 			if( helpIsDrawn() ) help();
-			if( zoomOnRegion ) drawZoomWindow();
-			if( rotateScreen ) drawScreenRotateLine();
+			if( zoomOnRegion ) drawZoomWindowHint();
+			if( rotateScreen ) drawScreenRotateLineHint();
+			if( rap ) drawRevolveAroundPointHint();
 		//parent.pushMatrix();
 		//setPCameraMatrix();
 		//if (gridIsDrawn()) drawGrid(camera().sceneRadius());
@@ -478,30 +508,42 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #setRadius(float)
 	 * @see #center()
 	 */
-	public float radius () {
+	public float radius() {
 		return camera().sceneRadius();
 	} 
 	
 	/**
 	 * Returns the scene center.
 	 * <p>
-	 * Convenience wrapper function that simply calls {@code camera().sceneCenter()}
+	 * Convenience wrapper function that simply returns {@code camera().sceneCenter()}
 	 * 
 	 * @see #setCenter(PVector)
 	 * {@link #radius()}
 	 */
-	public PVector center () {
+	public PVector center() {
 		return camera().sceneCenter();
-	} 
+	}
+	
+	/**
+	 * Returns the revolve around point.
+	 * <p>
+	 * Convenience wrapper function that simply returns {@code camera().revolveAroundPoint()}
+	 * 
+	 * @see #setCenter(PVector)
+	 * {@link #radius()}
+	 */
+	public PVector revolveAroundPoint() {
+		return camera().revolveAroundPoint();
+	}
 	
 	/**
 	 * Sets the {@link #radius()} of the Scene. 
 	 * <p>
-	 * Convenience wrapper function that simply calls {@code camera().setSceneRadius(radius)}
+	 * Convenience wrapper function that simply returns {@code camera().setSceneRadius(radius)}
 	 * 
 	 * @see #setCenter(PVector)
 	 */
-	public void setRadius (float radius) {
+	public void setRadius(float radius) {
 		camera().setSceneRadius(radius);
 	}
 	
@@ -512,7 +554,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * 
 	 * @see #setRadius(float)
 	 */
-	public void setCenter (PVector center) {
+	public void setCenter(PVector center) {
 		camera().setSceneCenter(center);
 	}
 	
@@ -525,7 +567,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #setRadius(float)
 	 * @see #setCenter(PVector)
 	 */
-	public void setBoundingBox (PVector min, PVector max) {
+	public void setBoundingBox(PVector min, PVector max) {
 		camera().setSceneBoundingBox(min,max);
 	}
 	
@@ -534,8 +576,40 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * 
 	 * @see remixlab.proscene.Camera#showEntireScene()
 	 */
-	public void showAll () {
+	public void showAll() {
 		camera().showEntireScene();
+	}
+	
+	/**
+	 * Convenience wrapper function that simply returns
+	 * {@code camera().setRevolveAroundPointFromPixel(pixel)}
+	 * <p>
+	 * Current implementation set no
+	 * {@link remixlab.proscene.Camera#revolveAroundPoint()}. Override
+	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
+	 * based camera for this to work.
+	 * 
+	 * @see remixlab.proscene.Camera#setRevolveAroundPointFromPixel(Point)
+	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
+	 */
+	public boolean setRevolveAroundPointFromPixel(Point pixel) {
+		return camera().setRevolveAroundPointFromPixel(pixel);
+	}
+	
+	/**
+	 * Convenience wrapper function that simply returns
+	 * {@code camera().setSceneCenterFromPixel(pixel)}
+	 * <p>
+	 * Current implementation set no
+	 * {@link remixlab.proscene.Camera#sceneCenter()}. Override
+	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
+	 * based camera for this to work.
+	 * 
+	 * @see remixlab.proscene.Camera#setSceneCenterFromPixel(Point)
+	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
+	 */
+	public boolean setCenterFromPixel(Point pixel) {
+		return camera().setSceneCenterFromPixel(pixel);
 	}
 	
 	// 5. State of the viewer
@@ -828,7 +902,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Draws a rectangle on the screen showing the region where a zoom
 	 * operation is taking place. 
 	 */
-	protected void drawZoomWindow() {
+	protected void drawZoomWindowHint() {
 		float threshold = 0.01f;
 		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
 		PVector v1 = new PVector();
@@ -898,7 +972,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Draws visual hint (a line on the screen) when a screen
 	 * rotation is taking place. 
 	 */
-	protected void drawScreenRotateLine() {
+	protected void drawScreenRotateLineHint() {
 		float threshold = 0.01f;
 		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
 		PVector v1 = new PVector();
@@ -946,6 +1020,68 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		parent.noStroke();
 		
 		parent.popMatrix();
+	}
+	
+	/**
+	 * Draws visual hint (a cross on the screen) when the {@link #revolveAroundPoint()}
+	 * is being set.
+	 */
+	protected void drawRevolveAroundPointHint() {
+		PVector proj = camera().projectedCoordinatesOf(revolveAroundPoint());
+		float threshold = 0.01f;
+		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
+		PVector v1 = new PVector();
+		float halfWidthSpace;
+		float halfHeightSpace;		
+		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
+			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * z;
+			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * z;
+		}
+		else {
+			float wh[] = camera().getOrthoWidthHeight();
+			halfWidthSpace = wh[0];
+			halfHeightSpace = wh[1];
+		}		
+		float p1x = (float) proj.x;
+		float p1y = (float) proj.y;
+		
+		//translate screen origin to center
+		p1x = p1x - (parent.width/2);
+		p1y = p1y - (parent.height/2);			
+		
+		//normalize
+		p1x = p1x / (parent.width/2);
+		p1y = p1y / (parent.height/2);								
+		
+		v1.x = halfWidthSpace * p1x;
+		v1.y = halfHeightSpace * p1y;
+		
+		parent.pushMatrix();
+		camera().frame().applyTransformation(parent);
+		
+		parent.stroke(255, 255, 255);
+		parent.strokeWeight(3);
+		parent.noFill();		
+		
+		float size = (8.0f * 2 * halfWidthSpace) / camera().screenHeight(); 
+		parent.beginShape(LINES);
+		parent.vertex(v1.x - size, v1.y, -z);
+		parent.vertex(v1.x + size, v1.y, -z);
+		parent.vertex(v1.x, v1.y - size, -z);
+		parent.vertex(v1.x, v1.y + size, -z);		
+		parent.endShape();
+		
+		parent.strokeWeight(1);
+		parent.noStroke();
+		
+		parent.popMatrix();		
+	}
+	
+	/**
+	 * Called from the timer to stop displaying the revolve around point visual hint. 
+	 */
+	protected void unSetRapFlag() {
+		rap = false;
 	}
 	
 	// 7. Mouse customization
@@ -998,25 +1134,24 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		if ( readyToGo ) {
-		//ZOOM_ON_REGION:
-	    if ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) {
-	    if (event.isShiftDown()) {
+		if ( readyToGo ) {		
+	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
+	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
 	    	lCorner = event.getPoint();
 			zoomOnRegion = true;
 			camera().frame().startAction(Scene.MouseAction.ZOOM_ON_REGION, withConstraint);			
 		}
-	    if (event.isControlDown()) {
+	    if ( event.isControlDown() ) {
 	    	fCorner = event.getPoint();
 	    	rotateScreen = true;
 	    	camera().frame().startAction(Scene.MouseAction.SCREEN_ROTATE, withConstraint);
 	    }
-	    if (event.isAltGraphDown()) {
+	    if ( event.isAltGraphDown() ) {
 	    	translateScreen = true;
 	    	camera().frame().startAction(Scene.MouseAction.SCREEN_TRANSLATE, withConstraint);
 	    }
-	    camera().frame().mousePressEvent(event, camera());
+	    camera().frame().mousePressEvent(event, camera()); //totally necessary
 	    }
 		else
 		if ( mouseGrabber() != null ) {
@@ -1171,7 +1306,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		if ( readyToGo && ( event.getClickCount() == 2 ) ) {			
+		if ( readyToGo && ( event.getClickCount() == 2 ) ) {		
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
