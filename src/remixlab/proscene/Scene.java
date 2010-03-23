@@ -161,7 +161,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		withConstraint = true;
 		
-		showAll();
+		//showAll();It is set in setCamera()
 		
 		setAxisIsDrawn(false);
 		setGridIsDrawn(false);
@@ -204,6 +204,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		camera.setScreenWidthAndHeight(parent.width, parent.height);
 		cam = camera;
+		showAll();
 	}
 	
 	/**
@@ -378,8 +379,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if (parent.key == 'w' || parent.key == 'W') {
 			toggleDrawWithConstraint();
 		}
-		if (parent.key == 'm' || parent.key == 'M') {
-			if (!helpIsDrawn())
+		if (parent.key == 'm' || parent.key == 'M') {			
+			if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Revolve Around Point example!");
+			else if (!helpIsDrawn())
 				if (setRevolveAroundPointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 					rap = true;
 					rapTimer.start();
@@ -409,7 +413,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		textToDisplay += "i: Toggle interactivity between camera and interactiv frame (if any)\n";
 		textToDisplay += "s: Show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";
-		textToDisplay += "n/m: (un)set revolve around point (implement Camera.pointUnderPixel)\n";
+		textToDisplay += "n/m: (un)set revolve around point (implement pointUnderPixel in your OpenGL Camera)\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
 		textToDisplay += "Arcball mode: motate, zoom and translate\n";
 		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
