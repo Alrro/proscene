@@ -93,6 +93,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean interactiveFrameIsACam;
 	boolean iFrameIsDrwn;
 	
+	// S C R E E N   C O O R D I N A T E S
+	static float halfWidthSpace;
+	static float halfHeightSpace;
+	static float zC;
+	
 	// Z O O M _ O N _ R E G I O N
 	Point fCorner;//also used for SCREEN_ROTATE
 	Point lCorner;
@@ -410,7 +415,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		textToDisplay += "c: Toggle camera mode (arcball or fly mode)\n";
 		textToDisplay += "e: Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
-		textToDisplay += "i: Toggle interactivity between camera and interactiv frame (if any)\n";
+		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
 		textToDisplay += "s: Show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";
 		textToDisplay += "n/m: (un)set revolve around point (implement pointUnderPixel in your OpenGL Camera)\n";
@@ -907,69 +912,23 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * operation is taking place. 
 	 */
 	protected void drawZoomWindowHint() {
-		float threshold = 0.01f;
-		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
-		PVector v1 = new PVector();
-		PVector v2 = new PVector();		
-		float halfWidthSpace;
-		float halfHeightSpace;		
-		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
-			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * z;
-			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * z;
-		}
-		else {
-			float wh[] = camera().getOrthoWidthHeight();
-			halfWidthSpace = wh[0];
-			halfHeightSpace = wh[1];
-			//any z value should do it, since camera projection is ortho
-			//v1 = camera().unprojectedCoordinatesOf( new PVector(fCorner.x, fCorner.y, (z - camera().zNear()) / (camera().zFar() - camera().zNear())), camera().frame() );
-			//v2 = camera().unprojectedCoordinatesOf( new PVector(lCorner.x, lCorner.y, (z - camera().zNear()) / (camera().zFar() - camera().zNear())), camera().frame() );
-			//v1 = camera().unprojectedCoordinatesOf( new PVector(fCorner.x, fCorner.y, 0.5f), camera().frame() );
-			//v2 = camera().unprojectedCoordinatesOf( new PVector(lCorner.x, lCorner.y, 0.5f), camera().frame() );
-		}		
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();			
 		float p2x = (float) lCorner.getX();
 		float p2y = (float) lCorner.getY();
-		
-		//translate screen origin to center
-		p1x = p1x - (parent.width/2);
-		p1y = p1y - (parent.height/2);
-		p2x = p2x - (parent.width/2);
-		p2y = p2y - (parent.height/2);			
-		
-		//normalize
-		p1x = p1x / (parent.width/2);
-		p1y = p1y / (parent.height/2);
-		p2x = p2x / (parent.width/2);
-		p2y = p2y / (parent.height/2);								
-		
-		v1.x = halfWidthSpace * p1x;
-		v1.y = halfHeightSpace * p1y;			
-		v2.x = halfWidthSpace * p2x;
-		v2.y = halfHeightSpace * p2y;
-					
-		//v1.z = -z;
-		//v2.z = -z;		
-		
-        parent.pushMatrix();
-		camera().frame().applyTransformation(parent);
-		
+		startScreenCoordinatesSystem();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(2);
 		parent.noFill();		
-		
-		parent.beginShape();
-		parent.vertex(v1.x, v1.y, -z);
-		parent.vertex(v2.x, v1.y, -z);
-		parent.vertex(v2.x, v2.y, -z);
-		parent.vertex(v1.x, v2.y, -z);		
-		parent.endShape(CLOSE);
-		
+		parent.beginShape();		
+		parent.vertex(xCoord(p1x), yCoord(p1y), zCoord());
+		parent.vertex(xCoord(p2x), yCoord(p1y), zCoord());
+		parent.vertex(xCoord(p2x), yCoord(p2y), zCoord());
+		parent.vertex(xCoord(p1x), yCoord(p2y), zCoord());
+		parent.endShape(CLOSE);		
 		parent.strokeWeight(1);
 		parent.noStroke();
-		
-		parent.popMatrix();
+		stopScreenCoordinatesSystem();
 	}
 	
 	/**
@@ -977,108 +936,83 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * rotation is taking place. 
 	 */
 	protected void drawScreenRotateLineHint() {
-		float threshold = 0.01f;
-		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
-		PVector v1 = new PVector();
-		float halfWidthSpace;
-		float halfHeightSpace;
-		if( camera().type() == Camera.Type.PERSPECTIVE ) {
-			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * z;
-			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * z;
-		} else {
-			float wh[] = camera().getOrthoWidthHeight();
-			halfWidthSpace = wh[0];
-			halfHeightSpace = wh[1];
-		}		
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();
-		
-		//translate screen origin to center
-		p1x = p1x - (parent.width/2);
-		p1y = p1y - (parent.height/2);			
-		
-		//normalize
-		p1x = p1x / (parent.width/2);
-		p1y = p1y / (parent.height/2);		
-		
-		v1.x = halfWidthSpace * p1x;
-		v1.y = halfHeightSpace * p1y;		
-		
-		//v1.z = -z;
-		//v2.z = -z;
-		
-		parent.pushMatrix();
-		camera().frame().applyTransformation(parent);
-		
+		PVector p2 = camera().projectedCoordinatesOf(revolveAroundPoint());
+		startScreenCoordinatesSystem();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(2);
-		parent.noFill();		
-		
-		PVector pnt = camera().frame().coordinatesOf(camera().revolveAroundPoint());
+		parent.noFill();
 		parent.beginShape(LINE);
-		parent.vertex(v1.x, v1.y, -z);
-		parent.vertex(pnt.x, pnt.y, pnt.z);				
-		parent.endShape();
-		
+		parent.vertex(xCoord(p1x), yCoord(p1y), zCoord());
+		parent.vertex(xCoord(p2.x), yCoord(p2.y), zCoord());		
+		parent.endShape();		
 		parent.strokeWeight(1);
 		parent.noStroke();
-		
-		parent.popMatrix();
+		stopScreenCoordinatesSystem();
 	}
 	
 	/**
 	 * Draws visual hint (a cross on the screen) when the {@link #revolveAroundPoint()}
 	 * is being set.
-	 */
+	 */	
 	protected void drawRevolveAroundPointHint() {
-		PVector proj = camera().projectedCoordinatesOf(revolveAroundPoint());
+		PVector p = camera().projectedCoordinatesOf(revolveAroundPoint());
+		startScreenCoordinatesSystem();
+		parent.stroke(255, 255, 255);
+		parent.strokeWeight(3);
+		parent.noFill();		
+		float size = (8.0f * 2 * halfWidthSpace) / camera().screenHeight(); 
+		parent.beginShape(LINES);
+		parent.vertex(xCoord(p.x) - size, yCoord(p.y), zCoord());
+		parent.vertex(xCoord(p.x) + size, yCoord(p.y), zCoord());
+		parent.vertex(xCoord(p.x), yCoord(p.y) - size, zCoord());
+		parent.vertex(xCoord(p.x), yCoord(p.y) + size, zCoord());		
+		parent.endShape();		
+		parent.strokeWeight(1);
+		parent.noStroke();
+		stopScreenCoordinatesSystem();
+	}
+	
+	public void startScreenCoordinatesSystem() {		
 		float threshold = 0.01f;
-		float z = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() ); 
-		PVector v1 = new PVector();
-		float halfWidthSpace;
-		float halfHeightSpace;		
+		zC = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() );		
 		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
-			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * z;
-			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * z;
+			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * zC;
+			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * zC;
 		}
 		else {
 			float wh[] = camera().getOrthoWidthHeight();
 			halfWidthSpace = wh[0];
 			halfHeightSpace = wh[1];
-		}		
-		float p1x = (float) proj.x;
-		float p1y = (float) proj.y;
-		
-		//translate screen origin to center
-		p1x = p1x - (parent.width/2);
-		p1y = p1y - (parent.height/2);			
-		
-		//normalize
-		p1x = p1x / (parent.width/2);
-		p1y = p1y / (parent.height/2);								
-		
-		v1.x = halfWidthSpace * p1x;
-		v1.y = halfHeightSpace * p1y;
+		}
 		
 		parent.pushMatrix();
 		camera().frame().applyTransformation(parent);
-		
-		parent.stroke(255, 255, 255);
-		parent.strokeWeight(3);
-		parent.noFill();		
-		
-		float size = (8.0f * 2 * halfWidthSpace) / camera().screenHeight(); 
-		parent.beginShape(LINES);
-		parent.vertex(v1.x - size, v1.y, -z);
-		parent.vertex(v1.x + size, v1.y, -z);
-		parent.vertex(v1.x, v1.y - size, -z);
-		parent.vertex(v1.x, v1.y + size, -z);		
-		parent.endShape();
-		
-		parent.strokeWeight(1);
-		parent.noStroke();
-		
-		parent.popMatrix();		
+	}
+	
+	public void stopScreenCoordinatesSystem() {
+		parent.popMatrix();
+	}
+	
+	public static float xCoord(float px) {
+		//translate screen origin to center
+		px = px - (parent.width/2);		
+		//normalize
+		px = px / (parent.width/2);
+		return halfWidthSpace * px;
+	}
+	
+	public static float yCoord(float py) {
+		//translate screen origin to center
+		py = py - (parent.height/2);		
+		//normalize
+		py = py / (parent.height/2);		
+		return halfHeightSpace * py;
+	}
+	
+	public static float zCoord() {
+		return -zC;
 	}
 	
 	/**
