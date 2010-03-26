@@ -105,6 +105,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// R E V O L V E   A R O U N D   P O I N T
 	private Timer rapTimer;
     private ActionListener taskRapPerformer;
+    
+    // E X C E P T I O N   H A N D L I N G
+    protected static int beginDrawCalls;
+    protected static int startCoordCalls;
 	
 	// M o u s e   G r a b b e r
 	MouseGrabber mouseGrbbr;
@@ -117,8 +121,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	// C O N S T R A I N T S
 	boolean withConstraint;
-	//TODO: find a better way than this hack!
-	protected boolean readyToGo;
+	//TODO: find a better way than this hack! ...testing without the hack
+	//protected boolean readyToGo;
 	
 	//O N L I N E   H E L P
 	boolean helpIsDrwn;
@@ -172,7 +176,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		setGridIsDrawn(false);
 		setHelpIsDrawn(true);
 		
-		readyToGo = false;
+		//readyToGo = false;
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -183,6 +187,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
         };
         rapTimer = new Timer(1000, taskRapPerformer);
         rapTimer.setRepeats(false);
+        
+        // E X C E P T I O N   H A N D L I N G
+        beginDrawCalls = 0;
+        startCoordCalls = 0;
 		
 		//called only once
 		init();
@@ -467,6 +475,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	public void beginDraw() {
 		pg3d = (PGraphics3D) parent.g;  // g may change
 		//TODO would be nice to check if the background was set and set if not (no not set it if yes).
+		if ( beginDrawCalls != 0 )
+			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
+		beginDrawCalls ++;
+		
+		//We set the processing camera matrices from our remixlab.proscene.Camera
 		setPProjectionMatrix();
 		setPModelViewMatrix();
 		
@@ -492,19 +505,17 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Displays some visual hints, such the {@link #help()} text.
 	 */
 	public void endDraw() {
-		if(readyToGo) {
-			if( helpIsDrawn() ) help();
-			if( zoomOnRegion ) drawZoomWindowHint();
-			if( rotateScreen ) drawScreenRotateLineHint();
-			if( rap ) drawRevolveAroundPointHint();
-		//parent.pushMatrix();
-		//setPCameraMatrix();
-		//if (gridIsDrawn()) drawGrid(camera().sceneRadius());
-		//if (axisIsDrawn()) drawAxis(camera().sceneRadius());
-		//parent.popMatrix();
-		}
-		else
-			readyToGo = true;
+		//if(readyToGo) {
+		if( helpIsDrawn() ) help();
+		if( zoomOnRegion ) drawZoomWindowHint();
+		if( rotateScreen ) drawScreenRotateLineHint();
+		if( rap ) drawRevolveAroundPointHint();
+		//}		
+		//else
+			//readyToGo = true;
+		beginDrawCalls --;
+		if ( beginDrawCalls != 0 )
+			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
 	}
 	
 	// 4. Scene dimensions
@@ -916,7 +927,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		float p1y = (float) fCorner.getY();			
 		float p2x = (float) lCorner.getX();
 		float p2y = (float) lCorner.getY();
-		startScreenCoordinatesSystem();
+		beginScreenDrawing();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(2);
 		parent.noFill();		
@@ -928,7 +939,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		parent.endShape(CLOSE);		
 		parent.strokeWeight(1);
 		parent.noStroke();
-		stopScreenCoordinatesSystem();
+		endScreenDrawing();
 	}
 	
 	/**
@@ -939,7 +950,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(revolveAroundPoint());
-		startScreenCoordinatesSystem();
+		beginScreenDrawing();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(2);
 		parent.noFill();
@@ -949,7 +960,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		parent.endShape();		
 		parent.strokeWeight(1);
 		parent.noStroke();
-		stopScreenCoordinatesSystem();
+		endScreenDrawing();
 	}
 	
 	/**
@@ -958,23 +969,27 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */	
 	protected void drawRevolveAroundPointHint() {
 		PVector p = camera().projectedCoordinatesOf(revolveAroundPoint());
-		startScreenCoordinatesSystem();
+		beginScreenDrawing();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(3);
-		parent.noFill();		
-		float size = (8.0f * 2 * halfWidthSpace) / camera().screenHeight(); 
+		parent.noFill();
+		float size = 15;
 		parent.beginShape(LINES);
-		parent.vertex(xCoord(p.x) - size, yCoord(p.y), zCoord());
-		parent.vertex(xCoord(p.x) + size, yCoord(p.y), zCoord());
-		parent.vertex(xCoord(p.x), yCoord(p.y) - size, zCoord());
-		parent.vertex(xCoord(p.x), yCoord(p.y) + size, zCoord());		
+		parent.vertex(xCoord(p.x - size), yCoord(p.y), zCoord());
+		parent.vertex(xCoord(p.x + size), yCoord(p.y), zCoord());
+		parent.vertex(xCoord(p.x), yCoord(p.y - size), zCoord());
+		parent.vertex(xCoord(p.x), yCoord(p.y + size), zCoord());
 		parent.endShape();		
 		parent.strokeWeight(1);
 		parent.noStroke();
-		stopScreenCoordinatesSystem();
+		endScreenDrawing();
 	}
 	
-	public void startScreenCoordinatesSystem() {		
+	public void beginScreenDrawing() {		
+		if ( startCoordCalls != 0 )
+			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
+					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implmentation!");
+		startCoordCalls ++;
 		float threshold = 0.01f;
 		zC = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() );		
 		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
@@ -991,8 +1006,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		camera().frame().applyTransformation(parent);
 	}
 	
-	public void stopScreenCoordinatesSystem() {
+	public void endScreenDrawing() {
 		parent.popMatrix();
+		startCoordCalls --;
+		if ( startCoordCalls != 0 )
+			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
+					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implmentation!");
 	}
 	
 	public static float xCoord(float px) {
@@ -1043,23 +1062,15 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */
 	public void mouseMoved(MouseEvent event) {
 		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
-		if ( readyToGo ) {
-		if((projectionMatrix != null) && (modelviewMatrix != null)) {
-			//camera().computeProjectionMatrix();
-			//camera().computeModelViewMatrix();
-			//Same as the 2 previous lines but a lot more efficient:
-			camera().setProjectionMatrix(projectionMatrix);
-			camera().setModelViewMatrix(modelviewMatrix);
-		}		
-		//need in order to make mousewheel work properly 
+		//if ( readyToGo ) {
+		//need in order to make mousewheel work properly
 		setMouseGrabber(null);
-		
 		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
 			mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if(mg.grabsMouse())
 				setMouseGrabber(mg);
 		}
-		}
+		//}
 	}
 	
 	/** Implementation of the MouseMotionListener interface method.
@@ -1072,7 +1083,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		if ( readyToGo ) {		
+		//if ( readyToGo ) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
 	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
@@ -1158,7 +1169,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			}	
 			camera().frame().mousePressEvent(event, camera());
 		}
-		}
+		//}
 	}
 	
 	/**
@@ -1170,7 +1181,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		if ( readyToGo ) {
+		//if ( readyToGo ) {
 		// /**
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
@@ -1199,7 +1210,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		else {
 			camera().frame().mouseMoveEvent(event, camera());
 		}
-		}
+		//}
 	}
 	
 	/**
@@ -1209,7 +1220,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
 	public void mouseReleased(MouseEvent event) {
-		if ( readyToGo ) {
+		//if ( readyToGo ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
 			camera().frame().mouseReleaseEvent(event, camera());
@@ -1234,7 +1245,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		else {
 			camera().frame().mouseReleaseEvent(event, camera());
 		}
-		}
+		//}
     }
 	
 	/**
@@ -1244,7 +1255,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		if ( readyToGo && ( event.getClickCount() == 2 ) ) {		
+		//if ( readyToGo && ( event.getClickCount() == 2 ) ) {
+		if ( event.getClickCount() == 2 ) {
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
@@ -1305,7 +1317,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		if ( readyToGo ) {
+		//if ( readyToGo ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
@@ -1335,7 +1347,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
 			camera().frame().mouseWheelEvent(event, camera());
 		}
-		}
+		//}
 	}
 	
 	// 10. Processing objects
@@ -1356,7 +1368,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			parent.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
-		projectionMatrix = pg3d.projection;		
+		projectionMatrix = pg3d.projection;
+		//Processing computes the camera matrices for us (it actually computes the
+		//projection matrix from our Camera parameters). We just set them back
+		//(instead of calling camera().computeProjectionMatrix() which is also possible
+		//but expensive)
+		camera().setProjectionMatrix(projectionMatrix);
 	}
 	
 	/**
@@ -1368,6 +1385,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 				      camera().at().x, camera().at().y, camera().at().z,
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		modelviewMatrix = pg3d.modelview;
+		//Processing computes the camera matrices for us (it actually computes the
+		//modelview matrix from our Camera parameters). We just set them back
+		//(instead of calling camera().computeModelViewMatrix() which is also possible
+		//but expensive)
+		camera().setModelViewMatrix(modelviewMatrix);
 	}
 	
 	// 11. Utility
