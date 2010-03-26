@@ -53,6 +53,6 @@ public class FrameInteraction extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.FrameInteraction" });
+		PApplet.main(new String[] { "--present", "FrameInteraction" });
 	}
 }

@@ -13,11 +13,12 @@ public class Box {
 	public void draw() {
 		parent.pushMatrix();
 		
-		//parent.applyMatrix( glIFrame.pMatrix() );
+		//parent.applyMatrix( glIFrame.matrix() );
 		//Same as the previous commented line, but a lot more efficient:
 		iFrame.applyTransformation(parent);
 		
-		Scene.drawAxis(0.3f);
+		//Scene.drawAxis(0.3f);
+		parent.noStroke();
 		if (iFrame.grabsMouse())
 			parent.fill(255, 0, 0);
 		else
@@ -27,6 +28,10 @@ public class Box {
 		
 		parent.popMatrix();
 	}
+	
+	public PVector getPosition() {
+		return iFrame.position();
+	}	
 	
 	public void setPosition(PVector pos) {
 		iFrame.setPosition(pos);

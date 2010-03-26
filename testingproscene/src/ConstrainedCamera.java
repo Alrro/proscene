@@ -175,6 +175,6 @@ public class ConstrainedCamera extends PApplet  {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.ConstrainedCamera" });
+		PApplet.main(new String[] { "--present", "ConstrainedCamera" });
 	}
 }

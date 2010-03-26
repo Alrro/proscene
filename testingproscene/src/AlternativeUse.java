@@ -30,13 +30,13 @@ public class AlternativeUse extends PApplet {
 			setAxisIsDrawn(true);
 		}
 		
-		public void scene() {
+		public void proscenium() {
 			fill(204, 102, 0);
 			box(0.2f, 0.3f, 0.5f);
 		}
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.AlternativeUse" });
+		PApplet.main(new String[] { "--present", "AlternativeUse" });
 	}
 }

@@ -190,6 +190,6 @@ public class ConstrainedFrame extends PApplet  {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.ConstrainedFrame" });
+		PApplet.main(new String[] { "--present", "ConstrainedFrame" });
 	}
 }

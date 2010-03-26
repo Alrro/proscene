@@ -51,6 +51,6 @@ Scene scene;
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.Moire" });
+		PApplet.main(new String[] { "--present", "Moire" });
 	}
 }

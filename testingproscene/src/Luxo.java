@@ -38,6 +38,6 @@ public class Luxo extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.Luxo" });
+		PApplet.main(new String[] { "--present", "Luxo" });
 	}
 }

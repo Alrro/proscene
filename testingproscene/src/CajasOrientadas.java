@@ -11,10 +11,6 @@ public class CajasOrientadas extends PApplet {
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
-		//size(600, 400, OPENGL);
-		//size(640, 360, P3D);
-		//size(300, 200, OPENGL);
-		//size(300, 200, P3D);
 		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
@@ -52,6 +48,6 @@ public class CajasOrientadas extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.CajasOrientadas" });
+		PApplet.main(new String[] { "--present", "CajasOrientadas" });
 	}
 }

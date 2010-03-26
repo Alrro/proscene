@@ -42,6 +42,6 @@ public class MouseGrabber extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "test.MouseGrabber" });
+		PApplet.main(new String[] { "--present", "MouseGrabber" });
 	}
 }
