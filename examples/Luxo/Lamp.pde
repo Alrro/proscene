@@ -20,6 +20,9 @@
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
+import processing.core.*;
+import remixlab.proscene.*;
+
 public class Lamp {
   PApplet parent;
   InteractiveFrame [] frameArray;
@@ -29,7 +32,7 @@ public class Lamp {
     frameArray = new InteractiveFrame[4];
     for (int i=0; i<4; ++i) {
       frameArray[i] = new InteractiveFrame();
-      // Creates a hierarchy of frames.
+      // Creates a hierarchy of frames
       if (i>0) frame(i).setReferenceFrame(frame(i-1));
     }
     
@@ -47,7 +50,6 @@ public class Lamp {
     baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,0.0f,1.0f));
     baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,0.0f,1.0f));
     frame(0).setConstraint(baseConstraint);
-    
     LocalConstraint XAxis = new LocalConstraint();
     XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN,  new PVector(0.0f,0.0f,0.0f));
     XAxis.setRotationConstraint   (AxisPlaneConstraint.Type.AXIS, new PVector(1.0f,0.0f,0.0f));
@@ -82,12 +84,17 @@ public class Lamp {
     frame(3).applyTransformation(parent);
     setColor( frame(3).grabsMouse() );
     drawHead();
+    
+    // Add light
+    parent.spotLight(155, 255, 255, 0, 0, 0, 0, 0, 1, PApplet.THIRD_PI, 1);
+    
     parent.popMatrix();//frame(3)
     
     parent.popMatrix();//frame(2)
     
     parent.popMatrix();//frame(1)
     
+    //totally necessary
     parent.popMatrix();//frame(0)
   }
   
@@ -121,20 +128,17 @@ public class Lamp {
   
   public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
     parent.translate(0.0f, 0.0f, zMin);
-     if(r1==r2)
-       Scene.cylinder(r1, zMax-zMin);
-     else
-       Scene.cone(nbSub, 0, 0, r1, zMax-zMin);
-     parent.translate(0.0f, 0.0f, -zMin);
-   }
-   
+    Scene.cone(nbSub, 0, 0, r1, r2, zMax-zMin);
+    parent.translate(0.0f, 0.0f, -zMin);
+  }
+  
   public void setColor(boolean selected) {
     if (selected)
       parent.fill(240, 240, 0);
     else
       parent.fill(240, 240, 240);
-   }
-   
+  }
+  
   public InteractiveFrame frame(int i) {
     return frameArray[i];
   }

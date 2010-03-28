@@ -121,8 +121,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	// C O N S T R A I N T S
 	boolean withConstraint;
-	//TODO: find a better way than this hack! ...testing without the hack
-	//protected boolean readyToGo;
+	//TODO: find a better way than this hack!
+	protected boolean readyToGo;
 	
 	//O N L I N E   H E L P
 	boolean helpIsDrwn;
@@ -176,7 +176,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		setGridIsDrawn(false);
 		setHelpIsDrawn(true);
 		
-		//readyToGo = false;
+		readyToGo = false;
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -505,14 +505,14 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Displays some visual hints, such the {@link #help()} text.
 	 */
 	public void endDraw() {
-		//if(readyToGo) {
-		if( helpIsDrawn() ) help();
-		if( zoomOnRegion ) drawZoomWindowHint();
-		if( rotateScreen ) drawScreenRotateLineHint();
-		if( rap ) drawRevolveAroundPointHint();
-		//}		
-		//else
-			//readyToGo = true;
+		if(readyToGo) {
+			if( helpIsDrawn() ) help();
+			if( zoomOnRegion ) drawZoomWindowHint();
+			if( rotateScreen ) drawScreenRotateLineHint();
+			if( rap ) drawRevolveAroundPointHint();
+		}		
+		else
+			readyToGo = true;
 		beginDrawCalls --;
 		if ( beginDrawCalls != 0 )
 			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
@@ -1062,15 +1062,15 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */
 	public void mouseMoved(MouseEvent event) {
 		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
-		//if ( readyToGo ) {
-		//need in order to make mousewheel work properly
-		setMouseGrabber(null);
-		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
-			mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
-			if(mg.grabsMouse())
-				setMouseGrabber(mg);
+		if ( readyToGo ) {
+			//need in order to make mousewheel work properly
+			setMouseGrabber(null);
+			for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
+				mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
+				if(mg.grabsMouse())
+					setMouseGrabber(mg);
+			}
 		}
-		//}
 	}
 	
 	/** Implementation of the MouseMotionListener interface method.
@@ -1083,7 +1083,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		//if ( readyToGo ) {
+		if ( readyToGo ) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
 	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
@@ -1169,7 +1169,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			}	
 			camera().frame().mousePressEvent(event, camera());
 		}
-		//}
+		}
 	}
 	
 	/**
@@ -1181,7 +1181,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		//if ( readyToGo ) {
+		if ( readyToGo ) {
 		// /**
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
@@ -1210,7 +1210,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		else {
 			camera().frame().mouseMoveEvent(event, camera());
 		}
-		//}
+		}
 	}
 	
 	/**
@@ -1220,7 +1220,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
 	public void mouseReleased(MouseEvent event) {
-		//if ( readyToGo ) {
+		if ( readyToGo ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
 			camera().frame().mouseReleaseEvent(event, camera());
@@ -1245,7 +1245,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		else {
 			camera().frame().mouseReleaseEvent(event, camera());
 		}
-		//}
+		}
     }
 	
 	/**
@@ -1255,8 +1255,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		//if ( readyToGo && ( event.getClickCount() == 2 ) ) {
-		if ( event.getClickCount() == 2 ) {
+		if ( readyToGo && ( event.getClickCount() == 2 ) ) {		
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
@@ -1317,7 +1316,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		//if ( readyToGo ) {
+		if ( readyToGo ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
@@ -1347,7 +1346,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
 			camera().frame().mouseWheelEvent(event, camera());
 		}
-		//}
+		}
 	}
 	
 	// 10. Processing objects
@@ -1453,29 +1452,79 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Draws a cone along the positive {@code z} axis, with its base centered at
 	 * {@code (x,y)}, height {@code h}, and radius {@code r}.
 	 * <p>
-	 * The code of this function was taken from http://processinghacks.com/hacks:cone
-	 * Thanks to Tom Carden
+	 * The code of this function was adapted from http://processinghacks.com/hacks:cone
+	 * Thanks to Tom Carden.
+	 * 
+	 * @see #cone(int, float, float, float, float, float)
 	 */
-	public static void cone(int detail, float x, float y, float r, float h) {		
+	public static void cone(int detail, float x, float y, float r, float h) {
 		float unitConeX[] = new float[detail+1];
 		float unitConeY[] = new float[detail+1];
 		
 		for (int i = 0; i <= detail; i++) {
 			float a1 = TWO_PI * i / detail;
-		    unitConeX[i] = (float)Math.cos(a1);
-		    unitConeY[i] = (float)Math.sin(a1);
+		    unitConeX[i] = r * (float)Math.cos(a1);
+		    unitConeY[i] = r * (float)Math.sin(a1);
+		}
+		
+		parent.pushMatrix();
+		parent.translate(x,y);		
+		parent.beginShape(TRIANGLE_FAN);
+		parent.vertex(0,0,h);
+		for (int i = 0; i <= detail; i++) {
+			parent.vertex(unitConeX[i],unitConeY[i],0.0f);
+		}
+		parent.endShape();
+		parent.popMatrix();
+	}
+	
+	/**
+	 * Same as {@code cone(det, 0, 0, r1, r2, h);}
+	 * 
+	 * @see #cone(int, float, float, float, float, float)
+	 */
+	public void cone(int det, float r1, float r2, float h) {
+		cone(det, 0, 0, r1, r2, h);
+	}
+	
+	/**
+	 * Same as {@code cone(18, 0, 0, r1, r2, h);}
+	 * 
+	 * @see #cone(int, float, float, float, float, float)
+	 */
+	public static void cone(float r1, float r2,float h) {
+		cone(18, 0, 0, r1, r2, h);
+	}
+	
+	/**
+	 * Draws a truncated cone along the positive {@code z} axis, with its base centered at
+	 * {@code (x,y)}, height {@code h}, and radii {@code r1} and {@code r2} (basis and
+	 * height respectively).
+	 * 
+	 * @see #cone(int, float, float, float, float)
+	 */
+	public static void cone(int detail, float x, float y, float r1, float r2, float h) {
+		float firstCircleX[] = new float[detail+1];
+		float firstCircleY[] = new float[detail+1];		
+		float secondCircleX[] = new float[detail+1];
+		float secondCircleY[] = new float[detail+1];
+		
+		for (int i = 0; i <= detail; i++) {
+			float a1 = TWO_PI * i / detail;
+		    firstCircleX[i] = r1 * (float)Math.cos(a1);
+		    firstCircleY[i] = r1 * (float)Math.sin(a1);
+		    secondCircleX[i] = r2 * (float)Math.cos(a1);
+		    secondCircleY[i] = r2 * (float)Math.sin(a1);
 		}
 		
 		parent.pushMatrix();
 		parent.translate(x,y);
-		parent.scale(r,r);
-		parent.beginShape(TRIANGLES);
-		for (int i = 0; i < detail; i++) {
-			parent.vertex(unitConeX[i],unitConeY[i],0.0f);
-			parent.vertex(unitConeX[i+1],unitConeY[i+1],0.0f);
-			parent.vertex(0,0,h);
+		parent.beginShape(QUAD_STRIP);
+		for (int i = 0; i <= detail; i++) {
+			parent.vertex(firstCircleX[i], firstCircleY[i], 0);
+			parent.vertex(secondCircleX[i], secondCircleY[i], h);			
 		}
 		parent.endShape();
 		parent.popMatrix();
-	}	
+	}
 }

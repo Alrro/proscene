@@ -13,19 +13,21 @@ Scene scene;
 Lamp lamp;
 
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   scene = new Scene(this);
+  scene.setHelpIsDrawn(false);
   lamp = new Lamp(this);
 }
 
 void draw() {
   background(0);
+  lights();
   scene.beginDraw();
   lamp.draw();
   //draw the ground
   noStroke();
   fill(120, 120, 120);
-  float nbPatches = 10;
+  float nbPatches = 100;
   normal(0.0f,0.0f,1.0f);
   for (int j=0; j<nbPatches; ++j) {
   beginShape(QUAD_STRIP );
