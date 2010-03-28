@@ -75,7 +75,7 @@ public class InteractiveFrame extends Frame
 	private boolean dirIsFixed;
 
 	// MouseGrabber
-	private boolean keepsGrabbingMouse;
+	protected boolean keepsGrabbingMouse;
 
 	protected Scene.MouseAction action;
 	protected Constraint prevConstraint; // When manipulation is without
