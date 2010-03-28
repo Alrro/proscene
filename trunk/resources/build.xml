@@ -7,12 +7,14 @@
 	
 <!-- #### (1) where are your processing libraries located? edit location. #### -->
 	<property name="processing" location="/home/pierre/Fun/downloads/bin/processing-1.0.9/libraries"/>
+	<!-- property name="processing" location="/home/pierre/Fun/downloads/bin/processing-1.1/libraries"/ -->
 
 
 <!-- #### (2) where are the jar files located that are required for compiling 
 		your library such as e.g. core.jar ? edit location. #### -->
 
-	<property name="libraryClasspath"  location="/home/pierre/projects/workspace/libs"/>	
+	<property name="libraryClasspath" location="/home/pierre/projects/workspace/libs/processing-1.0.9"/>
+	<!-- property name="libraryClasspath" location="/home/pierre/projects/workspace/libs/processing-1.1"/ -->
 	<path id="library-classpath">
 		<fileset dir="${libraryClasspath}" >		
 <!-- #### (3) add the jar files that are required for compiling. edit name.
@@ -54,6 +56,7 @@
 	
 <!-- #### (12) the processing version this library has been tested with. edit value. #### -->
 	<property name="tested:processingVersion"  value="1.0.9" />
+	<!-- property name="tested:processingVersion"  value="1.1" / -->
 	
 <!-- #### (13) does the library depend on any other library, dll, jnilib, etc. edit value. #### -->
 	<property name="tested:dependencies"  value="none" />
