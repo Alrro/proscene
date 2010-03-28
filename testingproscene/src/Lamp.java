@@ -1,7 +1,5 @@
 import processing.core.*;
 import remixlab.proscene.*;
-//import shapes3d.utils.*;
-//import shapes3d.*;
 
 public class Lamp {
 	PApplet parent;
@@ -65,23 +63,19 @@ public class Lamp {
 		frame(3).applyTransformation(parent);
 		setColor( frame(3).grabsMouse() );
 		drawHead();
+		
+		// Add light
+		//spotLight(v1, v2, v3, x, y, z, nx, ny, nz, angle, concentration)
+		parent.spotLight(155, 255, 255, 0, 0, 0, 0, 0, 1, PApplet.THIRD_PI, 1);
+		
 		parent.popMatrix();//frame(3)
 		
 		parent.popMatrix();//frame(2)
 		
 		parent.popMatrix();//frame(1)
 		
+		//totally necessary
 		parent.popMatrix();//frame(0)
-		
-
-		/**
-		  // Add light
-		  const GLfloat pos[4] = {0.0, 0.0, 0.0, 1.0};
-		  glLightfv(GL_LIGHT1, GL_POSITION, pos);
-		  const GLfloat spot_dir[3]  = {0.0, 0.0, 1.0};
-		  glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, spot_dir);
-		  glPopMatrix();
-		  */
 	}
 	
 	public void drawBase() {
@@ -94,8 +88,8 @@ public class Lamp {
 	public void drawArm() {
 		parent.translate(0.02f, 0.0f, 0.0f);
 		drawCone(0.0f, 0.5f, 0.01f, 0.01f, 10);
-		parent.translate(-0.04f, 0.0f, 0.0f);
-		drawCone(0.0f, 0.5f, 0.01f, 0.01f, 10);
+		parent.translate(-0.04f, 0.0f, 0.0f);  
+		drawCone(0.0f, 0.5f, 0.01f, 0.01f, 10);		
 		parent.translate(0.02f, 0.0f, 0.0f);
 	}
 
@@ -113,24 +107,15 @@ public class Lamp {
 	}
 	
 	public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
-		//Tube tube = new Tube(parent, 8, 60, new PVector(0,0,1), new PVector(0,0,0));
-		//tube.setSize(r2, r2, r1, r1, zMax-zMin);
 		parent.translate(0.0f, 0.0f, zMin);
-		//parent.fill(155, 0, 155);
-		if(r1==r2)
-			Scene.cylinder(r1, zMax-zMin);
-		else
-			Scene.cone(nbSub, 0, 0, r1, zMax-zMin);
-		//tube.draw();
+		Scene.cone(nbSub, 0, 0, r1, r2, zMax-zMin);
 		parent.translate(0.0f, 0.0f, -zMin);
 	}
 	
 	public void setColor(boolean selected) {
 		if (selected)
-			//parent.color(0.9f, 0.9f, 0.0f);
 			parent.fill(240, 240, 0);		
 		else
-			//parent.color(0.9f, 0.9f, 0.9f);
 			parent.fill(240, 240, 240);
 	}
 
