@@ -29,6 +29,7 @@ import processing.core.*;
 import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.util.*;
 
 /**
  * A perspective or orthographic camera.
@@ -80,10 +81,14 @@ public class Camera implements Cloneable {
 	private PMatrix3D projectionMat;
 
 	// S t e r e o p a r a m e t e r s
-	float IODist; // inter-ocular distance, in meters
-	float focusDist; // in scene units
-	float physicalDist2Scrn; // in meters
-	float physicalScrnWidth; // in meters
+	private float IODist; // inter-ocular distance, in meters
+	private float focusDist; // in scene units
+	private float physicalDist2Scrn; // in meters
+	private float physicalScrnWidth; // in meters
+	
+	// P o i n t s   o f   V i e w s   a n d   K e y F r a m e s
+    private Map<Integer, KeyFrameInterpolator> kfi;
+    private KeyFrameInterpolator interpolationKfi;
 
 	/**
 	 * Default constructor. 
@@ -98,6 +103,8 @@ public class Camera implements Cloneable {
 	 */
 	public Camera() {		
 		fldOfView = Quaternion.PI / 4.0f;
+		
+		//interpolationKfi = new KeyFrameInterpolator();
 		setFrame(new InteractiveCameraFrame());
 
 		// Requires fieldOfView() to define focusDistance()
