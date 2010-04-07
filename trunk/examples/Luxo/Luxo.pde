@@ -63,7 +63,7 @@ void filledCircle(int c, PVector center, float radius) {
   scene.beginScreenDrawing();
   beginShape(TRIANGLE_FAN);
   vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord());
-  for (angle=0.0f;angle<=TWO_PI;angle+=0.5f) {
+  for (angle=0.0f;angle<=TWO_PI;angle+=+=0.157f) {
     x2 = x+sin(angle)*radius;
     y2 = y+cos(angle)*radius;
     vertex(Scene.xCoord(x2), Scene.yCoord(y2), Scene.zCoord());
