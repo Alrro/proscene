@@ -29,7 +29,8 @@ import processing.core.*;
 import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
 
 /**
  * A perspective or orthographic camera.
@@ -87,8 +88,10 @@ public class Camera implements Cloneable {
 	private float physicalScrnWidth; // in meters
 	
 	// P o i n t s   o f   V i e w s   a n d   K e y F r a m e s
-    private Map<Integer, KeyFrameInterpolator> kfi;
-    private KeyFrameInterpolator interpolationKfi;
+    protected HashMap<Integer, KeyFrameInterpolator> kfi;
+    Iterator it;    
+    //TODO implement me
+    //protected KeyFrameInterpolator interpolationKfi;
 
 	/**
 	 * Default constructor. 
@@ -101,10 +104,13 @@ public class Camera implements Cloneable {
 	 * {@link #physicalScreenWidth()} and {@link #focusDistance()}
 	 * documentations for default stereo parameter values.
 	 */
-	public Camera() {		
+	public Camera() {
 		fldOfView = Quaternion.PI / 4.0f;
 		
+		//KeyFrames
 		//interpolationKfi = new KeyFrameInterpolator();
+		kfi = new HashMap<Integer, KeyFrameInterpolator>();
+		
 		setFrame(new InteractiveCameraFrame());
 
 		// Requires fieldOfView() to define focusDistance()
@@ -154,13 +160,25 @@ public class Camera implements Cloneable {
 	public Camera clone() {
 		try {
 			Camera clonedCam = (Camera) super.clone();
+			clonedCam.kfi = new HashMap<Integer, KeyFrameInterpolator>();
+			/**
+			it = kfi.entrySet().iterator();
+			while(it.hasNext()) { 
+				KeyFrameInterpolator key = (KeyFrameInterpolator) it.next();
+			}
+			*/
+			it = kfi.keySet().iterator();
+		    while (it.hasNext()) {
+		      Integer key = (Integer) it.next();
+		      clonedCam.kfi.put(key, kfi.get(key).clone());
+		    }
 			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);			
 			clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
-			clonedCam.projectionMat = new PMatrix3D(projectionMat);
+			clonedCam.projectionMat = new PMatrix3D(projectionMat);			
 			clonedCam.frm = frm.clone();
 			return clonedCam;
 		} catch (CloneNotSupportedException e) {
-			throw new Error("Is too");
+			throw new Error("Something went wrong when cloning the Camera");
 		}
 	}
 
@@ -1009,8 +1027,100 @@ public class Camera implements Cloneable {
 
 		frm = icf;
 	}
+	
+	// 6. KEYFRAMED PATHS
+	
+	/**
+	 * Returns the KeyFrameInterpolator that defines the Camera path number {@code key}.
+	 * <p>
+	 * The returned KeyFrameInterpolator may be null (if no path is defined for key {@code key}).
+	 */
+	public KeyFrameInterpolator keyFrameInterpolator (int key) {
+		return kfi.get(key);
+	} 
+	
+	/**
+	 * Sets the KeyFrameInterpolator that defines the Camera path of index {@code key}.
+	 */
+	public void setKeyFrameInterpolator (int key, KeyFrameInterpolator k) {
+		if (k != null)
+			kfi.put(key, k);
+		else
+			kfi.remove(key);
+	}
+	
+	/**
+	 * Adds the current Camera {@link #position()} and {@link #orientation()} as a keyFrame to
+	 * path {@code key}.
+	 * <p>
+	 * This method can also be used if you simply want to save a Camera point of view (a path
+	 * made of a single keyFrame). Use {@link #playPath(int)} to make the Camera play the
+	 * keyFrame path (resp. restore	the point of view). Use {@link #deletePath(int)} to clear the path.
+	 * <p>
+	 * The default keyboard shortcuts for this method are keys [j-n]. See
+	 * {@link remixlab.proscene.Scene#defaultKeyBindings()}.
+	 * <p>
+	 * If you use directly this method and the {@link #keyFrameInterpolator(int)} does not exist,
+	 * a new one is created.
+	 */
+	public void addKeyFrameToPath(int key) {		
+		if (!kfi.containsKey(key))
+			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame()));
+		
+		kfi.get(key).addKeyFrame((frame()));
+	}
+	
+	/**
+	 * Makes the Camera follow the path of keyFrameInterpolator() number {@code key}.
+	 * <p>
+	 * If the interpolation is started, it stops it instead.
+	 * <p>
+	 * This method silently ignores undefined (empty) paths (see keyFrameInterpolator()).
+	 * <p>
+	 * The default keyboard shortcuts for this method are keys [1-5].
+	 */
+	public void playPath (int key) {
+		if (kfi.containsKey(key)) {
+			if (kfi.get(key).interpolationIsStarted())
+				kfi.get(key).stopInterpolation();
+			else
+				kfi.get(key).startInterpolation();
+		}
+	}
+	
+	/**
+	 * Deletes the {@link #keyFrameInterpolator(int)} of index {@code key}. The default keyboard
+	 * shortcuts for this method are keys [J-N] (note the CAPS). See
+	 * {@link remixlab.proscene.Scene#defaultKeyBindings()}.
+	 */
+	public void deletePath (int key) {
+		if (kfi.containsKey(key)) {
+			kfi.get(key).stopInterpolation();
+			kfi.remove(key);
+		}
+	}
+	
+	/**
+	 * Resets the path of the {@link #keyFrameInterpolator(int)} number {@code key}.
+	 * <p>
+	 * If this path is not being played (see {@link #playPath(int)} and 
+	 * {@link remixlab.proscene.KeyFrameInterpolator#interpolationIsStarted()}),
+	 * resets it to is its starting position
+	 * (see {@link remixlab.proscene.KeyFrameInterpolator#resetInterpolation()}). If the
+	 * path is played, simply stops interpolation.
+	 */
+	public void resetPath (int key) {
+		if (kfi.containsKey(key)) {
+			if ((kfi.get(key).interpolationIsStarted()))
+				kfi.get(key).stopInterpolation();
+		    else {
+		    	kfi.get(key).resetInterpolation();
+		    	kfi.get(key).interpolateAtTime(kfi.get(key).interpolationTime());
+		    }
+		}
+	}
 
-	// 6. OPENGL MATRICES
+	// 7. OPENGL MATRICES
 	
 	/**
 	 * Convenience function that simply returns {@code getProjectionMatrix(new PMatrix3D())}
@@ -1188,7 +1298,7 @@ public class Camera implements Cloneable {
 		modelViewMat.set(modelview);
 	}
 	
-	// 7. WORLD -> CAMERA
+	// 8. WORLD -> CAMERA
 
 	/**
 	 * Returns the Camera frame coordinates of a point {@code src} defined in
@@ -1215,7 +1325,7 @@ public class Camera implements Cloneable {
 		return frame().inverseCoordinatesOf(src);
 	}
 
-	// 8. 2D -> 3D
+	// 9. 2D -> 3D
 
 	/**
 	 * Gives the coefficients of a 3D half-line passing through the Camera eye
@@ -1364,7 +1474,7 @@ public class Camera implements Cloneable {
 			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
-	// 9. FLYSPEED
+	// 10. FLYSPEED
 
 	/**
 	 * Returns the fly speed of the Camera. 
@@ -1393,7 +1503,7 @@ public class Camera implements Cloneable {
 		frame().setFlySpeed(speed);
 	}
 
-	// 10. POSITION TOOLS
+	// 11. POSITION TOOLS
 
 	/**
 	 * Sets the Camera {@link #orientation()}, so that it looks at point
@@ -1551,7 +1661,7 @@ public class Camera implements Cloneable {
 		frame().projectOnLine(sceneCenter(), viewDirection());
 	}
 
-	// 11. STEREO PARAMETERS
+	// 12. STEREO PARAMETERS
 
 	/**
 	 * Returns the user's inter-ocular distance (in meters). Default value is
@@ -1643,7 +1753,7 @@ public class Camera implements Cloneable {
 		focusDist = distance;
 	}
 	
-	// 14. Implementation of glu utility functions
+	// 13. Implementation of glu utility functions
 	
 	/**
 	 * Similar to {@code gluProject}: map object coordinates to window coordinates.

@@ -8,22 +8,48 @@ import javax.swing.Timer;
 
 import processing.core.*;
 
-public class KeyFrameInterpolator {
-	private class KeyFrame {
+public class KeyFrameInterpolator implements Cloneable {
+	private class KeyFrame  implements Cloneable {
 		private PVector p, tgPVec;
 	    private Quaternion q, tgQuat;
 	    private float tm;
-	    private Frame frm;	  
-	      
-		KeyFrame(Frame fr, float t) {
+	    private Frame frm;
+	    
+		KeyFrame(Frame fr, float t, boolean setRef) {
 			tm = t;
-			frm = fr;
-			updateValues();							
-		}		
+			if(setRef) {
+				frm = fr;
+				updateValues();
+			}
+			else {
+				frm = null;
+				p = new PVector(fr.position().x, fr.position().y, fr.position().z);
+				q = new Quaternion(fr.orientation());
+			}							
+		}
+		
+		public KeyFrame clone() {
+	        try {
+	            KeyFrame clonedKeyFrame = (KeyFrame) super.clone();
+	            if(frm != null)
+	            	clonedKeyFrame.frm = frm.clone();
+	            else
+	            	clonedKeyFrame.frm = null;
+	            clonedKeyFrame.p = new PVector (position().x, position().y, position().z);
+	            clonedKeyFrame.tgPVec = new PVector (tgP().x, tgP().y, tgP().z);
+	            clonedKeyFrame.q = new Quaternion(orientation());
+	            clonedKeyFrame.tgQuat = new Quaternion(tgQ());
+	            return clonedKeyFrame;
+	        } catch (CloneNotSupportedException e) {
+	            throw new Error("Something went wrong when cloning the KeyFrame");
+	        }
+	    }
 		
 		void updateValues() {
-			p = frame().position();
-		    q = frame().orientation();
+			if(frame() != null) {
+				p = frame().position();
+				q = frame().orientation();
+		    }
 		}
 		
 		PVector position() { return p; }
@@ -49,125 +75,224 @@ public class KeyFrameInterpolator {
         }
     }
 	
-	private List<KeyFrame> keyFrame_;
+	private List<KeyFrame> keyFr;
     private ListIterator<KeyFrame> currentFrame0;
     private ListIterator<KeyFrame> currentFrame1;
     private ListIterator<KeyFrame> currentFrame2;
     private ListIterator<KeyFrame> currentFrame3;
-    //private List<Frame> path_;//TODO only when implementing drawPath()
+    private List<Frame> path;//TODO implement me! i.e., drawPath() methods
     // A s s o c i a t e d   f r a m e
-    private Frame frame_;
+    private Frame fr;
 
     // R h y t h m
-    private Timer timer_;
+    private Timer timer;
     private ActionListener taskPerformer;
-    private int period_;
-    private float interpolationTime_;
-    private float interpolationSpeed_;
-    private boolean interpolationStarted_;
+    private int period;
+    private float interpolationTm;
+    private float interpolationSpd;
+    private boolean interpolationStrt;
 
     // M i s c
-    private boolean loopInterpolation_;
+    private boolean lpInterpolation;
 
     // C a c h e d   v a l u e s   a n d   f l a g s
-    //private boolean pathIsValid_;//TODO only when implementing drawPath()
-    private boolean valuesAreValid_;
-    private boolean currentFrameValid_;
-    private boolean splineCacheIsValid_;
+    private boolean pathIsValid;//TODO only when implementing drawPath()
+    private boolean valuesAreValid;
+    private boolean currentFrmValid;
+    private boolean splineCacheIsValid;
     private PVector v1, v2;
     
-    /** Creates a KeyFrameInterpolator, with \p frame as associated frame().
-
-    The frame() can be set or changed using setFrame().
-
-    interpolationTime(), interpolationSpeed() and interpolationPeriod() are set to their default
-    values.
-    */
+    /**
+     * Creates a KeyFrameInterpolator, with {@code frame} as associated {@link #frame()}.
+     * <p>
+     * The {@link #frame()} can be set or changed using {@link #setFrame(Frame)}.
+     * <p>
+     * {@link #interpolationTime()}, {@link #interpolationSpeed()} and
+     * {@link #interpolationPeriod()} are set to their default values.
+     */
     public KeyFrameInterpolator(Frame frame) {
-    	keyFrame_ = new ArrayList<KeyFrame>();
-    	frame_ = null;
-    	period_ = 40;
-    	interpolationTime_ = 0.0f;
-    	interpolationSpeed_ = 1.0f;
-    	interpolationStarted_ = false;
-        loopInterpolation_ = false;
-        //pathIsValid_ = false;//TODO only when implementing drawPath()
-        valuesAreValid_ = true;
-        currentFrameValid_ = false;
+    	keyFr = new ArrayList<KeyFrame>();
+    	fr = null;
+    	period = 40;
+    	interpolationTm = 0.0f;
+    	interpolationSpd = 1.0f;
+    	interpolationStrt = false;
+        lpInterpolation = false;
+        pathIsValid = false;//TODO only when implementing drawPath()
+        valuesAreValid = true;
+        currentFrmValid = false;
         setFrame(frame);
         
-        /**
-        currentFrame_ = new ListIterator[4];        
-        for (int i=0; i<4; ++i)        	
-        	currentFrame_[i] = keyFrame_.listIterator();
-        */
-        
-        currentFrame0 = keyFrame_.listIterator();
-        currentFrame1 = keyFrame_.listIterator();
-        currentFrame2 = keyFrame_.listIterator();
-        currentFrame3 = keyFrame_.listIterator();
+        currentFrame0 = keyFr.listIterator();
+        currentFrame1 = keyFr.listIterator();
+        currentFrame2 = keyFr.listIterator();
+        currentFrame3 = keyFr.listIterator();
         
         taskPerformer = new ActionListener() {
         	public void actionPerformed(ActionEvent evt) {
         		update();
         	}
         };
-        timer_ = new Timer(interpolationPeriod(), taskPerformer);
-        timer_.setRepeats(true);
+        timer = new Timer(interpolationPeriod(), taskPerformer);
+        timer.setRepeats(true);
     }
     
+    /**
+	 * Implementation of the clone method. 
+	 * <p> 
+	 * The method performs a deep copy of the all the KeyFrameInterpolator {@code KeyFrames}.
+	 */
+    public KeyFrameInterpolator clone() {
+    	try {
+            KeyFrameInterpolator clonedKfi = (KeyFrameInterpolator) super.clone();
+            clonedKfi.keyFr = new ArrayList<KeyFrame>();            
+            ListIterator<KeyFrame> it = keyFr.listIterator();
+    		while(it.hasNext()) {    			
+    			clonedKfi.keyFr.add(it.next().clone());
+    		}
+    		clonedKfi.currentFrame0 = keyFr.listIterator( currentFrame0.nextIndex() );
+    		clonedKfi.currentFrame1 = keyFr.listIterator( currentFrame1.nextIndex() );
+    		clonedKfi.currentFrame2 = keyFr.listIterator( currentFrame2.nextIndex() );
+    		clonedKfi.currentFrame3 = keyFr.listIterator( currentFrame3.nextIndex() );
+            return clonedKfi;
+        } catch (CloneNotSupportedException e) {
+            throw new Error("Something went wrong when cloning the KeyFrameInterpolator");
+        }
+    }
+    
+    /**
+     * Sets the {@link #frame()} associated to the KeyFrameInterpolator.
+     */
     public void setFrame(Frame f) {
-    	frame_ = f;
+    	fr = f;
     }
     
-    Frame frame() { return frame_; }
+    /**
+     * Returns the associated Frame that is interpolated by the KeyFrameInterpolator.
+     * <p>
+     * When {@link #interpolationIsStarted()}, this Frame's position and orientation will regularly be updated
+     * by a timer, so that they follow the KeyFrameInterpolator path.
+     * <p>
+     * Set using {@link #setFrame(Frame)} or with the KeyFrameInterpolator constructor.
+     */
+    public Frame frame() { return fr; }
     
-    public int numberOfKeyFrames() { return keyFrame_.size(); }
+    /**
+     * Returns the number of keyFrames used by the interpolation. Use {@link #addKeyFrame(Frame)}
+     * to add new keyFrames.
+     */
+    public int numberOfKeyFrames() { return keyFr.size(); }
     
-	public float interpolationTime() { return interpolationTime_; }
+    /**
+     * Returns the current interpolation time (in seconds) along the KeyFrameInterpolator path.
+     * <p>
+     * This time is regularly updated when {@link #interpolationIsStarted()}. Can be set directly with
+     * {@link #setInterpolationTime(float)} or {@link #interpolateAtTime(float)}.
+     */
+	public float interpolationTime() { return interpolationTm; }
 	
-	public float interpolationSpeed() { return interpolationSpeed_; }
+	/**
+	 * Returns the current interpolation speed.
+	 * <p>
+	 * Default value is 1.0f, which means {@link #keyFrameTime(int)} will be matched during the interpolation
+	 * (provided that your main loop is fast enough).
+	 * <p>
+	 * A negative value will result in a reverse interpolation of the keyFrames.
+	 * 
+	 * @see #interpolationPeriod()
+	 */
+	public float interpolationSpeed() { return interpolationSpd; }
 	
-	public int interpolationPeriod() { return period_; }
+	/**
+	 * Returns the current interpolation period, expressed in milliseconds.
+	 * The update of the {@link #frame()} state will be done by a timer at this period when
+	 * {@link #interpolationIsStarted()}.
+	 * <p>
+	 * This period (multiplied by {@link #interpolationSpeed()}) is added to the {@link #interpolationTime()}
+	 * at each update, and the {@link #frame()} state is modified accordingly (see {@link #interpolateAtTime(float)}).
+	 * Default value is 40 milliseconds.
+	 */
+	public int interpolationPeriod() { return period; }
 	
-	public boolean loopInterpolation() { return loopInterpolation_; }
+	/**
+	 * Returns {@code true} when the interpolation is played in an infinite loop.
+	 * <p>
+	 * When {@code false} (default), the interpolation stops when {@link #interpolationTime()} reaches
+	 * {@link #firstTime()} (with negative {@link #interpolationSpeed()}) or {@link #lastTime()}.
+	 * <p>
+	 * {@link #interpolationTime()} is otherwise reset to {@link #firstTime()} (+ {@link #interpolationTime()} - 
+	 * {@link #lastTime()}) (and inversely for negative {@link #interpolationSpeed()}) and interpolation continues.
+	 */
+	public boolean loopInterpolation() { return lpInterpolation; }
 	
-	public void setInterpolationTime(float time) { interpolationTime_ = time; };
-    /*! Sets the interpolationSpeed(). Negative or null values are allowed. */
-	public void setInterpolationSpeed(float speed) { interpolationSpeed_ = speed; }
-    /*! Sets the interpolationPeriod(). */
-	public void setInterpolationPeriod(int period) { period_ = period; }
+	/**
+	 * Sets the {@link #interpolationTime()}.
+	 * <p>
+	 * <b>Attention:</b> The {@link #frame()} state is not affected by this method. Use this function to define the
+	 * starting time of a future interpolation (see {@link #startInterpolation()}). Use {@link #interpolateAtTime(float)}
+	 * to actually interpolate at a given time.
+	 */
+	public void setInterpolationTime(float time) { interpolationTm = time; };
+	
+    /**
+     * Sets the {@link #interpolationSpeed()}. Negative or null values are allowed.
+     */
+	public void setInterpolationSpeed(float speed) { interpolationSpd = speed; }
+	
+    /**
+     * Sets the {@link #interpolationPeriod()}.
+     */
+	public void setInterpolationPeriod(int myPeriod) { period = myPeriod; }
     
 	public void setLoopInterpolation() { setLoopInterpolation(true); }
     
-    /*! Sets the loopInterpolation() value. */
-	public void setLoopInterpolation(boolean loop) { loopInterpolation_ = loop; }
+    /**
+     * Sets the {@link #loopInterpolation()} value.
+     */
+	public void setLoopInterpolation(boolean loop) { lpInterpolation = loop; }
     
-	public boolean interpolationIsStarted() { return interpolationStarted_; }
+	/**
+	 * Returns {@code true} when the interpolation is being performed. Use {@link #startInterpolation()},
+	 * {@link #stopInterpolation()} or {@link #toggleInterpolation()} to modify this state.
+	 */
+	public boolean interpolationIsStarted() { return interpolationStrt; }
 	
+	/**
+	 * Calls {@link #startInterpolation()} or {@link #stopInterpolation()}, depending on
+	 * {@link #interpolationIsStarted()}.
+	 */
 	public void toggleInterpolation() { if (interpolationIsStarted()) stopInterpolation(); else startInterpolation(); }
 	
+	/**
+	 * Updates {@link #frame()} state according to current {@link #interpolationTime()}. Then adds
+	 * {@link #interpolationPeriod()}*{@link #interpolationSpeed()} to {@link #interpolationTime()}.
+	 * <p>
+	 * This internal method is called by a timer when {@link #interpolationIsStarted()}.
+	 * It can be used for debugging purpose. {@link #stopInterpolation()} is called when
+	 * {@link #interpolationTime()} reaches {@link #firstTime()} or {@link #lastTime()}, unless
+	 * {@link #loopInterpolation()} is {@code true}.
+	 */
 	public void update() {
     	interpolateAtTime(interpolationTime());
     	
-    	interpolationTime_ += interpolationSpeed() * interpolationPeriod() / 1000.0f;
+    	interpolationTm += interpolationSpeed() * interpolationPeriod() / 1000.0f;
     	
-    	if (interpolationTime() > keyFrame_.get(keyFrame_.size()-1).time()) {
+    	if (interpolationTime() > keyFr.get(keyFr.size()-1).time()) {
     		if (loopInterpolation())
-    			setInterpolationTime(keyFrame_.get(0).time() + interpolationTime_ - keyFrame_.get(keyFrame_.size()-1).time());
+    			setInterpolationTime(keyFr.get(0).time() + interpolationTm - keyFr.get(keyFr.size()-1).time());
     		else {
     			// Make sure last KeyFrame is reached and displayed
-    			interpolateAtTime(keyFrame_.get(keyFrame_.size()-1).time());
+    			interpolateAtTime(keyFr.get(keyFr.size()-1).time());
     			stopInterpolation();
     		}
     		//emit endReached();
     	}
-    	else if (interpolationTime() < keyFrame_.get(0).time()) {
+    	else if (interpolationTime() < keyFr.get(0).time()) {
     		if (loopInterpolation())
-    			setInterpolationTime(keyFrame_.get(keyFrame_.size()-1).time() - keyFrame_.get(0).time() + interpolationTime_);
+    			setInterpolationTime(keyFr.get(keyFr.size()-1).time() - keyFr.get(0).time() + interpolationTm);
     		else {
     			// Make sure first KeyFrame is reached and displayed
-    			interpolateAtTime(keyFrame_.get(0).time());
+    			interpolateAtTime(keyFr.get(0).time());
     			stopInterpolation();
     		}
     		//emit endReached();
@@ -175,243 +300,352 @@ public class KeyFrameInterpolator {
     }
 	
 	public void invalidateValues() {
-		valuesAreValid_ = false;
-		//pathIsValid_ = false;//TODO only when implementing drawPath()
-		splineCacheIsValid_ = false;
+		valuesAreValid = false;
+		pathIsValid = false;
+		splineCacheIsValid = false;
 	}
 	
+	/**
+	 * Convenience function that simply calls {@code startInterpolation(-1)}.
+	 * 
+	 * @see #startInterpolation(int)
+	 */
 	public void startInterpolation() {
 		startInterpolation(-1);
 	}
 	
-	public void startInterpolation(int period) {
-		if (period >= 0)
-			setInterpolationPeriod(period);
+	/**
+	 * Starts the interpolation process.
+	 * <p> 
+	 * A timer is started with an {@link #interpolationPeriod()} period that updates the {@link #frame()}'s
+	 * position and orientation. {@link #interpolationIsStarted()} will return {@code true} until
+	 * {@link #stopInterpolation()} or {@link #toggleInterpolation()} is called.
+	 * <p>
+	 * If {@code period} is positive, it is set as the new {@link #interpolationPeriod()}. The previous
+	 * {@link #interpolationPeriod()} is used otherwise (default).
+	 * <p> 
+	 * If {@link #interpolationTime()} is larger than {@link #lastTime()}, {@link #interpolationTime()}
+	 * is reset to {@link #firstTime()} before interpolation starts (and inversely for negative
+	 * {@link #interpolationSpeed()}.
+	 * <p>
+	 * Use {@link #setInterpolationTime(float)} before calling this method to change the starting
+	 * {@link #interpolationTime()}.
+	 * 
+	 * <b>Attention:</b> The keyFrames must be defined (see {@link #addKeyFrame(Frame, float)}) before you
+	 * startInterpolation(), or else the interpolation will naturally immediately stop.
+	 */
+	public void startInterpolation(int myPeriod) {
+		if (myPeriod >= 0)
+			setInterpolationPeriod(myPeriod);
 		
-		if (!keyFrame_.isEmpty()) {
-			if ((interpolationSpeed() > 0.0) && (interpolationTime() >= keyFrame_.get(keyFrame_.size()-1).time()))
-				setInterpolationTime(keyFrame_.get(0).time());
-			if ((interpolationSpeed() < 0.0) && (interpolationTime() <= keyFrame_.get(0).time()))
-				setInterpolationTime(keyFrame_.get(keyFrame_.size()-1).time());			
-			timer_.setDelay(interpolationPeriod());
-			timer_.start();
-			interpolationStarted_ = true;
+		if (!keyFr.isEmpty()) {
+			if ((interpolationSpeed() > 0.0) && (interpolationTime() >= keyFr.get(keyFr.size()-1).time()))
+				setInterpolationTime(keyFr.get(0).time());
+			if ((interpolationSpeed() < 0.0) && (interpolationTime() <= keyFr.get(0).time()))
+				setInterpolationTime(keyFr.get(keyFr.size()-1).time());			
+			timer.setDelay(interpolationPeriod());
+			timer.start();
+			interpolationStrt = true;
 			update();
 		}
 	}
 	
+	/**
+	 * Stops an interpolation started with {@link #startInterpolation()}. See {@link #interpolationIsStarted()} and
+	 * {@link #toggleInterpolation()}.
+	 */
 	public void stopInterpolation() {
-	  timer_.stop();
-	  interpolationStarted_ = false;
+	  timer.stop();
+	  interpolationStrt = false;
 	}
 	
+	/**
+	 * Stops the interpolation and resets {@link #interpolationTime()} to the {@link #firstTime()}.
+	 * <p>
+	 * If desired, call {@link #interpolateAtTime(float)} after this method to actually move the {@link #frame()}
+	 * to {@link #firstTime()}.
+	 */
 	public void resetInterpolation() {
 		stopInterpolation();
 		setInterpolationTime(firstTime());
 	}
 	
-	public void addKeyFrame(Frame frame) {
-		float time;
-		
-		if (keyFrame_.isEmpty())
-			time = 0.0f;
-		else
-			time = keyFrame_.get(keyFrame_.size()-1).time() + 1.0f;
-		
-		addKeyFrame(frame, time);
+	/**
+	 * Convenience function that simply calls {@code addKeyFrame(frame, false)}.
+	 * 
+	 * @see #addKeyFrame(Frame, boolean)
+	 */
+	public void addKeyFrame(Frame frame) {		
+		addKeyFrame(frame, false);
 	}
 	
+	/**
+	 * Appends a new keyFrame to the path.
+	 * <p>
+	 * Same as {@link #addKeyFrame(Frame, float, boolean)}, except that the {@link #keyFrameTime(int)} is set to the
+	 * previous {@link #keyFrameTime(int)} plus one second (or 0.0 if there is no previous keyFrame).
+	 */
+	public void addKeyFrame(Frame frame, boolean setRef) {
+		float time;
+		
+		if (keyFr.isEmpty())
+			time = 0.0f;
+		else
+			time = keyFr.get(keyFr.size()-1).time() + 1.0f;
+		
+		addKeyFrame(frame, time, setRef);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code addKeyFrame(frame, time, false)}.
+	 * 
+	 * @see #addKeyFrame(Frame, float, boolean)
+	 */ 	
 	public void addKeyFrame(Frame frame, float time) {
+		addKeyFrame(frame, time, false);
+	}
+	
+	/** Appends a new keyFrame to the path, with its associated {@code time} (in seconds).
+	 * <p>
+	 * When {@code setRef} is {@code false} the keyFrame is added by value, meaning that
+	 * the path will use the current {@code frame} state.
+	 * <p>
+	 * When {@code setRef} is {@code true} the keyFrame is given as a reference to a Frame, which will be
+	 * connected to the KeyFrameInterpolator: when {@code frame} is modified, the KeyFrameInterpolator path is updated
+	 * accordingly. This allows for dynamic paths, where keyFrame can be edited, even during the interpolation.
+	 * {@code null} frame references are silently ignored. The {@link #keyFrameTime(int)} has to be monotonously
+	 * increasing over keyFrames.
+	 */
+	public void addKeyFrame(Frame frame, float time, boolean setRef) {
 		if( frame == null )
 			return;
 		
-		if (keyFrame_.isEmpty())
-			interpolationTime_ = time;
+		if (keyFr.isEmpty())
+			interpolationTm = time;
 		
-		if ( (!keyFrame_.isEmpty()) && (keyFrame_.get(keyFrame_.size()-1).time() > time) )
+		if ( (!keyFr.isEmpty()) && (keyFr.get(keyFr.size()-1).time() > time) )
 			PApplet.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
 		else
-			keyFrame_.add(new KeyFrame(frame, time));
+			keyFr.add(new KeyFrame(frame, time, setRef));
 		
-		//TODO
+		//TODO:
+		//if (setRef) //only when setting reference
 		// connect(frame, SIGNAL(modified()), SLOT(invalidateValues()));
 		
-		valuesAreValid_ = false;
-		//pathIsValid_ = false;//TODO only when implementing drawPath()
-		currentFrameValid_ = false;
+		valuesAreValid = false;
+		pathIsValid = false;
+		currentFrmValid = false;
 		resetInterpolation();
 	}
 	
+	/**
+	 * Removes all keyFrames from the path. The {@link #numberOfKeyFrames()} is set to 0.
+	 */
 	public void deletePath() {
 		stopInterpolation();
-		keyFrame_.clear();
-		//pathIsValid_ = false;//TODO only when implementing drawPath()
-		valuesAreValid_ = false;
-		currentFrameValid_ = false;
+		keyFr.clear();
+		pathIsValid = false;
+		valuesAreValid = false;
+		currentFrmValid = false;
 	}
 	
-	public void updateModifiedFrameValues() {
-		Quaternion prevQ = keyFrame_.get(0).orientation();		
+	void updateModifiedFrameValues() {
+		Quaternion prevQ = keyFr.get(0).orientation();
 		
-		for ( KeyFrame kf: keyFrame_ ) {
-			if (kf.frame() != null)
-				kf.updateValues();
+		KeyFrame kf;
+		for (int i=0; i<keyFr.size(); ++i) {			
+			kf = keyFr.get(i);
+			kf.updateValues();
 			kf.flipOrientationIfNeeded(prevQ);
-			prevQ = kf.orientation();			
-		}
+			prevQ = kf.orientation();
+	    }
 		
-		KeyFrame prev = keyFrame_.get(0);
-		KeyFrame kf = keyFrame_.get(0);
+		KeyFrame prev = keyFr.get(0);
+		kf = keyFr.get(0);
 		
-		ListIterator<KeyFrame> it = keyFrame_.listIterator(1);
-		while(it.hasNext()) {
-			KeyFrame next = it.next();
-			kf.computeTangent(prev, next);
+		int index = 1;
+		while(kf != null) {
+			KeyFrame next = (index < keyFr.size()) ? keyFr.get(index) : null;
+			index++;
+			if (next != null)
+				kf.computeTangent(prev, next);
+			else
+				kf.computeTangent(prev, kf);
 			prev = kf;
 			kf = next;
 		}
-		
-		kf.computeTangent(prev, kf);
-		valuesAreValid_ = true;
+		valuesAreValid = true;
 	}
 	
+	/**
+	 * Returns the Frame associated with the keyFrame at index {@code index}.
+	 * <p>
+	 * See also {@link #keyFrameTime(int)}. {@code index} has to be in the range
+	 * 0..{@link #numberOfKeyFrames()}-1.
+	 * <p>
+	 * <b>Note:</b> If this keyFrame was defined using a reference to a Frame (see 
+	 * {@link #addKeyFrame(Frame, float, boolean)} the current referenced Frame state is returned.
+	 */
 	public Frame keyFrame(int index) {
-		KeyFrame kf = keyFrame_.get(index);
+		KeyFrame kf = keyFr.get(index);
 		return new Frame(kf.position(), kf.orientation());
 	}
 
-	/*! Returns the time corresponding to the \p index keyFrame.
-
-	 See also keyFrame(). \p index has to be in the range 0..numberOfKeyFrames()-1. */
+	/**
+	 * Returns the time corresponding to the {@code index} keyFrame.
+	 * index has to be in the range 0..{@link #numberOfKeyFrames()}-1.
+	 * 
+	 * @see #keyFrame(int)
+	 */
 	public float keyFrameTime(int index) {
-		return keyFrame_.get(index).time();
+		return keyFr.get(index).time();
 	}
 	
+	/**
+	 * Returns the duration of the KeyFrameInterpolator path, expressed in seconds.
+	 * <p>
+	 * Simply corresponds to {@link #lastTime()} - {@link #firstTime()}. Returns 0.0 if the path has less than 2 keyFrames.
+	 * 
+	 * @see #keyFrameTime(int)
+	 */
 	public float duration() {
 		return lastTime() - firstTime();
 	}
 	
+	/**
+	 * Returns the time corresponding to the first keyFrame, expressed in seconds.
+	 * <p>
+	 * Returns 0.0 if the path is empty.
+	 * 
+	 * @see #lastTime()
+	 * @see #duration()
+	 * @see #keyFrameTime(int)
+	 */
 	public float firstTime() {
-		if (keyFrame_.isEmpty())
+		if (keyFr.isEmpty())
 			return 0.0f;
 		else
-			return keyFrame_.get(0).time();
+			return keyFr.get(0).time();
 	}
 
-	/*! Returns the time corresponding to the last keyFrame, expressed in seconds.
-
-	Returns 0.0 if the path is empty. See also firstTime(), duration() and keyFrameTime(). */
+	/**
+	 * Returns the time corresponding to the last keyFrame, expressed in seconds.
+	 * <p>
+	 * @see #firstTime()
+	 * @see #duration()
+	 * @see #keyFrameTime(int)
+	 */
 	public float lastTime() {
-		if (keyFrame_.isEmpty())
+		if (keyFr.isEmpty())
 			return 0.0f;
 		else
-			return keyFrame_.get(keyFrame_.size()-1).time();
+			return keyFr.get(keyFr.size()-1).time();
 	}
 	
 	public void updateCurrentKeyFrameForTime(float time) {
-		  // Assertion: times are sorted in monotone order.
-		  // Assertion: keyFrame_ is not empty
-
-		  // TODO: Special case for loops when closed path is implemented !!
-		if (!currentFrameValid_)
-			// Recompute everything from scratch
-			currentFrame1 = keyFrame_.listIterator();
+		// Assertion: times are sorted in monotone order.
+		// Assertion: keyFrame_ is not empty
 		
-		while (peekNext(currentFrame1).time() > time) {
-			currentFrameValid_ = false;
-			if (!currentFrame1.hasPrevious())
+		// TODO: Special case for loops when closed path is implemented !!
+		if (!currentFrmValid)
+			// Recompute everything from scratch
+			currentFrame1 = keyFr.listIterator();
+		
+		//currentFrame_[1]->peekNext() <---> keyFr.get(currentFrame1.nextIndex());
+		while (keyFr.get(currentFrame1.nextIndex()).time() > time) {
+			currentFrmValid = false;
+			if ( !currentFrame1.hasPrevious())
 				break;
 			currentFrame1.previous();
 		}
 		
-		if (!currentFrameValid_)
-			currentFrame2 = keyFrame_.listIterator( currentFrame1.nextIndex() );
+		if (!currentFrmValid)
+			//*currentFrame_[2] = *currentFrame_[1]; <---> currentFrame2 = keyFr.listIterator( currentFrame1.nextIndex() );
+			currentFrame2 = keyFr.listIterator( currentFrame1.nextIndex() );
 		
-		while (peekNext(currentFrame2).time() < time) {
-			currentFrameValid_ = false;
+		while (keyFr.get(currentFrame2.nextIndex()).time() < time) {
+			currentFrmValid = false;
+			
 			if (!currentFrame2.hasNext())
 				break;
+			
 			currentFrame2.next();
 		}
 		
-		if (!currentFrameValid_) {
-			currentFrame1 = keyFrame_.listIterator( currentFrame2.nextIndex() );
-			if ((currentFrame1.hasPrevious()) && (time < peekNext(currentFrame2).time()))
+		if (!currentFrmValid) {
+			currentFrame1 = keyFr.listIterator( currentFrame2.nextIndex() );
+			
+			if ((currentFrame1.hasPrevious()) && (time < keyFr.get(currentFrame2.nextIndex()).time()))
 				currentFrame1.previous();
 			
-			currentFrame0 = keyFrame_.listIterator( currentFrame1.nextIndex() );
+			currentFrame0 = keyFr.listIterator( currentFrame1.nextIndex() );
+			
 			if (currentFrame0.hasPrevious())
 				currentFrame0.previous();
 			
-			currentFrame3 = keyFrame_.listIterator( currentFrame2.nextIndex() );
+			currentFrame3 = keyFr.listIterator( currentFrame2.nextIndex() );
+			
 			if (currentFrame3.hasNext())
 				currentFrame3.next();
 			
-			currentFrameValid_ = true;
-			splineCacheIsValid_ = false;
+			currentFrmValid = true;
+			splineCacheIsValid = false;
 		}
 	}
 	
-	public void updateSplineCache() {		
-		PVector delta = PVector.sub( peekNext(currentFrame2).position(), peekNext(currentFrame1).position() );
-		
-		v1 = PVector.sub( PVector.mult(delta, 3.0f), PVector.mult(peekNext(currentFrame1).tgP(), 2.0f) );
-		v1 = PVector.sub( v1, peekNext(currentFrame2).tgP() );
-		
-		v2 = PVector.add( PVector.mult(delta, -2.0f), peekNext(currentFrame1).tgP());
-		v2 = PVector.add(v2, peekNext(currentFrame2).tgP());
-		
-		splineCacheIsValid_ = true;
+	public void updateSplineCache() {	
+		PVector delta = PVector.sub(keyFr.get(currentFrame2.nextIndex()).position(), keyFr.get(currentFrame1.nextIndex()).position());		
+		v1 = PVector.add( PVector.mult(delta, 3.0f), PVector.mult(keyFr.get(currentFrame1.nextIndex()).tgP(), (-2.0f)) );
+		v1 = PVector.sub(v1, keyFr.get(currentFrame2.nextIndex()).tgP());
+		v2 = PVector.add( PVector.mult(delta, (-2.0f)), keyFr.get(currentFrame1.nextIndex()).tgP());
+		v2 = PVector.add(v2, keyFr.get(currentFrame2.nextIndex()).tgP());
+		splineCacheIsValid = true;
 	}
 
-	/*! Interpolate frame() at time \p time (expressed in seconds). interpolationTime() is set to \p
-	  time and frame() is set accordingly.
-
-	  If you simply want to change interpolationTime() but not the frame() state, use
-	  setInterpolationTime() instead.
-
-	  Emits the interpolated() signal and makes the frame() emit the Frame::interpolated() signal. */
+	/**
+	 * Interpolate {@link #frame()} at time {@code time} (expressed in seconds). {@link #interpolationTime()} is set to
+	 * {@code time} and {@link #frame()} is set accordingly.
+	 * <p>
+	 * If you simply want to change {@link #interpolationTime()} but not the {@link #frame()} state, use
+	 * {@link #setInterpolationTime(float)} instead.
+	 */	
 	public void interpolateAtTime(float time) {
-		setInterpolationTime(time);
-		
-		if ((keyFrame_.isEmpty()) || (frame() == null))
-			return;
-		
-		if (!valuesAreValid_)
-			updateModifiedFrameValues();
-		
-		updateCurrentKeyFrameForTime(time);
-		
-		if (!splineCacheIsValid_)
-			updateSplineCache();
-		
-		float alpha;
-		float dt = peekNext(currentFrame2).time() -  peekNext(currentFrame1).time();
-		if (dt == 0.0)
-			alpha = 0.0f;
-		else
-			alpha = (time - peekNext(currentFrame1).time()) / dt;
-		
-		// Linear interpolation - debug
-		// Vec pos = alpha*(currentFrame2->peekNext()->position()) + (1.0-alpha)*(currentFrame1->peekNext()->position());
-		PVector pos = PVector.add( peekNext(currentFrame1).position(), PVector.mult( peekNext(currentFrame1).tgP(), alpha ) );		
-		pos = PVector.add(pos, PVector.mult(PVector.add(v1, PVector.mult(v2, alpha) ), alpha));
-		Quaternion q = Quaternion.squad(peekNext(currentFrame1).orientation(), peekNext(currentFrame1).tgQ(),
-				peekNext(currentFrame2).tgQ(), peekNext(currentFrame2).orientation(), alpha);
-		
-		frame().setPositionWithConstraint(pos);
-		frame().setRotationWithConstraint(q);
-		//emit interpolated();
-		//debug
-		//cout<< "Position: (" << kfi_.frame()->position().x << ", " << kfi_.frame()->position().y << ", " << kfi_.frame()->position().z << ") Orientation: ("
-        //<< kfi_.frame()->orientation()[0] << ", " << kfi_.frame()->orientation()[1] << ", " << kfi_.frame()->orientation()[2] << ", " << kfi_.frame()->orientation()[3] << ")" << endl;
-		PApplet.println( "Position: (" + frame().position().x + ", " + frame().position().y + ", " + frame().position().z + ") Orientation: (" +
-				frame().orientation().x + ", " + frame().orientation().y + ", " + frame().orientation().z + ", " + frame().orientation().w + ")" );
-	}
-	
-	private KeyFrame peekNext(ListIterator<KeyFrame> it) {
-		KeyFrame kf = it.next();
-		it.previous();
-		return kf;
-	}
+		  setInterpolationTime(time);
+
+		  if ((keyFr.isEmpty()) || (frame() == null))
+			  return;
+
+		  if (!valuesAreValid)
+			  updateModifiedFrameValues();
+		  
+		  updateCurrentKeyFrameForTime(time);
+
+		  if (!splineCacheIsValid)
+			  updateSplineCache();
+
+		  float alpha;
+		  float dt = keyFr.get(currentFrame2.nextIndex()).time() - keyFr.get(currentFrame1.nextIndex()).time();
+		  if (dt == 0.0f)
+			  alpha = 0.0f;
+		  else
+			  alpha = (time - keyFr.get(currentFrame1.nextIndex()).time()) / dt;
+		  
+		  // Linear interpolation - debug
+		  //Vec pos = alpha*(currentFrame2->peekNext()->position()) + (1.0-alpha)*(currentFrame1->peekNext()->position());
+		  //Vec pos = currentFrame_[1]->peekNext()->position() + alpha * (currentFrame_[1]->peekNext()->tgP() + alpha * (v1+alpha*v2));
+		  PVector pos = PVector.add(
+				        keyFr.get(currentFrame1.nextIndex()).position(),
+				        PVector.mult(PVector.add(keyFr.get(currentFrame1.nextIndex()).tgP(),
+				        		                 PVector.mult(PVector.add(v1, PVector.mult(v2, alpha) ), alpha) ), 
+				        		     alpha) );		  
+		  Quaternion q = Quaternion.squad(keyFr.get(currentFrame1.nextIndex()).orientation(), keyFr.get(currentFrame1.nextIndex()).tgQ(),
+				                          keyFr.get(currentFrame2.nextIndex()).tgQ(), keyFr.get(currentFrame2.nextIndex()).orientation(), alpha);
+		  
+		  frame().setPositionWithConstraint(pos);
+		  frame().setRotationWithConstraint(q);
+		  
+		  //debug		  
+		  //PApplet.println( frame().position().x + " " + frame().position().y + " " + frame().position().z + " " + frame().orientation().x + " " + frame().orientation().y + " " + frame().orientation().z + " " + frame().orientation().w );
+		  //emit interpolated();			
+	}	
 }

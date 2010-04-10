@@ -201,7 +201,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	/**
 	 * Returns the associated Camera, never {@code null}.
 	 */
-	public Camera camera() {		
+	public Camera camera() {
 		return cam;
 	}
 	
@@ -359,7 +359,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Associates interactivity actions to default keys.
+	 * Associates the different interactions to default keys.
 	 */
 	public void defaultKeyBindings() {
 		if (parent.key == '+') {
@@ -392,7 +392,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if (parent.key == 'w' || parent.key == 'W') {
 			toggleDrawWithConstraint();
 		}
-		if (parent.key == 'm' || parent.key == 'M') {			
+		if (parent.key == 'o' || parent.key == 'O') {			
 			if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
 						        "See the Revolve Around Point example!");
@@ -402,10 +402,43 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 					rapTimer.start();
 				}
 		}
-		if (parent.key == 'n' || parent.key == 'n') {
+		if (parent.key == 'p' || parent.key == 'P') {
 			camera().setRevolveAroundPoint(new PVector(0,0,0));
 			rap = true;
 			rapTimer.start();
+		}
+		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' ) {
+			if( parent.key == '1') camera().playPath(1);			
+			if( parent.key == 'j') {
+				camera().addKeyFrameToPath(1);
+				//debug
+				/**
+				PApplet.println("Frame " + camera().keyFrameInterpolator(1).numberOfKeyFrames() + " Position: "
+						+ camera().position().x + ", " +  camera().position().y + ", "+ camera().position().z + " Orientation: " 
+						+ camera().orientation().x + ", " + camera().orientation().y + ", " + camera().orientation().z + ", " + camera().orientation().w);
+			    // */
+			}
+			if( parent.key == 'J') camera().deletePath(1);			
+		}
+		if( parent.key == '2' || parent.key == 'k' || parent.key == 'K' ) {
+			if( parent.key == '2') camera().playPath(2);			
+			if( parent.key == 'k') camera().addKeyFrameToPath(2);
+			if( parent.key == 'K') camera().deletePath(2);
+		}
+		if( parent.key == '3' || parent.key == 'l' || parent.key == 'L' ) {
+			if( parent.key == '3') camera().playPath(3);			
+			if( parent.key == 'l') camera().addKeyFrameToPath(3);
+			if( parent.key == 'L') camera().deletePath(3);
+		}
+		if( parent.key == '4' || parent.key == 'm' || parent.key == 'M' ) {
+			if( parent.key == '4') camera().playPath(4);			
+			if( parent.key == 'm') camera().addKeyFrameToPath(4);
+			if( parent.key == 'M') camera().deletePath(4);
+		}
+		if( parent.key == '5' || parent.key == 'n' || parent.key == 'N' ) {
+			if( parent.key == '5') camera().playPath(5);			
+			if( parent.key == 'n') camera().addKeyFrameToPath(5);
+			if( parent.key == 'N') camera().deletePath(5);
 		}
 	}
 	
@@ -426,7 +459,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
 		textToDisplay += "s: Show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";
-		textToDisplay += "n/m: (un)set revolve around point (implement pointUnderPixel in your OpenGL Camera)\n";
+		textToDisplay += "o/p: (un)set revolve around point (implement pointUnderPixel in your OpenGL Camera)\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
 		textToDisplay += "Arcball mode: motate, zoom and translate\n";
 		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
