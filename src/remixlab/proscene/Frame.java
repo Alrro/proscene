@@ -108,7 +108,7 @@ public class Frame implements Cloneable {
             clonedFrame.rot = new Quaternion(rotation());
             return clonedFrame;
         } catch (CloneNotSupportedException e) {
-            throw new Error("Is too");
+            throw new Error("Something went wrong when cloning the Frame");
         }
     }
 

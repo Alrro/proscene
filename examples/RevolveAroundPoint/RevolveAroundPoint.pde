@@ -4,11 +4,11 @@
  * 
  * This example illustrates 3D world point picking.
  *
- * Press 'm' to select the revolve around point of the camera (which is defined in 3D
+ * Press 'o' to select the revolve around point of the camera (which is defined in 3D
  * world coordinates). It will be set from the mouse position (which is a point
  * defined in 2D screen coordinates) at the time the key press takes place.
  *
- * Press 'n' to reset the revolve around point position (it will be set to to its
+ * Press 'p' to reset the revolve around point position (it will be set to to its
  * default value: (0,0,0)).
  *
  * This example requires OpenGL to read the pixel depth. 
