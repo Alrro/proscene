@@ -89,7 +89,7 @@ public class Camera implements Cloneable {
 	
 	// P o i n t s   o f   V i e w s   a n d   K e y F r a m e s
     protected HashMap<Integer, KeyFrameInterpolator> kfi;
-    Iterator it;    
+    Iterator<Integer> it;    
     //TODO implement me
     //protected KeyFrameInterpolator interpolationKfi;
 
@@ -161,15 +161,9 @@ public class Camera implements Cloneable {
 		try {
 			Camera clonedCam = (Camera) super.clone();
 			clonedCam.kfi = new HashMap<Integer, KeyFrameInterpolator>();
-			/**
-			it = kfi.entrySet().iterator();
-			while(it.hasNext()) { 
-				KeyFrameInterpolator key = (KeyFrameInterpolator) it.next();
-			}
-			*/
 			it = kfi.keySet().iterator();
 		    while (it.hasNext()) {
-		      Integer key = (Integer) it.next();
+		      Integer key = it.next();
 		      clonedCam.kfi.put(key, kfi.get(key).clone());
 		    }
 			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);			
@@ -1118,6 +1112,20 @@ public class Camera implements Cloneable {
 		    	kfi.get(key).interpolateAtTime(kfi.get(key).interpolationTime());
 		    }
 		}
+	}
+	
+	/*! Draws all the Camera paths defined by the keyFrameInterpolator().
+
+	 Simply calls KeyFrameInterpolator::drawPath() for all the defined paths. The path color is the
+	 current \c glColor().
+
+	 \attention The OpenGL state is modified by this method: see KeyFrameInterpolator::drawPath(). */
+	public void drawAllPaths() {
+		it = kfi.keySet().iterator();
+	    while (it.hasNext()) {
+	      Integer key = it.next();
+	      kfi.get(key).drawPath(3, 5, sceneRadius());
+	    }	
 	}
 
 	// 7. OPENGL MATRICES
