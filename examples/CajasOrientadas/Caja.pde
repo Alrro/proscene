@@ -12,7 +12,8 @@
  * grabber pool. Scene parses this pool every frame to check if the mouse
  * grabs a InteractiveFrame by projecting its origin onto the screen.
  * If the mouse position is close enough to that projection (default
- * implementation gives a 10 pixel tolerance), the object will be picked. 
+ * implementation defines a 10x10 pixel square centered at it), the object
+ * will be picked. 
  *
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
@@ -38,7 +39,7 @@ public class Caja {
     Scene.drawAxis(0.3f);
 
     if (iFrame.grabsMouse()) {
-      parent.fill(0, 255, 0);
+      parent.fill(255, 0, 255);
       parent.box(0.35f);
     }
     else {

@@ -82,7 +82,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean rap;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
-	protected static PApplet parent;
+	public static PApplet parent;
 	protected PGraphics3D pg3d;
 	PMatrix3D projectionMatrix;
 	PMatrix3D modelviewMatrix;
@@ -91,7 +91,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsACam;
-	boolean iFrameIsDrwn;
+	boolean iFrameIsDrwn;	
 	
 	// S C R E E N   C O O R D I N A T E S
 	static float halfWidthSpace;
@@ -115,9 +115,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsAnICamFrame;
 	
-	// D I S P L A Y   W O R L D   C O O R D I N A T E S   F L A G S
+	// D I S P L A Y   F L A G S
 	boolean axisIsDrwn;	// world axis
 	boolean gridIsDrwn;	// world XY grid
+	boolean frameSelectionHintIsDrwn;
+	boolean cameraPathsAreDrwn;
 	
 	// C O N S T R A I N T S
 	boolean withConstraint;
@@ -174,6 +176,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		setAxisIsDrawn(false);
 		setGridIsDrawn(false);
+		setFrameSelectionHintIsDrawn(false);
+		setCameraPathsAreDrawn(false);
 		setHelpIsDrawn(true);
 		
 		readyToGo = false;
@@ -290,6 +294,24 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
+	 * Toggles the state of {@link #frameSelectionHintIsDrawn()}.
+	 * 
+	 * @see #setFrameSelectionHintIsDrawn(boolean)
+	 */
+	public void toggleFrameSelectionHintIsDrawn() {
+		setFrameSelectionHintIsDrawn(!frameSelectionHintIsDrawn());
+	}
+	
+	/**
+	 * Toggles the state of {@link #cameraPathsAreDrawn()}.
+	 * 
+	 * @see #setCameraPathsAreDrawn(boolean)
+	 */
+	public void toggleCameraPathsAreDrawn() {
+		setCameraPathsAreDrawn(!cameraPathsAreDrawn());
+	}
+	
+	/**
 	 * Toggles the state of the {@link #helpIsDrawn()}
 	 * 
 	 * @see #setHelpIsDrawn()
@@ -377,6 +399,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if (parent.key == 'e' || parent.key == 'E') {
 			toggleCameraType();
 		}
+		if (parent.key == 'f' || parent.key == 'F') {
+			toggleFrameSelectionHintIsDrawn();
+		}
 		if (parent.key == 'g' || parent.key == 'G') {
 			toggleGridIsDrawn();
 		}
@@ -385,6 +410,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		}
 		if (parent.key == 'i' || parent.key == 'I') {
 			toggleDrawInteractiveFrame();
+		}
+		if (parent.key == 'r' || parent.key == 'R') {
+			toggleCameraPathsAreDrawn();
 		}
 		if (parent.key == 's' || parent.key == 'S') {
 			showAll();
@@ -503,7 +531,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     
     /**
      * Sets the processing camera parameters from {@link #camera()} and displays
-     * axis and grid accordingly to user flags
+     * axis, grid and interactive frames' selection hints accordingly to user flags.
      */
 	public void beginDraw() {
 		pg3d = (PGraphics3D) parent.g;  // g may change
@@ -517,7 +545,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		setPModelViewMatrix();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
-		if (axisIsDrawn()) drawAxis(camera().sceneRadius());		
+		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
+		if (frameSelectionHintIsDrawn()) drawInteractiveFrameSelectionHint();
+		if (cameraPathsAreDrawn()) camera().drawAllPaths();
 	}
 	
 	/** The method that actually defines the scene.
@@ -708,6 +738,22 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
+	 * Returns {@code true} if the frames selection visual hints are currently being drawn and
+	 * {@code false} otherwise. 
+	 */
+	public boolean frameSelectionHintIsDrawn() {
+		return frameSelectionHintIsDrwn;
+	}
+	
+	/**
+	 * Returns {@code true} if the camera key frame paths are currently being drawn and
+	 * {@code false} otherwise. 
+	 */
+	public boolean cameraPathsAreDrawn() {
+		return cameraPathsAreDrwn;
+	}
+	
+	/**
 	 * Returns {@code true} if the {@link #help()} is currently being drawn and {@code false} otherwise. 
 	 */
 	public boolean helpIsDrawn() {
@@ -737,7 +783,6 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	/**
 	 * Sets the display of the axis according to {@code draw}
-	 * 
 	 */
 	public void setAxisIsDrawn(boolean draw) {
 		axisIsDrwn = draw;
@@ -752,10 +797,23 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	/**
 	 * Sets the display of the grid according to {@code draw}
-	 * 
 	 */
 	public void setGridIsDrawn(boolean draw) {
 		gridIsDrwn = draw;
+	}
+	
+	/**
+	 * Sets the display of the interactive frames' selection hints according to {@code draw}
+	 */
+	public void setFrameSelectionHintIsDrawn(boolean draw) {
+		frameSelectionHintIsDrwn = draw;
+	}
+	
+	/**
+	 * Sets the display of the camera key frame paths according to {@code draw}
+	 */
+	public void setCameraPathsAreDrawn(boolean draw) {
+		cameraPathsAreDrwn = draw;
 	}
 	
 	/**
@@ -767,7 +825,6 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	/**
 	 * Sets the display of the {@link #help()} according to {@code draw}
-	 * 
 	 */
 	public void setHelpIsDrawn(boolean draw) {
 		helpIsDrwn = draw;
@@ -1018,6 +1075,87 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		endScreenDrawing();
 	}
 	
+	/**
+	 * Draws all InteractiveFrames' selection regions (a 10x10 pixel square) as a visual hint.
+	 */
+	protected void drawInteractiveFrameSelectionHint() {
+		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
+			InteractiveFrame iF = (InteractiveFrame) mg;//downcast needed
+			PVector center = camera().projectedCoordinatesOf( iF.position() );
+			if ( mg.grabsMouse() )				
+				filledSquare(parent.color(0,255,0),center,10);
+			else
+				filledSquare(parent.color(190,190,190),center,10);
+		}
+	}
+	
+	/**
+	 * Draws a filled circle using screen coordinates.
+	 * @param color Color used to fill the circle.
+	 * @param center Circle screen center.
+	 * @param radius Circle screen radius.
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 */
+	public void filledCircle(int color, PVector center, float radius) {
+		float x = center.x;
+		float y = center.y;
+		float angle, x2, y2;
+		parent.noStroke();
+		parent.fill(color);
+		beginScreenDrawing();
+		parent.beginShape(TRIANGLE_FAN);
+		parent.vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord());
+		for (angle=0.0f;angle<=TWO_PI; angle+=0.157f) {
+		    x2 = x+PApplet.sin(angle)*radius;
+		    y2 = y+PApplet.cos(angle)*radius;
+		    parent.vertex(Scene.xCoord(x2), Scene.yCoord(y2), Scene.zCoord());
+		}		
+		parent.endShape();
+		endScreenDrawing();
+	}
+	
+	/**
+	 * Draws a filled square using screen coordinates.
+	 * @param color Color used to fill the circle.
+	 * @param center Circle screen center.
+	 * @param edge Circle screen radius.
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 */
+	public void filledSquare(int color, PVector center, float edge) {
+		float x = center.x;
+		float y = center.y;
+		parent.noStroke();
+		parent.fill(color);
+		beginScreenDrawing();
+		parent.beginShape(QUADS);
+		parent.vertex(Scene.xCoord(x-10), Scene.yCoord(y+10), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x+10), Scene.yCoord(y+10), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x+10), Scene.yCoord(y-10), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x-10), Scene.yCoord(y-10), Scene.zCoord());
+		parent.endShape();
+		endScreenDrawing();
+	}
+	
+	/**
+	 * Computes the world coordinates of an screen object so that drawing can be done directly
+	 * with 2D screen coordinates.
+	 * <p>
+	 * All screen drawing should be enclosed between {@link #beginScreenDrawing()} and {@link #endScreenDrawing()}.
+	 * Then you can just begin drawing your screen shapes (defined between {@code PApplet.beginShape()} and
+	 * {@code PApplet.endShape()}).
+	 * <p>
+	 * <b>Note:</b> The (x,y) vertex screen coordinates should be specified as:
+	 * {@code vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord())}.
+	 * 
+	 * @see #endScreenDrawing()
+	 * @see #xCoord(float)
+	 * @see #yCoord(float)
+	 * @see #zCoord()
+	 */
 	public void beginScreenDrawing() {		
 		if ( startCoordCalls != 0 )
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
@@ -1039,6 +1177,14 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		camera().frame().applyTransformation(parent);
 	}
 	
+	/**
+	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #xCoord(float)
+	 * @see #yCoord(float)
+	 * @see #zCoord()
+	 */
 	public void endScreenDrawing() {
 		parent.popMatrix();
 		startCoordCalls --;
@@ -1047,6 +1193,18 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implmentation!");
 	}
 	
+	/**
+	 * Computes the {@code x} coordinate of the {@code px} screen coordinate.
+	 * <p>
+	 * This method is only useful when drawing directly on screen.
+	 * It should be used in conjunction with {@link #beginScreenDrawing()} and
+	 * {@link #endScreenDrawing()} (which may be consulted for details).
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 * @see #yCoord(float)
+	 * @see #zCoord()
+	 */
 	public static float xCoord(float px) {
 		//translate screen origin to center
 		px = px - (parent.width/2);		
@@ -1055,6 +1213,18 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		return halfWidthSpace * px;
 	}
 	
+	/**
+	 * Computes the {@code y} coordinate of the {@code py} screen coordinate.
+	 * <p>
+	 * This method is only useful when drawing directly on screen.
+	 * It should be used in conjunction with {@link #beginScreenDrawing()} and
+	 * {@link #endScreenDrawing()} (which may be consulted for details).
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 * @see #xCoord(float)
+	 * @see #zCoord()
+	 */
 	public static float yCoord(float py) {
 		//translate screen origin to center
 		py = py - (parent.height/2);		
@@ -1063,6 +1233,17 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		return halfHeightSpace * py;
 	}
 	
+	/**
+	 * Returns the {@code z} coordinate needed when drawing objects directly on screen.
+	 * <p>
+	 * This should be used in conjunction with {@link #beginScreenDrawing()} and
+	 * {@link #endScreenDrawing()} (which may be consulted for details).
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 * @see #yCoord(float)
+	 * @see #zCoord()
+	 */
 	public static float zCoord() {
 		return -zC;
 	}

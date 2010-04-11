@@ -80,9 +80,10 @@ public class KeyFrameInterpolator implements Cloneable {
     private ListIterator<KeyFrame> currentFrame1;
     private ListIterator<KeyFrame> currentFrame2;
     private ListIterator<KeyFrame> currentFrame3;
-    private List<Frame> path;//TODO implement me! i.e., drawPath() methods
+    private List<Frame> path;
     // A s s o c i a t e d   f r a m e
     private Frame fr;
+    private static Frame myFrame;//needed for drawPath
 
     // R h y t h m
     private Timer timer;
@@ -96,11 +97,14 @@ public class KeyFrameInterpolator implements Cloneable {
     private boolean lpInterpolation;
 
     // C a c h e d   v a l u e s   a n d   f l a g s
-    private boolean pathIsValid;//TODO only when implementing drawPath()
+    private boolean pathIsValid;
     private boolean valuesAreValid;
     private boolean currentFrmValid;
     private boolean splineCacheIsValid;
     private PVector v1, v2;
+    
+    // P R O C E S S I N G   A P P L E T
+    public static PApplet parent;
     
     /**
      * Creates a KeyFrameInterpolator, with {@code frame} as associated {@link #frame()}.
@@ -111,14 +115,17 @@ public class KeyFrameInterpolator implements Cloneable {
      * {@link #interpolationPeriod()} are set to their default values.
      */
     public KeyFrameInterpolator(Frame frame) {
+    	parent = Scene.parent;
+    	myFrame = new Frame();
     	keyFr = new ArrayList<KeyFrame>();
+    	path = new ArrayList<Frame>();
     	fr = null;
     	period = 40;
     	interpolationTm = 0.0f;
     	interpolationSpd = 1.0f;
     	interpolationStrt = false;
         lpInterpolation = false;
-        pathIsValid = false;//TODO only when implementing drawPath()
+        pathIsValid = false;
         valuesAreValid = true;
         currentFrmValid = false;
         setFrame(frame);
@@ -475,6 +482,185 @@ public class KeyFrameInterpolator implements Cloneable {
 			kf = next;
 		}
 		valuesAreValid = true;
+	}	
+	
+	public static void drawCamera(float scale)	{
+		float halfHeight = scale * 0.07f;
+		float halfWidth  = halfHeight * 1.3f;
+		float dist = halfHeight / PApplet.tan(PApplet.PI/8.0f);
+		
+		float arrowHeight    = 1.5f * halfHeight;
+		float baseHeight     = 1.2f * halfHeight;
+		float arrowHalfWidth = 0.5f * halfWidth;
+		float baseHalfWidth  = 0.3f * halfWidth;
+		
+		// Frustum outline
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		parent.noFill();
+		parent.beginShape();
+		parent.vertex(-halfWidth, halfHeight,-dist);
+		parent.vertex(-halfWidth,-halfHeight,-dist);
+		parent.vertex( 0.0f, 0.0f, 0.0f);
+		parent.vertex( halfWidth,-halfHeight,-dist);
+		parent.vertex(-halfWidth,-halfHeight,-dist);
+		parent.endShape();
+		parent.noFill();
+		parent.beginShape();
+		parent.vertex( halfWidth,-halfHeight,-dist);
+		parent.vertex( halfWidth, halfHeight,-dist);
+		parent.vertex( 0.0f, 0.0f, 0.0f);
+		parent.vertex(-halfWidth, halfHeight,-dist);
+		parent.vertex( halfWidth, halfHeight,-dist);
+		parent.endShape();
+		
+		// Up arrow
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		// Base
+		parent.beginShape(PApplet.QUADS);
+		parent.vertex(-baseHalfWidth, halfHeight,-dist);
+		parent.vertex( baseHalfWidth, halfHeight,-dist);
+		parent.vertex( baseHalfWidth, baseHeight,-dist);
+		parent.vertex(-baseHalfWidth, baseHeight,-dist);
+		parent.endShape();
+		
+		// Arrow
+		parent.beginShape(PApplet.TRIANGLES);
+		parent.vertex( 0.0f,           arrowHeight,-dist);
+		parent.vertex(-arrowHalfWidth, baseHeight, -dist);
+		parent.vertex( arrowHalfWidth, baseHeight, -dist);
+		parent.endShape();
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawPath(1, 6, 1.0f)} 
+	 */
+	public void drawPath() {
+		drawPath(1, 6, 1.0f);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawPath(1, 6, scale)} 
+	 */
+	public void drawPath(float scale) {
+		drawPath(1, 6, scale);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawPath(mask, nbFrames, 1.0f)} 
+	 */
+	public void drawPath(int mask, int nbFrames) {
+		drawPath(mask, nbFrames, 1.0f);
+	}
+	
+	/**
+	 * Draws the path used to interpolate the {@link #frame()}.
+	 * <p>
+	 * {@code mask} controls what is drawn: If ( (mask & 1) != 0 ), the position path is drawn.
+	 * If ( (mask & 2) != 0 ), a camera representation is regularly drawn and
+	 * if ( (mask & 4) != 0 ), an oriented axis is regularly drawn. Examples:
+	 * <p>
+	 * {@code drawPath();  // Simply draws the interpolation path} <br>
+	 * {@code drawPath(3); // Draws path and cameras} <br>
+	 * {@code drawPath(5); // Draws path and axis} <br>
+	 * <p>
+	 * In the case where camera or axis is drawn, {@code nbFrames} controls the number of objects (axis
+	 * or camera) drawn between two successive keyFrames. When {@code nbFrames = 1}, only the path
+	 * KeyFrames are drawn. {@code nbFrames = 2} also draws the intermediate orientation, etc. The
+	 * maximum value is 30. {@code nbFrames} should divide 30 so that an object is drawn for each
+	 * KeyFrame. Default value is 6.
+	 * <p>
+	 * {@code scale} (default=1.0) controls the scaling of the camera and axis drawing. A value of
+	 * {@link remixlab.proscene.Scene#radius()} should give good results.
+	 */
+	public void drawPath(int mask, int nbFrames, float scale) {
+		parent.stroke(170, 170, 170);
+		int nbSteps = 30;
+		if (!pathIsValid) {
+			path.clear();
+			
+			if (keyFr.isEmpty())
+				return;
+			
+			if (!valuesAreValid)
+				updateModifiedFrameValues();
+			
+			if (keyFr.get(0) == keyFr.get(keyFr.size()-1 ) )
+				path.add(new Frame(keyFr.get(0).position(), keyFr.get(0).orientation()));
+			else{
+				KeyFrame [] kf = new KeyFrame[4];
+				kf[0] = keyFr.get(0);
+				kf[1] = kf[0];
+				
+				int index = 1;
+				kf[2] = (index < keyFr.size()) ? keyFr.get(index) : null;
+				index++;
+				kf[3] = (index < keyFr.size()) ? keyFr.get(index) : null;
+				
+				while (kf[2] != null ) {
+					PVector diff = PVector.sub(kf[2].position(), kf[1].position());					
+					PVector vec1 = PVector.add( PVector.mult(diff, 3.0f), PVector.mult(kf[1].tgP(), (-2.0f)) );
+					vec1 = PVector.sub(vec1, kf[2].tgP());
+					PVector vec2 = PVector.add( PVector.mult(diff, (-2.0f)), kf[1].tgP());
+					vec2 = PVector.add(vec2, kf[2].tgP());
+					
+					for (int step=0; step<nbSteps; ++step) {
+						float alpha = step / (float)nbSteps;
+						myFrame.setPosition(
+						PVector.add(kf[1].position(),
+						            PVector.mult(PVector.add(kf[1].tgP(),
+						        		                 PVector.mult(PVector.add(vec1, PVector.mult(vec2, alpha) ), alpha) ), alpha) )
+						        );
+						myFrame.setOrientation(Quaternion.squad(kf[1].orientation(), kf[1].tgQ(), kf[2].tgQ(), kf[2].orientation(), alpha));
+						path.add(new Frame(myFrame));
+					}
+					
+					// Shift
+					kf[0] = kf[1];
+					kf[1] = kf[2];
+					kf[2] = kf[3];
+					
+					index++;
+					kf[3] = (index < keyFr.size()) ? keyFr.get(index) : null;
+				}
+				// Add last KeyFrame
+				path.add(new Frame(kf[1].position(), kf[1].orientation()));
+			}
+			pathIsValid = true;			
+		}
+		
+		if ( mask != 0 ) {
+			parent.strokeWeight(2);
+			
+			if ( (mask & 1) != 0 ) {
+				parent.noFill();
+				parent.beginShape();
+				for (Frame myFr: path) 
+					parent.vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+				parent.endShape();
+			}			
+			if ( (mask & 6) != 0 ) {
+				int count = 0;
+				if (nbFrames > nbSteps)
+					nbFrames = nbSteps;
+				float goal = 0.0f;
+				
+				for (Frame myFr: path)
+					if ((count++) >= goal) {
+						goal += nbSteps / (float)nbFrames;
+						parent.pushMatrix();
+						
+						//parent.applyMatrix(myFr.matrix());
+						myFr.applyTransformation(parent);				
+						
+						if ( (mask & 2) != 0 ) drawCamera(scale);
+						if ( (mask & 4) != 0 ) Scene.drawAxis(scale/10.0f);
+						
+						parent.popMatrix();
+					}
+			}
+		}
+		parent.strokeWeight(1);
+		parent.noStroke();
 	}
 	
 	/**
