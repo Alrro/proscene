@@ -14,7 +14,6 @@
  * can interfere).
  */
 
-
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
@@ -27,6 +26,7 @@ void setup() {
   scene = new Scene(this);
   scene.setGridIsDrawn(true);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+  scene.setFrameSelectionHintIsDrawn(true);
   scene.setRadius(2);
   scene.showAll();
   
