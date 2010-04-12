@@ -414,7 +414,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if (parent.key == 'r' || parent.key == 'R') {
 			toggleCameraPathsAreDrawn();
 		}
-		if (parent.key == 's' || parent.key == 'S') {
+		if (parent.key == 's') {			
+			camera().interpolateToFitScene();
+		}
+		if (parent.key == 'S') {
 			showAll();
 		}
 		if (parent.key == 'w' || parent.key == 'W') {
@@ -480,27 +483,26 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		String textToDisplay = new String();
 		textToDisplay += "KEYBOARD\n";
 		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
-		textToDisplay += "a/g: Toggle axis/grid drawn\n";
-		textToDisplay += "c: Toggle camera mode (arcball or fly mode)\n";
-		textToDisplay += "e: Toggle camera type (orthographic or perspective)\n";
+		textToDisplay += "a/g: Toggle axis/grid/ drawn\n";
+		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
-		textToDisplay += "s: Show entire scene\n";
-		textToDisplay += "w: Toggle draw with constraint (if any)\n";
 		textToDisplay += "o/p: (un)set revolve around point (implement pointUnderPixel in your OpenGL Camera)\n";
+		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
+		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
+		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
+		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play key frame interpolators\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
-		textToDisplay += "Arcball mode: motate, zoom and translate\n";
+		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
 		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
 		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
-		textToDisplay += "MOUSE MODIFIERS\n";
-		textToDisplay += "shift+left button: zoom on region\n";
-		textToDisplay += "ctrl+left button: rotate screen\n";
-		textToDisplay += "altgraph+left button: translate screen\n";
+		textToDisplay += "MOUSE MODIFIERS (applied to left button)\n";
+		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
 		//parent.textAlign(CENTER, CENTER);
 		//parent.textAlign(RIGHT);		
 		parent.fill(0, 255, 0);		
 		parent.textLeading(20);
-		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));
+		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));		 
 	}
 	
 	// 3. Drawing methods

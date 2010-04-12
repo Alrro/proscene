@@ -7,6 +7,7 @@ import java.util.*;
 import javax.swing.Timer;
 
 import processing.core.*;
+import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 
 public class KeyFrameInterpolator implements Cloneable {
 	private class KeyFrame  implements Cloneable {
@@ -107,12 +108,25 @@ public class KeyFrameInterpolator implements Cloneable {
     public static PApplet parent;
     
     /**
+     * Convenience constructor that simply calls {@code this(new Frame())}.
+     * <p>
+     * Creates an anonymous {@link #frame()} to be interpolated by this KeyFrameInterpolator.
+     * 
+     * @see #KeyFrameInterpolator(Frame)
+     */
+    public KeyFrameInterpolator() {
+    	this(new Frame());
+    }
+    
+    /**
      * Creates a KeyFrameInterpolator, with {@code frame} as associated {@link #frame()}.
      * <p>
      * The {@link #frame()} can be set or changed using {@link #setFrame(Frame)}.
      * <p>
      * {@link #interpolationTime()}, {@link #interpolationSpeed()} and
      * {@link #interpolationPeriod()} are set to their default values.
+     * 
+     * @see #KeyFrameInterpolator()
      */
     public KeyFrameInterpolator(Frame frame) {
     	parent = Scene.parent;
@@ -279,7 +293,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@link #interpolationTime()} reaches {@link #firstTime()} or {@link #lastTime()}, unless
 	 * {@link #loopInterpolation()} is {@code true}.
 	 */
-	public void update() {
+	public void update() {		
     	interpolateAtTime(interpolationTime());
     	
     	interpolationTm += interpolationSpeed() * interpolationPeriod() / 1000.0f;
@@ -383,7 +397,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * @see #addKeyFrame(Frame, boolean)
 	 */
 	public void addKeyFrame(Frame frame) {		
-		addKeyFrame(frame, false);
+		addKeyFrame(frame, true);
 	}
 	
 	/**
@@ -409,7 +423,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * @see #addKeyFrame(Frame, float, boolean)
 	 */ 	
 	public void addKeyFrame(Frame frame, float time) {
-		addKeyFrame(frame, time, false);
+		addKeyFrame(frame, time, true);
 	}
 	
 	/** Appends a new keyFrame to the path, with its associated {@code time} (in seconds).
@@ -495,8 +509,8 @@ public class KeyFrameInterpolator implements Cloneable {
 		float baseHalfWidth  = 0.3f * halfWidth;
 		
 		// Frustum outline
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		parent.noFill();
+		parent.stroke(170);
 		parent.beginShape();
 		parent.vertex(-halfWidth, halfHeight,-dist);
 		parent.vertex(-halfWidth,-halfHeight,-dist);
@@ -514,21 +528,39 @@ public class KeyFrameInterpolator implements Cloneable {
 		parent.endShape();
 		
 		// Up arrow
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		parent.noStroke();
+		parent.fill(170);
 		// Base
 		parent.beginShape(PApplet.QUADS);
-		parent.vertex(-baseHalfWidth, halfHeight,-dist);
-		parent.vertex( baseHalfWidth, halfHeight,-dist);
-		parent.vertex( baseHalfWidth, baseHeight,-dist);
-		parent.vertex(-baseHalfWidth, baseHeight,-dist);
+		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
+			parent.vertex( baseHalfWidth, -halfHeight,-dist);
+			parent.vertex(-baseHalfWidth, -halfHeight,-dist);
+			parent.vertex(-baseHalfWidth, -baseHeight,-dist);
+			parent.vertex( baseHalfWidth, -baseHeight,-dist);				
+		}
+		else {
+			parent.vertex(-baseHalfWidth, halfHeight,-dist);
+			parent.vertex( baseHalfWidth, halfHeight,-dist);
+			parent.vertex( baseHalfWidth, baseHeight,-dist);
+			parent.vertex(-baseHalfWidth, baseHeight,-dist);
+		}
 		parent.endShape();
-		
 		// Arrow
 		parent.beginShape(PApplet.TRIANGLES);
-		parent.vertex( 0.0f,           arrowHeight,-dist);
-		parent.vertex(-arrowHalfWidth, baseHeight, -dist);
-		parent.vertex( arrowHalfWidth, baseHeight, -dist);
+		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
+			parent.vertex( 0.0f,           -arrowHeight,-dist);
+			parent.vertex( arrowHalfWidth, -baseHeight, -dist);
+			parent.vertex(-arrowHalfWidth, -baseHeight, -dist);			
+		}
+		else {
+			parent.vertex( 0.0f,           arrowHeight,-dist);
+			parent.vertex(-arrowHalfWidth, baseHeight, -dist);
+			parent.vertex( arrowHalfWidth, baseHeight, -dist);
+		}		
 		parent.endShape();
+		
+		parent.noFill();
+		parent.stroke(170);
 	}
 	
 	/**
@@ -569,11 +601,10 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * maximum value is 30. {@code nbFrames} should divide 30 so that an object is drawn for each
 	 * KeyFrame. Default value is 6.
 	 * <p>
-	 * {@code scale} (default=1.0) controls the scaling of the camera and axis drawing. A value of
+	 * {@code scale} controls the scaling of the camera and axis drawing. A value of
 	 * {@link remixlab.proscene.Scene#radius()} should give good results.
 	 */
-	public void drawPath(int mask, int nbFrames, float scale) {
-		parent.stroke(170, 170, 170);
+	public void drawPath(int mask, int nbFrames, float scale) {		
 		int nbSteps = 30;
 		if (!pathIsValid) {
 			path.clear();
@@ -633,6 +664,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			
 			if ( (mask & 1) != 0 ) {
 				parent.noFill();
+				parent.stroke(170);
 				parent.beginShape();
 				for (Frame myFr: path) 
 					parent.vertex(myFr.position().x, myFr.position().y, myFr.position().z);
@@ -658,8 +690,8 @@ public class KeyFrameInterpolator implements Cloneable {
 						parent.popMatrix();
 					}
 			}
-		}
-		parent.strokeWeight(1);
+			parent.strokeWeight(1);			
+		}		
 		parent.noStroke();
 	}
 	

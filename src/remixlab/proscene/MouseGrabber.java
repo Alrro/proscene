@@ -68,7 +68,7 @@ public interface MouseGrabber {
     List<MouseGrabber> getMouseGrabberPool();
 	
 	/**
-	 * Called by the Scene before they test if the MouseGrabber {@link #grabsMouse()}.
+	 * Called by the Scene before it tests if the MouseGrabber {@link #grabsMouse()}.
 	 * Should {@link #setGrabsMouse(boolean)} according to the mouse position. 
 	 * <p> 
 	 * This is the core method of the MouseGrabber. Its goal is to update the 

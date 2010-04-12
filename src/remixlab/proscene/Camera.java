@@ -88,10 +88,10 @@ public class Camera implements Cloneable {
 	private float physicalScrnWidth; // in meters
 	
 	// P o i n t s   o f   V i e w s   a n d   K e y F r a m e s
-    protected HashMap<Integer, KeyFrameInterpolator> kfi;
-    Iterator<Integer> it;    
-    //TODO implement me
-    //protected KeyFrameInterpolator interpolationKfi;
+	protected HashMap<Integer, KeyFrameInterpolator> kfi;
+	Iterator<Integer> it;
+	protected KeyFrameInterpolator interpolationKfi;
+	protected static InteractiveCameraFrame tempFrame;
 
 	/**
 	 * Default constructor. 
@@ -108,10 +108,10 @@ public class Camera implements Cloneable {
 		fldOfView = Quaternion.PI / 4.0f;
 		
 		//KeyFrames
-		//interpolationKfi = new KeyFrameInterpolator();
+		interpolationKfi = new KeyFrameInterpolator(frame());
 		kfi = new HashMap<Integer, KeyFrameInterpolator>();
 		
-		setFrame(new InteractiveCameraFrame());
+		setFrame(new InteractiveCameraFrame());		
 
 		// Requires fieldOfView() to define focusDistance()
 		setSceneRadius(1.0f);
@@ -160,6 +160,7 @@ public class Camera implements Cloneable {
 	public Camera clone() {
 		try {
 			Camera clonedCam = (Camera) super.clone();
+			clonedCam.interpolationKfi = interpolationKfi.clone(); 
 			clonedCam.kfi = new HashMap<Integer, KeyFrameInterpolator>();
 			it = kfi.keySet().iterator();
 		    while (it.hasNext()) {
@@ -1020,6 +1021,7 @@ public class Camera implements Cloneable {
 			return;
 
 		frm = icf;
+		interpolationKfi.setFrame(frame());
 	}
 	
 	// 6. KEYFRAMED PATHS
@@ -1057,11 +1059,18 @@ public class Camera implements Cloneable {
 	 * If you use directly this method and the {@link #keyFrameInterpolator(int)} does not exist,
 	 * a new one is created.
 	 */
-	public void addKeyFrameToPath(int key) {		
-		if (!kfi.containsKey(key))
+	public void addKeyFrameToPath(int key) {
+		//TODO: info should go on the applet ;)
+	    boolean info = true;
+		if (!kfi.containsKey(key)) {
 			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame()));
+			PApplet.println("Position " + key + " saved");
+			info = false;
+		}
 		
-		kfi.get(key).addKeyFrame((frame()));
+		kfi.get(key).addKeyFrame(frame(), false);
+		if(info)
+			PApplet.println("Path " + key + ", position " + kfi.get(key).numberOfKeyFrames() + " added");
 	}
 	
 	/**
@@ -1074,11 +1083,16 @@ public class Camera implements Cloneable {
 	 * The default keyboard shortcuts for this method are keys [1-5].
 	 */
 	public void playPath (int key) {
+		//TODO: info should go on the applet ;)
 		if (kfi.containsKey(key)) {
-			if (kfi.get(key).interpolationIsStarted())
+			if (kfi.get(key).interpolationIsStarted()) {
 				kfi.get(key).stopInterpolation();
-			else
+				PApplet.println("Path " + key + " stopped");
+			}
+			else {
 				kfi.get(key).startInterpolation();
+				PApplet.println("Path " + key + " started");
+			}
 		}
 	}
 	
@@ -1088,9 +1102,11 @@ public class Camera implements Cloneable {
 	 * {@link remixlab.proscene.Scene#defaultKeyBindings()}.
 	 */
 	public void deletePath (int key) {
+		//TODO: info should go on the applet ;)
 		if (kfi.containsKey(key)) {
 			kfi.get(key).stopInterpolation();
 			kfi.remove(key);
+			PApplet.println("Path " + key + " deleted");
 		}
 	}
 	
@@ -1114,12 +1130,11 @@ public class Camera implements Cloneable {
 		}
 	}
 	
-	/*! Draws all the Camera paths defined by the keyFrameInterpolator().
-
-	 Simply calls KeyFrameInterpolator::drawPath() for all the defined paths. The path color is the
-	 current \c glColor().
-
-	 \attention The OpenGL state is modified by this method: see KeyFrameInterpolator::drawPath(). */
+	/**
+	 * Draws all the Camera paths defined by the {@link #keyFrameInterpolator(int)}.
+	 * <p>
+	 * Simply calls {@link remixlab.proscene.KeyFrameInterpolator#drawPath(int, int, float)} for all the defined paths.
+	 */
 	public void drawAllPaths() {
 		it = kfi.keySet().iterator();
 	    while (it.hasNext()) {
@@ -1667,6 +1682,101 @@ public class Camera implements Cloneable {
 	 */
 	public void centerScene() {
 		frame().projectOnLine(sceneCenter(), viewDirection());
+	}
+	
+	/**
+	 * Makes the Camera smoothly zoom on the {@link #pointUnderPixel(Point)} {@code pixel}.
+	 * <p>
+	 * Nothing happens if no {@link #pointUnderPixel(Point)} is found. Otherwise a KeyFrameInterpolator is created that
+	 * animates the Camera on a one second path that brings the Camera closer to the point under {@code pixel}.
+	 * <p>
+	 * <b>Attention:</b> Override this method in your jogl-based camera class. See {@link #pointUnderPixel(Point)}.
+	 * @see #interpolateToFitScene()
+	 */
+	public void interpolateToZoomOnPixel(Point pixel) {
+		//TODO: needs test
+		float coef = 0.1f;
+		
+		WorldPoint target = pointUnderPixel(pixel);
+
+		if( !target.found )
+			return;
+		
+		if (interpolationKfi.interpolationIsStarted())
+			interpolationKfi.stopInterpolation();
+		
+		interpolationKfi.deletePath();
+		interpolationKfi.addKeyFrame(frame(), false);
+		
+		interpolationKfi.addKeyFrame(new Frame(PVector.add(PVector.mult(frame().position(), 0.3f), PVector.mult(target.point, 0.7f)), frame().orientation()),
+				                     0.4f, false);
+		
+		// Small hack: attach a temporary frame to take advantage of lookAt without modifying frame		
+		tempFrame = new InteractiveCameraFrame();
+		InteractiveCameraFrame originalFrame = frame();		
+		tempFrame.setPosition(PVector.add(PVector.mult(frame().position(), coef), PVector.mult(target.point, (1.0f-coef)) ));
+		tempFrame.setOrientation( new Quaternion(frame().orientation()) );
+		setFrame(tempFrame);
+		lookAt( target.point );
+		setFrame(originalFrame);
+		
+		interpolationKfi.addKeyFrame(tempFrame, 1.0f, false);
+		
+		interpolationKfi.startInterpolation();
+	}
+	
+	/**
+	 * Interpolates the Camera on a one second KeyFrameInterpolator path so that the entire scene fits
+	 * the screen at the end.
+	 * <p>
+	 * The scene is defined by its {@link #sceneCenter()} and its {@link #sceneRadius()}.
+	 * See {@link #showEntireScene()}.
+	 * <p>
+	 * The {@link #orientation()} of the Camera is not modified.
+	 * 
+	 * @see #interpolateToZoomOnPixel(Point)
+	 */
+	void interpolateToFitScene() {
+		//TODO: needs test
+		if (interpolationKfi.interpolationIsStarted())
+			interpolationKfi.stopInterpolation();
+		
+		interpolationKfi.deletePath();
+		interpolationKfi.addKeyFrame(frame(), false);
+		
+		// Small hack:  attach a temporary frame to take advantage of lookAt without modifying frame
+		tempFrame = new InteractiveCameraFrame();
+		InteractiveCameraFrame originalFrame = frame();
+		tempFrame.setPosition(new PVector(frame().position().x, frame().position().y, frame().position().z));
+		tempFrame.setOrientation(new Quaternion (frame().orientation()));
+		setFrame(tempFrame);
+		showEntireScene();
+		setFrame(originalFrame);
+		
+		interpolationKfi.addKeyFrame(tempFrame, false);
+		
+		interpolationKfi.startInterpolation();
+	}
+
+
+	/**
+	 * Smoothly interpolates the Camera on a KeyFrameInterpolator path so that it goes to {@code fr}.
+	 * <p>
+	 * {@code fr} is expressed in world coordinates. {@code duration} tunes the interpolation speed
+	 * (default is 1 second).
+	 * 
+	 * @see #interpolateToFitScene()
+	 * @see #interpolateToZoomOnPixel(Point)
+	 */
+	void interpolateTo(Frame fr, float duration) {
+		if (interpolationKfi.interpolationIsStarted())
+			interpolationKfi.stopInterpolation();
+		
+		interpolationKfi.deletePath();
+		interpolationKfi.addKeyFrame(frame(), false);
+		interpolationKfi.addKeyFrame(fr, duration, false);
+		
+		interpolationKfi.startInterpolation();
 	}
 
 	// 12. STEREO PARAMETERS

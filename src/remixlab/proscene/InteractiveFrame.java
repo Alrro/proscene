@@ -52,7 +52,7 @@ public class InteractiveFrame extends Frame
 	 * by default (processing standard).
 	 */
 	public enum CoordinateSystemConvention {LEFT_HANDED, RIGHT_HANDED};
-	protected CoordinateSystemConvention coordSysConvention;
+	static protected CoordinateSystemConvention coordSysConvention;
 
 	private float rotSensitivity;
 	private float transSensitivity;
@@ -143,7 +143,7 @@ public class InteractiveFrame extends Frame
 	 * 
 	 * @see #setCoordinateSystemConvention(CoordinateSystemConvention)
 	 */
-	public CoordinateSystemConvention coordinateSystemConvention() {
+	static public CoordinateSystemConvention coordinateSystemConvention() {
 		return coordSysConvention;
 	}
 	
