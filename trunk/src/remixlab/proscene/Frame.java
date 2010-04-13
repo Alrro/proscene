@@ -25,7 +25,12 @@
 
 package remixlab.proscene;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
 import processing.core.*;
+//import remixlab.proscene.KeyFrameInterpolator.KeyFrame;
 
 /**
  * A Frame is a 3D coordinate system, represented by a {@link #position()} and an
@@ -38,6 +43,7 @@ public class Frame implements Cloneable {
 	protected Quaternion rot;
 	protected Frame refFrame;
 	protected Constraint constr;
+	protected List<KeyFrameInterpolator> list;	
 
 	/**
 	 * Creates a default Frame. 
@@ -51,8 +57,9 @@ public class Frame implements Cloneable {
 		rot = new Quaternion();
 		refFrame = null;
 		constr = null;
+		list = new ArrayList<KeyFrameInterpolator>();
 	}
-
+	
 	/**
 	 * Creates a Frame with a {@link #position()} and an {@link #orientation()}. 
 	 * <p> 
@@ -66,6 +73,7 @@ public class Frame implements Cloneable {
 		rot = new Quaternion(r);
 		refFrame = null;
 		constr = null;
+		list = new ArrayList<KeyFrameInterpolator>();
 	}
 
 	/**
@@ -79,6 +87,10 @@ public class Frame implements Cloneable {
 		rot = new Quaternion(other.rotation());
 		refFrame = other.referenceFrame();
 		constr = other.constraint();
+		list = new ArrayList<KeyFrameInterpolator>();
+		Iterator<KeyFrameInterpolator> it = other.listeners().iterator();
+		while(it.hasNext())
+			list.add(it.next());
 	}
 	
 	/**
@@ -106,6 +118,10 @@ public class Frame implements Cloneable {
             Frame clonedFrame = (Frame) super.clone();
             clonedFrame.trans = new PVector (translation().x, translation().y, translation().z);
             clonedFrame.rot = new Quaternion(rotation());
+            clonedFrame.list = new ArrayList<KeyFrameInterpolator>();
+    		Iterator<KeyFrameInterpolator> it = listeners().iterator();
+    		while(it.hasNext())
+    			clonedFrame.list.add(it.next());
             return clonedFrame;
         } catch (CloneNotSupportedException e) {
             throw new Error("Something went wrong when cloning the Frame");
@@ -179,10 +195,50 @@ public class Frame implements Cloneable {
 	public Constraint constraint() {
 		return constr;
 	}
-
+	
+	/**
+	 * Returns the list of KeyFrameInterpolators that are currently listening to this frame.
+	 * Normally, you should not call this method as the KeyFrameInterpolator takes care of
+	 * calling it.
+	 * 
+	 * @see remixlab.proscene.KeyFrameInterpolator#addKeyFrame(Frame, float, boolean)
+	 */
+	public List<KeyFrameInterpolator> listeners() {
+		return list;
+	}
+	
+	/**
+	 * Adds {@code kfi} Returns the list of KeyFrameInterpolators that are currently
+	 * listening this frame.
+	 */
+	public void addListener( KeyFrameInterpolator kfi ) {
+        list.add( kfi );
+    }
+    
+	/**
+	 * Removes {@code kfi} from the list of KeyFrameInterpolators that are currently listening
+	 * to this frame. Normally, you should not call this method, unless you have added {@code kfi}
+	 * before (by calling {@link #addListener(KeyFrameInterpolator)}).
+	 * 
+	 * @see remixlab.proscene.KeyFrameInterpolator#addKeyFrame(Frame, float, boolean)
+	 */
+    public void removeListener( KeyFrameInterpolator kfi ) {
+        list.remove( kfi );
+    }
+         
+	/**
+	 * Resets the cache of all KeyFrameInterpolators' associated with this Frame. 
+	 */
+	private void modified() {
+		Iterator<KeyFrameInterpolator> it = list.iterator();
+        while( it.hasNext() ) {
+        	it.next().invalidateValues();
+        }
+	}
+	
     /**
      * Sets the {@link #translation()} of the frame, locally defined
-     * with respect to the {@link #referenceFrame()}. 
+     * with respect to the {@link #referenceFrame()}. Calls {@link #modified()}. 
      * <p> 
      * Use {@link #setPosition(PVector)} to define the world coordinates {@link #position()}.
      * Use {@link #setTranslationWithConstraint(PVector)} to take into account the potential
@@ -190,6 +246,7 @@ public class Frame implements Cloneable {
      */
 	public final void setTranslation(PVector t) {
 		this.trans = t;
+		modified();
 	}
 
 	/**
@@ -222,7 +279,7 @@ public class Frame implements Cloneable {
 	}
 
     /**
-     * Set the current rotation Quaternion. See the different
+     * Set the current rotation Quaternion and  Calls {@link #modified()}. See the different
      * Quaternion constructors. 
      * <p> 
      * Sets the {@link #rotation()} of the Frame, locally defined
@@ -239,6 +296,7 @@ public class Frame implements Cloneable {
      */
 	public final void setRotation(Quaternion r) {
 		this.rot = r;
+		modified();
 	}
 
 	/**
@@ -272,7 +330,7 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	 * Sets the {@link #referenceFrame()} of the Frame.
+	 * Sets the {@link #referenceFrame()} of the Frame and calls {@link #modified()}.
 	 * <p> 
 	 * The Frame {@link #translation()} and {@link #rotation()} are then defined
 	 * in the {@link #referenceFrame()} coordinate system. 
@@ -289,8 +347,14 @@ public class Frame implements Cloneable {
 	 * @see #settingAsReferenceFrameWillCreateALoop(Frame)
 	 */ 
 	public final void setReferenceFrame(Frame rFrame) {
-		if (!settingAsReferenceFrameWillCreateALoop(rFrame))
+		if (settingAsReferenceFrameWillCreateALoop(rFrame))
+			PApplet.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
+		else {
+			boolean identical = (this.refFrame == rFrame);
 			this.refFrame = rFrame;
+			if (!identical)
+				modified();
+		}
 	}
 	
 	public void setConstraint(Constraint c) {
@@ -414,7 +478,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Same as {@code translate(t, true)}.
+	 * Same as {@code translate(t, true)}. Calls {@link #modified()}.
 	 * 
 	 * @see #translate(PVector, boolean)
 	 * @see #rotate(Quaternion)
@@ -424,11 +488,12 @@ public class Frame implements Cloneable {
 		    trans.add(constraint().constrainTranslation(t, this));
 		else
 			trans.add(t);
+		modified();
 	}
 	
 	/**
 	 * Translates the Frame according to {@code t} (which is defined in the Frame
-	 * coordinate system).
+	 * coordinate system). Calls {@link #modified()}.
 	 * <p> 
 	 * If there's a {@link #constraint()} it is satisfied. Hence the translation actually
 	 * applied to the Frame may differ from {@code t} (since it can be filtered by the
@@ -450,6 +515,7 @@ public class Frame implements Cloneable {
 		    }    
 		}
 		trans.add(o);
+		modified();
 	}
 	
 	/**
@@ -460,7 +526,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Same as @ {@code rotate(q, true)}.
+	 * Same as @ {@code rotate(q, true)}. Calls {@link #modified()}.
 	 * 
 	 * @see #rotate(Quaternion, boolean)
 	 * @see #translate(PVector)
@@ -472,11 +538,12 @@ public class Frame implements Cloneable {
 			rot.multiply(q);
 		
 		rot.normalize(); // Prevents numerical drift
+		modified();
 	}
 	
 	/**
 	 * Rotates the Frame by {@code q} (defined in the Frame coordinate system):
-	 * {@code R = R*q}.
+	 * {@code R = R*q}. Calls {@link #modified()}.
 	 * <p> 
 	 * If there's a {@link #constraint()} it is satisfied. Hence the rotation actually
 	 * applied to the Frame may differ from {@code q} (since it can be filtered by the
@@ -501,6 +568,7 @@ public class Frame implements Cloneable {
 		rot.multiply(o);
 		
 		rot.normalize(); // Prevents numerical drift
+		modified();
 	}
 
 	/**
@@ -511,7 +579,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Same as {@code rotateAroundPoint(rotation, point, true)}. 
+	 * Same as {@code rotateAroundPoint(rotation, point, true)}. Calls {@link #modified()}.
 	 */
 	public final void rotateAroundPoint(Quaternion rotation, PVector point) {
 		if (constraint() != null)
@@ -527,7 +595,8 @@ public class Frame implements Cloneable {
 		if (constraint() != null)
 			trans.add(constraint().constrainTranslation(t, this));
 		else
-			trans.add(t);
+			trans.add(t);		
+		modified();
 	}
 
 	/**
@@ -536,7 +605,8 @@ public class Frame implements Cloneable {
 	*/
 	
 	/**
-	 * Makes the Frame {@link #rotate(Quaternion)} by {@code rotation} around {@code point}. 
+	 * Makes the Frame {@link #rotate(Quaternion)} by {@code rotation} around {@code point}.
+	 * Calls {@link #modified()}.
 	 * <p> 
 	 * {@code point} is defined in the world coordinate system, while the {@code rotation}
 	 * axis is defined in the Frame coordinate system.
@@ -573,7 +643,8 @@ public class Frame implements Cloneable {
 		if (constraint() != null)
 			trans.add(constraint().constrainTranslation(t, this));
 		else
-			trans.add(t);
+			trans.add(t);		
+		modified();
 	}
 	
 	/**
@@ -1071,7 +1142,7 @@ public class Frame implements Cloneable {
 
 	/**
 	 * Sets the Frame from an PMatrix3D (processing matrix) representation (rotation
-	 * in the upper left 3x3 matrix and translation on the last column). 
+	 * in the upper left 3x3 matrix and translation on the last column). Calls {@link #modified()}.
 	 * <p>
 	 * Hence, if a code fragment looks like: 
 	 * <p> 
@@ -1117,6 +1188,7 @@ public class Frame implements Cloneable {
 		r[2][2] = pM.m22 / pM.m33;
 		
 		rot.fromRotationMatrix(r);
+		modified();
 	}
 	
 	/**
