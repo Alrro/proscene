@@ -22,7 +22,6 @@
 import processing.core.*;
 import remixlab.proscene.*;
 
-
 Scene scene;
 InteractiveFrame keyFrame[];
 KeyFrameInterpolator kfi;
@@ -59,13 +58,7 @@ void draw() {
   
   kfi.drawPath(5, 10);
   
-  for (int i=0; i<nbKeyFrames; ++i) {
-    // Hack: it is necessary to reset the KeyFrameInterpolator cache each time
-    // one of its frames changes. We do here a soft test: we check if the frame
-    // grabs the mouse or if it is spinning.
-    if ( keyFrame[i].grabsMouse() || keyFrame[i].isSpinning() )
-      kfi.invalidateValues();// resets KeyFrameInterpolator cache
-      
+  for (int i=0; i<nbKeyFrames; ++i) {      
     pushMatrix();
     kfi.keyFrame(i).applyTransformation(this);
     

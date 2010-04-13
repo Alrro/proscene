@@ -293,7 +293,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@link #interpolationTime()} reaches {@link #firstTime()} or {@link #lastTime()}, unless
 	 * {@link #loopInterpolation()} is {@code true}.
 	 */
-	public void update() {		
+	protected void update() {		
     	interpolateAtTime(interpolationTime());
     	
     	interpolationTm += interpolationSpeed() * interpolationPeriod() / 1000.0f;
@@ -351,7 +351,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * <p>
 	 * Use {@link #setInterpolationTime(float)} before calling this method to change the starting
 	 * {@link #interpolationTime()}.
-	 * 
+	 * <p>
 	 * <b>Attention:</b> The keyFrames must be defined (see {@link #addKeyFrame(Frame, float)}) before you
 	 * startInterpolation(), or else the interpolation will naturally immediately stop.
 	 */
@@ -449,9 +449,9 @@ public class KeyFrameInterpolator implements Cloneable {
 		else
 			keyFr.add(new KeyFrame(frame, time, setRef));
 		
-		//TODO:
-		//if (setRef) //only when setting reference
 		// connect(frame, SIGNAL(modified()), SLOT(invalidateValues()));
+		if (setRef) //only when setting reference
+			frame.addListener(this);
 		
 		valuesAreValid = false;
 		pathIsValid = false;
@@ -470,7 +470,7 @@ public class KeyFrameInterpolator implements Cloneable {
 		currentFrmValid = false;
 	}
 	
-	void updateModifiedFrameValues() {
+	protected void updateModifiedFrameValues() {
 		Quaternion prevQ = keyFr.get(0).orientation();
 		
 		KeyFrame kf;
@@ -760,7 +760,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			return keyFr.get(keyFr.size()-1).time();
 	}
 	
-	public void updateCurrentKeyFrameForTime(float time) {
+	protected void updateCurrentKeyFrameForTime(float time) {
 		// Assertion: times are sorted in monotone order.
 		// Assertion: keyFrame_ is not empty
 		
