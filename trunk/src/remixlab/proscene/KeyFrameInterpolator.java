@@ -9,6 +9,67 @@ import javax.swing.Timer;
 import processing.core.*;
 import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 
+/** A keyFrame Catmull-Rom Frame interpolator.
+ * <p>
+ * A KeyFrameInterpolator holds keyFrames (that define a path) and, optionally, a reference
+ * to a Frame of your application (which will be interpolated). In this case, when the user
+ * {@link #startInterpolation()}, the KeyFrameInterpolator regularly updates the
+ * {@link #frame()} position and orientation along the path.
+ * <p>
+ * Here is a typical utilization example (see also the example KeyFrames):
+ * <p>
+ * {@code //PApplet.setup() should look like:}<br>
+ * {@code size(640, 360, P3D);}<br>
+ * {@code kfi = new KeyFrameInterpolator();}<br>
+ * {@code // The KeyFrameInterpolator kfi is given the Frame that it will drive over time.}<br>
+ * {@code kfi = new KeyFrameInterpolator();}<br>
+ * {@code //By default the Frame is provided as a reference to the KeyFrameInterpolator:}<br>
+ * {@code kfi.addKeyFrame( new Frame( new PVector(1,0,0), new Quaternion() ) );}<br>
+ * {@code kfi.addKeyFrame( new Frame( new PVector(2,1,0), new Quaternion() ) );}<br>
+ * {@code // ...and so on for all the keyFrames.}<br>
+ * {@code kfi.startInterpolation();}<br>
+ * <p>
+ * {@code //PApplet.draw() should look like:}<br>
+ * {@code background(0);}<br>
+ * {@code scene.beginDraw();}<br>
+ * {@code pushMatrix();}<br>
+ * {@code kfi.frame().applyTransformation(this);}<br>
+ * {@code // Draw your object here. Its position and orientation are interpolated.}<br>
+ * {@code popMatrix();}<br>
+ * {@code scene.endDraw();}<br>
+ * <p>
+ * The keyFrames are defined by a Frame and a time, expressed in seconds. Optionally, the Frame
+ * can be provided as a reference (see the {@link #addKeyFrame(Frame)} methods). In this case,
+ * the path will automatically be updated when the Frame is modified.
+ * <p>
+ * The time has to be monotonously increasing over keyFrames. When {@link #interpolationSpeed()}
+ * equals 1.0 (default value), these times correspond to actual user's seconds during interpolation
+ * (provided that your main loop is fast enough). The interpolation is then real-time:
+ * the keyFrames will be reached at their {@link #keyFrameTime(int)}.
+ * <p>
+ * <h3>Interpolation details</h3>
+ * <p>
+ * When the user {@link #startInterpolation()}, a timer is started which will update the
+ * {@link #frame()}'s position and orientation every {@link #interpolationPeriod()} milliseconds.
+ * This update increases the {@link #interpolationTime()} by {@link #interpolationPeriod()} *
+ * {@link #interpolationSpeed()} milliseconds.
+ * <p>
+ * Note that this mechanism ensures that the number of interpolation steps is constant and equal
+ * to the total path {@link #duration()} divided by the {@link #interpolationPeriod()} *
+ * {@link #interpolationSpeed()}. This is especially useful for benchmarking or movie creation
+ * (constant number of snapshots).
+ * <p>
+ * The interpolation is stopped when {@link #interpolationTime()} is greater than the
+ * {@link #lastTime()} (unless loopInterpolation() is {@code true}).
+ * <p>
+ * Note that a Camera has {@link remixlab.proscene.Camera#keyFrameInterpolator(int)}, that can be
+ * used to drive the Camera along a path.
+ * <p>
+ * <b>Attention:</b> If a Constraint is attached to the {@link #frame()} (see
+ * {@link remixlab.proscene.Frame#constraint()}), it should be deactivated before
+ * {@link #interpolationIsStarted()}, otherwise the interpolated motion (computed as if there
+ * was no constraint) will probably be erroneous.
+ */
 public class KeyFrameInterpolator implements Cloneable {
 	private class KeyFrame  implements Cloneable {
 		private PVector p, tgPVec;
