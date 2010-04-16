@@ -9,23 +9,33 @@ import processing.opengl.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
-public class RevolveAroundPoint extends PApplet {
+public class PointUnderPixel extends PApplet {
 	Scene scene;
+	Box [] boxes;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
 		scene = new Scene(this);
 		GLCamera glCam = new GLCamera(this);
 		scene.setCamera(glCam);
-		scene.setGridIsDrawn(true);
-		scene.setAxisIsDrawn(true);
+		scene.setGridIsDrawn(false);
+		scene.setAxisIsDrawn(false);
+		scene.setHelpIsDrawn(false);
+		scene.setRadius(scene.radius() * 1.5f);
+		scene.showAll();
+		
+		boxes = new Box[50];
+		for (int i = 0; i < boxes.length; i++)
+			boxes[i] = new Box(this);
 	}
 
 	public void draw() {
 		background(0);
 		scene.beginDraw();
-		fill(204, 102, 0);
-		box(0.2f, 0.3f, 0.5f);		
+		for (int i = 0; i < boxes.length; i++) {
+			//3D drawing
+			boxes[i].draw();
+		}
 		scene.endDraw();
 	}
 	
@@ -59,6 +69,6 @@ public class RevolveAroundPoint extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "RevolveAroundPoint" });
+		PApplet.main(new String[] { "--present", "PointUnderPixel" });
 	}
 }

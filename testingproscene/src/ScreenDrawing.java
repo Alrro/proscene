@@ -17,7 +17,7 @@ public class ScreenDrawing extends PApplet {
 		
 		boxes = new Box[6];
 		for (int i = 0; i < 6; i++) {
-			boxes[i] = new Box(this);
+			boxes[i] = new Box(this, 0.3f, color(0,0,255));
 			boxes[i].setPosition(new PVector((-1.0f + (i*0.4f )), 0.0f, 0.0f));
 		}
 	}

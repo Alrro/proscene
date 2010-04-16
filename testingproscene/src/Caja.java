@@ -17,7 +17,7 @@ public class Caja {
 		Scene.drawAxis(0.3f);
 
 		if (iFrame.grabsMouse()) {
-			parent.fill(0, 255, 0);
+			parent.fill(255, 0, 255);
 			parent.box(0.35f);
 		}
 		else {

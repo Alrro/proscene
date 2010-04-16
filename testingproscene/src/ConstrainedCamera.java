@@ -124,29 +124,29 @@ public class ConstrainedCamera extends PApplet  {
 	
 	public void displayText() {
 		text("TRANSLATION :", 350, height-30);
-		displayDir(transDir, (350+90), height-30, 'F');
+		displayDir(transDir, (350+90), height-30, 'D');
 		displayType(constraints[activeConstraint].translationConstraintType(), 350, height-60, 'T');
 		
 		text("ROTATION :", width-120,height-30);		
-		displayDir(rotDir, width-50, height-30, 'D');		
+		displayDir(rotDir, width-50, height-30, 'B');		
 		displayType(constraints[activeConstraint].rotationConstraintType(), width-120, height-60, 'R');
 		
 		switch (activeConstraint) {	
-	    case 0 : text("Constraint direction defined w/r to WORLD (L)", 370,20); break;
-	    case 1 : text("Constraint direction defined w/r to CAMERA (L)", 370,20); break;
+	    case 0 : text("Constraint direction defined w/r to WORLD (U)", 370,20); break;
+	    case 1 : text("Constraint direction defined w/r to CAMERA (U)", 370,20); break;
 	    }
 	}
 	
 	public void keyPressed() {
 		scene.defaultKeyBindings();
 		
-		if (key == 'd' || key == 'D') {
+		if (key == 'b' || key == 'B') {
 			rotDir   = (rotDir+1)%3;
 		}
-		if (key == 'f' || key == 'F') {
+		if (key == 'd' || key == 'D') {
 			transDir = (transDir+1)%3;
 		}
-		if (key == 'l' || key == 'L') {
+		if (key == 'u' || key == 'U') {
 			changeConstraint();
 		}
 		if (key == 't' || key == 'T') {

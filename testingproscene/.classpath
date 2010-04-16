@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/core.jar">
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing-1.0.9/core.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/home/pierre/Fun/src/processing/build/javadoc/core/"/>
 		</attributes>
@@ -17,8 +17,7 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/projects/workspace/native_libs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/opengl.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/proscene.jar" sourcepath="/home/pierre/Fun/downloads/bin/processing-1.0.9/libraries/proscene/library"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/glproscene.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/proscene.jar" sourcepath="/home/pierre/Fun/downloads/bin/processing-1.0.9/libraries/proscene/library"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing-1.0.9/opengl.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

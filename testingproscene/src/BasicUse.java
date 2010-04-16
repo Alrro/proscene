@@ -11,11 +11,14 @@ public class BasicUse extends PApplet {
 		scene = new Scene(this); 
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);
+		//scene.camera().setUpVector(new PVector(0,-1,0));
+		//println( scene.camera().upVector() );
+		//scene.setRadius(scene.radius()*2);
 	}
 
 	public void draw() {
 		background(0);
-		scene.beginDraw();
+		scene.beginDraw();		
 		fill(204, 102, 0);
 		box(0.2f, 0.3f, 0.5f);		
 		scene.endDraw();
