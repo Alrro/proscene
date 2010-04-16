@@ -1610,11 +1610,11 @@ public class Camera implements Cloneable {
 	 * rectangle} (pixel units, with origin in the upper left corner) fits the
 	 * screen. 
 	 * <p> 
-	 * The Camera is translated (its orientation() is unchanged) so that
+	 * The Camera is translated (its {@link #orientation()} is unchanged) so that
 	 * {@code rectangle} is entirely visible. Since the pixel coordinates only
 	 * define a <i>frustum</i> in 3D, it's the intersection of this frustum with
-	 * a plane (orthogonal to the viewDirection() and passing through the
-	 * sceneCenter()) that is used to define the 3D rectangle that is eventually
+	 * a plane (orthogonal to the {@link #viewDirection()} and passing through the
+	 * {@link #sceneCenter()}) that is used to define the 3D rectangle that is eventually
 	 * fitted.
 	 */
 	public void fitScreenRegion(Rectangle rectangle) {
@@ -1685,7 +1685,43 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
-	 * Makes the Camera smoothly zoom on the {@link #pointUnderPixel(Point)} {@code pixel}.
+	 * Smoothly moves the Camera so that the rectangular screen region defined by {@code
+	 * rectangle} (pixel units, with origin in the upper left corner) fits the
+	 * screen. 
+	 * <p> 
+	 * The Camera is translated (its {@link #orientation()} is unchanged) so that
+	 * {@code rectangle} is entirely visible. Since the pixel coordinates only
+	 * define a <i>frustum</i> in 3D, it's the intersection of this frustum with
+	 * a plane (orthogonal to the {@link #viewDirection()} and passing through the
+	 * {@link #sceneCenter()}) that is used to define the 3D rectangle that is eventually
+	 * fitted.
+	 * 
+	 * @see #fitScreenRegion(Rectangle)
+	 */
+	public void interpolateToZoomOnRegion(Rectangle rectangle) {
+		if (interpolationKfi.interpolationIsStarted())
+			interpolationKfi.stopInterpolation();
+		
+		interpolationKfi.deletePath();
+		interpolationKfi.addKeyFrame(frame(), false);
+		
+		// Small hack: attach a temporary frame to take advantage of fitScreenRegion without modifying frame
+		tempFrame = new InteractiveCameraFrame();
+		InteractiveCameraFrame originalFrame = frame();
+		tempFrame.setPosition(new PVector(frame().position().x, frame().position().y, frame().position().z));
+		tempFrame.setOrientation(new Quaternion (frame().orientation()));
+		setFrame(tempFrame);
+		fitScreenRegion(rectangle);
+		setFrame(originalFrame);
+		
+		interpolationKfi.addKeyFrame(tempFrame, false);
+		
+		interpolationKfi.startInterpolation();
+	}
+	
+	/**
+	 * Makes the Camera smoothly zoom on the {@link #pointUnderPixel(Point)} {@code pixel}
+	 * and returns the world coordinates of the {@link #pointUnderPixel(Point)}.
 	 * <p>
 	 * Nothing happens if no {@link #pointUnderPixel(Point)} is found. Otherwise a KeyFrameInterpolator is created that
 	 * animates the Camera on a one second path that brings the Camera closer to the point under {@code pixel}.
@@ -1693,14 +1729,14 @@ public class Camera implements Cloneable {
 	 * <b>Attention:</b> Override this method in your jogl-based camera class. See {@link #pointUnderPixel(Point)}.
 	 * @see #interpolateToFitScene()
 	 */
-	public void interpolateToZoomOnPixel(Point pixel) {
-		//TODO: needs test
+	public WorldPoint interpolateToZoomOnPixel(Point pixel) {
+		//TODO: from time to time ortho mode behaves weirdly
 		float coef = 0.1f;
 		
 		WorldPoint target = pointUnderPixel(pixel);
 
 		if( !target.found )
-			return;
+			return target;
 		
 		if (interpolationKfi.interpolationIsStarted())
 			interpolationKfi.stopInterpolation();
@@ -1723,6 +1759,8 @@ public class Camera implements Cloneable {
 		interpolationKfi.addKeyFrame(tempFrame, 1.0f, false);
 		
 		interpolationKfi.startInterpolation();
+		
+		return target;
 	}
 	
 	/**
@@ -1736,15 +1774,14 @@ public class Camera implements Cloneable {
 	 * 
 	 * @see #interpolateToZoomOnPixel(Point)
 	 */
-	void interpolateToFitScene() {
-		//TODO: needs test
+	public void interpolateToFitScene() {
 		if (interpolationKfi.interpolationIsStarted())
 			interpolationKfi.stopInterpolation();
 		
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
 		
-		// Small hack:  attach a temporary frame to take advantage of lookAt without modifying frame
+		// Small hack: attach a temporary frame to take advantage of showEntireScene without modifying frame
 		tempFrame = new InteractiveCameraFrame();
 		InteractiveCameraFrame originalFrame = frame();
 		tempFrame.setPosition(new PVector(frame().position().x, frame().position().y, frame().position().z));
@@ -1758,17 +1795,25 @@ public class Camera implements Cloneable {
 		interpolationKfi.startInterpolation();
 	}
 
-
+	/**
+	 * Convenience function that simplyu calls {@code interpolateTo(fr, 1)}.
+	 * 
+	 * @see #interpolateTo(Frame, float)
+	 */
+	public void interpolateTo(Frame fr) {
+		interpolateTo(fr, 1);
+	}
+	
 	/**
 	 * Smoothly interpolates the Camera on a KeyFrameInterpolator path so that it goes to {@code fr}.
 	 * <p>
-	 * {@code fr} is expressed in world coordinates. {@code duration} tunes the interpolation speed
-	 * (default is 1 second).
+	 * {@code fr} is expressed in world coordinates. {@code duration} tunes the interpolation speed.
 	 * 
+	 * @see #interpolateTo(Frame)
 	 * @see #interpolateToFitScene()
 	 * @see #interpolateToZoomOnPixel(Point)
 	 */
-	void interpolateTo(Frame fr, float duration) {
+	public void interpolateTo(Frame fr, float duration) {
 		if (interpolationKfi.interpolationIsStarted())
 			interpolationKfi.stopInterpolation();
 		

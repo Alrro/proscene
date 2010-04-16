@@ -79,7 +79,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean zoomOnRegion;
 	boolean rotateScreen;
 	boolean translateScreen;
-	boolean rap;
+	boolean rapFlag;
+	boolean pupFlag;
+	PVector pupVec;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public static PApplet parent;
@@ -103,8 +105,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	Point lCorner;
 	
 	// R E V O L V E   A R O U N D   P O I N T
-	private Timer rapTimer;
-    private ActionListener taskRapPerformer;
+	private Timer utilityTimer;
+    private ActionListener taskTimerPerformer;
     
     // E X C E P T I O N   H A N D L I N G
     protected static int beginDrawCalls;
@@ -151,7 +153,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		zoomOnRegion = false;
 		rotateScreen = false;
 		translateScreen = false;
-		rap = false;
+		rapFlag = false;
+		pupFlag = false;
 		
 		cam = new Camera();
 		setCamera(camera());
@@ -184,13 +187,13 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		font = parent.createFont("Arial", 12);
 		
-		taskRapPerformer = new ActionListener() {
+		taskTimerPerformer = new ActionListener() {
         	public void actionPerformed(ActionEvent evt) {
-        		unSetRapFlag();
+        		unSetTimerFlag();
         	}
         };
-        rapTimer = new Timer(1000, taskRapPerformer);
-        rapTimer.setRepeats(false);
+        utilityTimer = new Timer(1000, taskTimerPerformer);
+        utilityTimer.setRepeats(false);
         
         // E X C E P T I O N   H A N D L I N G
         beginDrawCalls = 0;
@@ -423,20 +426,33 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if (parent.key == 'w' || parent.key == 'W') {
 			toggleDrawWithConstraint();
 		}
-		if (parent.key == 'o' || parent.key == 'O') {			
+		if (parent.key == 'o') {			
 			if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
-						        "See the Revolve Around Point example!");
+						        "See the Point Under Pixel example!");
 			else if (!helpIsDrawn())
 				if (setRevolveAroundPointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-					rap = true;
-					rapTimer.start();
+					rapFlag = true;
+					utilityTimer.start();
 				}
 		}
-		if (parent.key == 'p' || parent.key == 'P') {
+		if (parent.key == 'O') {
 			camera().setRevolveAroundPoint(new PVector(0,0,0));
-			rap = true;
-			rapTimer.start();
+			rapFlag = true;
+			utilityTimer.start();
+		}
+		if ((parent.key == 'p') || (parent.key == 'P')) {
+			if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (!helpIsDrawn()) {
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
+				if (wP.found) {
+					pupVec = wP.point; 
+					pupFlag = true;
+					utilityTimer.start();
+				}
+			}
 		}
 		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' ) {
 			if( parent.key == '1') camera().playPath(1);			
@@ -487,7 +503,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
-		textToDisplay += "o/p: (un)set revolve around point (implement pointUnderPixel in your OpenGL Camera)\n";
+		textToDisplay += "(o)O/p: (un)set revolve around point / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
 		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
 		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
@@ -574,7 +590,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			if( helpIsDrawn() ) help();
 			if( zoomOnRegion ) drawZoomWindowHint();
 			if( rotateScreen ) drawScreenRotateLineHint();
-			if( rap ) drawRevolveAroundPointHint();
+			if( rapFlag ) drawRevolveAroundPointHint();			
+			if( pupFlag ) {
+				PVector v = camera().projectedCoordinatesOf( pupVec );
+				drawPointUnderPixelHint( v.x, v.y );
+			}
 		}		
 		else
 			readyToGo = true;
@@ -667,7 +687,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	/**
 	 * Convenience wrapper function that simply returns
-	 * {@code camera().setRevolveAroundPointFromPixel(pixel)}
+	 * {@code camera().setRevolveAroundPointFromPixel(pixel)}.
 	 * <p>
 	 * Current implementation set no
 	 * {@link remixlab.proscene.Camera#revolveAroundPoint()}. Override
@@ -680,6 +700,22 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	public boolean setRevolveAroundPointFromPixel(Point pixel) {
 		return camera().setRevolveAroundPointFromPixel(pixel);
 	}
+	
+	/**
+	 * Convenience wrapper function that simply returns
+	 * {@code camera().interpolateToZoomOnPixel(pixel)}.
+	 * <p>
+	 * Current implementation does nothing. Override
+	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
+	 * based camera for this to work.
+	 * 
+	 * @see remixlab.proscene.Camera#interpolateToZoomOnPixel(Point)
+	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
+	 */
+	public Camera.WorldPoint interpolateToZoomOnPixel(Point pixel) {
+		return camera().interpolateToZoomOnPixel(pixel);
+	}
+	
 	
 	/**
 	 * Convenience wrapper function that simply returns
@@ -1056,25 +1092,40 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Draws visual hint (a cross on the screen) when the {@link #revolveAroundPoint()}
-	 * is being set.
-	 */	
-	protected void drawRevolveAroundPointHint() {
-		PVector p = camera().projectedCoordinatesOf(revolveAroundPoint());
+	 * Draws a cross on the screen under pixel {@code (px, py)}.
+	 * 
+	 * @see #drawRevolveAroundPointHint()
+	 */
+	protected void drawPointUnderPixelHint(float px, float py) {
 		beginScreenDrawing();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(3);
 		parent.noFill();
 		float size = 15;
 		parent.beginShape(LINES);
-		parent.vertex(xCoord(p.x - size), yCoord(p.y), zCoord());
-		parent.vertex(xCoord(p.x + size), yCoord(p.y), zCoord());
-		parent.vertex(xCoord(p.x), yCoord(p.y - size), zCoord());
-		parent.vertex(xCoord(p.x), yCoord(p.y + size), zCoord());
+		parent.vertex(xCoord(px - size), yCoord(py), zCoord());
+		parent.vertex(xCoord(px + size), yCoord(py), zCoord());
+		parent.vertex(xCoord(px), yCoord(py - size), zCoord());
+		parent.vertex(xCoord(px), yCoord(py + size), zCoord());
 		parent.endShape();		
 		parent.strokeWeight(1);
 		parent.noStroke();
 		endScreenDrawing();
+	}
+	
+	/**
+	 * Draws visual hint (a cross on the screen) when the {@link #revolveAroundPoint()}
+	 * is being set.
+	 * <p>
+	 * Simply calls {@link #drawPointUnderPixelHint(float, float)} on
+	 * {@code camera().projectedCoordinatesOf(revolveAroundPoint())} {@code x} and 
+	 * {@code y} coordinates.
+	 * 
+	 * @see #drawPointUnderPixelHint(float, float)
+	 */	
+	protected void drawRevolveAroundPointHint() {
+		PVector p = camera().projectedCoordinatesOf(revolveAroundPoint());
+		drawPointUnderPixelHint(p.x, p.y);
 	}
 	
 	/**
@@ -1251,10 +1302,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Called from the timer to stop displaying the revolve around point visual hint. 
+	 * Called from the timer to stop displaying the point under pixel and
+	 * revolve around point visual hints. 
 	 */
-	protected void unSetRapFlag() {
-		rap = false;
+	protected void unSetTimerFlag() {
+		rapFlag = false;
+		pupFlag = false;			
 	}
 	
 	// 7. Mouse customization

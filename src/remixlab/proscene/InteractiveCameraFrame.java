@@ -405,7 +405,10 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			  int h = PApplet.abs(event.getY() - pressPos.y);
 			  int tlY  = pressPos.y < event.getY() ? pressPos.y : event.getY();
 			  
-			  camera.fitScreenRegion( new Rectangle (tlX, tlY, w, h) );
+			  if (event.getButton() == MouseEvent.BUTTON3)
+				  camera.fitScreenRegion( new Rectangle (tlX, tlY, w, h) );
+			  else
+				  camera.interpolateToZoomOnRegion(new Rectangle (tlX, tlY, w, h));
 		  }
 		  super.mouseReleaseEvent(event, camera);
 	}
