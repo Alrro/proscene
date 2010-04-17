@@ -27,20 +27,19 @@ import java.awt.Point;
 
 Scene scene;
 Box [] boxes;
-Point[] points;
-int LINE_ITEMS = 500;
-int index;
+ArrayList points;
 	
 void setup() {
   size(640, 360, OPENGL);
   scene = new Scene(this);
   scene.setRadius(scene.radius() * 1.5f);
   scene.showAll();
-  index = 0;
-  points = new Point [LINE_ITEMS];
+  
   boxes = new Box[50];
   for (int i = 0; i < boxes.length; i++)
-  boxes[i] = new Box(this);
+    boxes[i] = new Box(this);
+  
+  points = new ArrayList();  // Create an empty ArrayList
 }
 
 // Your actual scene drawing should be enclosed between the
@@ -66,8 +65,9 @@ void draw() {
   stroke(183,67,158,127);
   noFill();
   beginShape();
-  for (int i=0; i<index; i++)
-    vertex(Scene.xCoord( points[i].x ), Scene.yCoord( points[i].y ), Scene.zCoord());
+  for (int i = 0; i < points.size(); i++)
+    vertex(Scene.xCoord( ((Point) points.get(i)).x ),
+           Scene.yCoord( ((Point) points.get(i)).y ), Scene.zCoord());
   endShape();
   strokeWeight(1);
   scene.endScreenDrawing();
@@ -81,19 +81,13 @@ void keyPressed() {
   if(key == 'y' && mousePressed) {
     // to draw on screen first disable proscene mouse handling
     scene.enableMouseHandling(false);
-      if (index < LINE_ITEMS ) {
-        // if there's enough memory then add a point according to the mouse position
-        points[index] = new Point(mouseX, mouseY);
-        index++;
-      }
-      else
-        index = 0;
+    points.add(new Point(mouseX, mouseY));
   }
   else {
     // re-enable proscene mouse handling
     scene.enableMouseHandling(true);
     if (key == 'x')
-      index = 0;
+      points.clear();
     else
       scene.defaultKeyBindings();
   }

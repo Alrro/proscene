@@ -18,35 +18,94 @@
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
  *
+ * Observe that this class is used among many examples, such as MouseGrabber
+ * CajasOrientadas, PointUnderPixel and ScreenDrawing. Hence, it's quite
+ * complete, but its functionality is not totally exploited by this example.
+ *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 public class Box {
   PApplet parent;
   InteractiveFrame iFrame;
+  float w, h, d;
+  int c;
 
   Box(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
+    setSize();
+    setColor();
+    setPosition();
+  }
+  
+  // don't draw local axis
+  public void draw() {
+    draw(false);
   }
 
-  public void draw() {
+  public void draw(boolean drawAxis) {
     pushMatrix();
     // Multiply matrix to get in the frame coordinate system.
     // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
     iFrame.applyTransformation(parent); //optimum
-    Scene.drawAxis(0.3f);
+    if(drawAxis) Scene.drawAxis(PApplet.max(w,h,d)*1.3f);
+    noStroke();
     if (iFrame.grabsMouse())
       fill(255, 0, 0);
     else
-      fill(0,0,255);
+      fill(getColor());
     //Draw a box
-    box(0.3f);
+    box(w,h,d);
 
     popMatrix();
   }
-
+  
+  // sets size randomly
+  public void setSize() {
+    w = random(0.1f, 0.4f);
+    h = random(0.1f, 0.4f);
+    d = random(0.1f, 0.4f);
+  }
+  
+  public void setSize(float myW, float myH, float myD) {
+    w=myW; h=myH; d=myD;
+  }
+  
+  public int getColor() {
+    return c;
+  }
+  
+  // sets color randomly
+  public void setColor() {
+    c = color(random(0, 255), random(0, 255), random(0, 255));
+  }
+  
+  public void setColor(int myC) {
+    c = myC;
+  }
+  
+  public PVector getPosition() {
+    return iFrame.position();
+  }
+  
+  // sets position randomly
+  public void setPosition() {
+    float low = -1.0f;
+    float high = 1.0f;
+    iFrame.setPosition(new PVector(parent.random(low, high), parent.random(low, high), parent.random(low, high)));
+  }
+  
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
+  }
+  
+  public Quaternion getOrientation() {
+    return iFrame.orientation();
+  }
+  
+  public void setOrientation(PVector v) {
+    PVector to = PVector.sub(v, iFrame.position());
+    iFrame.setOrientation(new Quaternion(new PVector(0,1,0), to));
   }
 }

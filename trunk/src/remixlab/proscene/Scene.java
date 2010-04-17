@@ -285,6 +285,27 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     public void toggleMouseHandling() {
     	enableMouseHandling(!mouseIsHandled());
     }
+    
+    /**
+	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
+	 */
+	public boolean mouseIsHandled() {
+		return mouseHandling;
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code enableMouseHandling(true)}
+	 */
+	public void enableMouseHandling() {
+		enableMouseHandling(true);
+	}
+	
+	/**
+	 * Enables or disables mouse handling according to {@code flag}
+	 */
+	public void enableMouseHandling(boolean flag) {
+		mouseHandling = flag;
+	}
 	
 	/**
 	 * Toggles the state of {@link #axisIsDrawn()}.
@@ -562,7 +583,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
      */
 	public void beginDraw() {
 		pg3d = (PGraphics3D) parent.g;  // g may change
-		//TODO would be nice to check if the background was set and set if not (no not set it if yes).
+		//TODO would be nice to check if the background was set and to set it if not.
 		if ( beginDrawCalls != 0 )
 			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
 		beginDrawCalls ++;
@@ -771,13 +792,6 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// 6. Display of visual hints and Display methods
 	
 	/**
-	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
-	 */
-	public boolean mouseIsHandled() {
-		return mouseHandling;
-	}
-	
-	/**
 	 * Returns {@code true} if axis is currently being drawn and {@code false} otherwise. 
 	 */
 	public boolean axisIsDrawn () {
@@ -826,20 +840,6 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */
 	public boolean drawIsConstrained() {
 		return withConstraint;
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code enableMouseHandling(true)}
-	 */
-	public void enableMouseHandling() {
-		enableMouseHandling(true);
-	}
-	
-	/**
-	 * Enables or disables mouse handling according to {@code flag}
-	 */
-	public void enableMouseHandling(boolean flag) {
-		mouseHandling = flag;
 	}
 	
 	/**
