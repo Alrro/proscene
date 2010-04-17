@@ -18,7 +18,7 @@
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
  *
- * Observe that this class is used among many examples, such as MouseGrabber
+ * Observe that this class is used among other examples, such as MouseGrabber
  * CajasOrientadas, PointUnderPixel and ScreenDrawing. Hence, it's quite
  * complete, but its functionality is not totally exploited by this example.
  *

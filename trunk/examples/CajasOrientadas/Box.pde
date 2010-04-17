@@ -1,10 +1,10 @@
 /**
- * Caja.
+ * Box. 
  * by Jean Pierre Charalambos.
  * 
- * This class is part of the Cajas Orientadas example.
+ * This class is part of the Mouse Grabber example.
  *
- * Any object that needs to be "pickable" (such as the Caja), should be
+ * Any object that needs to be "pickable" (such as the Box), should be
  * attached to its own InteractiveFrame. That's all there is to it.
  *
  * The built-in picking proscene mechanism actually works as follows. At
@@ -18,45 +18,94 @@
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
  *
+ * Observe that this class is used among many examples, such as MouseGrabber
+ * CajasOrientadas, PointUnderPixel and ScreenDrawing. Hence, it's quite
+ * complete, but its functionality is not totally exploited by this example.
+ *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
-public class Caja {
+public class Box {
   PApplet parent;
   InteractiveFrame iFrame;
+  float w, h, d;
+  int c;
 
-  Caja(PApplet p) {
+  Box(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
+    setSize();
+    setColor();
+    setPosition();
+  }
+  
+  // don't draw local axis
+  public void draw() {
+    draw(false);
   }
 
-  public void draw(PVector v) {
-    setOrientation(v);
-    parent.pushMatrix();
+  public void draw(boolean drawAxis) {
+    pushMatrix();
     // Multiply matrix to get in the frame coordinate system.
     // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
     iFrame.applyTransformation(parent); //optimum
-    Scene.drawAxis(0.3f);
+    if(drawAxis) Scene.drawAxis(PApplet.max(w,h,d)*1.3f);
+    noStroke();
+    if (iFrame.grabsMouse())
+      fill(255, 0, 0);
+    else
+      fill(getColor());
+    //Draw a box
+    box(w,h,d);
 
-    if (iFrame.grabsMouse()) {
-      parent.fill(255, 0, 255);
-      parent.box(0.35f);
-    }
-    else {
-      parent.fill(0,255,255);
-      parent.box(0.3f);
-    }
-    parent.popMatrix();
+    popMatrix();
   }
-
+  
+  // sets size randomly
+  public void setSize() {
+    w = random(0.1f, 0.4f);
+    h = random(0.1f, 0.4f);
+    d = random(0.1f, 0.4f);
+  }
+  
+  public void setSize(float myW, float myH, float myD) {
+    w=myW; h=myH; d=myD;
+  }
+  
+  public int getColor() {
+    return c;
+  }
+  
+  // sets color randomly
+  public void setColor() {
+    c = color(random(0, 255), random(0, 255), random(0, 255));
+  }
+  
+  public void setColor(int myC) {
+    c = myC;
+  }
+  
+  public PVector getPosition() {
+    return iFrame.position();
+  }
+  
+  // sets position randomly
+  public void setPosition() {
+    float low = -1.0f;
+    float high = 1.0f;
+    iFrame.setPosition(new PVector(parent.random(low, high), parent.random(low, high), parent.random(low, high)));
+  }
+  
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
   }
-
-  // We orient the Caja's y axis according to the Esfera's position that
-  // should be defined in v.
+  
+  public Quaternion getOrientation() {
+    return iFrame.orientation();
+  }
+  
   public void setOrientation(PVector v) {
-    PVector to = PVector.sub(v, iFrame.position()); 
+    PVector to = PVector.sub(v, iFrame.position());
     iFrame.setOrientation(new Quaternion(new PVector(0,1,0), to));
   }
 }
