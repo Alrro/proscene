@@ -27,7 +27,7 @@ public class Sphere {
   float r;
   int c;
 
-  Esfera(PApplet p) {
+  Sphere(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
     setRadius(0.1f);

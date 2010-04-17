@@ -23,13 +23,14 @@ void setup() {
   scene = new Scene(this);
   scene.setGridIsDrawn(true);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setRadius(2);
+  scene.setRadius(1.5f);
   scene.showAll();
-
-  boxes = new Box[6];
-  for (int i = 0; i < 6; i++) {
+  // create an array of boxes with random positions
+  boxes = new Box[30];
+  for (int i = 0; i < boxes.length; i++) {
     boxes[i] = new Box(this);
-    boxes[i].setPosition(new PVector((-1.0f + (i*0.4f )), 0.0f, 0.0f));
+    boxes[i].setSize(0.2f, 0.2f, 0.2f);
+    boxes[i].setColor(color(0,0,255));
   }
 }
 
@@ -42,9 +43,8 @@ void draw() {
   scene.beginDraw();
   // Here we are in the world coordinate system.
   // Draw your scene here.
-  for (int i = 0; i < 6; i++) {
-    boxes[i].draw();
-  }
+  for (int i = 0; i < boxes.length; i++)
+    boxes[i].draw(true);
   scene.endDraw();
 }
 

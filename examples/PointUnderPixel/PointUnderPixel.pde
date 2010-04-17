@@ -43,6 +43,7 @@ void setup() {
   scene.setRadius(scene.radius() * 1.5f);
   scene.showAll();
   boxes = new Box[50];
+  // create an array of boxes with random positions, sizes and colors
   for (int i = 0; i < boxes.length; i++)
     boxes[i] = new Box(this);
 }

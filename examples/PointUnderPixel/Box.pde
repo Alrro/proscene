@@ -18,54 +18,78 @@
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
  *
+ * Observe that this class is used among many examples, such as MouseGrabber
+ * CajasOrientadas, PointUnderPixel and ScreenDrawing. Hence, it's quite
+ * complete, but its functionality is not totally exploited by this example.
+ *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
- 
-import processing.core.*;
-import remixlab.proscene.*;
 
 public class Box {
   PApplet parent;
+  InteractiveFrame iFrame;
   float w, h, d;
-  int myColor;
-  remixlab.proscene.InteractiveFrame iFrame;
-  
-  Box(PApplet p, float size, int c) {
-    parent = p;
-    w = h = d = size;
-    myColor = c;
-    iFrame = new remixlab.proscene.InteractiveFrame();
-  }
-  
+  int c;
+
   Box(PApplet p) {
     parent = p;
-    w = parent.random(0.1f, 0.4f);
-    h = parent.random(0.1f, 0.4f);
-    d = parent.random(0.1f, 0.4f);
-    myColor = color(parent.random(0, 255), parent.random(0, 255), parent.random(0, 255));
-    iFrame = new remixlab.proscene.InteractiveFrame();
+    iFrame = new InteractiveFrame();
+    setSize();
+    setColor();
     setPosition();
   }
   
+  // don't draw local axis
   public void draw() {
-    parent.pushMatrix();
-    //parent.applyMatrix( glIFrame.matrix() );
-    //Same as the previous commented line, but a lot more efficient:
-    iFrame.applyTransformation(parent);
-    parent.noStroke();
+    draw(false);
+  }
+
+  public void draw(boolean drawAxis) {
+    pushMatrix();
+    // Multiply matrix to get in the frame coordinate system.
+    // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
+    iFrame.applyTransformation(parent); //optimum
+    if(drawAxis) Scene.drawAxis(PApplet.max(w,h,d)*1.3f);
+    noStroke();
     if (iFrame.grabsMouse())
-      parent.fill(255,0,0);
+      fill(255, 0, 0);
     else
-      parent.fill(myColor);
+      fill(getColor());
     //Draw a box
-    parent.box(w,h,d);
-    parent.popMatrix();
+    box(w,h,d);
+
+    popMatrix();
+  }
+  
+  // sets size randomly
+  public void setSize() {
+    w = random(0.1f, 0.4f);
+    h = random(0.1f, 0.4f);
+    d = random(0.1f, 0.4f);
+  }
+  
+  public void setSize(float myW, float myH, float myD) {
+    w=myW; h=myH; d=myD;
+  }
+  
+  public int getColor() {
+    return c;
+  }
+  
+  // sets color randomly
+  public void setColor() {
+    c = color(random(0, 255), random(0, 255), random(0, 255));
+  }
+  
+  public void setColor(int myC) {
+    c = myC;
   }
   
   public PVector getPosition() {
     return iFrame.position();
   }
   
+  // sets position randomly
   public void setPosition() {
     float low = -1.0f;
     float high = 1.0f;
@@ -74,5 +98,14 @@ public class Box {
   
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
+  }
+  
+  public Quaternion getOrientation() {
+    return iFrame.orientation();
+  }
+  
+  public void setOrientation(PVector v) {
+    PVector to = PVector.sub(v, iFrame.position());
+    iFrame.setOrientation(new Quaternion(new PVector(0,1,0), to));
   }
 }
