@@ -13,13 +13,14 @@ public class MouseGrabber extends PApplet {
 		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-		scene.setRadius(2);		
+		scene.setRadius(1.5f);		
 		scene.showAll();
 		
-		boxes = new Box[6];
-		for (int i = 0; i < 6; i++) {
+		boxes = new Box[30];
+		for (int i = 0; i < boxes.length; i++) {
 			boxes[i] = new Box(this);
-			boxes[i].setPosition(new PVector((-1.0f + (i*0.4f )), 0.0f, 0.0f));
+			boxes[i].setSize(0.2f, 0.2f, 0.2f);
+			boxes[i].setColor(color(0,0,255));
 		}
 	}
 
@@ -30,9 +31,9 @@ public class MouseGrabber extends PApplet {
 		scene.beginDraw();
 		// Here we are in the world coordinate system.
 		// Draw your scene here.
-		//background(0);		
-		for (int i = 0; i < 6; i++) {
-			boxes[i].draw();
+		//background(0);
+		for (int i = 0; i < boxes.length; i++) {
+			boxes[i].draw(true);
 		}		    
 		scene.endDraw();
 	}

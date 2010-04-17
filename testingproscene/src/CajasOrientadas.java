@@ -6,27 +6,24 @@ import remixlab.proscene.*;
 @SuppressWarnings("serial")
 public class CajasOrientadas extends PApplet {
 	Scene scene;
-	Caja [] cajas;
+	Box [] cajas;
 	Esfera esfera;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
 		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
-		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-		scene.setRadius(2);		
+		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		scene.setRadius(1.6f);		
 		scene.showAll();
 		
 		esfera = new Esfera(this);
-		esfera.setPosition(new PVector(0.0f, 1.0f, 0.0f));
+		esfera.setPosition(new PVector(0.0f, 1.4f, 0.0f));
+		esfera.setColor(color(0,0,255));
 		
-		cajas = new Caja[5];
-		for (int i = 0; i < 5; i++) {
-			cajas[i] = new Caja(this);
-			cajas[i].setPosition(new PVector((-1.0f + (i*0.5f )), 0.0f, 0.0f));
-			//not really necessary here: it is set in draw!
-			//cajas[i].setOrientation( esfera.getPosition() );
-		}	
+		cajas = new Box[30];
+		for (int i = 0; i < cajas.length; i++)
+			cajas[i] = new Box(this);	
 	}
 
 	public void draw() {
@@ -37,8 +34,9 @@ public class CajasOrientadas extends PApplet {
 		// Here we are in the world coordinate system.
 		// Draw your scene here.				
 	    esfera.draw();
-		for (int i = 0; i < 5; i++) {
-			cajas[i].draw(esfera.getPosition());
+		for (int i = 0; i < cajas.length; i++) {
+			cajas[i].setOrientation(esfera.getPosition());
+			cajas[i].draw(true);
 		}		    
 		scene.endDraw();
 	}

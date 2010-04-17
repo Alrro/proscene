@@ -32,10 +32,9 @@ public class PointUnderPixel extends PApplet {
 	public void draw() {
 		background(0);
 		scene.beginDraw();
-		for (int i = 0; i < boxes.length; i++) {
+		for (int i = 0; i < boxes.length; i++)
 			//3D drawing
 			boxes[i].draw();
-		}
 		scene.endDraw();
 	}
 	

@@ -3,44 +3,58 @@ import remixlab.proscene.*;
 
 public class Box {
 	PApplet parent;
+	InteractiveFrame iFrame;
 	float w, h, d;
-	int myColor;
-	remixlab.proscene.InteractiveFrame iFrame;
-	
-	Box(PApplet p, float size, int c) {
-		parent = p;
-		w = h = d = size;
-		myColor = c;
-		iFrame = new remixlab.proscene.InteractiveFrame();
-	}
+	int c;
 	
 	Box(PApplet p) {
 		parent = p;
+		iFrame = new InteractiveFrame();
 		w = parent.random(0.1f, 0.4f);
 		h = parent.random(0.1f, 0.4f);
 		d = parent.random(0.1f, 0.4f);
-		myColor = parent.color(parent.random(0, 255), parent.random(0, 255), parent.random(0, 255));
-		iFrame = new remixlab.proscene.InteractiveFrame();
+		setColor();		
 		setPosition();
 	}
 	
 	public void draw() {
+		draw(false);
+	}
+	
+	public void draw(boolean drawAxis) {
 		parent.pushMatrix();
 		
 		//parent.applyMatrix( glIFrame.matrix() );
 		//Same as the previous commented line, but a lot more efficient:
 		iFrame.applyTransformation(parent);
 		
-		//Scene.drawAxis(0.3f);
+		if(drawAxis)
+		  Scene.drawAxis(PApplet.max(w,h,d)*1.3f);
 		parent.noStroke();
 		if (iFrame.grabsMouse())
 			parent.fill(255,0,0);
 		else
-			parent.fill(myColor);		
+			parent.fill(getColor());
 		//Draw a box		
 		parent.box(w,h,d);
 		
 		parent.popMatrix();
+	}
+	
+	public void setSize(float myW, float myH, float myD) {
+		w=myW; h=myH; d=myD;
+	}	
+	
+	public int getColor() {
+		return c;
+	}
+	
+	public void setColor() {
+		c = parent.color(parent.random(0, 255), parent.random(0, 255), parent.random(0, 255));
+	}
+	
+	public void setColor(int myC) {
+		c = myC;
 	}
 	
 	public PVector getPosition() {
@@ -55,5 +69,14 @@ public class Box {
 	
 	public void setPosition(PVector pos) {
 		iFrame.setPosition(pos);
+	}
+	
+	public Quaternion getOrientation() {
+		return iFrame.orientation();
+	}
+	
+	public void setOrientation(PVector v) {
+		PVector to = PVector.sub(v, iFrame.position()); 
+		iFrame.setOrientation(new Quaternion(new PVector(0,1,0), to));
 	}
 }
