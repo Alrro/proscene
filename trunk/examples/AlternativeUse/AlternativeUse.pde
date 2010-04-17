@@ -24,9 +24,9 @@ void draw() {
   background(0);
   scene.draw();
 }
- 
-// To take full advantage of proscene 3d navigation power this
-// method should always call Scene.defaultKeyBindings()
+
+// To take full advantage of proscene 3d navigation power
+// keyPressed() should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }

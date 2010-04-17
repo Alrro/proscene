@@ -127,6 +127,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean withConstraint;
 	//TODO: find a better way than this hack!
 	protected boolean readyToGo;
+	protected boolean mouseHandling;
 	
 	//O N L I N E   H E L P
 	boolean helpIsDrwn;
@@ -184,6 +185,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		setHelpIsDrawn(true);
 		
 		readyToGo = false;
+		enableMouseHandling(true);
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -276,6 +278,13 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	// 2. State of the viewer
+    
+    /**
+     * Toggles the state of {@link #mouseIsHandled()}
+     */
+    public void toggleMouseHandling() {
+    	enableMouseHandling(!mouseIsHandled());
+    }
 	
 	/**
 	 * Toggles the state of {@link #axisIsDrawn()}.
@@ -762,6 +771,13 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// 6. Display of visual hints and Display methods
 	
 	/**
+	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
+	 */
+	public boolean mouseIsHandled() {
+		return mouseHandling;
+	}
+	
+	/**
 	 * Returns {@code true} if axis is currently being drawn and {@code false} otherwise. 
 	 */
 	public boolean axisIsDrawn () {
@@ -810,6 +826,20 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */
 	public boolean drawIsConstrained() {
 		return withConstraint;
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code enableMouseHandling(true)}
+	 */
+	public void enableMouseHandling() {
+		enableMouseHandling(true);
+	}
+	
+	/**
+	 * Enables or disables mouse handling according to {@code flag}
+	 */
+	public void enableMouseHandling(boolean flag) {
+		mouseHandling = flag;
 	}
 	
 	/**
@@ -1331,7 +1361,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */
 	public void mouseMoved(MouseEvent event) {
 		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
-		if ( readyToGo ) {
+		if ( readyToGo && mouseIsHandled() ) {
 			//need in order to make mousewheel work properly
 			setMouseGrabber(null);
 			for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
@@ -1352,7 +1382,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		if ( readyToGo ) {
+		if ( readyToGo && mouseIsHandled() ) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
 	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
@@ -1450,7 +1480,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		if ( readyToGo ) {
+		if ( readyToGo && mouseIsHandled() ) {
 		// /**
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
@@ -1489,7 +1519,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
 	public void mouseReleased(MouseEvent event) {
-		if ( readyToGo ) {
+		if ( readyToGo && mouseIsHandled() ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
 			camera().frame().mouseReleaseEvent(event, camera());
@@ -1524,7 +1554,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		if ( readyToGo && ( event.getClickCount() == 2 ) ) {		
+		if ( readyToGo && mouseIsHandled() && ( event.getClickCount() == 2 ) ) {		
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
@@ -1585,7 +1615,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		if ( readyToGo ) {
+		if ( readyToGo && mouseIsHandled() ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();

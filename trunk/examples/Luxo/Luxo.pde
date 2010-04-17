@@ -1,6 +1,17 @@
 /**
  * Luxo. 
- * by Jean Pierre Charalambos.
+ * by Jean Pierre Charalambos.  
+ *
+ * A more complex example that combines InteractiveFrames, selection and constraints.
+ * 
+ * This example displays a famous luxo lamp (Pixar) that can be interactively
+ * manipulated with the mouse. It illustrates the use of several InteractiveFrames
+ * in the same scene.
+ *
+ * Click on a frame visual hint to select a part of the lamp, and then move it with
+ * the mouse.
+ *
+ * Press 'f' to toggle the drawing of the frames' visual hints.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
@@ -21,6 +32,8 @@ void setup() {
   lamp = new Lamp(this);
 }
 
+// Your actual scene drawing should be enclosed between the
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
   background(0);
   lights();
@@ -42,6 +55,8 @@ void draw() {
   scene.endDraw();
 }
 
+// To take full advantage of proscene 3d navigation power
+// keyPressed() should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }
