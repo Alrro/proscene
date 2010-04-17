@@ -4,10 +4,15 @@
  * 
  * This example illustrates how to combine 2D and 3D drawing.
  *
- * All screen drawing should be enclosed between a Scene.beginScreenDrawing() / Scene.endScreenDrawing() pair.
- * Then you can just begin drawing your screen shapes (defined between a beginShape() / endShape() pair).
- * Just note that the (x,y) vertex screen coordinates should be specified as:
- * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()). 
+ * All screen drawing should be enclosed between Scene.beginScreenDrawing() and
+ * Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
+ * (defined between beginShape() and endShape()). Just note that the (x,y) vertex
+ * screen coordinates should be specified as:
+ * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
+ *
+ * Press 'y' while pressing + moving the mouse to draw directly on the screen.
+ *
+ * Press 'x' to clean your screen drawing.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help. Note that the point
  * picking mechanism is disable when the help is display (otherwise the help text
@@ -18,57 +23,78 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 
+import java.awt.Point;
+
 Scene scene;
 Box [] boxes;
-
+Point[] points;
+int LINE_ITEMS = 500;
+int index;
+	
 void setup() {
   size(640, 360, OPENGL);
   scene = new Scene(this);
-  scene.setGridIsDrawn(true);
-  scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setFrameSelectionHintIsDrawn(true);
-  scene.setRadius(2);
+  scene.setRadius(scene.radius() * 1.5f);
   scene.showAll();
-  
-  boxes = new Box[6];
-  for (int i = 0; i < 6; i++) {
-    boxes[i] = new Box(this);
-    boxes[i].setPosition(new PVector((-1.0f + (i*0.4f )), 0.0f, 0.0f));
-  }
+  index = 0;
+  points = new Point [LINE_ITEMS];
+  boxes = new Box[50];
+  for (int i = 0; i < boxes.length; i++)
+  boxes[i] = new Box(this);
 }
 
+// Your actual scene drawing should be enclosed between the
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  //set camera stuff, always necessary:
-  background(0);  
+  // Should always be defined before Scene.beginDraw()
+  background(0);
+  
   scene.beginDraw();
-  // Here we are in the world coordinate system.
-  // Draw your scene here.
-  for (int i = 0; i < 6; i++) {
-    //2D drawing of arrows
-    //PVector head = scene.camera().projectedCoordinatesOf(boxes[i].getPosition());
-    //same as the previous line:
-    PVector pos = boxes[i].getPosition();
-    PVector head = new PVector (screenX(pos.x, pos.y, pos.z), screenY(pos.x, pos.y, pos.z), screenZ(pos.x, pos.y, pos.z)); 
-    scene.beginScreenDrawing();
-    stroke(255, 255, 255);
-    strokeWeight(2);
-    noFill();
-    beginShape(LINES);
-    vertex(Scene.xCoord(head.x-10), Scene.yCoord(head.y-10), Scene.zCoord());
-    vertex(Scene.xCoord(head.x), Scene.yCoord(head.y), Scene.zCoord());
-    vertex(Scene.xCoord(head.x), Scene.yCoord(head.y), Scene.zCoord());
-    vertex(Scene.xCoord(head.x-10), Scene.yCoord(head.y+10), Scene.zCoord());
-    vertex(Scene.xCoord(head.x), Scene.yCoord(head.y), Scene.zCoord());
-    vertex(Scene.xCoord(head.x-30), Scene.yCoord(head.y), Scene.zCoord());
-    endShape();
-    strokeWeight(1);
-    scene.endScreenDrawing();
-    //3D drawing
+    
+  // A. 3D drawing
+  for (int i = 0; i < boxes.length; i++)
     boxes[i].draw();
-  }
+    
+  // B. 2D drawing
+  // All screen drawing should be enclosed between Scene.beginScreenDrawing() and
+  // Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
+  // (defined between beginShape() and endShape()). Just note that the (x,y) vertex
+  // screen coordinates should be specified as:
+  // vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
+  scene.beginScreenDrawing();
+  strokeWeight(8);
+  stroke(183,67,158,127);
+  noFill();
+  beginShape();
+  for (int i=0; i<index; i++)
+    vertex(Scene.xCoord( points[i].x ), Scene.yCoord( points[i].y ), Scene.zCoord());
+  endShape();
+  strokeWeight(1);
+  scene.endScreenDrawing();
+  
   scene.endDraw();
 }
 
+// To take full advantage of proscene 3d navigation power keyPressed() should always
+// call Scene.defaultKeyBindings()
 void keyPressed() {
-  scene.defaultKeyBindings();
+  if(key == 'y' && mousePressed) {
+    // to draw on screen first disable proscene mouse handling
+    scene.enableMouseHandling(false);
+      if (index < LINE_ITEMS ) {
+        // if there's enough memory then add a point according to the mouse position
+        points[index] = new Point(mouseX, mouseY);
+        index++;
+      }
+      else
+        index = 0;
+  }
+  else {
+    // re-enable proscene mouse handling
+    scene.enableMouseHandling(true);
+    if (key == 'x')
+      index = 0;
+    else
+      scene.defaultKeyBindings();
+  }
 }

@@ -47,20 +47,23 @@ void setup() {
     boxes[i] = new Box(this);
 }
 
+// Your actual scene drawing should be enclosed between the
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
   background(0);
   scene.beginDraw();
-  for (int i = 0; i < boxes.length; i++) {
-    //3D drawing
+  //3D drawing
+  for (int i = 0; i < boxes.length; i++)    
     boxes[i].draw();
-  }
   scene.endDraw();
 }
-  
+
+// To take full advantage of proscene 3d navigation power
+// keyPressed() should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
 }
-  
+
 class GLCamera extends Camera {
   protected PGraphicsOpenGL pgl;
   protected PApplet parent;

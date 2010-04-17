@@ -4,7 +4,7 @@
  * 
  * This example illustrates the KeyFrameInterpolator functionality.
  *
- * KeyFrameInterpolator smoothly interpolate their attached Frame over time on
+ * KeyFrameInterpolator smoothly interpolate its attached Frame over time on
  * a path defined by Frames. The interpolation can be started/stopped/reset,
  * played in loop, played at a different speed, etc...
  *
@@ -48,6 +48,8 @@ void setup() {
   kfi.startInterpolation();
 }
 
+// Your actual scene drawing should be enclosed between the
+// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
   background(0);
   scene.beginDraw();
@@ -71,7 +73,9 @@ void draw() {
   }
   scene.endDraw();
 }
-	
+
+// To take full advantage of proscene 3d navigation power
+// keyPressed() should always call Scene.defaultKeyBindings()
 void keyPressed() {
   scene.defaultKeyBindings();
   if ((key == ENTER) || (key == RETURN))
