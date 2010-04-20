@@ -80,12 +80,12 @@ void draw() {
 void keyPressed() {
   if(key == 'y' && mousePressed) {
     // to draw on screen first disable proscene mouse handling
-    scene.enableMouseHandling(false);
+    scene.disableMouseHandling();
     points.add(new Point(mouseX, mouseY));
   }
   else {
     // re-enable proscene mouse handling
-    scene.enableMouseHandling(true);
+    scene.enableMouseHandling();
     if (key == 'x')
       points.clear();
     else

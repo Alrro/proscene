@@ -17,6 +17,8 @@ void setup() {
   size(640, 360, OPENGL);
   // Scene instantiation
   scene = new Scene(this);
+  scene.setRadius(100);
+  scene.showAll();
   scene.setGridIsDrawn(true);
   scene.setAxisIsDrawn(true);
 }
@@ -29,7 +31,7 @@ void draw() {
   scene.beginDraw();
   // Actual scene
   fill(204, 102, 0);
-  box(0.2f, 0.3f, 0.5f);
+  box(20, 30, 50);
   scene.endDraw();
 }
 

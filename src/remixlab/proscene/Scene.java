@@ -26,10 +26,8 @@
 package remixlab.proscene;
 
 import processing.core.*;
-
 import java.awt.Point;
 import java.awt.event.*;
-
 import javax.swing.event.*;
 import javax.swing.Timer;
 
@@ -88,6 +86,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	protected PGraphics3D pg3d;
 	PMatrix3D projectionMatrix;
 	PMatrix3D modelviewMatrix;
+	static String VERSION_NAME;//TODO perhaps needs to be removed
 	
 	// O B J E C T S
 	protected Camera cam;
@@ -138,7 +137,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * See the associated documentation.
 	 */
 	public Scene(PApplet p) {
-		parent = p;	
+		parent = p;		
+		pg3d = (PGraphics3D) parent.g;  // g may change	    
+	    	
 		parent.addMouseListener(this);
 		parent.addMouseMotionListener(this);
 		parent.addMouseWheelListener(this);
@@ -288,6 +289,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     
     /**
 	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
+	 * Set mouse handling with {@link #enableMouseHandling(boolean)}.
+	 * <p>
+	 * Mouse handling is enable by default.
 	 */
 	public boolean mouseIsHandled() {
 		return mouseHandling;
@@ -298,6 +302,13 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 */
 	public void enableMouseHandling() {
 		enableMouseHandling(true);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code enableMouseHandling(false)}
+	 */
+	public void disableMouseHandling() {
+		enableMouseHandling(false);
 	}
 	
 	/**
@@ -581,8 +592,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
      * Sets the processing camera parameters from {@link #camera()} and displays
      * axis, grid and interactive frames' selection hints accordingly to user flags.
      */
-	public void beginDraw() {
-		pg3d = (PGraphics3D) parent.g;  // g may change
+	public void beginDraw() {		
 		//TODO would be nice to check if the background was set and to set it if not.
 		if ( beginDrawCalls != 0 )
 			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
@@ -1825,5 +1835,5 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		}
 		parent.endShape();
 		parent.popMatrix();
-	}
+	}	
 }
