@@ -15,7 +15,6 @@
  */
 
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 
 Scene scene;
@@ -23,14 +22,14 @@ Box [] cajas;
 Sphere esfera;
 
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   scene = new Scene(this);
   scene.setGridIsDrawn(true);
-  scene.setRadius(1.6f);
+  scene.setRadius(160);
   scene.showAll();
   
   esfera = new Sphere(this);
-  esfera.setPosition(new PVector(0.0f, 1.4f, 0.0f));
+  esfera.setPosition(new PVector(0, 140, 0));
   esfera.setColor(color(0,0,255));
   
   // create an array of boxes with random positions, sizes and colors 

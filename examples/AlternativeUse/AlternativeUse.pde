@@ -9,13 +9,12 @@
  */
 
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 
 MyScene scene;
 
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   // We instantiate our MyScene class defined below
   scene = new MyScene(this);
 }
@@ -46,6 +45,6 @@ class MyScene extends Scene {
 
   public void proscenium() {
     fill(204, 102, 0);
-    box(0.2f, 0.3f, 0.5f);
+    box(20, 30, 50);
   }
 }

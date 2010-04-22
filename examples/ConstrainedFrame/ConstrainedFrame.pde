@@ -47,7 +47,7 @@ void setup() {
   activeConstraint = 0;
 
   frame = new InteractiveFrame();
-  frame.translate(new PVector(0.2f, 0.2f, 0));
+  frame.translate(new PVector(20, 20, 0));
   scene.setInteractiveFrame(frame);
   frame.setConstraint(constraints[activeConstraint]);
   scene.setDrawInteractiveFrame(true);
@@ -100,9 +100,9 @@ void draw() {
   //applyMatrix( frame.matrix() );
   //Same as the previous commented line, but a lot more efficient:
   frame.applyTransformation(this);
-  Scene.drawAxis(0.4f);
+  Scene.drawAxis(40);
   fill(204, 102, 0);
-  box(0.2f, 0.3f, 0.2f);
+  box(20, 20, 20);
   popMatrix();
 
   fill(0, 0, 255);

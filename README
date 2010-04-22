@@ -35,7 +35,7 @@ CHANGELOG
 
   * Version 0.8.0
     + Adding keyFrames' functionality through KeyFrameInterpolator class.
-    + New examples: Luxo, PointUnderPixel and ScreenDrawing.
+    + New examples: KeyFrames, Luxo, PointUnderPixel and ScreenDrawing.
  
 DOWNLOAD
 

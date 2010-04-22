@@ -18,16 +18,15 @@
  */
 
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 
 Scene scene;
 
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   scene = new Scene(this);
   scene.setAxisIsDrawn(true);
-  scene.setRadius(1.5f);
+  scene.setRadius(150);
   scene.showAll();
 }
 
@@ -43,23 +42,22 @@ void draw() {
   beginShape(LINES);
   for (float i=0; i<nbLines; ++i) {
     float angle = 2.0f*PI*i/nbLines;
-
+    
     stroke(204, 51, 51);
     // These lines will never be seen as they are always aligned with the viewing direction.
-    // They can only be seen if you change the camera projection to ORTHOGRAPHIC.
     vertex(scene.camera().position().x, scene.camera().position().y, scene.camera().position().z);
-    vertex(cos(angle), sin(angle), 0.0f);
-
+    vertex(100*cos(angle), 100*sin(angle), 0);
+    
     stroke(55, 204, 55);
-    // World Coordinates are inferred from the camera, and seem to be motionless in the screen.
-    PVector tmp = scene.camera().worldCoordinatesOf(new PVector(.3f*cos(angle), .3f*sin(angle), -2.0f));
+    // World Coordinates are infered from the camera, and seem to be immobile in the screen.
+    PVector tmp = scene.camera().worldCoordinatesOf(new PVector(30*cos(angle), 30*sin(angle), -200));
     vertex(tmp.x, tmp.y, tmp.z);
-    vertex(cos(angle), sin(angle), 0.0f);
-
+    vertex(100*cos(angle), 100*sin(angle), 0);
+    
     stroke(55, 55, 204);
     // These lines are defined in the world coordinate system and will move with the camera.
-    vertex(1.5f*cos(angle), 1.5f*sin(angle), -1.0f);
-    vertex(cos(angle), sin(angle), 0.0f);
+    vertex(150*cos(angle), 150*sin(angle), -100);
+    vertex(100*cos(angle), 100*sin(angle), 0);
   }
   endShape();
   

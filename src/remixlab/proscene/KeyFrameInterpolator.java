@@ -557,7 +557,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			kf = next;
 		}
 		valuesAreValid = true;
-	}	
+	}
 	
 	public static void drawCamera(float scale)	{
 		float halfHeight = scale * 0.07f;
@@ -625,10 +625,10 @@ public class KeyFrameInterpolator implements Cloneable {
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code drawPath(1, 6, 1.0f)} 
+	 * Convenience function that simply calls {@code drawPath(1, 6, 100)} 
 	 */
 	public void drawPath() {
-		drawPath(1, 6, 1.0f);
+		drawPath(1, 6, 100);
 	}
 	
 	/**
@@ -639,10 +639,10 @@ public class KeyFrameInterpolator implements Cloneable {
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code drawPath(mask, nbFrames, 1.0f)} 
+	 * Convenience function that simply calls {@code drawPath(mask, nbFrames, 100)} 
 	 */
 	public void drawPath(int mask, int nbFrames) {
-		drawPath(mask, nbFrames, 1.0f);
+		drawPath(mask, nbFrames, 100);
 	}
 	
 	/**

@@ -40,7 +40,7 @@ void setup() {
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
   scene.setHelpIsDrawn(false);
-  scene.setRadius(scene.radius() * 1.5f);
+  scene.setRadius(150);
   scene.showAll();
   boxes = new Box[50];
   // create an array of boxes with random positions, sizes and colors
