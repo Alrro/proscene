@@ -80,7 +80,7 @@ public class Frame implements Cloneable {
 	 * Copy constructor.
 	 * 
 	 * @param other
-	 *            the Frame containing the data where to copy from
+	 *            the Frame containing the object to be copied
 	 */
 	protected Frame(Frame other) {
 		trans = new PVector (other.translation().x, other.translation().y, other.translation().z);

@@ -120,6 +120,58 @@ public class InteractiveFrame extends Frame
 		};
 		spngTimer = new Timer(10, taskPerformer);
 	}
+	
+	/**
+	 * Copy constructor.
+	 * 	
+	 * @param other the Frame containing the object to be copied
+	 */
+	//TODO: experimental for editing camera paths. Fix me before release!!!
+	/**
+	public InteractiveFrame(InteractiveFrame other) {
+	    //TODO needs testing
+		super(new Frame((Frame)other));
+		prevPos = new Point(other.prevPos.x, other.prevPos.y);
+		pressPos = new Point(other.pressPos.x, other.pressPos.y);
+		spngTimer = new Timer(10, other.taskPerformer);
+	}
+	*/
+	
+	//TODO: experimental for editing camera paths. Fix me before release!!!
+	public InteractiveFrame(InteractiveCameraFrame iFrame) {
+		super(iFrame.position(), iFrame.orientation());
+		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
+		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		
+		addInMouseGrabberPool();
+		grbsMouse = false;
+		
+		setRotationSensitivity(1.0f);
+		setTranslationSensitivity(1.0f);
+		setSpinningSensitivity(0.3f);
+		setWheelSensitivity(20.0f);
+		
+		keepsGrabbingMouse = false;
+		isSpng = false;
+		prevConstraint = null;
+		startedTime = 0;		
+		taskPerformer = new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				spin();
+			}
+		};
+		spngTimer = new Timer(10, taskPerformer);
+		/**
+		spngTimer = new Timer(10, taskPerformer);
+		prevPos = new Point(iFrame.prevPos.x, iFrame.prevPos.y);
+		pressPos = new Point(iFrame.pressPos.x, iFrame.pressPos.y);
+		spngTimer = new Timer(10, ((InteractiveFrame)iFrame).taskPerformer);
+		*/
+		list = new ArrayList<KeyFrameInterpolator>();
+		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
+		while(it.hasNext())
+			list.add(it.next());
+	}
 
 	/**
 	 * Implementation of the clone method. 
