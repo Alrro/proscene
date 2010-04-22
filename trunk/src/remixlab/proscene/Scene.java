@@ -1258,7 +1258,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
 					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implmentation!");
 		startCoordCalls ++;
-		float threshold = 0.01f;
+		float threshold = 0.03f;
 		zC = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() );		
 		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
 			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * zC;
