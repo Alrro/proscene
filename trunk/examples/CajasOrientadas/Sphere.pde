@@ -30,7 +30,7 @@ public class Sphere {
   Sphere(PApplet p) {
     parent = p;
     iFrame = new InteractiveFrame();
-    setRadius(0.1f);
+    setRadius(10);
   }
 
   public void draw() {

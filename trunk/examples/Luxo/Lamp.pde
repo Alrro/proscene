@@ -38,10 +38,9 @@ public class Lamp {
     }
     
     // Initialize frames
-    frame(1).setTranslation(0.0f, 0.0f, 0.08f); // Base height
-    frame(2).setTranslation(0.0f, 0.0f, 0.5f);  // Arm length
-    frame(3).setTranslation(0.0f, 0.0f, 0.5f);  // Arm length
-    
+    frame(1).setTranslation(0, 0, 8); // Base height
+    frame(2).setTranslation(0, 0, 50);  // Arm length
+    frame(3).setTranslation(0, 0, 50);  // Arm length
     frame(1).setRotation(new Quaternion(new PVector(1.0f,0.0f,0.0f), 0.6f));
     frame(2).setRotation(new Quaternion(new PVector(1.0f,0.0f,0.0f), -2.0f));
     frame(3).setRotation(new Quaternion(new PVector(1.0f,-0.3f,0.0f), -1.7f));
@@ -51,6 +50,7 @@ public class Lamp {
     baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,0.0f,1.0f));
     baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,0.0f,1.0f));
     frame(0).setConstraint(baseConstraint);
+    
     LocalConstraint XAxis = new LocalConstraint();
     XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN,  new PVector(0.0f,0.0f,0.0f));
     XAxis.setRotationConstraint   (AxisPlaneConstraint.Type.AXIS, new PVector(1.0f,0.0f,0.0f));
@@ -100,30 +100,30 @@ public class Lamp {
   }
   
   public void drawBase() {
-    drawCone(0.0f, 0.03f, 0.15f, 0.15f, 30);
-    drawCone(0.03f, 0.05f, 0.15f, 0.13f, 30);
-    drawCone(0.05f, 0.07f, 0.13f, 0.01f, 30);
-    drawCone(0.07f, 0.09f, 0.01f, 0.01f, 10);
+    drawCone(0, 3, 15, 15, 30);
+    drawCone(3, 5, 15, 13, 30);
+    drawCone(5, 7, 13, 1, 30);
+    drawCone(7, 9, 1, 1, 10);
   }
   
   public void drawArm() {
-    parent.translate(0.02f, 0.0f, 0.0f);
-    drawCone(0.0f, 0.5f, 0.01f, 0.01f, 10);
-    parent.translate(-0.04f, 0.0f, 0.0f);
-    drawCone(0.0f, 0.5f, 0.01f, 0.01f, 10);
-    parent.translate(0.02f, 0.0f, 0.0f);
+    parent.translate(2, 0, 0);
+    drawCone(0, 50, 1, 1, 10);
+    parent.translate(-4, 0, 0);
+    drawCone(0, 50, 1, 1, 10);
+    parent.translate(2, 0, 0);
   }
   
   public void drawHead() {
-    drawCone(-0.02f, 0.06f, 0.04f, 0.04f, 30);
-    drawCone(0.06f, 0.15f, 0.04f, 0.17f, 30);
-    drawCone(0.15f, 0.17f, 0.17f, 0.17f, 30);
+    drawCone(-2, 6, 4, 4, 30);
+    drawCone(6, 15, 4, 17, 30);
+    drawCone(15, 17, 17, 17, 30);
   }
   
   public void drawCylinder() {
     parent.pushMatrix();
-    parent.rotate(PApplet.HALF_PI, 0.0f, 1.0f, 0.0f);
-    drawCone(-0.05f, 0.05f, 0.02f, 0.02f, 20);
+    parent.rotate(PApplet.HALF_PI, 0, 1, 0);
+    drawCone(-5, 5, 2, 2, 20);
     parent.popMatrix();
   }
   
@@ -132,7 +132,7 @@ public class Lamp {
     Scene.cone(nbSub, 0, 0, r1, r2, zMax-zMin);
     parent.translate(0.0f, 0.0f, -zMin);
   }
-  
+
   public void setColor(boolean selected) {
     if (selected)
       parent.fill(240, 240, 0);

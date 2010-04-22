@@ -83,10 +83,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public static PApplet parent;
-	protected PGraphics3D pg3d;
-	PMatrix3D projectionMatrix;
-	PMatrix3D modelviewMatrix;
-	static String VERSION_NAME;//TODO perhaps needs to be removed
+	public static PGraphics3D pg3d;
 	
 	// O B J E C T S
 	protected Camera cam;
@@ -124,9 +121,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	// C O N S T R A I N T S
 	boolean withConstraint;
-	//TODO: find a better way than this hack!
-	protected boolean readyToGo;
 	protected boolean mouseHandling;
+	//TODO hack
+	//private boolean readyToGo;
 	
 	//O N L I N E   H E L P
 	boolean helpIsDrwn;
@@ -158,11 +155,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		rapFlag = false;
 		pupFlag = false;
 		
+		//readyToGo = false;
+		mouseHandling = false;
 		cam = new Camera();
 		setCamera(camera());
-		
-		projectionMatrix = null;
-		modelviewMatrix = null;
 		
 		//setDefaultShortcuts();
 		//setDefaultMouseBindings();
@@ -183,10 +179,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		setGridIsDrawn(false);
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
-		setHelpIsDrawn(true);
-		
-		readyToGo = false;
-		enableMouseHandling(true);
+		setHelpIsDrawn(true);	    
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -200,8 +193,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
         
         // E X C E P T I O N   H A N D L I N G
         beginDrawCalls = 0;
-        startCoordCalls = 0;
-		
+        startCoordCalls = 0;       
+        
+        enableMouseHandling();
+        
 		//called only once
 		init();
 	}
@@ -226,7 +221,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		camera.setSceneCenter(center());		
 		
 		camera.setScreenWidthAndHeight(parent.width, parent.height);
-		cam = camera;
+		
+		cam = camera;		
+		
 		showAll();
 	}
 	
@@ -595,12 +592,16 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	public void beginDraw() {		
 		//TODO would be nice to check if the background was set and to set it if not.
 		if ( beginDrawCalls != 0 )
-			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
+			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function implementation!");
 		beginDrawCalls ++;
 		
 		//We set the processing camera matrices from our remixlab.proscene.Camera
 		setPProjectionMatrix();
 		setPModelViewMatrix();
+		//same as the two previous lines:
+		//TODO: needs more testing
+		//camera().computeProjectionMatrix();
+		//camera().computeModelViewMatrix();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
@@ -626,21 +627,24 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Displays some visual hints, such the {@link #help()} text.
 	 */
 	public void endDraw() {
-		if(readyToGo) {
-			if( helpIsDrawn() ) help();
-			if( zoomOnRegion ) drawZoomWindowHint();
-			if( rotateScreen ) drawScreenRotateLineHint();
-			if( rapFlag ) drawRevolveAroundPointHint();			
-			if( pupFlag ) {
-				PVector v = camera().projectedCoordinatesOf( pupVec );
-				drawPointUnderPixelHint( v.x, v.y );
-			}
-		}		
-		else
-			readyToGo = true;
 		beginDrawCalls --;
 		if ( beginDrawCalls != 0 )
 			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
+		if( helpIsDrawn() ) help();
+		if( zoomOnRegion ) drawZoomWindowHint();
+		if( rotateScreen ) drawScreenRotateLineHint();
+		if( rapFlag ) drawRevolveAroundPointHint();
+		if( pupFlag ) {
+			PVector v = camera().projectedCoordinatesOf( pupVec );
+			drawPointUnderPixelHint( v.x, v.y );
+		}
+		/**
+		//TODO hack to enable mouse handling only after first call to endDraw
+		if(!readyToGo) {
+			enableMouseHandling();
+			readyToGo = true;
+		}	
+		*/	
 	}
 	
 	// 4. Scene dimensions
@@ -929,10 +933,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     }
 	
     /**
-     * Convenience function that simply calls {@code drawAxis(1.0f)} 
+     * Convenience function that simply calls {@code drawAxis(100)} 
      */
 	public static void drawAxis() {
-		drawAxis(1.0f);
+		drawAxis(100);
 	}
 	
 	/**
@@ -1037,12 +1041,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code drawGrid(1.0f, 10)}
+	 * Convenience function that simply calls {@code drawGrid(100, 10)}
 	 * 
 	 * @see #drawGrid(float, int)
 	 */
 	public static void drawGrid() {
-		drawGrid(1.0f, 10);
+		drawGrid(100, 10);
 	}
 	
 	/**
@@ -1055,12 +1059,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code drawGrid(1.0f, nbSubdivisions)}
+	 * Convenience function that simply calls {@code drawGrid(100, nbSubdivisions)}
 	 * 
 	 * @see #drawGrid(float, int)
 	 */
 	public static void drawGrid(int nbSubdivisions) {
-		drawGrid(1.0f, nbSubdivisions);
+		drawGrid(100, nbSubdivisions);
 	}
 	
 	/** Draws a grid in the XY plane, centered on (0,0,0)
@@ -1267,7 +1271,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		}
 		
 		parent.pushMatrix();
-		camera().frame().applyTransformation(parent);
+		if (camera().frame()!=null) camera().frame().applyTransformation(parent);
 	}
 	
 	/**
@@ -1278,12 +1282,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #yCoord(float)
 	 * @see #zCoord()
 	 */
-	public void endScreenDrawing() {
-		parent.popMatrix();
+	public void endScreenDrawing() {		
 		startCoordCalls --;
 		if ( startCoordCalls != 0 )
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
-					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implmentation!");
+					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+		parent.popMatrix();
 	}
 	
 	/**
@@ -1370,8 +1374,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * the mouse (or to {@code null} if none of them grab it).
 	 */
 	public void mouseMoved(MouseEvent event) {
-		//TODO: hack, sometimes setMouseGrabber is called by mouseMove before proper setup
-		if ( readyToGo && mouseIsHandled() ) {
+		if ( mouseIsHandled() ) {
 			//need in order to make mousewheel work properly
 			setMouseGrabber(null);
 			for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
@@ -1392,7 +1395,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		if ( readyToGo && mouseIsHandled() ) {
+		if ( mouseIsHandled() ) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
 	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
@@ -1490,14 +1493,14 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		if ( readyToGo && mouseIsHandled() ) {
+		if ( mouseIsHandled() ) {
 		// /**
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
 	    	if (zoomOnRegion) lCorner = event.getPoint();
 	    	else if (rotateScreen) {
 	    		fCorner = event.getPoint();
-				camera().frame().mouseMoveEvent(event, camera());
+	    		camera().frame().mouseMoveEvent(event, camera());
 	    	}
 	    	else //translateScreen
 	    		camera().frame().mouseMoveEvent(event, camera());
@@ -1513,10 +1516,16 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			else
 				setMouseGrabber(null);
 		}
+		//TODO weird null pointer exception when moving dragging the at Constrained* examples instantiation (specially in ConstrainedFrame)
+		//even the tougher condition is not enough 
+		//else if ( (interactiveFrameIsDrawn()) && (interactiveFrame()!=null) ) {
 		else if ( interactiveFrameIsDrawn() ) {
 			interactiveFrame().mouseMoveEvent(event, camera());
 		}
 		else {
+			//TODO weird null pointer exception when moving dragging the at Constrained* examples instantiation (specially in ConstrainedFrame)
+			//even the tougher condition is not enough
+			//if (camera() != null ) if (camera().frame() != null ) camera().frame().mouseMoveEvent(event, camera());
 			camera().frame().mouseMoveEvent(event, camera());
 		}
 		}
@@ -1529,10 +1538,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
 	public void mouseReleased(MouseEvent event) {
-		if ( readyToGo && mouseIsHandled() ) {
+		if ( mouseIsHandled() ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
-			camera().frame().mouseReleaseEvent(event, camera());
+	    	camera().frame().mouseReleaseEvent(event, camera());
 			zoomOnRegion = false;
 			rotateScreen = false;
 			translateScreen = false;
@@ -1564,7 +1573,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		if ( readyToGo && mouseIsHandled() && ( event.getClickCount() == 2 ) ) {		
+		if ( mouseIsHandled() && ( event.getClickCount() == 2 ) ) {
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
@@ -1625,7 +1634,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		if ( readyToGo && mouseIsHandled() ) {
+		if ( mouseIsHandled() ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
@@ -1653,7 +1662,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		}
 		else {
 			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
-			camera().frame().mouseWheelEvent(event, camera());
+			camera().frame().mouseWheelEvent(event, camera());			
 		}
 		}
 	}
@@ -1661,11 +1670,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// 10. Processing objects
 	
 	/**
-	 * Sets the processing camera projection matrix from {@link #camera()} (Camera).
+	 * Sets the processing camera projection matrix from {@link #camera()}.
 	 * Calls {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
 	 * {@link remixlab.proscene.Camera#type()}. 
 	 */
 	protected void setPProjectionMatrix() {
+		//compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			parent.perspective(camera().fieldOfView(), camera().aspectRatio(),
@@ -1676,28 +1686,23 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 			parent.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
-		projectionMatrix = pg3d.projection;
-		//Processing computes the camera matrices for us (it actually computes the
-		//projection matrix from our Camera parameters). We just set them back
-		//(instead of calling camera().computeProjectionMatrix() which is also possible
-		//but expensive)
-		camera().setProjectionMatrix(projectionMatrix);
+		//if our camera() matrices are detached from the processing Camera matrices,
+		//we cache the processing camera projection matrix into our camera()
+		camera().setProjectionMatrix(pg3d.projection);
 	}
 	
 	/**
-	 * Sets the processing camera matrix from {@link #camera()} (Camera).
+	 * Sets the processing camera matrix from {@link #camera()}.
 	 * Simply calls {@code PApplet.camera()}.
 	 */
 	protected void setPModelViewMatrix() {
+		//compute the processing camera modelview matrix from our camera() parameters
 		parent.camera(camera().position().x, camera().position().y, camera().position().z,
 				      camera().at().x, camera().at().y, camera().at().z,
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
-		modelviewMatrix = pg3d.modelview;
-		//Processing computes the camera matrices for us (it actually computes the
-		//modelview matrix from our Camera parameters). We just set them back
-		//(instead of calling camera().computeModelViewMatrix() which is also possible
-		//but expensive)
-		camera().setModelViewMatrix(modelviewMatrix);
+		//if our camera() matrices are detached from the processing Camera matrices,
+		//we cache the processing camera modelview matrix into our camera()
+		camera().setModelViewMatrix(pg3d.modelview);
 	}
 	
 	// 11. Utility

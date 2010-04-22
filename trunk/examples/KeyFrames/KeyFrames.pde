@@ -31,7 +31,7 @@ void setup() {
   size(640, 360, P3D);
   nbKeyFrames = 4;
   scene = new Scene(this);
-  scene.setRadius(scene.radius()*0.7f);
+  scene.setRadius(70);
   scene.showAll();
   kfi = new KeyFrameInterpolator();
   kfi.setLoopInterpolation();
@@ -41,7 +41,7 @@ void setup() {
   // Create an initial path
   for (int i=0; i<nbKeyFrames; i++) {
     keyFrame[i] = new InteractiveFrame();
-    keyFrame[i].setPosition(-1.0f + 2.0f*i/(nbKeyFrames-1), 0.0f, 0.0f);
+    keyFrame[i].setPosition(-100 + 200*i/(nbKeyFrames-1), 0, 0);
     kfi.addKeyFrame(keyFrame[i]);
   }
   
@@ -55,7 +55,7 @@ void draw() {
   scene.beginDraw();
   pushMatrix();
   kfi.frame().applyTransformation(this);
-  Scene.drawAxis(0.3f);
+  Scene.drawAxis(30);
   popMatrix();
   
   kfi.drawPath(5, 10);
@@ -65,9 +65,9 @@ void draw() {
     kfi.keyFrame(i).applyTransformation(this);
     
     if ( keyFrame[i].grabsMouse() )
-      Scene.drawAxis(0.4f);
+      Scene.drawAxis(40);
     else
-      Scene.drawAxis(0.2f);
+      Scene.drawAxis(20);
       
     popMatrix();
   }

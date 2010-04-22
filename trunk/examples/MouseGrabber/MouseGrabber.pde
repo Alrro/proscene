@@ -12,24 +12,23 @@
  */
 
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 
 Scene scene;
 Box [] boxes;
 
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   scene = new Scene(this);
   scene.setGridIsDrawn(true);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setRadius(1.5f);
+  scene.setRadius(150);
   scene.showAll();
   // create an array of boxes with random positions
   boxes = new Box[30];
   for (int i = 0; i < boxes.length; i++) {
     boxes[i] = new Box(this);
-    boxes[i].setSize(0.2f, 0.2f, 0.2f);
+    boxes[i].setSize(20, 20, 20);
     boxes[i].setColor(color(0,0,255));
   }
 }

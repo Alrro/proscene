@@ -20,7 +20,6 @@
  */
 
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 
 import java.awt.Point;
@@ -30,9 +29,9 @@ Box [] boxes;
 ArrayList points;
 	
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   scene = new Scene(this);
-  scene.setRadius(scene.radius() * 1.5f);
+  scene.setRadius(150);
   scene.showAll();
   
   boxes = new Box[50];

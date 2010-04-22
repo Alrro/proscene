@@ -18,7 +18,7 @@
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
  *
- * Observe that this class is used among other examples, such as MouseGrabber
+ * Observe that this class is used among many examples, such as MouseGrabber
  * CajasOrientadas, PointUnderPixel and ScreenDrawing. Hence, it's quite
  * complete, but its functionality is not totally exploited by this example.
  *
@@ -63,9 +63,9 @@ public class Box {
   
   // sets size randomly
   public void setSize() {
-    w = random(0.1f, 0.4f);
-    h = random(0.1f, 0.4f);
-    d = random(0.1f, 0.4f);
+    w = random(10, 40);
+    h = random(10, 40);
+    d = random(10, 40);
   }
   
   public void setSize(float myW, float myH, float myD) {
@@ -91,8 +91,8 @@ public class Box {
   
   // sets position randomly
   public void setPosition() {
-    float low = -1.0f;
-    float high = 1.0f;
+    float low = -100;
+    float high = 100;
     iFrame.setPosition(new PVector(parent.random(low, high), parent.random(low, high), parent.random(low, high)));
   }
   

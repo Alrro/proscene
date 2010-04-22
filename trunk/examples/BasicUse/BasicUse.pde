@@ -9,16 +9,13 @@
  */
 
 import remixlab.proscene.*;
-import processing.opengl.*;
 
 Scene scene;
 
 void setup() {
-  size(640, 360, OPENGL);
+  size(640, 360, P3D);
   // Scene instantiation
   scene = new Scene(this);
-  scene.setRadius(100);
-  scene.showAll();
   scene.setGridIsDrawn(true);
   scene.setAxisIsDrawn(true);
 }

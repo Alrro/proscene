@@ -39,10 +39,21 @@ import java.util.Iterator;
  * {@link #position()}, {@link #viewDirection()}, {@link #upVector()}...)
  * and useful positioning tools that ease its placement
  * ({@link #showEntireScene()}, {@link #fitSphere(PVector, float)},
- * {@link #lookAt(PVector)}...). It exports its associated projection and
- * modelview matrices and can interactively be modified using the mouse.
+ * {@link #lookAt(PVector)}...). It exports its associated processing
+ * projection and modelview matrices and it can interactively be modified using
+ * the mouse.
+ * <p>
+ * Camera matrices can be directly set as references to the processing camera
+ * matrices (default), or they can be set as independent PMatrix3D objects
+ * (which may be useful for off-screen computations). See {@link #isAttachedToPCamera()},
+ * {@link #attachToPCamera()} and {@link #detachFromPCamera()}.
  */
 public class Camera implements Cloneable {
+	/**
+	 * Internal class provided to catch the output of
+	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} (which should be
+	 * implemented by an openGL based derived class Camera).
+	 */
 	public class WorldPoint {
 		public WorldPoint(PVector p, boolean f) {
 			point = p;
@@ -92,19 +103,40 @@ public class Camera implements Cloneable {
 	Iterator<Integer> it;
 	protected KeyFrameInterpolator interpolationKfi;
 	protected static InteractiveCameraFrame tempFrame;
+	
+	// A t t a c h e d   S c e n e
+	boolean attachedToPCam;
+	
+	/**
+	 * Convenience constructor that simply calls {@code this(true)}.
+	 * 
+	 * @see #Camera(boolean)
+	 */
+	public Camera() {
+		this(true);
+	}
 
 	/**
-	 * Default constructor. 
+	 * Main constructor. 
 	 * <p> 
 	 * {@link #sceneCenter()} is set to (0,0,0) and {@link #sceneRadius()} is
-	 * set to 1.0. {@link #type()} Camera.PERSPECTIVE, with a {@code PI/4}
-	 * {@link #fieldOfView()}. 
+	 * set to 100. {@link #type()} Camera.PERSPECTIVE, with a {@code PI/4}
+	 * {@link #fieldOfView()}.
+	 * <p>
+	 * If {@code attachedToScene} is true then the Camera matrices are set as
+	 * references to the processing camera matrices. Otherwise newly matrices
+	 * are created. In both cases the matrices are computed according to
+	 * remaining default Camera parameters.
 	 * <p> 
 	 * See {@link #IODistance()}, {@link #physicalDistanceToScreen()},
 	 * {@link #physicalScreenWidth()} and {@link #focusDistance()}
 	 * documentations for default stereo parameter values.
+	 * 
+	 * @see #Camera()
 	 */
-	public Camera() {
+	public Camera(boolean attachedToScene) {
+		attachedToPCam = attachedToScene;
+		
 		fldOfView = Quaternion.PI / 4.0f;
 		
 		//KeyFrames
@@ -114,7 +146,7 @@ public class Camera implements Cloneable {
 		setFrame(new InteractiveCameraFrame());		
 
 		// Requires fieldOfView() to define focusDistance()
-		setSceneRadius(1.0f);
+		setSceneRadius(100);
 
 		// Initial value (only scaled after this)
 		orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
@@ -137,15 +169,91 @@ public class Camera implements Cloneable {
 		setPhysicalDistanceToScreen(0.5f);
 		setPhysicalScreenWidth(0.4f);
 		// focusDistance is set from setFieldOfView()
-		
-		modelViewMat = new PMatrix3D();
-		projectionMat  = new PMatrix3D();
-		
-		projectionMat.set(0, 0, 0, 0,
-						  0, 0, 0, 0,
-						  0, 0, 0, 0,
-						  0, 0, 0, 0);
-		computeProjectionMatrix();
+				
+		if( isAttachedToPCamera() ) {
+			projectionMat = Scene.pg3d.projection;
+			modelViewMat = Scene.pg3d.modelview;
+			computeProjectionMatrix();
+			computeModelViewMatrix();
+		}
+		else {
+			modelViewMat = new PMatrix3D();
+			projectionMat  = new PMatrix3D();
+			projectionMat.set(0, 0, 0, 0,
+					0, 0, 0, 0,
+					0, 0, 0, 0,
+					0, 0, 0, 0);
+			computeProjectionMatrix();
+		}
+	}
+	
+	// 0. ATTACHED PCAMERA MATRICES
+	
+	/**
+	 * Convenience function that simply returns {@code !isAttachedToScene()}
+	 * 
+	 * @see #isAttachedToPCamera()
+	 */
+	public boolean isDetachedFromPCamera() {
+		return !isAttachedToPCamera();
+	}
+	
+	/**
+	 * Returns {@code true} if the Camera matrices are set as references to
+	 * the processing camera matrices and {@code false} if not.
+	 * 
+	 * @see #isDetachedFromPCamera()
+	 */
+	public boolean isAttachedToPCamera() {
+		return attachedToPCam;
+	}
+	
+	/**
+	 * Set the Camera matrices as references to the processing camera matrices. If the
+	 * references are already set ({@link #isAttachedToPCamera()}), silently
+	 * ignores the call.
+	 * <p>
+	 * <b>Note:</b> Since it is only one Scene per PApplet, there's
+	 * no need to specify it.
+	 * 
+	 * @see #detachFromPCamera()
+	 * @see #isAttachedToPCamera()
+	 */
+	public void attachToPCamera() {
+		if( !isAttachedToPCamera() ) {
+			attachedToPCam = true;
+			//projectionMat = scn.pg3d.projection;
+			//modelViewMat = scn.pg3d.modelview;
+			projectionMat = Scene.pg3d.projection;
+			modelViewMat = Scene.pg3d.modelview;
+			computeProjectionMatrix();
+			computeModelViewMatrix();
+		}
+	}
+	
+	/**
+	 * Create new independent Camera matrices' objects (i.e., Camera matrices are no
+	 * longer set as references to processing camera matrices). If the Camera is already
+	 * detached, silently ignores the call.
+	 * <p>
+	 * The values of the newly created matrices are set with
+	 * {@link #computeProjectionMatrix()} and {@link #computeModelViewMatrix()}.
+	 * 
+	 * @see #attachToPCamera()
+	 * @see #isAttachedToPCamera()
+	 */
+	public void detachFromPCamera() {
+		if( isAttachedToPCamera() ) {
+			attachedToPCam = false;
+			modelViewMat = new PMatrix3D();
+			projectionMat  = new PMatrix3D();
+			projectionMat.set(0, 0, 0, 0,
+					0, 0, 0, 0,
+					0, 0, 0, 0,
+					0, 0, 0, 0);
+			computeProjectionMatrix();
+			computeModelViewMatrix();
+		}
 	}
 
 	/**
@@ -167,9 +275,11 @@ public class Camera implements Cloneable {
 		      Integer key = it.next();
 		      clonedCam.kfi.put(key, kfi.get(key).clone());
 		    }
-			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);			
-			clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
-			clonedCam.projectionMat = new PMatrix3D(projectionMat);			
+			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);
+			if ( isDetachedFromPCamera() ) {
+				clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
+				clonedCam.projectionMat = new PMatrix3D(projectionMat);
+			}			
 			clonedCam.frm = frm.clone();
 			return clonedCam;
 		} catch (CloneNotSupportedException e) {
@@ -1143,7 +1253,7 @@ public class Camera implements Cloneable {
 	    }	
 	}
 
-	// 7. OPENGL MATRICES
+	// 7. PROCESSING MATRICES
 	
 	/**
 	 * Convenience function that simply returns {@code getProjectionMatrix(new PMatrix3D())}
@@ -1157,8 +1267,8 @@ public class Camera implements Cloneable {
 	/**
 	 * Fills {@code m} with the Camera projection matrix values and returns it. If
 	 * {@code m} is {@code null} a new PMatrix3D will be created. 
-	 * <p> 
-	 * Calls {@link #computeProjectionMatrix()} to define the Camera projection matrix.
+	 * <p>
+	 * First calls {@link #computeProjectionMatrix()} to define the Camera projection matrix.
 	 * <p>
 	 * 
 	 * @see #getModelViewMatrix()
@@ -1176,7 +1286,7 @@ public class Camera implements Cloneable {
 	/**
 	 * Computes the projection matrix associated with the Camera. 
 	 * <p> 
-	 * If {@link #type()} is PERSPECTIVE, defines a GL_PROJECTION matrix similar to what
+	 * If {@link #type()} is PERSPECTIVE, defines a projection matrix similar to what
 	 * would {@code perspective()} do using the {@link #fieldOfView()}, window
 	 * {@link #aspectRatio()}, {@link #zNear()} and {@link #zFar()} parameters. 
 	 * <p> 
@@ -1184,9 +1294,9 @@ public class Camera implements Cloneable {
 	 * ortho()} would do. Frustum's width and height are set using
 	 * {@link #getOrthoWidthHeight()}. 
 	 * <p> 
-	 * Both types use {@link #zNear()} and {@link #zFar()} to place clipping planes. These values
-	 * are determined from sceneRadius() and sceneCenter() so that they best fit
-	 * the scene size. 
+	 * Both types use {@link #zNear()} and {@link #zFar()} to place clipping planes.
+	 * These values are determined from sceneRadius() and sceneCenter() so that they
+	 * best fit the scene size. 
 	 * <p> 
 	 * Use {@link #getProjectionMatrix()} to retrieve this matrix.
 	 * <p> 
@@ -1227,12 +1337,15 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
-	 * Sets the projection matrix associated with the Camera directly from a PCamera.
+	 * Fills the projection matrix with the {@code proj} matrix values.
+	 * <p>
+	 * Only meaningful when the camera {@link #isDetachedFromPCamera()}.
 	 * 
-	 * @see #computeProjectionMatrix()
-	 */
+	 * @see #setModelViewMatrix(PMatrix3D)
+	 */ 
 	public void setProjectionMatrix(PMatrix3D proj) {
-		projectionMat.set(proj);
+		if( isDetachedFromPCamera() )
+			projectionMat.set(proj);
 	}
 
 	/**
@@ -1259,7 +1372,7 @@ public class Camera implements Cloneable {
 		m.set(modelViewMat);
 		return m;
 	}
-
+	
 	/**
 	 * Computes the modelView matrix associated with the Camera's {@link #position()}
 	 * and {@link #orientation()}.
@@ -1274,51 +1387,54 @@ public class Camera implements Cloneable {
 	 * Scene and is used for offscreen computations
 	 * (using {@code projectedCoordinatesOf()} for instance).
 	 */
-	public void computeModelViewMatrix() {
+	public void computeModelViewMatrix() {				
 		Quaternion q = frame().orientation();
-		
+
 		float q00 = 2.0f * q.x * q.x;
 		float q11 = 2.0f * q.y * q.y;
 		float q22 = 2.0f * q.z * q.z;
-		
+
 		float q01 = 2.0f * q.x * q.y;
 		float q02 = 2.0f * q.x * q.z;
 		float q03 = 2.0f * q.x * q.w;
-		
+
 		float q12 = 2.0f * q.y * q.z;
 		float q13 = 2.0f * q.y * q.w;
 		float q23 = 2.0f * q.z * q.w;
-		
+
 		modelViewMat.m00 = 1.0f  - q11 - q22;
 		modelViewMat.m10 =         q01 - q23;
 		modelViewMat.m20 =         q02 + q13;
 		modelViewMat.m30 = 0.0f;
-		
+
 		modelViewMat.m01 =         q01 + q23;
 		modelViewMat.m11 = 1.0f  - q22 - q00;
 		modelViewMat.m21 =         q12 - q03;
 		modelViewMat.m31 = 0.0f;
-		
+
 		modelViewMat.m02 =         q02 - q13;
 		modelViewMat.m12 =         q12 + q03;
 		modelViewMat.m22 = 1.0f - q11 - q00;
 		modelViewMat.m32 = 0.0f;
-		
+
 		PVector t = q.inverseRotate(frame().position());
-		
+
 		modelViewMat.m03 = -t.x;
 		modelViewMat.m13 = -t.y;
 		modelViewMat.m23 = -t.z;
-		modelViewMat.m33 = 1.0f;
+		modelViewMat.m33 = 1.0f;		
 	}
 	
-	/**
-	 * Sets the modelview matrix associated with the Camera directly from a PCamera.
+	/** 
+	 * Fills the modelview matrix with the {@code modelview} matrix values.
+	 * <p>
+	 * Only meaningful when the camera {@link #isDetachedFromPCamera()}.
 	 * 
-	 * @see #computeModelViewMatrix()
+	 * @see #setProjectionMatrix(PMatrix3D)
 	 */
 	public void setModelViewMatrix(PMatrix3D modelview) {
-		modelViewMat.set(modelview);
+		if( isDetachedFromPCamera() )
+			modelViewMat.set(modelview);
 	}
 	
 	// 8. WORLD -> CAMERA
@@ -1365,7 +1481,7 @@ public class Camera implements Cloneable {
 	 */
 	public void convertClickToLine(final Point pixelInput, PVector orig, PVector dir) {
 		Point pixel = new Point(pixelInput);
-		if ( frame().coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
+		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 			pixel.y = screenHeight() - pixelInput.y;
 		switch (type()) {
 		case PERSPECTIVE:
@@ -1432,7 +1548,7 @@ public class Camera implements Cloneable {
 		} else
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
-		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+		if ( InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 			xyz[1] = screenHeight() - xyz[1];
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
@@ -1487,7 +1603,7 @@ public class Camera implements Cloneable {
 	public final PVector unprojectedCoordinatesOf(PVector src, Frame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
-		if ( frame().coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+		if ( InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat, projectionMat, viewport, xyz);
 		else
 			unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);		
@@ -1796,7 +1912,7 @@ public class Camera implements Cloneable {
 	}
 
 	/**
-	 * Convenience function that simplyu calls {@code interpolateTo(fr, 1)}.
+	 * Convenience function that simply calls {@code interpolateTo(fr, 1)}.
 	 * 
 	 * @see #interpolateTo(Frame, float)
 	 */
