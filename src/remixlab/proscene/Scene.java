@@ -636,7 +636,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		if( rapFlag ) drawRevolveAroundPointHint();
 		if( pupFlag ) {
 			PVector v = camera().projectedCoordinatesOf( pupVec );
-			drawPointUnderPixelHint( v.x, v.y );
+			drawCross( v.x, v.y );
 		}
 		/**
 		//TODO hack to enable mouse handling only after first call to endDraw
@@ -1136,54 +1136,64 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Draws a cross on the screen under pixel {@code (px, py)}.
-	 * 
-	 * @see #drawRevolveAroundPointHint()
-	 */
-	protected void drawPointUnderPixelHint(float px, float py) {
-		beginScreenDrawing();
-		parent.stroke(255, 255, 255);
-		parent.strokeWeight(3);
-		parent.noFill();
-		float size = 15;
-		parent.beginShape(LINES);
-		parent.vertex(xCoord(px - size), yCoord(py), zCoord());
-		parent.vertex(xCoord(px + size), yCoord(py), zCoord());
-		parent.vertex(xCoord(px), yCoord(py - size), zCoord());
-		parent.vertex(xCoord(px), yCoord(py + size), zCoord());
-		parent.endShape();		
-		parent.strokeWeight(1);
-		parent.noStroke();
-		endScreenDrawing();
-	}
-	
-	/**
 	 * Draws visual hint (a cross on the screen) when the {@link #revolveAroundPoint()}
 	 * is being set.
 	 * <p>
-	 * Simply calls {@link #drawPointUnderPixelHint(float, float)} on
+	 * Simply calls {@link #drawCross(float, float)} on
 	 * {@code camera().projectedCoordinatesOf(revolveAroundPoint())} {@code x} and 
 	 * {@code y} coordinates.
 	 * 
-	 * @see #drawPointUnderPixelHint(float, float)
+	 * @see #drawCross(float, float)
 	 */	
 	protected void drawRevolveAroundPointHint() {
 		PVector p = camera().projectedCoordinatesOf(revolveAroundPoint());
-		drawPointUnderPixelHint(p.x, p.y);
+		drawCross(p.x, p.y);
 	}
 	
 	/**
-	 * Draws all InteractiveFrames' selection regions (a 10x10 pixel square) as a visual hint.
+	 * Draws all InteractiveFrames' selection regions (a 10x10 shooter target) as a visual hint.
 	 */
 	protected void drawInteractiveFrameSelectionHint() {
 		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
 			InteractiveFrame iF = (InteractiveFrame) mg;//downcast needed
 			PVector center = camera().projectedCoordinatesOf( iF.position() );
-			if ( mg.grabsMouse() )				
-				filledSquare(parent.color(0,255,0),center,10);
+			if ( mg.grabsMouse() )
+				drawShooterTarget(parent.color(0,255,0),center,12,2);
 			else
-				filledSquare(parent.color(190,190,190),center,10);
+				drawShooterTarget(parent.color(210,210,210),center,10,1);
 		}
+	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code drawPointUnderPixelHint(parent.color(255,255,255),px,py,15,3)}.
+	 */
+	public void drawCross(float px, float py) {
+		drawCross(parent.color(255,255,255),px,py,15,3);
+	}
+	
+	/**
+	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
+	 * of size {@code size}. {@code strokeWeight} defined the weight of the stroke.
+	 * 
+	 * @see #drawRevolveAroundPointHint()
+	 */
+	public void drawCross(int color, float px, float py, float size, int strokeWeight) {		
+		parent.stroke(color);
+		parent.strokeWeight(strokeWeight);
+		parent.noFill();
+		
+		beginScreenDrawing();		
+		parent.beginShape(LINES);
+		parent.vertex(xCoord(px - size), yCoord(py), zCoord());
+		parent.vertex(xCoord(px + size), yCoord(py), zCoord());
+		parent.vertex(xCoord(px), yCoord(py - size), zCoord());
+		parent.vertex(xCoord(px), yCoord(py + size), zCoord());
+		parent.endShape();
+		endScreenDrawing();
+		
+		parent.strokeWeight(1);
+		parent.noStroke();
 	}
 	
 	/**
@@ -1195,7 +1205,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
 	 */
-	public void filledCircle(int color, PVector center, float radius) {
+	public void drawFilledCircle(int color, PVector center, float radius) {
 		float x = center.x;
 		float y = center.y;
 		float angle, x2, y2;
@@ -1215,26 +1225,72 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	/**
 	 * Draws a filled square using screen coordinates.
-	 * @param color Color used to fill the circle.
-	 * @param center Circle screen center.
-	 * @param edge Circle screen radius.
+	 * @param color Color used to fill the square.
+	 * @param center Square screen center.
+	 * @param edge Square edge length.
 	 * 
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
 	 */
-	public void filledSquare(int color, PVector center, float edge) {
+	public void drawFilledSquare(int color, PVector center, float edge) {
 		float x = center.x;
 		float y = center.y;
 		parent.noStroke();
 		parent.fill(color);
 		beginScreenDrawing();
 		parent.beginShape(QUADS);
-		parent.vertex(Scene.xCoord(x-10), Scene.yCoord(y+10), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x+10), Scene.yCoord(y+10), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x+10), Scene.yCoord(y-10), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x-10), Scene.yCoord(y-10), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x-edge), Scene.yCoord(y+edge), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x+edge), Scene.yCoord(y+edge), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x+edge), Scene.yCoord(y-edge), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x-edge), Scene.yCoord(y-edge), Scene.zCoord());
 		parent.endShape();
 		endScreenDrawing();
+	}
+	
+	/**
+	 * Draws the classical shooter target on the screen.
+	 * 
+	 * @param color Color of the target
+	 * @param center Center of the target on the screen
+	 * @param length Length of the target in pixels
+	 * @param strokeWeight Stroke weight
+	 */
+	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {		
+		float x = center.x;
+		float y = center.y;
+		parent.stroke(color);
+		parent.strokeWeight(strokeWeight);
+		parent.noFill();
+		
+		beginScreenDrawing();
+		parent.beginShape();		
+		parent.vertex(Scene.xCoord((x-length)), Scene.yCoord((y-length)+(0.6f*length)), Scene.zCoord());		
+		parent.vertex(Scene.xCoord(x-length), Scene.yCoord(y-length), Scene.zCoord());
+		parent.vertex(Scene.xCoord((x-length)+(0.6f*length)), Scene.yCoord((y-length)), Scene.zCoord());
+		parent.endShape();
+		
+		parent.beginShape();
+		parent.vertex(Scene.xCoord((x+length)-(0.6f*length)), Scene.yCoord(y-length), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x+length), Scene.yCoord(y-length), Scene.zCoord());		
+		parent.vertex(Scene.xCoord(x+length), Scene.yCoord((y-length)+(0.6f*length)), Scene.zCoord());
+		parent.endShape();
+		
+		parent.beginShape();
+		parent.vertex(Scene.xCoord(x+length), Scene.yCoord((y+length)-(0.6f*length)), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x+length), Scene.yCoord(y+length), Scene.zCoord());
+		parent.vertex(Scene.xCoord((x+length)-(0.6f*length)), Scene.yCoord(y+length), Scene.zCoord());
+		parent.endShape();
+		
+		parent.beginShape();
+		parent.vertex(Scene.xCoord((x-length)+(0.6f*length)), Scene.yCoord(y+length), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x-length), Scene.yCoord(y+length), Scene.zCoord());
+		parent.vertex(Scene.xCoord(x-length), Scene.yCoord((y+length)-(0.6f*length)), Scene.zCoord());
+		parent.endShape();		
+		endScreenDrawing();
+		
+		drawCross(color, center.x, center.y, 0.6f*length, strokeWeight);
+		
+		parent.strokeWeight(1);
 	}
 	
 	/**

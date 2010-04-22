@@ -1178,7 +1178,13 @@ public class Camera implements Cloneable {
 			info = false;
 		}
 		
-		kfi.get(key).addKeyFrame(frame(), false);
+		//Original line:
+		//kfi.get(key).addKeyFrame(frame(), false);
+		//TODO: experimental for editing camera paths. Fix me before release!!!
+		//kfi.get(key).addKeyFrame(new InteractiveFrame((InteractiveFrame) frame()));
+		//InteractiveFrame iF = new InteractiveFrame();		
+		kfi.get(key).addKeyFrame(new InteractiveFrame(frame()));
+		
 		if(info)
 			PApplet.println("Path " + key + ", position " + kfi.get(key).numberOfKeyFrames() + " added");
 	}
