@@ -19,7 +19,6 @@
  * can interfere).
  */
 
-import processing.core.*;
 import remixlab.proscene.*;
 
 import java.awt.Point;

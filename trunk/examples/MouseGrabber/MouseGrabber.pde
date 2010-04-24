@@ -11,7 +11,6 @@
  * Press 'h' to toggle the mouse and keyboard navigation help. 
  */
 
-import processing.core.*;
 import remixlab.proscene.*;
 
 Scene scene;

@@ -25,7 +25,6 @@ import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
 
-import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 
