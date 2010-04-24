@@ -6,7 +6,7 @@
  * KeyFrameInterpolator functionality.
  *
  * KeyFrameInterpolator smoothly interpolate its attached Camera Frames over
- * time on  a path defined by Frames. The interpolation can be
+ * time on a path defined by Frames. The interpolation can be
  * started/stopped/reset, played in loop, played at a different speed, etc...
  *
  * In this example, a Camera path is defined by four InteractivedCameraFrames
