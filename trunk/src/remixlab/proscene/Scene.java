@@ -605,8 +605,13 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
-		if (frameSelectionHintIsDrawn()) drawInteractiveFrameSelectionHint();
-		if (cameraPathsAreDrawn()) camera().drawAllPaths();
+		if (frameSelectionHintIsDrawn()) drawSelectionHints();
+		if (cameraPathsAreDrawn()) {
+			camera().drawAllPaths();
+			drawCameraPathSelectionHints();
+		} else {
+			camera().hideAllPaths();
+		}
 	}
 	
 	/** The method that actually defines the scene.
@@ -1151,16 +1156,41 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	}
 	
 	/**
-	 * Draws all InteractiveFrames' selection regions (a 10x10 shooter target) as a visual hint.
+	 * Draws all InteractiveFrames' selection regions (a 10x10 shooter target visual hint).
+	 * 
+	 * <b>Attention:</b> If the InteractiveFrame is part of a Camera path draws nothing.
+	 * 
+	 * @see #drawCameraPathSelectionHints()
 	 */
-	protected void drawInteractiveFrameSelectionHint() {
-		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
+	protected void drawSelectionHints() {
+		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {			
 			InteractiveFrame iF = (InteractiveFrame) mg;//downcast needed
-			PVector center = camera().projectedCoordinatesOf( iF.position() );
-			if ( mg.grabsMouse() )
-				drawShooterTarget(parent.color(0,255,0),center,12,2);
-			else
-				drawShooterTarget(parent.color(210,210,210),center,10,1);
+			if ( !iF.isInCameraPath() ) {
+				PVector center = camera().projectedCoordinatesOf( iF.position() );
+				if ( mg.grabsMouse() )
+					drawShooterTarget(parent.color(0,255,0),center,12,2);
+				else
+					drawShooterTarget(parent.color(210,210,210),center,10,1);
+			}
+		}
+	}
+	
+	/**
+	 * Draws the selection regions (a 10x10 shooter target visual hint) of all InteractiveFrames
+	 * forming part of the Camera paths.
+	 * 
+	 * @see #drawSelectionHints()
+	 */
+	protected void drawCameraPathSelectionHints() {
+		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {			
+			InteractiveFrame iF = (InteractiveFrame) mg;//downcast needed
+			if ( iF.isInCameraPath() ) {
+				PVector center = camera().projectedCoordinatesOf( iF.position() );
+				if ( mg.grabsMouse() )
+					drawShooterTarget(parent.color(0,255,255),center,12,2);
+				else
+					drawShooterTarget(parent.color(255,255,0),center,10,1);
+			}
 		}
 	}
 	

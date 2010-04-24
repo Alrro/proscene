@@ -1156,8 +1156,22 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
+	 * Convenience function that simply calls {@code addKeyFrameToPath(key, true)}.
+	 * <p>
+	 * The resulting created camera path will be editable.
+	 * 
+	 * @see #addKeyFrameToPath(int, boolean) 
+	 */
+	public void addKeyFrameToPath(int key) {
+		addKeyFrameToPath(key, true);
+	}
+	
+	/**
 	 * Adds the current Camera {@link #position()} and {@link #orientation()} as a keyFrame to
-	 * path {@code key}.
+	 * path {@code key}. If {@code editablePath} is {@code true}, builds an InteractiveFrame (from
+	 * the current Camera {@link #position()} and {@link #orientation()}) before adding it
+	 * (see {@link remixlab.proscene.InteractiveFrame#InteractiveFrame(InteractiveCameraFrame)}).
+	 * In the latter mode the resulting created path will be editable.
 	 * <p>
 	 * This method can also be used if you simply want to save a Camera point of view (a path
 	 * made of a single keyFrame). Use {@link #playPath(int)} to make the Camera play the
@@ -1169,7 +1183,7 @@ public class Camera implements Cloneable {
 	 * If you use directly this method and the {@link #keyFrameInterpolator(int)} does not exist,
 	 * a new one is created.
 	 */
-	public void addKeyFrameToPath(int key) {
+	public void addKeyFrameToPath(int key, boolean editablePath) {
 		//TODO: info should go on the applet ;)
 	    boolean info = true;
 		if (!kfi.containsKey(key)) {
@@ -1178,12 +1192,10 @@ public class Camera implements Cloneable {
 			info = false;
 		}
 		
-		//Original line:
-		//kfi.get(key).addKeyFrame(frame(), false);
-		//TODO: experimental for editing camera paths. Fix me before release!!!
-		//kfi.get(key).addKeyFrame(new InteractiveFrame((InteractiveFrame) frame()));
-		//InteractiveFrame iF = new InteractiveFrame();		
-		kfi.get(key).addKeyFrame(new InteractiveFrame(frame()));
+		if (editablePath)
+			kfi.get(key).addKeyFrame(new InteractiveFrame(frame()));
+		else
+			kfi.get(key).addKeyFrame(frame(), false);
 		
 		if(info)
 			PApplet.println("Path " + key + ", position " + kfi.get(key).numberOfKeyFrames() + " added");
@@ -1221,6 +1233,7 @@ public class Camera implements Cloneable {
 		//TODO: info should go on the applet ;)
 		if (kfi.containsKey(key)) {
 			kfi.get(key).stopInterpolation();
+			kfi.get(key).deletePath();
 			kfi.remove(key);
 			PApplet.println("Path " + key + " deleted");
 		}
@@ -1247,16 +1260,37 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
-	 * Draws all the Camera paths defined by the {@link #keyFrameInterpolator(int)}.
+	 * Draws all the Camera paths defined by {@link #keyFrameInterpolator(int)} and makes them editable by adding
+	 * all its Frames to the mouse grabber pool. 
 	 * <p>
-	 * Simply calls {@link remixlab.proscene.KeyFrameInterpolator#drawPath(int, int, float)} for all the defined paths.
+	 * First calls {@link remixlab.proscene.KeyFrameInterpolator#addFramesToMouseGrabberPool()} and then
+	 * {@link remixlab.proscene.KeyFrameInterpolator#drawPath(int, int, float)} for all the defined paths.
+	 * 
+	 * @see #hideAllPaths()
 	 */
 	public void drawAllPaths() {
 		it = kfi.keySet().iterator();
 	    while (it.hasNext()) {
 	      Integer key = it.next();
+	      kfi.get(key).addFramesToMouseGrabberPool();
 	      kfi.get(key).drawPath(3, 5, sceneRadius());
-	    }	
+	    }
+	}
+	
+	/**
+	 * Hides all the Camera paths defined by {@link #keyFrameInterpolator(int)} by provisionally removing all
+	 * its Frames from the mouse grabber pool.
+	 * <p>
+	 * Simply calls {@link remixlab.proscene.KeyFrameInterpolator#removeFramesFromMouseGrabberPool()}.
+	 * 
+	 * @see #drawAllPaths()
+	 */
+	public void hideAllPaths() {
+		it = kfi.keySet().iterator();
+	    while (it.hasNext()) {
+	      Integer key = it.next();
+	      kfi.get(key).removeFramesFromMouseGrabberPool();
+	    }
 	}
 
 	// 7. PROCESSING MATRICES
