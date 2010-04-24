@@ -2,7 +2,8 @@
  * Frame Interpolation.
  * by Jean Pierre Charalambos.
  * 
- * This example illustrates the KeyFrameInterpolator functionality.
+ * This example (together with Camera Interpolation) illustrates the
+ * KeyFrameInterpolator functionality.
  *
  * KeyFrameInterpolator smoothly interpolate its attached Frame over time on
  * a path defined by Frames. The interpolation can be started/stopped/reset,
@@ -19,7 +20,6 @@
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
-import processing.core.*;
 import remixlab.proscene.*;
 
 Scene scene;

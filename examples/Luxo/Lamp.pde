@@ -135,9 +135,9 @@ public class Lamp {
 
   public void setColor(boolean selected) {
     if (selected)
-      parent.fill(240, 240, 0);
+      parent.fill(200, 200, 0);
     else
-      parent.fill(240, 240, 240);
+      parent.fill(200, 200, 200);
   }
   
   public InteractiveFrame frame(int i) {

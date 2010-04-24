@@ -545,7 +545,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
 		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
-		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play key frame interpolators\n";
+		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play camera key frame interpolators\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
 		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
 		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
@@ -1170,7 +1170,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 				if ( mg.grabsMouse() )
 					drawShooterTarget(parent.color(0,255,0),center,12,2);
 				else
-					drawShooterTarget(parent.color(210,210,210),center,10,1);
+					drawShooterTarget(parent.color(240,240,240),center,10,1);
 			}
 		}
 	}
