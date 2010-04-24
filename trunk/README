@@ -34,8 +34,9 @@ http://codeanticode.wordpress.com/2010/03/04/glgraphics-0-9-3-3/).
 CHANGELOG
 
   * Version 0.8.0
-    + Adding keyFrames' functionality through KeyFrameInterpolator class.
-    + New examples: KeyFrames, Luxo, PointUnderPixel and ScreenDrawing.
+    + Adding keyFrames' functionality through the KeyFrameInterpolator class.
+    + New examples: CameraInterpolation, FrameInterpolation, Luxo, PointUnderPixel and
+                    ScreenDrawing.
  
 DOWNLOAD
 
