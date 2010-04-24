@@ -1,5 +1,5 @@
 /**
- * Key Frames.
+ * Frame Interpolation.
  * by Jean Pierre Charalambos.
  * 
  * This example illustrates the KeyFrameInterpolator functionality.
