@@ -1,0 +1,57 @@
+
+                                  proscene
+
+	      	            Version 0.8.0 April, 2010
+
+
+  Copyright (C) 2010 Jean Pierre Charalambos. All rights reserved.
+  http://code.google.com/p/proscene/
+  Send e-mail to: jpcharalambosh@unal.edu.co or nakednous@gmail.com
+
+Proscene (pronounced similar as the Czech word "prosím" which means "please") is a java
+library which provides classes to ease the creation of interactive 3D scenes in Processing. 
+
+Proscene has been pretty much inspired in the Qt's OpenGL C++ libqglviewer library
+(http://www.libqglviewer.com/). Proscene has a very similar functionality and API
+reference to that found in libqglviewer, both of which have been ported to Java.
+Most of the examples found in the current release (v-0.8.0) are implementations of the
+libqglviewer counterparts.
+
+Proscene provides seemless integration with Processing: Its API has been designed to fit
+that of Processing and its implementation has been optimized to work along side with it.
+One of Proscene main implementation goals was to keep it independent of the underlying
+Processing 3D renderer. It has been tested with the OPENGL, P3D and GLGRAPHICS renderers
+and can properly work with any of them.
+ 
+Many thanks to Gilles Debunne for releasing his fantastic libqglviewer as free software.
+Many thanks to Andres Colubri (http://codeanticode.wordpress.com) for redistributing
+previous releases of Proscene (such as v-0.7.0) along side his fantastic GLGraphics 
+Processing library (http://users.design.ucla.edu/~acolubri/processing/glgraphics/home/).
+Proscene actually started as a GLGraphics component and thanks to Andres contributions it
+became a stand-alone library (you may read the whole story here: 
+http://codeanticode.wordpress.com/2010/03/04/glgraphics-0-9-3-3/).
+
+CHANGELOG
+
+  * Version 0.8.0
+    + Adding keyFrames' functionality through KeyFrameInterpolator class.
+    + New examples: KeyFrames, Luxo, PointUnderPixel and ScreenDrawing.
+ 
+DOWNLOAD
+
+Released packages are available at the project's page: http://code.google.com/p/proscene/
+
+INSTALLATION
+
+The installation of the library is quite straightforward. Just unzip the
+proscene-x.y.z.zip file inside your Processing's libraries folder.
+
+LICENSE
+
+Proscene is free software; you can redistribute it and/or modify it under the terms of
+the GNU General Public License as published by the Free Software Foundation; either
+version 3 of the License, or (at your option) any later version.
+ 
+A copy of the GNU General Public License is available on the World Wide Web at
+<http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by writing to the
+Free Software Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA. 
