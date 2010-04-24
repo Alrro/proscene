@@ -3,7 +3,7 @@
  * interactive 3D scenes in Processing.
  * @author Jean Pierre Charalambos, A/Prof. National University of Colombia
  * (http://disi.unal.edu.co/profesores/pierre/, http://www.unal.edu.co/).
- * @version 0.7.0
+ * @version 0.8.0
  * 
  * Copyright (c) 2010 Jean Pierre Charalambos
  * 
