@@ -521,14 +521,44 @@ public class KeyFrameInterpolator implements Cloneable {
 	}
 	
 	/**
-	 * Removes all keyFrames from the path. The {@link #numberOfKeyFrames()} is set to 0.
+	 * Removes all keyFrames from the path. Calls {@link #removeFramesFromMouseGrabberPool()}.
+	 * The {@link #numberOfKeyFrames()} is set to 0.
+	 * 
+	 * @see #removeFramesFromMouseGrabberPool()
 	 */
 	public void deletePath() {
-		stopInterpolation();
+		stopInterpolation();		
+		removeFramesFromMouseGrabberPool();		
 		keyFr.clear();
 		pathIsValid = false;
 		valuesAreValid = false;
 		currentFrmValid = false;
+	}
+	
+	/**
+	 * Removes all the Frames from the mouse grabber pool (if they were provided as references).
+	 * 
+	 * @see #addFramesToMouseGrabberPool()
+	 */
+	protected void removeFramesFromMouseGrabberPool() {
+		for (int i=0; i<keyFr.size(); ++i) {			
+			if (keyFr.get(i).frame() != null)
+				if  ( ((InteractiveFrame) keyFr.get(i).frame()).isInMouseGrabberPool() )
+					((InteractiveFrame) keyFr.get(i).frame()).removeFromMouseGrabberPool();
+	    }
+	}
+	
+	/**
+	 * Re-adds all the Frames to the mouse grabber pool (if they were provided as references).
+	 * 
+	 * @see #removeFramesFromMouseGrabberPool()
+	 */
+	protected void addFramesToMouseGrabberPool() {
+		for (int i=0; i<keyFr.size(); ++i) {			
+			if (keyFr.get(i).frame() != null)
+				if  ( !((InteractiveFrame) keyFr.get(i).frame()).isInMouseGrabberPool() )
+					((InteractiveFrame) keyFr.get(i).frame()).addInMouseGrabberPool();
+	    }
 	}
 	
 	protected void updateModifiedFrameValues() {
@@ -678,7 +708,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			
 			if (keyFr.get(0) == keyFr.get(keyFr.size()-1 ) )
 				path.add(new Frame(keyFr.get(0).position(), keyFr.get(0).orientation()));
-			else{
+			else {
 				KeyFrame [] kf = new KeyFrame[4];
 				kf[0] = keyFr.get(0);
 				kf[1] = kf[0];

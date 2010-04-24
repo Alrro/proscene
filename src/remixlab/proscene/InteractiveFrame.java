@@ -85,6 +85,8 @@ public class InteractiveFrame extends Frame
 	protected Point prevPos, pressPos;
 
 	protected boolean grbsMouse;
+	
+	protected boolean isInCamPath;
 
 	/**
 	 * Default constructor.
@@ -100,6 +102,7 @@ public class InteractiveFrame extends Frame
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		
 		addInMouseGrabberPool();
+		isInCamPath = false;
 		grbsMouse = false;
 		
 		setRotationSensitivity(1.0f);
@@ -122,28 +125,24 @@ public class InteractiveFrame extends Frame
 	}
 	
 	/**
-	 * Copy constructor.
-	 * 	
-	 * @param other the Frame containing the object to be copied
+	 * Ad-hoc constructor needed to make editable a Camera path defined a by KeyFrameInterpolator.
+	 * <p>
+	 * Constructs a Frame from the the {@code iFrame} {@link #translation()} and {@link #orientation()}
+	 * and immediately adds it to the {@link #mouseGrabberPool()}.
+	 * <p>
+	 * A call on {@link #isInCameraPath()} on this Frame will return {@code true}.
+	 * 
+	 * <b>Attention:</b> Internal use. You should call this constructor in your own applications.
+	 * 
+	 * @see remixlab.proscene.Camera#addKeyFrameToPath(int)
 	 */
-	//TODO: experimental for editing camera paths. Fix me before release!!!
-	/**
-	public InteractiveFrame(InteractiveFrame other) {
-	    //TODO needs testing
-		super(new Frame((Frame)other));
-		prevPos = new Point(other.prevPos.x, other.prevPos.y);
-		pressPos = new Point(other.pressPos.x, other.pressPos.y);
-		spngTimer = new Timer(10, other.taskPerformer);
-	}
-	*/
-	
-	//TODO: experimental for editing camera paths. Fix me before release!!!
-	public InteractiveFrame(InteractiveCameraFrame iFrame) {
-		super(iFrame.position(), iFrame.orientation());
+	protected InteractiveFrame(InteractiveCameraFrame iFrame) {
+		super(iFrame.translation(), iFrame.rotation());
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		
 		addInMouseGrabberPool();
+		isInCamPath = true;
 		grbsMouse = false;
 		
 		setRotationSensitivity(1.0f);
@@ -161,16 +160,19 @@ public class InteractiveFrame extends Frame
 			}
 		};
 		spngTimer = new Timer(10, taskPerformer);
-		/**
-		spngTimer = new Timer(10, taskPerformer);
-		prevPos = new Point(iFrame.prevPos.x, iFrame.prevPos.y);
-		pressPos = new Point(iFrame.pressPos.x, iFrame.pressPos.y);
-		spngTimer = new Timer(10, ((InteractiveFrame)iFrame).taskPerformer);
-		*/
 		list = new ArrayList<KeyFrameInterpolator>();
 		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
 		while(it.hasNext())
 			list.add(it.next());
+	}
+	
+	/**
+	 * Returns {@code true} if the InteractiveFrame forms part of a Camera path and
+	 * {@code false} otherwise.
+	 * 
+	 */
+	public boolean isInCameraPath() {
+		return isInCamPath;
 	}
 
 	/**
