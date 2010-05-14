@@ -33,6 +33,7 @@ void setup() {
   scene = new Scene(this);
   scene.setRadius(70);
   scene.showAll();
+  scene.setFrameSelectionHintIsDrawn(true);
   kfi = new KeyFrameInterpolator();
   kfi.setLoopInterpolation();
   

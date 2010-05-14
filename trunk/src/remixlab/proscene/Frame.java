@@ -526,7 +526,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Same as @ {@code rotate(q, true)}. Calls {@link #modified()}.
+	 * Same as {@code rotate(q, true)}. Calls {@link #modified()}.
 	 * 
 	 * @see #rotate(Quaternion, boolean)
 	 * @see #translate(PVector)
@@ -1110,7 +1110,7 @@ public class Frame implements Cloneable {
 	 * This method should be used in conjunction with {@code applyMatrix()}
 	 * to modify the processing modelview matrix from a Frame: 
 	 * <p> 
-	 * {@code // The modelview here corresponds to the world coordinate system.}
+	 * {@code // Here the modelview matrix corresponds to the world coordinate system.} <br>
 	 * {@code Frame fr = new Frame(pos, Quaternion(from, to));} <br>
 	 * {@code pushMatrix();} <br>
 	 * {@code applyMatrix(worldMatrix());} <br>
@@ -1121,7 +1121,7 @@ public class Frame implements Cloneable {
 	 * {@link #referenceFrame()} hierarchy is taken into account to define the
 	 * Frame transformation from the world coordinate system.
 	 * Use {@link #matrix()} to get the local Frame transformation matrix
-	 * (i.e. defined with respect to the referenceFrame()).
+	 * (i.e. defined with respect to the {@link #referenceFrame()}).
 	 * These two match when the {@link #referenceFrame()} is {@code null}. 
 	 * <p> 
 	 * <b>Attention:</b> The result is only valid until the next call to
@@ -1141,7 +1141,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Sets the Frame from an PMatrix3D (processing matrix) representation (rotation
+	 * Sets the Frame from a PMatrix3D (processing matrix) representation (rotation
 	 * in the upper left 3x3 matrix and translation on the last column). Calls {@link #modified()}.
 	 * <p>
 	 * Hence, if a code fragment looks like: 

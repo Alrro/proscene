@@ -1,6 +1,6 @@
 /**
  * Luxo. 
- * by Jean Pierre Charalambos.  
+ * by Jean Pierre Charalambos. 
  *
  * A more complex example that combines InteractiveFrames, selection and constraints.
  * 
@@ -47,7 +47,7 @@ void draw() {
   for (int i=0; i<=nbPatches; ++i) {
     vertex((200*(float)i/nbPatches-100), (200*j/nbPatches-100));
     vertex((200*(float)i/nbPatches-100), (200*(float)(j+1)/nbPatches-100));
-    }
+  }
   endShape();
   }
   scene.endDraw();

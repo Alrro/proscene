@@ -28,7 +28,7 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * A AxisPlaneConstraint defined in the camera coordinate system. 
+ * An AxisPlaneConstraint defined in the camera coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
  * are expressed in the associated {@link #camera()} coordinate system.

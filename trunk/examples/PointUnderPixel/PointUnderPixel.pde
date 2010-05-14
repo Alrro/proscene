@@ -1,5 +1,5 @@
 /**
- * Revolve Around Point. 
+ * Point Under Pixel.
  * by Jean Pierre Charalambos.
  * 
  * This example illustrates 3D world point picking.

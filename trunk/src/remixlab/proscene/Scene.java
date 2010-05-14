@@ -537,7 +537,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		String textToDisplay = new String();
 		textToDisplay += "KEYBOARD\n";
 		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
-		textToDisplay += "a/g: Toggle axis/grid/ drawn\n";
+		textToDisplay += "a/g: Toggle axis/grid drawn\n";
 		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
