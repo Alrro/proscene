@@ -107,6 +107,9 @@ public class Camera implements Cloneable {
 	// A t t a c h e d   S c e n e
 	boolean attachedToPCam;
 	
+	// P R O C E S S I N G   A P P L E T
+    public static PApplet parent;
+	
 	/**
 	 * Convenience constructor that simply calls {@code this(true)}.
 	 * 
@@ -135,6 +138,7 @@ public class Camera implements Cloneable {
 	 * @see #Camera()
 	 */
 	public Camera(boolean attachedToScene) {
+		parent = Scene.parent;
 		attachedToPCam = attachedToScene;
 		
 		fldOfView = Quaternion.PI / 4.0f;
@@ -187,7 +191,7 @@ public class Camera implements Cloneable {
 		}
 	}
 	
-	// 0. ATTACHED PCAMERA MATRICES
+	// 1. ATTACHED PCAMERA MATRICES
 	
 	/**
 	 * Convenience function that simply returns {@code !isAttachedToScene()}
@@ -287,7 +291,7 @@ public class Camera implements Cloneable {
 		}
 	}
 
-	// 1. POSITION AND ORIENTATION
+	// 2. POSITION AND ORIENTATION
 
 	/**
 	 * Returns the Camera position (the eye), defined in the world coordinate
@@ -492,7 +496,7 @@ public class Camera implements Cloneable {
 		frm.setCoordinateSystemConvention(CoordinateSystemConvention.RIGHT_HANDED);
 	}
 	
-	// 2. FRUSTUM
+	// 3. FRUSTUM
 
 	/**
 	 * Returns the Camera.Type of the Camera. 
@@ -925,7 +929,7 @@ public class Camera implements Cloneable {
 		return 1.0f;	
 	}
 
-	// 3. SCENE RADIUS AND CENTER
+	// 4. SCENE RADIUS AND CENTER
 
 	/**
 	 * Returns the radius of the scene observed by the Camera. 
@@ -1017,7 +1021,7 @@ public class Camera implements Cloneable {
 		setSceneRadius(0.5f * (PVector.sub(max, min)).mag());
 	}
 
-	// 4. REVOLVE AROUND POINT
+	// 5. REVOLVE AROUND POINT
 
 	/**
 	 * The point the Camera revolves around its
@@ -1099,7 +1103,7 @@ public class Camera implements Cloneable {
 		return new WorldPoint(new PVector(0,0,0), false);
 	}
 
-	// 5. ASSOCIATED FRAME
+	// 6. ASSOCIATED FRAME
 
 	/**
 	 * Returns the InteractiveCameraFrame attached to the Camera. 
@@ -1134,7 +1138,7 @@ public class Camera implements Cloneable {
 		interpolationKfi.setFrame(frame());
 	}
 	
-	// 6. KEYFRAMED PATHS
+	// 7. KEYFRAMED PATHS
 	
 	/**
 	 * Returns the KeyFrameInterpolator that defines the Camera path number {@code key}.
@@ -1293,7 +1297,7 @@ public class Camera implements Cloneable {
 	    }
 	}
 
-	// 7. PROCESSING MATRICES
+	// 8. PROCESSING MATRICES
 	
 	/**
 	 * Convenience function that simply returns {@code getProjectionMatrix(new PMatrix3D())}
@@ -1477,7 +1481,168 @@ public class Camera implements Cloneable {
 			modelViewMat.set(modelview);
 	}
 	
-	// 8. WORLD -> CAMERA
+	// 9. DRAWING
+	
+	/**
+	 * Convenience function that simply calls {@code draw(true, 1.0f)}
+	 * 
+	 * @see #draw(boolean, float)
+	 */
+	void draw() {
+		draw(true, 1.0f);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code draw(true, scale)}
+	 * 
+	 * @see #draw(boolean, float)
+	 */
+	void draw(float scale) {
+		draw(true, scale);
+	}
+	
+	/**
+	 * Convenience function that simply calls draw(drawFarPlane, 1.0f)}
+	 * 
+	 * @see #draw(boolean, float)
+	 */
+	void draw(boolean drawFarPlane) {
+		draw(drawFarPlane, 1.0f);
+	}
+	
+	/**
+	 * Draws a representation of the Camera in the 3D world.
+	 * <p>
+	 * The near and far planes are drawn as quads, the frustum is drawn using lines and the camera up
+	 * vector is represented by an arrow to disambiguate the drawing.
+	 * <p>
+	 * Note that the current processing color is used to draw the near and far planes.
+	 * <p>
+	 * When {@code drawFarPlane} is {@code false}, only the near plane is drawn. {@code scale} can be used
+	 * to scale the	drawing: a value of 1.0 (default) will draw the Camera's frustum at its actual size.
+	 * <p>
+	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be visible, but may create
+	 * artifacts due to numerical imprecisions.
+	 */
+	public void draw(boolean drawFarPlane, float scale) {
+		parent.pushMatrix();
+		
+		parent.applyMatrix(frame().worldMatrix());
+		//TODO: use something like:
+		//frame().applyTransformation(parent);
+		
+		//parent.applyMatrix(myFr.matrix());
+		//myFr.applyTransformation(parent);
+		
+		// 0 is the upper left coordinates of the near corner, 1 for the far one
+		PVector points[] = new PVector[2];
+		points[0].z = scale * zNear();
+		points[1].z = scale * zFar();
+		
+		switch (type()) {
+		case PERSPECTIVE: {
+			points[0].y = points[0].z * PApplet.tan(fieldOfView()/2.0f);
+			points[0].x = points[0].y * aspectRatio();			
+			float ratio = points[1].z / points[0].z;
+			points[1].y = ratio * points[0].y;
+			points[1].x = ratio * points[0].x;
+			break;
+		}
+		case ORTHOGRAPHIC: {
+			float [] wh = getOrthoWidthHeight();
+			points[0].x = points[1].x = scale * wh[0];
+			points[0].y = points[1].y = scale * wh[1];
+			break;
+		}
+		}
+		
+		int farIndex = drawFarPlane?1:0;
+		
+		// Near and (optionally) far plane(s)
+		parent.beginShape(PApplet.QUADS);
+		for (int i=farIndex; i>=0; --i) {
+			parent.normal(0.0f, 0.0f, (i==0)?1.0f:-1.0f);
+			parent.vertex( points[i].x,  points[i].y, -points[i].z);
+			parent.vertex(-points[i].x,  points[i].y, -points[i].z);
+			parent.vertex(-points[i].x, -points[i].y, -points[i].z);
+			parent.vertex( points[i].x, -points[i].y, -points[i].z);
+		}
+		parent.endShape();
+		
+		// Up arrow
+		float arrowHeight    = 1.5f * points[0].y;
+		float baseHeight     = 1.2f * points[0].y;
+		float arrowHalfWidth = 0.5f * points[0].x;
+		float baseHalfWidth  = 0.3f * points[0].x;
+		
+		parent.noStroke();
+		parent.fill(170);
+		// Base
+		parent.beginShape(PApplet.QUADS);
+		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
+			parent.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
+			parent.vertex( baseHalfWidth, -points[0].y, -points[0].z);
+			parent.vertex( baseHalfWidth, -baseHeight,  -points[0].z);
+			parent.vertex(-baseHalfWidth, -baseHeight,  -points[0].z);
+		}
+		else {
+			parent.vertex(-baseHalfWidth, points[0].y, -points[0].z);
+			parent.vertex( baseHalfWidth, points[0].y, -points[0].z);
+			parent.vertex( baseHalfWidth, baseHeight,  -points[0].z);
+			parent.vertex(-baseHalfWidth, baseHeight,  -points[0].z);
+		}
+		parent.endShape();
+		
+		// Arrow
+		parent.beginShape(PApplet.TRIANGLES);
+		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
+			parent.vertex( 0.0f,           -arrowHeight, -points[0].z);
+			parent.vertex(-arrowHalfWidth, -baseHeight,  -points[0].z);
+			parent.vertex( arrowHalfWidth, -baseHeight,  -points[0].z);
+		}
+		else {
+			parent.vertex( 0.0f,           arrowHeight, -points[0].z);
+			parent.vertex(-arrowHalfWidth, baseHeight,  -points[0].z);
+			parent.vertex( arrowHalfWidth, baseHeight,  -points[0].z);
+		}		
+		parent.endShape();
+		
+		// Frustum lines
+		switch (type()) {
+		case PERSPECTIVE :
+			parent.beginShape(PApplet.LINES);
+			parent.vertex(0.0f, 0.0f, 0.0f);
+			parent.vertex( points[farIndex].x,  points[farIndex].y, -points[farIndex].z);
+			parent.vertex(0.0f, 0.0f, 0.0f);
+			parent.vertex(-points[farIndex].x,  points[farIndex].y, -points[farIndex].z);
+			parent.vertex(0.0f, 0.0f, 0.0f);
+			parent.vertex(-points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
+			parent.vertex(0.0f, 0.0f, 0.0f);
+			parent.vertex( points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
+			parent.endShape();
+			break;
+			case ORTHOGRAPHIC :
+				if (drawFarPlane) {
+					parent.beginShape(PApplet.LINES);
+					parent.vertex( points[0].x,  points[0].y, -points[0].z);
+					parent.vertex( points[1].x,  points[1].y, -points[1].z);
+					parent.vertex(-points[0].x,  points[0].y, -points[0].z);
+					parent.vertex(-points[1].x,  points[1].y, -points[1].z);
+					parent.vertex(-points[0].x, -points[0].y, -points[0].z);
+					parent.vertex(-points[1].x, -points[1].y, -points[1].z);
+					parent.vertex( points[0].x, -points[0].y, -points[0].z);
+					parent.vertex( points[1].x, -points[1].y, -points[1].z);
+					parent.endShape();
+				}
+		}
+		
+		parent.noFill();//check me!
+		parent.stroke(170);//check me!
+		
+		parent.popMatrix();
+	}
+	
+	// 10. WORLD -> CAMERA
 
 	/**
 	 * Returns the Camera frame coordinates of a point {@code src} defined in
@@ -1504,7 +1669,7 @@ public class Camera implements Cloneable {
 		return frame().inverseCoordinatesOf(src);
 	}
 
-	// 9. 2D -> 3D
+	// 11. 2D -> 3D
 
 	/**
 	 * Gives the coefficients of a 3D half-line passing through the Camera eye
@@ -1653,7 +1818,7 @@ public class Camera implements Cloneable {
 			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
-	// 10. FLYSPEED
+	// 12. FLYSPEED
 
 	/**
 	 * Returns the fly speed of the Camera. 
@@ -1682,7 +1847,7 @@ public class Camera implements Cloneable {
 		frame().setFlySpeed(speed);
 	}
 
-	// 11. POSITION TOOLS
+	// 13. POSITION TOOLS
 
 	/**
 	 * Sets the Camera {@link #orientation()}, so that it looks at point
@@ -1980,7 +2145,7 @@ public class Camera implements Cloneable {
 		interpolationKfi.startInterpolation();
 	}
 
-	// 12. STEREO PARAMETERS
+	// 14. STEREO PARAMETERS
 
 	/**
 	 * Returns the user's inter-ocular distance (in meters). Default value is
@@ -2072,7 +2237,7 @@ public class Camera implements Cloneable {
 		focusDist = distance;
 	}
 	
-	// 13. Implementation of glu utility functions
+	// 15. Implementation of glu utility functions
 	
 	/**
 	 * Similar to {@code gluProject}: map object coordinates to window coordinates.
@@ -2143,7 +2308,7 @@ public class Camera implements Cloneable {
 	 * @param objCoordinate
 	 *            Return the computed object coordinates.                
 	 */
-	boolean unproject(float winx, float winy, float winz, PMatrix3D modelview,
+	public boolean unproject(float winx, float winy, float winz, PMatrix3D modelview,
 			              PMatrix3D projection, int viewport[], float []objCoordinate)	{
         PMatrix3D finalMatrix = new PMatrix3D(projection);
 	    float in[] = new float [4];

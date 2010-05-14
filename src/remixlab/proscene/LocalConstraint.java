@@ -28,7 +28,7 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * A AxisPlaneConstraint defined in the Frame local coordinate system. 
+ * An AxisPlaneConstraint defined in the Frame local coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
  * are expressed in the Frame local coordinate system (see

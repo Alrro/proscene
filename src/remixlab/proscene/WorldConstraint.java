@@ -28,7 +28,7 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * A AxisPlaneConstraint defined in the world coordinate system. 
+ * An AxisPlaneConstraint defined in the world coordinate system. 
  * <p> 
  * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
  * are expressed in the Frame world coordinate system (see
