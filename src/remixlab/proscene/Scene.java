@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
+
 import java.awt.Point;
 import java.awt.event.*;
 import javax.swing.event.*;
@@ -82,8 +83,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	PVector pupVec;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
-	public static PApplet parent;
-	public static PGraphics3D pg3d;
+	public PApplet parent;
+	public PGraphics3D pg3d;
 	
 	// O B J E C T S
 	protected Camera cam;
@@ -92,9 +93,9 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	boolean iFrameIsDrwn;	
 	
 	// S C R E E N   C O O R D I N A T E S
-	static float halfWidthSpace;
-	static float halfHeightSpace;
-	static float zC;
+	float halfWidthSpace;
+	float halfHeightSpace;
+	float zC;
 	
 	// Z O O M _ O N _ R E G I O N
 	Point fCorner;//also used for SCREEN_ROTATE
@@ -105,8 +106,8 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     private ActionListener taskTimerPerformer;
     
     // E X C E P T I O N   H A N D L I N G
-    protected static int beginDrawCalls;
-    protected static int startCoordCalls;
+    protected int beginDrawCalls;
+    protected int startCoordCalls;
 	
 	// M o u s e   G r a b b e r
 	MouseGrabber mouseGrbbr;
@@ -157,7 +158,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		//readyToGo = false;
 		mouseHandling = false;
-		cam = new Camera();
+		cam = new Camera(parent);
 		setCamera(camera());
 		
 		//setDefaultShortcuts();
@@ -632,9 +633,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * Displays some visual hints, such the {@link #help()} text.
 	 */
 	public void endDraw() {
+		//TODO: implement exception!
 		beginDrawCalls --;
 		if ( beginDrawCalls != 0 )
 			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
+		
 		if( helpIsDrawn() ) help();
 		if( zoomOnRegion ) drawZoomWindowHint();
 		if( rotateScreen ) drawScreenRotateLineHint();
@@ -938,161 +941,57 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     }
 	
     /**
-     * Convenience function that simply calls {@code drawAxis(100)} 
+     * Convenience wrapper function that simply calls {@code DrawingUtils.drawAxis(parent)}
+     * 
+     * @see remixlab.proscene.DrawingUtils#drawAxis(PApplet)
      */
-	public static void drawAxis() {
-		drawAxis(100);
+	public void drawAxis() {
+		DrawingUtils.drawAxis(parent);
 	}
 	
 	/**
-	 * Draws an axis of length {@code length} which origin correspond to that
-	 * of the world coordinate system.
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public static void drawAxis(float length) {
-		final float charWidth = length / 40.0f;
-		final float charHeight = length / 30.0f;
-		final float charShift = 1.04f * length;
-		
-		//parent.noLights();
-		
-		parent.beginShape(LINES);
-		// The X
-		parent.stroke(255, 178, 178);
-		parent.vertex(charShift,  charWidth, -charHeight);
-		parent.vertex(charShift, -charWidth,  charHeight);
-		parent.vertex(charShift, -charWidth, -charHeight);
-		parent.vertex(charShift,  charWidth,  charHeight);
-		// The Y
-		parent.stroke(178, 255, 178);
-		parent.vertex( charWidth, charShift, charHeight);
-		parent.vertex(0.0f,       charShift, 0.0f);
-		parent.vertex(-charWidth, charShift, charHeight);
-		parent.vertex(0.0f,       charShift, 0.0f);
-		parent.vertex(0.0f,       charShift, 0.0f);
-		parent.vertex(0.0f,       charShift, -charHeight);
-		// The Z
-		parent.stroke(178, 178, 255);
-		parent.vertex(-charWidth,  charHeight, charShift);
-		parent.vertex( charWidth,  charHeight, charShift);
-		parent.vertex( charWidth,  charHeight, charShift);
-		parent.vertex(-charWidth, -charHeight, charShift);
-		parent.vertex(-charWidth, -charHeight, charShift);
-		parent.vertex( charWidth, -charHeight, charShift);		
-		parent.endShape();
-	    
-		parent.noStroke();
-		// Z axis
-		parent.fill(178, 178, 255);
-		drawArrow(length, 0.01f*length);		
-		
-		// X Axis
-		parent.fill(255, 178, 178);
-		parent.pushMatrix();		
-		parent.rotateY(HALF_PI);
-		drawArrow(length, 0.01f*length);
-		parent.popMatrix();
-		
-		// Y Axis
-		parent.fill(178, 255, 178);
-		parent.pushMatrix();
-		parent.rotateX(-HALF_PI);
-		drawArrow(length, 0.01f*length);
-		parent.popMatrix();
-		
-		//parent.lights();		
+     * Convenience wrapper function that simply calls {@code DrawingUtils.drawAxis(parent, length)}
+     * 
+     * @see remixlab.proscene.DrawingUtils#drawAxis(PApplet, float)
+     */
+	public void drawAxis(float length) {
+		DrawingUtils.drawAxis(parent, length);
 	}
 	
 	/**
-	 * Simply calls {@code drawArrow(length, 0.05f * length)}
-	 * 
-	 * @see #drawArrow(float, float)
-	 */	
-	public static void drawArrow(float length){
-		float radius = 0.05f * length;
-		drawArrow(length, radius);
+     * Convenience wrapper function that simply calls {@code DrawingUtils.drawGrid(parent, 100, 10)}
+     * 
+     * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet)
+     */
+	public void drawGrid() {
+		DrawingUtils.drawGrid(parent, 100, 10);
 	}
 	
 	/**
-	 * Draws a 3D arrow along the positive Z axis. 
-	 * <p> 
-	 * {@code length} and {@code radius} define its geometry. 
-	 * <p> 
-	 * Use {@link #drawArrow(PVector, PVector, float)} to place the arrow in 3D. 
-	 */
-	public static void drawArrow(float length, float radius) {
-		float head = 2.5f*(radius / length) + 0.1f;
-		float coneRadiusCoef = 4.0f - 5.0f * head;
-		
-		cylinder(radius, length * (1.0f - head/coneRadiusCoef));
-		parent.translate(0.0f, 0.0f, length * (1.0f - head));
-		cone(coneRadiusCoef * radius, head * length);
-		parent.translate(0.0f, 0.0f, -length * (1.0f - head));
+     * Convenience wrapper function that simply calls {@code DrawingUtils.drawGrid(parent, size, 10)}
+     * 
+     * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float)
+     */
+	public void drawGrid(float size) {
+		DrawingUtils.drawGrid(parent, size, 10);
 	}
 	
 	/**
-	 * Draws a 3D arrow between the 3D point {@code from} and the 3D point {@code to},
-	 * both defined in the current ModelView coordinates system.
-	 * 
-	 * @see #drawArrow(float, float)
-	 */
-	public static void drawArrow(PVector from, PVector to, float radius) {
-		parent.pushMatrix();
-		parent.translate(from.x,from.y,from.z);		
-		parent.applyMatrix(new Quaternion(new PVector(0,0,1), PVector.sub(to, from)).matrix());		
-		drawArrow(PVector.sub(to, from).mag(), radius);
-		parent.popMatrix();
+     * Convenience wrapper function that simply calls {@code DrawingUtils.drawGrid(parent, 100, nbSubdivisions)}
+     * 
+     * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
+     */
+	public void drawGrid(int nbSubdivisions) {
+		DrawingUtils.drawGrid(parent, 100, nbSubdivisions);
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code drawGrid(100, 10)}
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public static void drawGrid() {
-		drawGrid(100, 10);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code drawGrid(size, 10)}
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public static void drawGrid(float size) {
-		drawGrid(size, 10);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code drawGrid(100, nbSubdivisions)}
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public static void drawGrid(int nbSubdivisions) {
-		drawGrid(100, nbSubdivisions);
-	}
-	
-	/** Draws a grid in the XY plane, centered on (0,0,0)
-	 * (defined in the current coordinate system).
-	 * <p>
-	 * {@code size} (processing scene units) and {@code nbSubdivisions} define its geometry.
-	 * 
-	 * @see #drawAxis(float) 
-	 */
-	public static void drawGrid(float size, int nbSubdivisions) {
-		//parent.noLights();		
-		parent.stroke(170, 170, 170);		
-		parent.beginShape(LINES);
-		for (int i=0; i<=nbSubdivisions; ++i) {
-			final float pos = size*(2.0f*i/nbSubdivisions-1.0f);
-			parent.vertex(pos, -size);
-			parent.vertex(pos, +size);
-			parent.vertex(-size, pos);
-			parent.vertex( size, pos);
-		}
-		parent.endShape();		
-		parent.noStroke();		
-		//parent.lights();
+     * Convenience wrapper function that simply calls {@code DrawingUtils.drawGrid(parent, size, nbSubdivisions)}
+     * 
+     * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
+     */
+	public void drawGrid(float size, int nbSubdivisions) {
+		DrawingUtils.drawGrid(parent, size, nbSubdivisions);
 	}
 	
 	/**
@@ -1243,11 +1142,11 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		parent.fill(color);
 		beginScreenDrawing();
 		parent.beginShape(TRIANGLE_FAN);
-		parent.vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord());
+		parent.vertex(xCoord(x), yCoord(y), zCoord());
 		for (angle=0.0f;angle<=TWO_PI; angle+=0.157f) {
 		    x2 = x+PApplet.sin(angle)*radius;
 		    y2 = y+PApplet.cos(angle)*radius;
-		    parent.vertex(Scene.xCoord(x2), Scene.yCoord(y2), Scene.zCoord());
+		    parent.vertex(xCoord(x2), yCoord(y2), zCoord());
 		}		
 		parent.endShape();
 		endScreenDrawing();
@@ -1269,10 +1168,10 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		parent.fill(color);
 		beginScreenDrawing();
 		parent.beginShape(QUADS);
-		parent.vertex(Scene.xCoord(x-edge), Scene.yCoord(y+edge), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x+edge), Scene.yCoord(y+edge), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x+edge), Scene.yCoord(y-edge), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x-edge), Scene.yCoord(y-edge), Scene.zCoord());
+		parent.vertex(xCoord(x-edge), yCoord(y+edge), zCoord());
+		parent.vertex(xCoord(x+edge), yCoord(y+edge), zCoord());
+		parent.vertex(xCoord(x+edge), yCoord(y-edge), zCoord());
+		parent.vertex(xCoord(x-edge), yCoord(y-edge), zCoord());
 		parent.endShape();
 		endScreenDrawing();
 	}
@@ -1294,27 +1193,27 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		
 		beginScreenDrawing();
 		parent.beginShape();		
-		parent.vertex(Scene.xCoord((x-length)), Scene.yCoord((y-length)+(0.6f*length)), Scene.zCoord());		
-		parent.vertex(Scene.xCoord(x-length), Scene.yCoord(y-length), Scene.zCoord());
-		parent.vertex(Scene.xCoord((x-length)+(0.6f*length)), Scene.yCoord((y-length)), Scene.zCoord());
+		parent.vertex(xCoord((x-length)), yCoord((y-length)+(0.6f*length)), zCoord());		
+		parent.vertex(xCoord(x-length), yCoord(y-length), zCoord());
+		parent.vertex(xCoord((x-length)+(0.6f*length)), yCoord((y-length)), zCoord());
 		parent.endShape();
 		
 		parent.beginShape();
-		parent.vertex(Scene.xCoord((x+length)-(0.6f*length)), Scene.yCoord(y-length), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x+length), Scene.yCoord(y-length), Scene.zCoord());		
-		parent.vertex(Scene.xCoord(x+length), Scene.yCoord((y-length)+(0.6f*length)), Scene.zCoord());
+		parent.vertex(xCoord((x+length)-(0.6f*length)), yCoord(y-length), zCoord());
+		parent.vertex(xCoord(x+length), yCoord(y-length), zCoord());		
+		parent.vertex(xCoord(x+length), yCoord((y-length)+(0.6f*length)), zCoord());
 		parent.endShape();
 		
 		parent.beginShape();
-		parent.vertex(Scene.xCoord(x+length), Scene.yCoord((y+length)-(0.6f*length)), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x+length), Scene.yCoord(y+length), Scene.zCoord());
-		parent.vertex(Scene.xCoord((x+length)-(0.6f*length)), Scene.yCoord(y+length), Scene.zCoord());
+		parent.vertex(xCoord(x+length), yCoord((y+length)-(0.6f*length)), zCoord());
+		parent.vertex(xCoord(x+length), yCoord(y+length), zCoord());
+		parent.vertex(xCoord((x+length)-(0.6f*length)), yCoord(y+length), zCoord());
 		parent.endShape();
 		
 		parent.beginShape();
-		parent.vertex(Scene.xCoord((x-length)+(0.6f*length)), Scene.yCoord(y+length), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x-length), Scene.yCoord(y+length), Scene.zCoord());
-		parent.vertex(Scene.xCoord(x-length), Scene.yCoord((y+length)-(0.6f*length)), Scene.zCoord());
+		parent.vertex(xCoord((x-length)+(0.6f*length)), yCoord(y+length), zCoord());
+		parent.vertex(xCoord(x-length), yCoord(y+length), zCoord());
+		parent.vertex(xCoord(x-length), yCoord((y+length)-(0.6f*length)), zCoord());
 		parent.endShape();		
 		endScreenDrawing();
 		
@@ -1332,18 +1231,19 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@code PApplet.endShape()}).
 	 * <p>
 	 * <b>Note:</b> The (x,y) vertex screen coordinates should be specified as:
-	 * {@code vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord())}.
+	 * {@code vertex(xCoord(x), yCoord(y), Scene.zCoord())}.
 	 * 
 	 * @see #endScreenDrawing()
 	 * @see #xCoord(float)
 	 * @see #yCoord(float)
 	 * @see #zCoord()
 	 */
-	public void beginScreenDrawing() {		
+	public void beginScreenDrawing() {
 		if ( startCoordCalls != 0 )
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
-					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implmentation!");
+					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
 		startCoordCalls ++;
+
 		float threshold = 0.03f;
 		zC = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() );		
 		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
@@ -1368,11 +1268,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #yCoord(float)
 	 * @see #zCoord()
 	 */
-	public void endScreenDrawing() {		
+	public void endScreenDrawing() {
 		startCoordCalls --;
 		if ( startCoordCalls != 0 )
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
 					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+		
 		parent.popMatrix();
 	}
 	
@@ -1388,7 +1289,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #yCoord(float)
 	 * @see #zCoord()
 	 */
-	public static float xCoord(float px) {
+	public float xCoord(float px) {
 		//translate screen origin to center
 		px = px - (parent.width/2);		
 		//normalize
@@ -1408,7 +1309,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #xCoord(float)
 	 * @see #zCoord()
 	 */
-	public static float yCoord(float py) {
+	public float yCoord(float py) {
 		//translate screen origin to center
 		py = py - (parent.height/2);		
 		//normalize
@@ -1427,7 +1328,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * @see #yCoord(float)
 	 * @see #zCoord()
 	 */
-	public static float zCoord() {
+	public float zCoord() {
 		return -zC;
 	}
 	
@@ -1789,142 +1690,5 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		//if our camera() matrices are detached from the processing Camera matrices,
 		//we cache the processing camera modelview matrix into our camera()
 		camera().setModelViewMatrix(pg3d.modelview);
-	}
-	
-	// 11. Utility
-	
-	/**
-	 * Draws a cylinder of width {@code w} and height {@code h}, along the
-	 * positive {@code z} axis.
-	 * <p>
-	 * Code adapted from http://www.processingblogs.org/category/processing-java/
-	 */	
-	public static void cylinder(float w,float h) {
-		  float px,py;
-
-		  parent.beginShape(QUAD_STRIP);
-		  for(float i=0; i<13; i++) {
-			  px=PApplet.cos(PApplet.radians(i*30))*w;
-			  py=PApplet.sin(PApplet.radians(i*30))*w;
-			  parent.vertex(px,py,0);
-			  parent.vertex(px,py,h);
-		  }
-		  parent.endShape();
-
-		  parent.beginShape(TRIANGLE_FAN);
-		  parent.vertex(0,0,0);
-		  for(float i=12; i>-1; i--) {
-			  px=PApplet.cos(PApplet.radians(i*30))*w;
-			  py=PApplet.sin(PApplet.radians(i*30))*w;
-			  parent.vertex(px,py,0);
-		  }
-		  parent.endShape();
-
-		  parent.beginShape(TRIANGLE_FAN);
-		  parent.vertex(0,0,h);
-		  for(float i=0; i<13; i++) {
-			  px=PApplet.cos(PApplet.radians(i*30))*w;
-			  py=PApplet.sin(PApplet.radians(i*30))*w;
-			  parent.vertex(px,py,h);
-		  }
-		  parent.endShape();	  
-	}
-	
-	/**
-	 * Same as {@code cone(det, 0, 0, r, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float)
-	 */
-	public void cone(int det, float r, float h) {
-		cone(det, 0, 0, r, h);
-	}
-	
-	/**
-	 * Same as {@code cone(12, 0, 0, r, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float)
-	 */
-	public static void cone(float r, float h) {
-		cone(12, 0, 0, r, h);
-	}
-	
-	/**
-	 * Draws a cone along the positive {@code z} axis, with its base centered at
-	 * {@code (x,y)}, height {@code h}, and radius {@code r}.
-	 * <p>
-	 * The code of this function was adapted from http://processinghacks.com/hacks:cone
-	 * Thanks to Tom Carden.
-	 * 
-	 * @see #cone(int, float, float, float, float, float)
-	 */
-	public static void cone(int detail, float x, float y, float r, float h) {
-		float unitConeX[] = new float[detail+1];
-		float unitConeY[] = new float[detail+1];
-		
-		for (int i = 0; i <= detail; i++) {
-			float a1 = TWO_PI * i / detail;
-		    unitConeX[i] = r * (float)Math.cos(a1);
-		    unitConeY[i] = r * (float)Math.sin(a1);
-		}
-		
-		parent.pushMatrix();
-		parent.translate(x,y);		
-		parent.beginShape(TRIANGLE_FAN);
-		parent.vertex(0,0,h);
-		for (int i = 0; i <= detail; i++) {
-			parent.vertex(unitConeX[i],unitConeY[i],0.0f);
-		}
-		parent.endShape();
-		parent.popMatrix();
-	}
-	
-	/**
-	 * Same as {@code cone(det, 0, 0, r1, r2, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float, float)
-	 */
-	public void cone(int det, float r1, float r2, float h) {
-		cone(det, 0, 0, r1, r2, h);
-	}
-	
-	/**
-	 * Same as {@code cone(18, 0, 0, r1, r2, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float, float)
-	 */
-	public static void cone(float r1, float r2,float h) {
-		cone(18, 0, 0, r1, r2, h);
-	}
-	
-	/**
-	 * Draws a truncated cone along the positive {@code z} axis, with its base centered at
-	 * {@code (x,y)}, height {@code h}, and radii {@code r1} and {@code r2} (basis and
-	 * height respectively).
-	 * 
-	 * @see #cone(int, float, float, float, float)
-	 */
-	public static void cone(int detail, float x, float y, float r1, float r2, float h) {
-		float firstCircleX[] = new float[detail+1];
-		float firstCircleY[] = new float[detail+1];		
-		float secondCircleX[] = new float[detail+1];
-		float secondCircleY[] = new float[detail+1];
-		
-		for (int i = 0; i <= detail; i++) {
-			float a1 = TWO_PI * i / detail;
-		    firstCircleX[i] = r1 * (float)Math.cos(a1);
-		    firstCircleY[i] = r1 * (float)Math.sin(a1);
-		    secondCircleX[i] = r2 * (float)Math.cos(a1);
-		    secondCircleY[i] = r2 * (float)Math.sin(a1);
-		}
-		
-		parent.pushMatrix();
-		parent.translate(x,y);
-		parent.beginShape(QUAD_STRIP);
-		for (int i = 0; i <= detail; i++) {
-			parent.vertex(firstCircleX[i], firstCircleY[i], 0);
-			parent.vertex(secondCircleX[i], secondCircleY[i], h);			
-		}
-		parent.endShape();
-		parent.popMatrix();
 	}	
 }

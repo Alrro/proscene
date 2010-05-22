@@ -34,7 +34,7 @@ void setup() {
   scene.setRadius(70);
   scene.showAll();
   scene.setFrameSelectionHintIsDrawn(true);
-  kfi = new KeyFrameInterpolator();
+  kfi = new KeyFrameInterpolator(this);
   kfi.setLoopInterpolation();
   
   // An array of interactive (key) frames.
@@ -56,7 +56,7 @@ void draw() {
   scene.beginDraw();
   pushMatrix();
   kfi.frame().applyTransformation(this);
-  Scene.drawAxis(30);
+  scene.drawAxis(30);
   popMatrix();
   
   kfi.drawPath(5, 10);
@@ -66,9 +66,9 @@ void draw() {
     kfi.keyFrame(i).applyTransformation(this);
     
     if ( keyFrame[i].grabsMouse() )
-      Scene.drawAxis(40);
+      scene.drawAxis(40);
     else
-      Scene.drawAxis(20);
+      scene.drawAxis(20);
       
     popMatrix();
   }

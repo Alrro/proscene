@@ -495,8 +495,8 @@ public class Quaternion implements PConstants {
 	 * @see #fromAxisAngle(PVector, float)
 	 */
 	public void fromTo(PVector from, PVector to) {
-		float fromSqNorm = Utility.squaredNorm(from);
-		float toSqNorm = Utility.squaredNorm(to);
+		float fromSqNorm = MathUtils.squaredNorm(from);
+		float toSqNorm = MathUtils.squaredNorm(to);
 		// Identity Quaternion when one vector is null
 		if ((fromSqNorm < 1E-10f) || (toSqNorm < 1E-10f)) {
 			this.x = this.y = this.z = 0.0f;
@@ -505,11 +505,11 @@ public class Quaternion implements PConstants {
 
 			PVector axis = from.cross(to);
 
-			float axisSqNorm = Utility.squaredNorm(axis);
+			float axisSqNorm = MathUtils.squaredNorm(axis);
 
 			// Aligned vectors, pick any axis, not aligned with from or to
 		    if (axisSqNorm < 1E-10f)
-		    	axis = Utility.orthogonalVector(from);
+		    	axis = MathUtils.orthogonalVector(from);
 
 			float angle = PApplet.asin(PApplet.sqrt(axisSqNorm
 					/ (fromSqNorm * toSqNorm)));
@@ -577,7 +577,7 @@ public class Quaternion implements PConstants {
 	 * @see #fromRotationMatrix(float[][])
 	 */
 	public final void fromMatrix(PMatrix3D pM) {
-		fromRotationMatrix(Utility.get3x3UpperLeftMatrixFromPMatrix3D(pM));
+		fromRotationMatrix(MathUtils.get3x3UpperLeftMatrixFromPMatrix3D(pM));
 	}
 
 	/**
@@ -659,7 +659,7 @@ public class Quaternion implements PConstants {
 	 * 
 	 */
 	public final float[][] rotationMatrix() {
-		return Utility.get3x3UpperLeftMatrixFromPMatrix3D(matrix());
+		return MathUtils.get3x3UpperLeftMatrixFromPMatrix3D(matrix());
 	}
 	
 	/**
@@ -727,7 +727,7 @@ public class Quaternion implements PConstants {
 	 * <b>Attention:</b> This is the classical mathematical rotation matrix.
 	 */
 	public final float[][] inverseRotationMatrix() {
-		return Utility.get3x3UpperLeftMatrixFromPMatrix3D(inverseMatrix());
+		return MathUtils.get3x3UpperLeftMatrixFromPMatrix3D(inverseMatrix());
 	}
 	
 	/**

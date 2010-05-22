@@ -97,7 +97,7 @@ void draw() {
   //applyMatrix( frame.matrix() );
   //Same as the previous commented line, but a lot more efficient:
   frame.applyTransformation(this);
-  Scene.drawAxis(40);
+  scene.drawAxis(40);
   fill(204, 102, 0);
   box(20, 20, 20);
   popMatrix();

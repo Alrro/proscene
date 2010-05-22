@@ -30,7 +30,7 @@ import processing.core.*;
 /**
  * Utility class that complements the PVector and PMatrix classes.
  */
-public class Utility implements PConstants {	
+public class MathUtils implements PConstants {	
 	/**
 	 * Utility function that simply projects {@code src} on the axis
 	 * of direction {@code direction} that passes through the origin.

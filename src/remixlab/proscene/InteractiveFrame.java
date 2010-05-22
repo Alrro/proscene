@@ -817,7 +817,7 @@ public class InteractiveFrame extends Frame
 		// Should be divided by the projectOnBall size, but it is 1.0
 		PVector axis = p2.cross(p1);
 		 
-		float angle = 2.0f * PApplet.asin(PApplet.sqrt(Utility.squaredNorm(axis) / Utility.squaredNorm(p1) / Utility.squaredNorm(p2)));
+		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
 		
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED) {
 			axis.y = -axis.y;

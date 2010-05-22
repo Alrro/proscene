@@ -191,31 +191,32 @@ public class KeyFrameInterpolator implements Cloneable {
     private PVector v1, v2;
     
     // P R O C E S S I N G   A P P L E T
-    public static PApplet parent;
+    public PApplet parent;
     
     /**
-     * Convenience constructor that simply calls {@code this(new Frame())}.
+     * Convenience constructor that simply calls {@code this(new Frame(), p)}.
      * <p>
      * Creates an anonymous {@link #frame()} to be interpolated by this KeyFrameInterpolator.
      * 
-     * @see #KeyFrameInterpolator(Frame)
+     * @see #KeyFrameInterpolator(Frame, PApplet)
      */
-    public KeyFrameInterpolator() {
-    	this(new Frame());
+    public KeyFrameInterpolator(PApplet p) {
+    	this(new Frame(), p);
     }
     
     /**
      * Creates a KeyFrameInterpolator, with {@code frame} as associated {@link #frame()}.
+     * {@code p} will be used if {@link #drawPath(int, int, float)} is called.
      * <p>
      * The {@link #frame()} can be set or changed using {@link #setFrame(Frame)}.
      * <p>
      * {@link #interpolationTime()}, {@link #interpolationSpeed()} and
      * {@link #interpolationPeriod()} are set to their default values.
      * 
-     * @see #KeyFrameInterpolator()
+     * @see #KeyFrameInterpolator(PApplet)
      */
-    public KeyFrameInterpolator(Frame frame) {
-    	parent = Scene.parent;
+    public KeyFrameInterpolator(Frame frame, PApplet p) {
+		parent = p;
     	myFrame = new Frame();
     	keyFr = new ArrayList<KeyFrame>();
     	path = new ArrayList<Frame>();
@@ -612,72 +613,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			kf = next;
 		}
 		valuesAreValid = true;
-	}
-	
-	public static void drawCamera(float scale)	{
-		float halfHeight = scale * 0.07f;
-		float halfWidth  = halfHeight * 1.3f;
-		float dist = halfHeight / PApplet.tan(PApplet.PI/8.0f);
-		
-		float arrowHeight    = 1.5f * halfHeight;
-		float baseHeight     = 1.2f * halfHeight;
-		float arrowHalfWidth = 0.5f * halfWidth;
-		float baseHalfWidth  = 0.3f * halfWidth;
-		
-		// Frustum outline
-		parent.noFill();
-		parent.stroke(170);
-		parent.beginShape();
-		parent.vertex(-halfWidth, halfHeight,-dist);
-		parent.vertex(-halfWidth,-halfHeight,-dist);
-		parent.vertex( 0.0f, 0.0f, 0.0f);
-		parent.vertex( halfWidth,-halfHeight,-dist);
-		parent.vertex(-halfWidth,-halfHeight,-dist);
-		parent.endShape();
-		parent.noFill();
-		parent.beginShape();
-		parent.vertex( halfWidth,-halfHeight,-dist);
-		parent.vertex( halfWidth, halfHeight,-dist);
-		parent.vertex( 0.0f, 0.0f, 0.0f);
-		parent.vertex(-halfWidth, halfHeight,-dist);
-		parent.vertex( halfWidth, halfHeight,-dist);
-		parent.endShape();
-		
-		// Up arrow
-		parent.noStroke();
-		parent.fill(170);
-		// Base
-		parent.beginShape(PApplet.QUADS);
-		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
-			parent.vertex( baseHalfWidth, -halfHeight,-dist);
-			parent.vertex(-baseHalfWidth, -halfHeight,-dist);
-			parent.vertex(-baseHalfWidth, -baseHeight,-dist);
-			parent.vertex( baseHalfWidth, -baseHeight,-dist);				
-		}
-		else {
-			parent.vertex(-baseHalfWidth, halfHeight,-dist);
-			parent.vertex( baseHalfWidth, halfHeight,-dist);
-			parent.vertex( baseHalfWidth, baseHeight,-dist);
-			parent.vertex(-baseHalfWidth, baseHeight,-dist);
-		}
-		parent.endShape();
-		// Arrow
-		parent.beginShape(PApplet.TRIANGLES);
-		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
-			parent.vertex( 0.0f,           -arrowHeight,-dist);
-			parent.vertex( arrowHalfWidth, -baseHeight, -dist);
-			parent.vertex(-arrowHalfWidth, -baseHeight, -dist);			
-		}
-		else {
-			parent.vertex( 0.0f,           arrowHeight,-dist);
-			parent.vertex(-arrowHalfWidth, baseHeight, -dist);
-			parent.vertex( arrowHalfWidth, baseHeight, -dist);
-		}		
-		parent.endShape();
-		
-		parent.noFill();
-		parent.stroke(170);
-	}
+	}	
 	
 	/**
 	 * Convenience function that simply calls {@code drawPath(1, 6, 100)} 
@@ -720,7 +656,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@code scale} controls the scaling of the camera and axis drawing. A value of
 	 * {@link remixlab.proscene.Scene#radius()} should give good results.
 	 */
-	public void drawPath(int mask, int nbFrames, float scale) {		
+	public void drawPath(int mask, int nbFrames, float scale) {
 		int nbSteps = 30;
 		if (!pathIsValid) {
 			path.clear();
@@ -800,8 +736,8 @@ public class KeyFrameInterpolator implements Cloneable {
 						//parent.applyMatrix(myFr.matrix());
 						myFr.applyTransformation(parent);				
 						
-						if ( (mask & 2) != 0 ) drawCamera(scale);
-						if ( (mask & 4) != 0 ) Scene.drawAxis(scale/10.0f);
+						if ( (mask & 2) != 0 ) DrawingUtils.drawKFICamera(parent, scale);
+						if ( (mask & 4) != 0 ) DrawingUtils.drawAxis(parent, scale/10.0f);
 						
 						parent.popMatrix();
 					}

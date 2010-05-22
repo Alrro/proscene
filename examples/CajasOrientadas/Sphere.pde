@@ -42,7 +42,7 @@ public class Sphere {
     // Multiply matrix to get in the frame coordinate system.
     // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
     iFrame.applyTransformation(parent); //optimum
-    if(drawAxis)  Scene.drawAxis(radius()*1.3f);
+    if(drawAxis) scene.drawAxis(radius()*1.3f);
     if (iFrame.grabsMouse()) {
       fill(255, 0, 0);
       sphere(radius()*1.2f);

@@ -69,14 +69,14 @@ public class CameraConstraint extends AxisPlaneConstraint {
 					translationConstraintDirection());
 			if (frame.referenceFrame() != null)
 				proj = frame.referenceFrame().transformOf(proj);
-			res = Utility.projectVectorOnPlane(translation, proj);
+			res = MathUtils.projectVectorOnPlane(translation, proj);
 			break;
 		case AXIS:
 			proj = camera().frame().inverseTransformOf(
 					translationConstraintDirection());
 			if (frame.referenceFrame() != null)
 				proj = frame.referenceFrame().transformOf(proj);
-			res = Utility.projectVectorOnAxis(translation, proj);
+			res = MathUtils.projectVectorOnAxis(translation, proj);
 			break;
 		case FORBIDDEN:
 			res = new PVector(0.0f, 0.0f, 0.0f);
@@ -101,7 +101,7 @@ public class CameraConstraint extends AxisPlaneConstraint {
 			PVector axis = frame.transformOf(camera().frame()
 					.inverseTransformOf(rotationConstraintDirection()));
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
-			quat = Utility.projectVectorOnAxis(quat, axis);
+			quat = MathUtils.projectVectorOnAxis(quat, axis);
 			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
 		}
 			break;

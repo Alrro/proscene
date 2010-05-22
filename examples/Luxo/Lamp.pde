@@ -129,7 +129,7 @@ public class Lamp {
   
   public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
     parent.translate(0.0f, 0.0f, zMin);
-    Scene.cone(nbSub, 0, 0, r1, r2, zMax-zMin);
+    DrawingUtils.cone(parent, nbSub, 0, 0, r1, r2, zMax-zMin);
     parent.translate(0.0f, 0.0f, -zMin);
   }
 
