@@ -49,11 +49,11 @@ public class LocalConstraint extends AxisPlaneConstraint {
 			break;
 		case PLANE:
 			proj = frame.rotation().rotate(translationConstraintDirection());
-			res = Utility.projectVectorOnPlane(translation, proj);
+			res = MathUtils.projectVectorOnPlane(translation, proj);
 			break;
 		case AXIS:
 			proj = frame.rotation().rotate(translationConstraintDirection());
-			res = Utility.projectVectorOnAxis(translation, proj);
+			res = MathUtils.projectVectorOnAxis(translation, proj);
 			break;
 		case FORBIDDEN:
 			res = new PVector(0.0f, 0.0f, 0.0f);
@@ -77,7 +77,7 @@ public class LocalConstraint extends AxisPlaneConstraint {
 		case AXIS: {
 			PVector axis = rotationConstraintDirection();
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
-			quat = Utility.projectVectorOnAxis(quat, axis);
+			quat = MathUtils.projectVectorOnAxis(quat, axis);
 			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
 		}
 			break;

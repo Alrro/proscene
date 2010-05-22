@@ -44,7 +44,7 @@ void draw() {
   // applyMatrix(scene.interactiveFrame().matrix()) is handy but inefficient 
   scene.interactiveFrame().applyTransformation(this); //optimum
   // Draw an axis using the Scene static function
-  Scene.drawAxis(70);
+  scene.drawAxis(70);
   // Draw a second box attached to the interactive frame
   if (scene.interactiveFrame().grabsMouse()) {
     fill(255, 0, 0);

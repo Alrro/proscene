@@ -794,7 +794,7 @@ public class Frame implements Cloneable {
 		//float directionSquaredNorm = (direction.x * direction.x) + (direction.y * direction.y) + (direction.z * direction.z);
 		//float modulation = proj.dot(direction) / directionSquaredNorm; 
 		//proj = PVector.mult(direction, modulation);
-		proj = Utility.projectVectorOnAxis(proj, direction);
+		proj = MathUtils.projectVectorOnAxis(proj, direction);
 		translate(PVector.sub(shift, proj));	
 	}
 

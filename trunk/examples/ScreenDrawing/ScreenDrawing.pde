@@ -64,8 +64,8 @@ void draw() {
   noFill();
   beginShape();
   for (int i = 0; i < points.size(); i++)
-    vertex(Scene.xCoord( ((Point) points.get(i)).x ),
-           Scene.yCoord( ((Point) points.get(i)).y ), Scene.zCoord());
+    vertex(scene.xCoord( ((Point) points.get(i)).x ),
+           scene.yCoord( ((Point) points.get(i)).y ), scene.zCoord());
   endShape();
   strokeWeight(1);
   scene.endScreenDrawing();

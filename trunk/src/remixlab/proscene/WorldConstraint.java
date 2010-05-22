@@ -51,18 +51,18 @@ public class WorldConstraint extends AxisPlaneConstraint {
 			if (frame.referenceFrame() != null) {
 				proj = frame.referenceFrame().transformOf(
 						translationConstraintDirection());
-				res = Utility.projectVectorOnPlane(translation, proj);
+				res = MathUtils.projectVectorOnPlane(translation, proj);
 			} else				
-				res = Utility.projectVectorOnPlane(translation,
+				res = MathUtils.projectVectorOnPlane(translation,
 						translationConstraintDirection());
 			break;
 		case AXIS:
 			if (frame.referenceFrame() != null) {
 				proj = frame.referenceFrame().transformOf(
 						translationConstraintDirection());				
-				res = Utility.projectVectorOnAxis(translation, proj);
+				res = MathUtils.projectVectorOnAxis(translation, proj);
 			} else				
-				res = Utility.projectVectorOnAxis(translation,
+				res = MathUtils.projectVectorOnAxis(translation,
 						translationConstraintDirection());
 			break;
 		case FORBIDDEN:
@@ -87,7 +87,7 @@ public class WorldConstraint extends AxisPlaneConstraint {
 		case AXIS: {
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
 			PVector axis = frame.transformOf(rotationConstraintDirection());
-			quat = Utility.projectVectorOnAxis(quat, axis);
+			quat = MathUtils.projectVectorOnAxis(quat, axis);
 			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
 			break;
 		}

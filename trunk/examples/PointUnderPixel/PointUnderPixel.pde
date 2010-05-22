@@ -71,7 +71,7 @@ class GLCamera extends Camera {
   protected GLU glu;
     
   public GLCamera(PApplet p) {
-    super();
+    super(p);
     parent = p;
     pgl = (PGraphicsOpenGL)parent.g;
     gl = pgl.gl;

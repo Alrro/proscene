@@ -107,20 +107,21 @@ public class Camera implements Cloneable {
 	// A t t a c h e d   S c e n e
 	boolean attachedToPCam;
 	
-	// P R O C E S S I N G   A P P L E T
-    public static PApplet parent;
-	
+	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
+	public PApplet parent;
+	public PGraphics3D pg3d;
+    	
 	/**
-	 * Convenience constructor that simply calls {@code this(true)}.
+	 * Convenience constructor that simply calls {@code this(true, p)}. 
 	 * 
-	 * @see #Camera(boolean)
+	 * @see #Camera(boolean, PApplet)
 	 */
-	public Camera() {
-		this(true);
+	public Camera(PApplet p) {
+		this(true, p);
 	}
 
 	/**
-	 * Main constructor. 
+	 * Main constructor. {@code p} will be used for rendering purposes.
 	 * <p> 
 	 * {@link #sceneCenter()} is set to (0,0,0) and {@link #sceneRadius()} is
 	 * set to 100. {@link #type()} Camera.PERSPECTIVE, with a {@code PI/4}
@@ -135,16 +136,17 @@ public class Camera implements Cloneable {
 	 * {@link #physicalScreenWidth()} and {@link #focusDistance()}
 	 * documentations for default stereo parameter values.
 	 * 
-	 * @see #Camera()
+	 * @see #Camera(PApplet)
 	 */
-	public Camera(boolean attachedToScene) {
-		parent = Scene.parent;
+	public Camera(boolean attachedToScene, PApplet p) {
+		parent = p;
+		pg3d = (PGraphics3D) parent.g;  // g may change
 		attachedToPCam = attachedToScene;
 		
 		fldOfView = Quaternion.PI / 4.0f;
 		
 		//KeyFrames
-		interpolationKfi = new KeyFrameInterpolator(frame());
+		interpolationKfi = new KeyFrameInterpolator(frame(), parent);
 		kfi = new HashMap<Integer, KeyFrameInterpolator>();
 		
 		setFrame(new InteractiveCameraFrame());		
@@ -175,8 +177,8 @@ public class Camera implements Cloneable {
 		// focusDistance is set from setFieldOfView()
 				
 		if( isAttachedToPCamera() ) {
-			projectionMat = Scene.pg3d.projection;
-			modelViewMat = Scene.pg3d.modelview;
+			projectionMat = pg3d.projection;
+			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		}
@@ -226,10 +228,8 @@ public class Camera implements Cloneable {
 	public void attachToPCamera() {
 		if( !isAttachedToPCamera() ) {
 			attachedToPCam = true;
-			//projectionMat = scn.pg3d.projection;
-			//modelViewMat = scn.pg3d.modelview;
-			projectionMat = Scene.pg3d.projection;
-			modelViewMat = Scene.pg3d.modelview;
+			projectionMat = pg3d.projection;
+			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		}
@@ -403,11 +403,11 @@ public class Camera implements Cloneable {
 	 * @see #setUpVector(PVector)
 	 */
 	public void setViewDirection(PVector direction) {
-		if (Utility.squaredNorm(direction) < 1E-10)
+		if (MathUtils.squaredNorm(direction) < 1E-10)
 			return;
 
 		PVector xAxis = direction.cross(upVector());
-		if (Utility.squaredNorm(xAxis) < 1E-10) {
+		if (MathUtils.squaredNorm(xAxis) < 1E-10) {
 			// target is aligned with upVector, this means a rotation around X
 			// axis
 			// X axis is then unchanged, let's keep it !
@@ -1191,7 +1191,7 @@ public class Camera implements Cloneable {
 		//TODO: info should go on the applet ;)
 	    boolean info = true;
 		if (!kfi.containsKey(key)) {
-			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame()));
+			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), parent));
 			PApplet.println("Position " + key + " saved");
 			info = false;
 		}
@@ -1481,168 +1481,7 @@ public class Camera implements Cloneable {
 			modelViewMat.set(modelview);
 	}
 	
-	// 9. DRAWING
-	
-	/**
-	 * Convenience function that simply calls {@code draw(true, 1.0f)}
-	 * 
-	 * @see #draw(boolean, float)
-	 */
-	void draw() {
-		draw(true, 1.0f);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code draw(true, scale)}
-	 * 
-	 * @see #draw(boolean, float)
-	 */
-	void draw(float scale) {
-		draw(true, scale);
-	}
-	
-	/**
-	 * Convenience function that simply calls draw(drawFarPlane, 1.0f)}
-	 * 
-	 * @see #draw(boolean, float)
-	 */
-	void draw(boolean drawFarPlane) {
-		draw(drawFarPlane, 1.0f);
-	}
-	
-	/**
-	 * Draws a representation of the Camera in the 3D world.
-	 * <p>
-	 * The near and far planes are drawn as quads, the frustum is drawn using lines and the camera up
-	 * vector is represented by an arrow to disambiguate the drawing.
-	 * <p>
-	 * Note that the current processing color is used to draw the near and far planes.
-	 * <p>
-	 * When {@code drawFarPlane} is {@code false}, only the near plane is drawn. {@code scale} can be used
-	 * to scale the	drawing: a value of 1.0 (default) will draw the Camera's frustum at its actual size.
-	 * <p>
-	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be visible, but may create
-	 * artifacts due to numerical imprecisions.
-	 */
-	public void draw(boolean drawFarPlane, float scale) {
-		parent.pushMatrix();
-		
-		parent.applyMatrix(frame().worldMatrix());
-		//TODO: use something like:
-		//frame().applyTransformation(parent);
-		
-		//parent.applyMatrix(myFr.matrix());
-		//myFr.applyTransformation(parent);
-		
-		// 0 is the upper left coordinates of the near corner, 1 for the far one
-		PVector points[] = new PVector[2];
-		points[0].z = scale * zNear();
-		points[1].z = scale * zFar();
-		
-		switch (type()) {
-		case PERSPECTIVE: {
-			points[0].y = points[0].z * PApplet.tan(fieldOfView()/2.0f);
-			points[0].x = points[0].y * aspectRatio();			
-			float ratio = points[1].z / points[0].z;
-			points[1].y = ratio * points[0].y;
-			points[1].x = ratio * points[0].x;
-			break;
-		}
-		case ORTHOGRAPHIC: {
-			float [] wh = getOrthoWidthHeight();
-			points[0].x = points[1].x = scale * wh[0];
-			points[0].y = points[1].y = scale * wh[1];
-			break;
-		}
-		}
-		
-		int farIndex = drawFarPlane?1:0;
-		
-		// Near and (optionally) far plane(s)
-		parent.beginShape(PApplet.QUADS);
-		for (int i=farIndex; i>=0; --i) {
-			parent.normal(0.0f, 0.0f, (i==0)?1.0f:-1.0f);
-			parent.vertex( points[i].x,  points[i].y, -points[i].z);
-			parent.vertex(-points[i].x,  points[i].y, -points[i].z);
-			parent.vertex(-points[i].x, -points[i].y, -points[i].z);
-			parent.vertex( points[i].x, -points[i].y, -points[i].z);
-		}
-		parent.endShape();
-		
-		// Up arrow
-		float arrowHeight    = 1.5f * points[0].y;
-		float baseHeight     = 1.2f * points[0].y;
-		float arrowHalfWidth = 0.5f * points[0].x;
-		float baseHalfWidth  = 0.3f * points[0].x;
-		
-		parent.noStroke();
-		parent.fill(170);
-		// Base
-		parent.beginShape(PApplet.QUADS);
-		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
-			parent.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
-			parent.vertex( baseHalfWidth, -points[0].y, -points[0].z);
-			parent.vertex( baseHalfWidth, -baseHeight,  -points[0].z);
-			parent.vertex(-baseHalfWidth, -baseHeight,  -points[0].z);
-		}
-		else {
-			parent.vertex(-baseHalfWidth, points[0].y, -points[0].z);
-			parent.vertex( baseHalfWidth, points[0].y, -points[0].z);
-			parent.vertex( baseHalfWidth, baseHeight,  -points[0].z);
-			parent.vertex(-baseHalfWidth, baseHeight,  -points[0].z);
-		}
-		parent.endShape();
-		
-		// Arrow
-		parent.beginShape(PApplet.TRIANGLES);
-		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED ) {
-			parent.vertex( 0.0f,           -arrowHeight, -points[0].z);
-			parent.vertex(-arrowHalfWidth, -baseHeight,  -points[0].z);
-			parent.vertex( arrowHalfWidth, -baseHeight,  -points[0].z);
-		}
-		else {
-			parent.vertex( 0.0f,           arrowHeight, -points[0].z);
-			parent.vertex(-arrowHalfWidth, baseHeight,  -points[0].z);
-			parent.vertex( arrowHalfWidth, baseHeight,  -points[0].z);
-		}		
-		parent.endShape();
-		
-		// Frustum lines
-		switch (type()) {
-		case PERSPECTIVE :
-			parent.beginShape(PApplet.LINES);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex( points[farIndex].x,  points[farIndex].y, -points[farIndex].z);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex(-points[farIndex].x,  points[farIndex].y, -points[farIndex].z);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex(-points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex( points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
-			parent.endShape();
-			break;
-			case ORTHOGRAPHIC :
-				if (drawFarPlane) {
-					parent.beginShape(PApplet.LINES);
-					parent.vertex( points[0].x,  points[0].y, -points[0].z);
-					parent.vertex( points[1].x,  points[1].y, -points[1].z);
-					parent.vertex(-points[0].x,  points[0].y, -points[0].z);
-					parent.vertex(-points[1].x,  points[1].y, -points[1].z);
-					parent.vertex(-points[0].x, -points[0].y, -points[0].z);
-					parent.vertex(-points[1].x, -points[1].y, -points[1].z);
-					parent.vertex( points[0].x, -points[0].y, -points[0].z);
-					parent.vertex( points[1].x, -points[1].y, -points[1].z);
-					parent.endShape();
-				}
-		}
-		
-		parent.noFill();//check me!
-		parent.stroke(170);//check me!
-		
-		parent.popMatrix();
-	}
-	
-	// 10. WORLD -> CAMERA
+	// 9. WORLD -> CAMERA
 
 	/**
 	 * Returns the Camera frame coordinates of a point {@code src} defined in
@@ -1669,7 +1508,7 @@ public class Camera implements Cloneable {
 		return frame().inverseCoordinatesOf(src);
 	}
 
-	// 11. 2D -> 3D
+	// 10. 2D -> 3D
 
 	/**
 	 * Gives the coefficients of a 3D half-line passing through the Camera eye
@@ -1818,7 +1657,7 @@ public class Camera implements Cloneable {
 			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
-	// 12. FLYSPEED
+	// 11. FLYSPEED
 
 	/**
 	 * Returns the fly speed of the Camera. 
@@ -1847,7 +1686,7 @@ public class Camera implements Cloneable {
 		frame().setFlySpeed(speed);
 	}
 
-	// 13. POSITION TOOLS
+	// 12. POSITION TOOLS
 
 	/**
 	 * Sets the Camera {@link #orientation()}, so that it looks at point
@@ -2145,7 +1984,7 @@ public class Camera implements Cloneable {
 		interpolationKfi.startInterpolation();
 	}
 
-	// 14. STEREO PARAMETERS
+	// 13. STEREO PARAMETERS
 
 	/**
 	 * Returns the user's inter-ocular distance (in meters). Default value is
@@ -2237,7 +2076,7 @@ public class Camera implements Cloneable {
 		focusDist = distance;
 	}
 	
-	// 15. Implementation of glu utility functions
+	// 14. Implementation of glu utility functions
 	
 	/**
 	 * Similar to {@code gluProject}: map object coordinates to window coordinates.
