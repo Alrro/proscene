@@ -181,12 +181,22 @@ public class DrawingUtils implements PConstants {
 		parent.vertex(0.0f,       charShift, -charHeight);
 		// The Z
 		parent.stroke(178, 178, 255);
-		parent.vertex(-charWidth,  charHeight, charShift);
-		parent.vertex( charWidth,  charHeight, charShift);
-		parent.vertex( charWidth,  charHeight, charShift);
-		parent.vertex(-charWidth, -charHeight, charShift);
-		parent.vertex(-charWidth, -charHeight, charShift);
-		parent.vertex( charWidth, -charHeight, charShift);		
+		if ( InteractiveFrame.coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED) {
+			parent.vertex(-charWidth, -charHeight, charShift);
+			parent.vertex( charWidth, -charHeight, charShift);
+			parent.vertex( charWidth, -charHeight, charShift);
+			parent.vertex(-charWidth,  charHeight, charShift);
+			parent.vertex(-charWidth,  charHeight, charShift);
+			parent.vertex( charWidth,  charHeight, charShift);
+		}
+		else {
+			parent.vertex(-charWidth,  charHeight, charShift);
+			parent.vertex( charWidth,  charHeight, charShift);
+			parent.vertex( charWidth,  charHeight, charShift);
+			parent.vertex(-charWidth, -charHeight, charShift);
+			parent.vertex(-charWidth, -charHeight, charShift);
+			parent.vertex( charWidth, -charHeight, charShift);
+		}
 		parent.endShape();
 	    
 		parent.noStroke();
@@ -368,12 +378,10 @@ public class DrawingUtils implements PConstants {
 	}	
 	
 	/**
-	 * Draws a representation of the {@code camera} in the {@code parent} 3D world using {@code color}.
+	 * Draws a representation of the {@code camera} in the {@code parent} 3D virtual world using {@code color}.
 	 * <p>
 	 * The near and far planes are drawn as quads, the frustum is drawn using lines and the camera up
 	 * vector is represented by an arrow to disambiguate the drawing.
-	 * <p>
-	 * Note that the current processing color is used to draw the near and far planes.
 	 * <p>
 	 * When {@code drawFarPlane} is {@code false}, only the near plane is drawn. {@code scale} can be used
 	 * to scale the	drawing: a value of 1.0 (default) will draw the Camera's frustum at its actual size.
