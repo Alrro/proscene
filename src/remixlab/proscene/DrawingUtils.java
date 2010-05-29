@@ -165,6 +165,7 @@ public class DrawingUtils implements PConstants {
 		//parent.noLights();
 		
 		parent.beginShape(LINES);
+		parent.strokeWeight(2);
 		// The X
 		parent.stroke(255, 178, 178);
 		parent.vertex(charShift,  charWidth, -charHeight);
@@ -198,8 +199,9 @@ public class DrawingUtils implements PConstants {
 			parent.vertex( charWidth, -charHeight, charShift);
 		}
 		parent.endShape();
-	    
+		parent.strokeWeight(1);	    
 		parent.noStroke();
+		
 		// Z axis
 		parent.fill(178, 178, 255);
 		drawArrow(parent, length, 0.01f*length);		
@@ -298,7 +300,8 @@ public class DrawingUtils implements PConstants {
 	 */
 	public static void drawGrid(PApplet parent, float size, int nbSubdivisions) {
 		//parent.noLights();		
-		parent.stroke(170, 170, 170);		
+		parent.stroke(170, 170, 170);
+		parent.strokeWeight(1);
 		parent.beginShape(LINES);
 		for (int i=0; i<=nbSubdivisions; ++i) {
 			final float pos = size*(2.0f*i/nbSubdivisions-1.0f);
@@ -307,7 +310,8 @@ public class DrawingUtils implements PConstants {
 			parent.vertex(-size, pos);
 			parent.vertex( size, pos);
 		}
-		parent.endShape();		
+		parent.endShape();
+		parent.strokeWeight(1);
 		parent.noStroke();		
 		//parent.lights();
 	}
@@ -427,6 +431,7 @@ public class DrawingUtils implements PConstants {
 		int farIndex = drawFarPlane?1:0;
 		
 		// Near and (optionally) far plane(s)
+		parent.noStroke();
 		parent.fill(color);
 		parent.beginShape(PApplet.QUADS);
 		for (int i=farIndex; i>=0; --i) {
@@ -444,7 +449,7 @@ public class DrawingUtils implements PConstants {
 		float arrowHalfWidth = 0.5f * points[0].x;
 		float baseHalfWidth  = 0.3f * points[0].x;
 		
-		parent.noStroke();
+		//parent.noStroke();
 		parent.fill(color);
 		// Base
 		parent.beginShape(PApplet.QUADS);

@@ -64,8 +64,8 @@ public class Camera implements Cloneable {
 	}
 	static int viewport[] = new int [4];
 	//next variables are needed for frustrum plane coefficients
-	static PVector normal[] = new PVector[6];
-	static float dist[] = new float[6];
+	PVector normal[] = new PVector[6];
+	float dist[] = new float[6];
 	
 	/**
 	 * Enumerates the two possible types of Camera.
@@ -933,7 +933,18 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
-	 * Returns the 6 plane equations of the GLCamera frustum.
+	 * Convenience function that simply returns
+	 * {@code getFrustumPlanesCoefficients(new float [6][4])}
+	 * 
+	 * @see #getFrustumPlanesCoefficients(float[][])
+	 */
+	public float [][] getFrustumPlanesCoefficients() {
+		// Computed once and for all
+		return getFrustumPlanesCoefficients(new float [6][4]);
+	}
+		
+	/**
+	 * Fills {@code coef} with the 6 plane equations of the camera frustum and returns it.
 	 * 
 	 * <p>
 	 * 
@@ -948,98 +959,107 @@ public class Camera implements Cloneable {
 	 * 
 	 * <p>
 	 * 
-	 * This format is compatible with the {@code glClipPlane()} function. One camera frustum
+	 * This format is compatible with the {@code gl.glClipPlane()} function. One camera frustum
 	 * plane can hence be applied in an other viewer to visualize the culling results:
 	 * <p>
 	 * {@code // Retrieve place equations}<br>
 	 * {@code float [][] coef = mainViewer.camera().getFrustumPlanesCoefficients();}<br>
 	 * {@code // These two additional clipping planes (which must have been enabled)}<br>
 	 * {@code // will reproduce the mainViewer's near and far clipping.}<br>
-	 * {@code glClipPlane(GL_CLIP_PLANE0, coef[2]);}<br>
-	 * {@code glClipPlane(GL_CLIP_PLANE1, coef[3]);}<br>
+	 * {@code gl.glClipPlane(GL.GL_CLIP_PLANE0, coef[2]);}<br>
+	 * {@code gl.glClipPlane(GL.GL_CLIP_PLANE1, coef[3]);}<br>
 	 */
-	public float[][] getFrustumPlanesCoefficients() {
+	public float[][] getFrustumPlanesCoefficients(float [][] coef) {
+		//soft check:	
+		if ( coef == null || (coef.length == 0 ))
+			coef = new float [6][4];
+		else
+			if ( (coef.length != 6 ) || (coef[0].length != 4 ) )
+				coef = new float [6][4];
+			
 		// Computed once and for all
-		float [][] coef = new float [6][4];
 		PVector pos          = position();
-		PVector viewDir      = viewDirection();
-		PVector up           = upVector();
-		PVector right        = rightVector();
-		float posViewDir = PVector.dot(pos, viewDir);
-		
-		switch (type()) {
-		case PERSPECTIVE : {
-			float hhfov = horizontalFieldOfView() / 2.0f;
-			float chhfov = PApplet.cos(hhfov);
-			float shhfov = PApplet.sin(hhfov);
-			normal[0] = PVector.mult(viewDir, -shhfov);
-			normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
-			normal[0] = PVector.sub(normal[0], PVector.mult(right, chhfov));
-			
-			normal[2] = PVector.mult(viewDir, -1);
-			normal[3] =  viewDir;
-			
-			float hfov = fieldOfView() / 2.0f;
-			float chfov = PApplet.cos(hfov);
-			float shfov = PApplet.sin(hfov);
-			normal[4] = PVector.mult(viewDir, -shfov);
-			normal[5] = PVector.sub(normal[4], PVector.mult(up, chfov));
-			normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
-			
-			for (int i=0; i<2; ++i)
-				dist[i] = PVector.dot(pos, normal[i]);
-			for (int j=4; j<6; ++j)
-				dist[j] = PVector.dot(pos, normal[j]);
-			
-			// Natural equations are:
-			// dist[0,1,4,5] = pos * normal[0,1,4,5];
-			// dist[2] = (pos + zNear() * viewDir) * normal[2];
-			// dist[3] = (pos + zFar()  * viewDir) * normal[3];
-			
-			// 2 times less computations using expanded/merged equations. Dir vectors are normalized.
-			
-			float posRightCosHH = PVector.dot(PVector.mult(pos, chhfov), right);
-			dist[0] = -shhfov * posViewDir;
-			dist[1] = dist[0] + posRightCosHH;
-			dist[0] = dist[0] - posRightCosHH;
-			float posUpCosH = PVector.dot(PVector.mult(pos, chfov), up);
-			dist[4] = - shfov * posViewDir;
-			dist[5] = dist[4] - posUpCosH;
-			dist[4] = dist[4] + posUpCosH;
-			
-			break;
-			}
-		
-		case ORTHOGRAPHIC :
-			normal[0] = PVector.mult(right, -1);
-			normal[1] =  right;
-			normal[4] =  up;
-			normal[5] = PVector.mult(up, -1);
-			
-			float [] wh = getOrthoWidthHeight();
-			
-			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])), normal[0]);
-			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])), normal[1]);
-			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])), normal[4]);
-			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])), normal[5]);
-			break;
-			}
-		
-		// Front and far planes are identical for both camera types.
-		normal[2] = PVector.mult(viewDir, -1);
-		normal[3] =  viewDir;
-		dist[2] = -posViewDir - zNear();
-		dist[3] =  posViewDir + zFar();
-		
-		for (int i=0; i<6; ++i) {
-			coef[i][0] = normal[i].x;
-			coef[i][1] = normal[i].y;
-			coef[i][2] = normal[i].z;
-			coef[i][3] = dist[i];
-		}
-		
-		return coef;
+	    PVector viewDir      = viewDirection();
+	    PVector up           = upVector();
+	    PVector right        = rightVector();
+	    float posViewDir = PVector.dot(pos, viewDir);
+	    
+	    switch (type()) {
+	    case PERSPECTIVE : {
+	    	float hhfov = horizontalFieldOfView() / 2.0f;
+	    	float chhfov = PApplet.cos(hhfov);
+	    	float shhfov = PApplet.sin(hhfov);
+	    	normal[0] = PVector.mult(viewDir, -shhfov);
+	    	normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
+	    	normal[0] = PVector.add(normal[0], PVector.mult(right, -chhfov));
+	    	normal[2] = PVector.mult(viewDir, -1);
+	    	normal[3] =  viewDir;
+	    	
+	    	float hfov = fieldOfView() / 2.0f;
+	    	float chfov = PApplet.cos(hfov);
+	    	float shfov = PApplet.sin(hfov);
+	    	normal[4] = PVector.mult(viewDir, -shfov);
+	    	normal[5] = PVector.add(normal[4], PVector.mult(up, -chfov));
+	    	normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
+	    	
+	    	for (int i=0; i<2; ++i)
+	    		dist[i] = PVector.dot(pos, normal[i]);
+	    	for (int j=4; j<6; ++j)
+	    		dist[j] = PVector.dot(pos, normal[j]);
+	    	
+	    	// Natural equations are:
+	    	// dist[0,1,4,5] = pos * normal[0,1,4,5];
+	    	// dist[2] = (pos + zNear() * viewDir) * normal[2];
+	    	// dist[3] = (pos + zFar()  * viewDir) * normal[3];
+	    	
+	    	// 2 times less computations using expanded/merged equations. Dir vectors are normalized.
+	    	float posRightCosHH = chhfov * PVector.dot(pos, right);
+	    	dist[0] = -shhfov * posViewDir;
+	    	dist[1] = dist[0] + posRightCosHH;
+	    	dist[0] = dist[0] - posRightCosHH;
+	    	float posUpCosH = chfov * PVector.dot(pos, up);
+	    	dist[4] = - shfov * posViewDir;
+	    	dist[5] = dist[4] - posUpCosH;
+	    	dist[4] = dist[4] + posUpCosH;
+	    	break;
+	    	}
+	    case ORTHOGRAPHIC :
+	    	normal[0] = PVector.mult(right, -1);
+	    	normal[1] = right;
+	    	normal[4] = up;
+	    	normal[5] = PVector.mult(up, -1);
+	    	
+	    	float [] wh = getOrthoWidthHeight();
+	    	dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])), normal[0]);
+	    	dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])), normal[1]);
+	    	dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])), normal[4]);
+	    	dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])), normal[5]);
+	    	break;
+	    }
+	    
+	    // Front and far planes are identical for both camera types.
+	    normal[2] = PVector.mult(viewDir, -1);
+	    normal[3] =  viewDir;
+	    dist[2] = -posViewDir - zNear();
+	    dist[3] =  posViewDir + zFar();
+	    
+	    for (int i=0; i<6; ++i) {
+	    	coef[i][0] = normal[i].x;
+	    	coef[i][1] = normal[i].y;
+	    	coef[i][2] = normal[i].z;
+	    	coef[i][3] = dist[i];
+	    }
+	    
+	    return coef;
 	}
+	
+	/**
+	public float distanceToFrustumPlane(int index, PVector pos) {
+		float planeCoefficients[][] = getFrustumPlanesCoefficients();
+		PVector myVec = new PVector(planeCoefficients[index][0],planeCoefficients[index][1], planeCoefficients[index][2]);
+		return PVector.dot(pos, myVec) - planeCoefficients[index][3];
+	}
+	*/
 
 	// 4. SCENE RADIUS AND CENTER
 
