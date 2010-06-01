@@ -29,7 +29,8 @@ import processing.core.*;
 
 import java.awt.Point;
 import java.awt.event.*;
-import javax.swing.event.*;
+
+//import javax.swing.event.*;
 import javax.swing.Timer;
 
 /**
@@ -62,7 +63,9 @@ import javax.swing.Timer;
  * <p>
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
-public class Scene implements MouseWheelListener, MouseInputListener, PConstants {	
+//public class Scene implements MouseWheelListener, MouseInputListener, PConstants {
+public class Scene implements MouseWheelListener, PConstants {
+//public class Scene implements PConstants {
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
 	 */
@@ -123,6 +126,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	// C O N S T R A I N T S
 	boolean withConstraint;
 	protected boolean mouseHandling;
+	protected boolean keyHandling;
 	//TODO hack
 	//private boolean readyToGo;
 	
@@ -132,14 +136,14 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
-	 * See the associated documentation.
+	 * See the associated documentation. 
 	 */
 	public Scene(PApplet p) {
 		parent = p;		
-		pg3d = (PGraphics3D) parent.g;  // g may change	    
+		pg3d = (PGraphics3D) parent.g;  // g may change
 	    	
-		parent.addMouseListener(this);
-		parent.addMouseMotionListener(this);
+		//parent.addMouseListener(this);
+		//parent.addMouseMotionListener(this);
 		parent.addMouseWheelListener(this);
 		
 		//test: setting camera to revolveAround mode
@@ -157,7 +161,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		pupFlag = false;
 		
 		//readyToGo = false;
-		mouseHandling = false;
+		//mouseHandling = false;
 		cam = new Camera(parent);
 		setCamera(camera());
 		
@@ -196,10 +200,110 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
         beginDrawCalls = 0;
         startCoordCalls = 0;       
         
+        enableKeyHandling();
         enableMouseHandling();
         
 		//called only once
 		init();
+	}
+	
+	//key
+	public boolean keyIsHandled() {
+		return keyHandling; 
+	}
+	
+	public void toggleKeyHandling() {
+		enableKeyHandling(!keyHandling);
+	}
+	
+	public void enableKeyHandling(boolean enable) {
+		if(enable)
+			enableKeyHandling();
+		else
+			disableKeyHandling();
+	}
+	
+	public void enableKeyHandling() {
+		keyHandling = true;
+		parent.registerKeyEvent(this);
+	}
+	
+	public void disableKeyHandling() {
+		keyHandling = false;
+		parent.unregisterKeyEvent(this);
+	}
+	
+	public void keyEvent(KeyEvent e) {
+		switch (e.getID()) {
+		case KeyEvent.KEY_PRESSED:
+			break;
+		case KeyEvent.KEY_RELEASED:
+			this.defaultKeyBindings();
+			break;
+		case KeyEvent.KEY_TYPED:
+			break;
+		}
+	}
+	
+	//mouse
+	public boolean mouseIsHandled() {
+		return mouseHandling; 
+	}
+	
+	public void togglemouseHandling() {
+		enableKeyHandling(!mouseHandling);
+	}
+	
+	public void enableMouseHandling(boolean enable) {
+		if(enable)
+			enableMouseHandling();
+		else
+			disableMouseHandling();
+	}
+	
+	public void enableMouseHandling() {
+		mouseHandling = true;
+		parent.registerMouseEvent(this);
+	}
+	
+	public void disableMouseHandling() {
+		mouseHandling = false;
+		parent.unregisterMouseEvent(this);
+	}
+	
+	public void mouseEvent(MouseEvent e) {		
+		switch (e.getID()) {
+		case MouseEvent.MOUSE_CLICKED:
+			this.mouseClicked(e);
+		break;
+		case MouseEvent.MOUSE_DRAGGED:
+			this.mouseDragged(e);
+		break;
+		case MouseEvent.MOUSE_MOVED:
+			this.mouseMoved(e);
+		break;
+		case MouseEvent.MOUSE_PRESSED:
+			this.mousePressed(e);
+		break;
+		case MouseEvent.MOUSE_RELEASED:
+			this.mouseReleased(e);
+		break;
+		/**
+		case MouseEvent.MOUSE_WHEEL:
+			this.mouseWheelMoved(e);
+		break;
+		*/
+	}
+		/**
+		case KeyEvent.KEY_PRESSED:
+			break;
+		case KeyEvent.KEY_RELEASED:
+			this.defaultKeyBindings();
+			break;
+		case KeyEvent.KEY_TYPED:
+			break;
+		}	
+		*/	
 	}
 	
 	// 1. Associated objects
@@ -281,9 +385,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
     /**
      * Toggles the state of {@link #mouseIsHandled()}
      */
+    
+    /**
     public void toggleMouseHandling() {
     	enableMouseHandling(!mouseIsHandled());
     }
+    */
     
     /**
 	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
@@ -291,30 +398,42 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * <p>
 	 * Mouse handling is enable by default.
 	 */
+    
+    /**
 	public boolean mouseIsHandled() {
 		return mouseHandling;
 	}
+	*/
 	
 	/**
 	 * Convenience function that simply calls {@code enableMouseHandling(true)}
 	 */
+    
+    /**
 	public void enableMouseHandling() {
 		enableMouseHandling(true);
 	}
+	*/
 	
 	/**
 	 * Convenience function that simply calls {@code enableMouseHandling(false)}
 	 */
+    
+    /**
 	public void disableMouseHandling() {
 		enableMouseHandling(false);
 	}
+	*/	
 	
 	/**
 	 * Enables or disables mouse handling according to {@code flag}
 	 */
+    
+    /**
 	public void enableMouseHandling(boolean flag) {
 		mouseHandling = flag;
 	}
+	*/
 	
 	/**
 	 * Toggles the state of {@link #axisIsDrawn()}.
@@ -597,12 +716,12 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 		beginDrawCalls ++;
 		
 		//We set the processing camera matrices from our remixlab.proscene.Camera
-		setPProjectionMatrix();
-		setPModelViewMatrix();
+		//setPProjectionMatrix();
+		//setPModelViewMatrix();
 		//same as the two previous lines:
 		//TODO: needs more testing
-		//camera().computeProjectionMatrix();
-		//camera().computeModelViewMatrix();
+		camera().computeProjectionMatrix();
+		camera().computeModelViewMatrix();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
@@ -1621,6 +1740,7 @@ public class Scene implements MouseWheelListener, MouseInputListener, PConstants
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
+	//public void mouseWheelMoved(MouseEvent event) {
 		if ( mouseIsHandled() ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
