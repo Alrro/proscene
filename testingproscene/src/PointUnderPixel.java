@@ -23,6 +23,7 @@ public class PointUnderPixel extends PApplet {
 		scene.setHelpIsDrawn(false);
 		scene.setRadius(scene.radius() * 1.5f);
 		scene.showAll();
+		//((GLCamera)scene.camera()).gl.glDisable(GL.GL_DEPTH_TEST);
 		
 		boxes = new Box[50];
 		for (int i = 0; i < boxes.length; i++)
@@ -32,14 +33,12 @@ public class PointUnderPixel extends PApplet {
 	public void draw() {
 		background(0);
 		scene.beginDraw();
+		//Effectively disables z-buffer
+		//((GLCamera)scene.camera()).gl.glDisable(GL.GL_DEPTH_TEST);
 		for (int i = 0; i < boxes.length; i++)
 			//3D drawing
 			boxes[i].draw();
 		scene.endDraw();
-	}
-	
-	public void keyPressed() {
-		scene.defaultKeyBindings();
 	}
 	
 	class GLCamera extends Camera {
@@ -49,11 +48,12 @@ public class PointUnderPixel extends PApplet {
 	    protected GLU glu;
 	    
 		public GLCamera(PApplet p) {
-			super();
+			super(p);
 			parent = p;
 			pgl = (PGraphicsOpenGL)parent.g;
 	        gl = pgl.gl;
 	        glu = pgl.glu;
+	        //gl.glDisable(GL.GL_DEPTH_TEST);
 		}
 		
 		protected WorldPoint pointUnderPixel(Point pixel) {

@@ -14,7 +14,7 @@ public class Caja {
 		setOrientation(v);
 		parent.pushMatrix();		
 		iFrame.applyTransformation(parent);
-		Scene.drawAxis(0.3f);
+		DrawingUtils.drawAxis(parent, 30);
 
 		if (iFrame.grabsMouse()) {
 			parent.fill(255, 0, 255);
@@ -22,7 +22,7 @@ public class Caja {
 		}
 		else {
 			parent.fill(0,255,255);
-			parent.box(0.3f);
+			parent.box(30);
 		}			
 		parent.popMatrix();
 	}

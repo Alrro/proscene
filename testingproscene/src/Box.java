@@ -10,9 +10,7 @@ public class Box {
 	Box(PApplet p) {
 		parent = p;
 		iFrame = new InteractiveFrame();
-		w = parent.random(0.1f, 0.4f);
-		h = parent.random(0.1f, 0.4f);
-		d = parent.random(0.1f, 0.4f);
+		setSize();
 		setColor();		
 		setPosition();
 	}
@@ -29,7 +27,7 @@ public class Box {
 		iFrame.applyTransformation(parent);
 		
 		if(drawAxis)
-		  Scene.drawAxis(PApplet.max(w,h,d)*1.3f);
+			DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
 		parent.noStroke();
 		if (iFrame.grabsMouse())
 			parent.fill(255,0,0);
@@ -39,6 +37,12 @@ public class Box {
 		parent.box(w,h,d);
 		
 		parent.popMatrix();
+	}
+	
+	public void setSize() {
+		w = parent.random(10, 40);
+		h = parent.random(10, 40);
+		d = parent.random(10, 40);
 	}
 	
 	public void setSize(float myW, float myH, float myD) {
@@ -62,8 +66,8 @@ public class Box {
 	}	
 	
 	public void setPosition() {
-		float low = -1.0f;
-		float high = 1.0f;
+		float low = -100;
+		float high = 100;
 		iFrame.setPosition(new PVector(parent.random(low, high), parent.random(low, high), parent.random(low, high)));
 	}
 	

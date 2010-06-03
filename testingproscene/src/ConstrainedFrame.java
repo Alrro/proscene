@@ -14,8 +14,8 @@ public class ConstrainedFrame extends PApplet  {
 	int activeConstraint;
 	
 	public void setup()	{
-		//size(640, 360, P3D);
-		size(640, 360, OPENGL);
+		size(640, 360, P3D);
+		//size(640, 360, OPENGL);
 		myFont = createFont("Arial", 12);
 		textFont(myFont);
 		textMode(SCREEN);
@@ -84,9 +84,9 @@ public class ConstrainedFrame extends PApplet  {
 		//applyMatrix( frame.pMatrix() );
 		//Same as the previous commented line, but a lot more efficient:
 		frame.applyTransformation(this);		
-		Scene.drawAxis(0.4f);		
+		scene.drawAxis(40);		
 		fill(204, 102, 0);
-		box(0.2f, 0.3f, 0.2f);				
+		box(30, 30, 30);				
 		popMatrix();
 		
 		fill(0, 0, 255);
@@ -153,7 +153,7 @@ public class ConstrainedFrame extends PApplet  {
 	}
 	
 	public void keyPressed() {
-		scene.defaultKeyBindings();
+		//scene.defaultKeyBindings();
 	
 		if (key == 'b' || key == 'B') {
 			rotDir   = (rotDir+1)%3;

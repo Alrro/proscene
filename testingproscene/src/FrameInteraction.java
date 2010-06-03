@@ -30,7 +30,7 @@ public class FrameInteraction extends PApplet {
 		// applyMatrix(scene.interactiveFrame().matrix()) is possible but inefficient 
 		scene.interactiveFrame().applyTransformation(this);//very efficient
 		// Draw an axis using the Scene static function
-		Scene.drawAxis(0.7f);
+		scene.drawAxis(0.7f);
 		// Draw a second box
 		if (scene.interactiveFrame().grabsMouse()) {
 			fill(255, 0, 0);

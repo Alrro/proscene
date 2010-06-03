@@ -13,9 +13,9 @@ public class ScreenDrawing extends PApplet {
 	int index;
 	
 	public void setup()	{
-		size(640, 360, OPENGL);
+		size(640, 360, P3D);
 		scene = new Scene(this);		
-		scene.setRadius(scene.radius() * 1.5f);
+		scene.setRadius(150);
 		scene.showAll();
 		index = 0;
 		points = new Point [LINE_ITEMS];		
@@ -43,7 +43,7 @@ public class ScreenDrawing extends PApplet {
 		noFill();
 		beginShape();
 		for (int i=0; i<index; i++)
-			vertex(Scene.xCoord( points[i].x ), Scene.yCoord( points[i].y ), Scene.zCoord());
+			vertex(scene.xCoord( points[i].x ), scene.yCoord( points[i].y ), scene.zCoord());
 		endShape();
 		strokeWeight(1);		
 		scene.endScreenDrawing();
@@ -53,7 +53,7 @@ public class ScreenDrawing extends PApplet {
 	
 	public void keyPressed() {	
 		if(key == 'y' && mousePressed) {
-			scene.enableMouseHandling(false);
+			scene.disableMouseHandling();
 			if (index < LINE_ITEMS ) {
 				points[index] = new Point (mouseX, mouseY);
 				index++;
@@ -61,11 +61,9 @@ public class ScreenDrawing extends PApplet {
 				index = 0;			
 		}
 		else {
-			scene.enableMouseHandling(true);
+			scene.enableMouseHandling();
 			if (key == 'x')
 				index = 0;
-			else
-				scene.defaultKeyBindings();
 		}
 	}
 	

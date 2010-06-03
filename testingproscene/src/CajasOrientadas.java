@@ -7,17 +7,17 @@ import remixlab.proscene.*;
 public class CajasOrientadas extends PApplet {
 	Scene scene;
 	Box [] cajas;
-	Esfera esfera;
+	Sphere esfera;
 	
 	public void setup()	{
-		size(640, 360, OPENGL);
+		size(640, 360, P3D);
 		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setRadius(1.6f);		
 		scene.showAll();
 		
-		esfera = new Esfera(this);
+		esfera = new Sphere(this);
 		esfera.setPosition(new PVector(0.0f, 1.4f, 0.0f));
 		esfera.setColor(color(0,0,255));
 		

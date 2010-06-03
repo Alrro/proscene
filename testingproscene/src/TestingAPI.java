@@ -24,6 +24,20 @@ public class TestingAPI extends PApplet {
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);
 		
+		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		scene.setCameraType(Camera.Type.PERSPECTIVE);
+		scene.camera().setPosition(new PVector(-30,-30,-80));
+		scene.camera().lookAt( scene.camera().sceneCenter() );
+		scene.showAll();
+		
+		float [][] coef = new float [6][4];		
+		coef = scene.camera().getFrustumPlanesCoefficients();
+		
+		for (int i=0; i<6; i++)
+			for (int j=0; j<4; j++)				
+				println("coef[" + i + "]" + "[" + j + "] = " + coef[i][j]);
+		
+		
 		/**
 		ArrayList<String> alist = new ArrayList<String>();
 		// . . . Add Strings to alist
@@ -54,14 +68,14 @@ public class TestingAPI extends PApplet {
 		}
 		*/
 
-		// /**
+		 /**
 		nbKeyFrames = 4;
 		
 		// myFrame is the Frame that will be interpolated.
 		Frame myFrame = new Frame();
 		
 		// Set myFrame as the KeyFrameInterpolator interpolated Frame.
-		kfi_ = new KeyFrameInterpolator(myFrame);		
+		kfi_ = new KeyFrameInterpolator(myFrame, this);		
 		
 		//kfi_.setLoopInterpolation();
 
@@ -125,7 +139,7 @@ public class TestingAPI extends PApplet {
 		background(0);
 		scene.beginDraw();
 		fill(204, 102, 0);
-		box(0.2f, 0.3f, 0.5f);		
+		box(20f, 30f, 50f);		
 		scene.endDraw();
 	}
 	

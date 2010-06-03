@@ -1,16 +1,16 @@
 import processing.core.*;
 import remixlab.proscene.*;
 
-public class Esfera {
+public class Sphere {
 	PApplet parent;
 	InteractiveFrame iFrame;
 	float r;
 	int c;
 	
-	Esfera(PApplet p) {
+	Sphere(PApplet p) {
 		parent = p;
 		iFrame = new InteractiveFrame();
-		setRadius(0.1f);
+		setRadius(10);
 	}
 	
 	public void draw() {
@@ -22,7 +22,7 @@ public class Esfera {
 		iFrame.applyTransformation(parent);
 		
 		if(drawAxis)
-			  Scene.drawAxis(radius()*1.3f);
+			DrawingUtils.drawAxis(parent, radius()*1.3f);
 		if (iFrame.grabsMouse()) {
 			parent.fill(255, 0, 0);
 			parent.sphere(radius()*1.2f);
@@ -35,7 +35,7 @@ public class Esfera {
 	}
 	
 	public float radius() {
-		return r; 
+		return r;
 	}
 	
 	public void setRadius(float myR) {

@@ -9,7 +9,7 @@ public class MouseGrabber extends PApplet {
 	Box [] boxes;
 	
 	public void setup()	{
-		size(640, 360, OPENGL);
+		size(640, 360, P3D);
 		scene = new Scene(this);		
 		scene.setGridIsDrawn(true);		
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);

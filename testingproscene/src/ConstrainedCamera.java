@@ -74,7 +74,7 @@ public class ConstrainedCamera extends PApplet  {
 		background(0);
 		scene.beginDraw();
 		fill(204, 102, 0);
-		box(0.2f, 0.3f, 0.5f);
+		box(20, 30, 50);
 		fill(0, 0, 255);
 		displayText();
 		scene.endDraw();
@@ -138,7 +138,7 @@ public class ConstrainedCamera extends PApplet  {
 	}
 	
 	public void keyPressed() {
-		scene.defaultKeyBindings();
+		//scene.defaultKeyBindings();
 		
 		if (key == 'b' || key == 'B') {
 			rotDir   = (rotDir+1)%3;
