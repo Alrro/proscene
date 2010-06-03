@@ -3,7 +3,7 @@
  * interactive 3D scenes in Processing.
  * @author Jean Pierre Charalambos, A/Prof. National University of Colombia
  * (http://disi.unal.edu.co/profesores/pierre/, http://www.unal.edu.co/).
- * @version 0.8.0
+ * @version 0.9.0
  * 
  * Copyright (c) 2010 Jean Pierre Charalambos
  * 
@@ -62,7 +62,7 @@ public class Camera implements Cloneable {
 		public PVector point;
 		public boolean found;
 	}
-	static int viewport[] = new int [4];
+	int viewport[] = new int [4];
 	//next variables are needed for frustrum plane coefficients
 	PVector normal[] = new PVector[6];
 	float dist[] = new float[6];
@@ -102,7 +102,7 @@ public class Camera implements Cloneable {
 	protected HashMap<Integer, KeyFrameInterpolator> kfi;
 	Iterator<Integer> it;
 	protected KeyFrameInterpolator interpolationKfi;
-	protected static InteractiveCameraFrame tempFrame;
+	protected InteractiveCameraFrame tempFrame;
 	
 	// A t t a c h e d   S c e n e
 	boolean attachedToPCam;

@@ -23,12 +23,6 @@ void draw() {
   scene.draw();
 }
 
-// To take full advantage of proscene 3d navigation power
-// keyPressed() should always call Scene.defaultKeyBindings()
-void keyPressed() {
-  scene.defaultKeyBindings();
-}
-
 class MyScene extends Scene {
   // We need to call super(p) to instantiate the base class
   public MyScene(PApplet p) {

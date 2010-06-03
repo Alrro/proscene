@@ -1,7 +1,7 @@
 
                                   proscene
 
-	      	            Version 0.8.0 April, 2010
+	      	            Version 0.9.0 June, 2010
 
 
   Copyright (C) 2010 Jean Pierre Charalambos. All rights reserved.
@@ -14,7 +14,7 @@ library which provides classes to ease the creation of interactive 3D scenes in 
 Proscene has been pretty much inspired in the Qt's OpenGL C++ libqglviewer library
 (http://www.libqglviewer.com/). Proscene has a very similar functionality and API
 reference to that found in libqglviewer, both of which have been ported to Java.
-Most of the examples found in the current release (v-0.8.0) are implementations of the
+Most of the examples found in the current release (v-0.9.0) are implementations of the
 libqglviewer counterparts.
 
 Proscene provides seemless integration with Processing: Its API has been designed to fit

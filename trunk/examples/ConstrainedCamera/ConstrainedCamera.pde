@@ -146,11 +146,7 @@ void displayText() {
   }
 }
 
-// To take full advantage of proscene 3d navigation power
-// keyPressed() should always call Scene.defaultKeyBindings()
 void keyPressed() {
-  scene.defaultKeyBindings();
-
   if (key == 'b' || key == 'B') {
     rotDir   = (rotDir+1)%3;
   }

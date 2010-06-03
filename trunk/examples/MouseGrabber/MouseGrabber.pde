@@ -45,9 +45,3 @@ void draw() {
     boxes[i].draw(true);
   scene.endDraw();
 }
-
-// To take full advantage of proscene 3d navigation power
-// keyPressed() should always call Scene.defaultKeyBindings()
-void keyPressed() {
-  scene.defaultKeyBindings();
-}
