@@ -3,7 +3,7 @@
  * interactive 3D scenes in Processing.
  * @author Jean Pierre Charalambos, A/Prof. National University of Colombia
  * (http://disi.unal.edu.co/profesores/pierre/, http://www.unal.edu.co/).
- * @version 0.8.0
+ * @version 0.9.0
  * 
  * Copyright (c) 2010 Jean Pierre Charalambos
  * 
@@ -26,11 +26,13 @@
 package remixlab.proscene;
 
 import processing.core.*;
-
 import java.awt.Point;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-//import javax.swing.event.*;
 import javax.swing.Timer;
 
 /**
@@ -63,9 +65,7 @@ import javax.swing.Timer;
  * <p>
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
-//public class Scene implements MouseWheelListener, MouseInputListener, PConstants {
 public class Scene implements MouseWheelListener, PConstants {
-//public class Scene implements PConstants {
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
 	 */
@@ -125,8 +125,11 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	// C O N S T R A I N T S
 	boolean withConstraint;
+	
+	// K E Y B O A R D   A N D   M O U S E
 	protected boolean mouseHandling;
-	protected boolean keyHandling;
+	protected boolean keyboardHandling;
+	final List<String> keyList;
 	//TODO hack
 	//private boolean readyToGo;
 	
@@ -182,9 +185,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		setAxisIsDrawn(false);
 		setGridIsDrawn(false);
+		setHelpIsDrawn(true);	    
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
-		setHelpIsDrawn(true);	    
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -200,111 +203,15 @@ public class Scene implements MouseWheelListener, PConstants {
         beginDrawCalls = 0;
         startCoordCalls = 0;       
         
-        enableKeyHandling();
+        enableKeyboardHandling();
         enableMouseHandling();
-        
+        keyList = new ArrayList<String>();
+        addKeys();       
+		parseKeyXxxxMethods();
+		
 		//called only once
 		init();
-	}
-	
-	//key
-	public boolean keyIsHandled() {
-		return keyHandling; 
-	}
-	
-	public void toggleKeyHandling() {
-		enableKeyHandling(!keyHandling);
-	}
-	
-	public void enableKeyHandling(boolean enable) {
-		if(enable)
-			enableKeyHandling();
-		else
-			disableKeyHandling();
-	}
-	
-	public void enableKeyHandling() {
-		keyHandling = true;
-		parent.registerKeyEvent(this);
-	}
-	
-	public void disableKeyHandling() {
-		keyHandling = false;
-		parent.unregisterKeyEvent(this);
-	}
-	
-	public void keyEvent(KeyEvent e) {
-		switch (e.getID()) {
-		case KeyEvent.KEY_PRESSED:
-			break;
-		case KeyEvent.KEY_RELEASED:
-			this.defaultKeyBindings();
-			break;
-		case KeyEvent.KEY_TYPED:
-			break;
-		}
-	}
-	
-	//mouse
-	public boolean mouseIsHandled() {
-		return mouseHandling; 
-	}
-	
-	public void togglemouseHandling() {
-		enableKeyHandling(!mouseHandling);
-	}
-	
-	public void enableMouseHandling(boolean enable) {
-		if(enable)
-			enableMouseHandling();
-		else
-			disableMouseHandling();
-	}
-	
-	public void enableMouseHandling() {
-		mouseHandling = true;
-		parent.registerMouseEvent(this);
-	}
-	
-	public void disableMouseHandling() {
-		mouseHandling = false;
-		parent.unregisterMouseEvent(this);
-	}
-	
-	public void mouseEvent(MouseEvent e) {		
-		switch (e.getID()) {
-		case MouseEvent.MOUSE_CLICKED:
-			this.mouseClicked(e);
-		break;
-		case MouseEvent.MOUSE_DRAGGED:
-			this.mouseDragged(e);
-		break;
-		case MouseEvent.MOUSE_MOVED:
-			this.mouseMoved(e);
-		break;
-		case MouseEvent.MOUSE_PRESSED:
-			this.mousePressed(e);
-		break;
-		case MouseEvent.MOUSE_RELEASED:
-			this.mouseReleased(e);
-		break;
-		/**
-		case MouseEvent.MOUSE_WHEEL:
-			this.mouseWheelMoved(e);
-		break;
-		*/
-	}
-		/**
-		case KeyEvent.KEY_PRESSED:
-			break;
-		case KeyEvent.KEY_RELEASED:
-			this.defaultKeyBindings();
-			break;
-		case KeyEvent.KEY_TYPED:
-			break;
-		}	
-		*/	
-	}
+	}	
 	
 	// 1. Associated objects
 		
@@ -381,60 +288,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	// 2. State of the viewer
-    
-    /**
-     * Toggles the state of {@link #mouseIsHandled()}
-     */
-    
-    /**
-    public void toggleMouseHandling() {
-    	enableMouseHandling(!mouseIsHandled());
-    }
-    */
-    
-    /**
-	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
-	 * Set mouse handling with {@link #enableMouseHandling(boolean)}.
-	 * <p>
-	 * Mouse handling is enable by default.
-	 */
-    
-    /**
-	public boolean mouseIsHandled() {
-		return mouseHandling;
-	}
-	*/
-	
-	/**
-	 * Convenience function that simply calls {@code enableMouseHandling(true)}
-	 */
-    
-    /**
-	public void enableMouseHandling() {
-		enableMouseHandling(true);
-	}
-	*/
-	
-	/**
-	 * Convenience function that simply calls {@code enableMouseHandling(false)}
-	 */
-    
-    /**
-	public void disableMouseHandling() {
-		enableMouseHandling(false);
-	}
-	*/	
-	
-	/**
-	 * Enables or disables mouse handling according to {@code flag}
-	 */
-    
-    /**
-	public void enableMouseHandling(boolean flag) {
-		mouseHandling = flag;
-	}
-	*/
-	
+    	
 	/**
 	 * Toggles the state of {@link #axisIsDrawn()}.
 	 * 
@@ -539,145 +393,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			setDrawWithConstraint(false);
 		else
 			setDrawWithConstraint(true);
-	}
-	
-	/**
-	 * Associates the different interactions to default keys.
-	 */
-	public void defaultKeyBindings() {
-		if (parent.key == '+') {
-			camera().setFlySpeed(camera().flySpeed() * 1.5f);
-		}
-		if (parent.key == '-') {
-			camera().setFlySpeed(camera().flySpeed() / 1.5f);
-		}
-		if (parent.key == 'a' || parent.key == 'A') {
-			toggleAxisIsDrawn();
-		}
-		if (parent.key == 'c' || parent.key == 'C') {
-			toggleCameraMode();
-		}
-		if (parent.key == 'e' || parent.key == 'E') {
-			toggleCameraType();
-		}
-		if (parent.key == 'f' || parent.key == 'F') {
-			toggleFrameSelectionHintIsDrawn();
-		}
-		if (parent.key == 'g' || parent.key == 'G') {
-			toggleGridIsDrawn();
-		}
-		if (parent.key == 'h' || parent.key == 'H') {
-			toggleHelpIsDrawn();
-		}
-		if (parent.key == 'i' || parent.key == 'I') {
-			toggleDrawInteractiveFrame();
-		}
-		if (parent.key == 'r' || parent.key == 'R') {
-			toggleCameraPathsAreDrawn();
-		}
-		if (parent.key == 's') {			
-			camera().interpolateToFitScene();
-		}
-		if (parent.key == 'S') {
-			showAll();
-		}
-		if (parent.key == 'w' || parent.key == 'W') {
-			toggleDrawWithConstraint();
-		}
-		if (parent.key == 'o') {			
-			if ( Camera.class == camera().getClass() )
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
-						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn())
-				if (setRevolveAroundPointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-					rapFlag = true;
-					utilityTimer.start();
-				}
-		}
-		if (parent.key == 'O') {
-			camera().setRevolveAroundPoint(new PVector(0,0,0));
-			rapFlag = true;
-			utilityTimer.start();
-		}
-		if ((parent.key == 'p') || (parent.key == 'P')) {
-			if ( Camera.class == camera().getClass() )
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
-						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn()) {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point; 
-					pupFlag = true;
-					utilityTimer.start();
-				}
-			}
-		}
-		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' ) {
-			if( parent.key == '1') camera().playPath(1);			
-			if( parent.key == 'j') {
-				camera().addKeyFrameToPath(1);
-				//debug
-				/**
-				PApplet.println("Frame " + camera().keyFrameInterpolator(1).numberOfKeyFrames() + " Position: "
-						+ camera().position().x + ", " +  camera().position().y + ", "+ camera().position().z + " Orientation: " 
-						+ camera().orientation().x + ", " + camera().orientation().y + ", " + camera().orientation().z + ", " + camera().orientation().w);
-			    // */
-			}
-			if( parent.key == 'J') camera().deletePath(1);			
-		}
-		if( parent.key == '2' || parent.key == 'k' || parent.key == 'K' ) {
-			if( parent.key == '2') camera().playPath(2);			
-			if( parent.key == 'k') camera().addKeyFrameToPath(2);
-			if( parent.key == 'K') camera().deletePath(2);
-		}
-		if( parent.key == '3' || parent.key == 'l' || parent.key == 'L' ) {
-			if( parent.key == '3') camera().playPath(3);			
-			if( parent.key == 'l') camera().addKeyFrameToPath(3);
-			if( parent.key == 'L') camera().deletePath(3);
-		}
-		if( parent.key == '4' || parent.key == 'm' || parent.key == 'M' ) {
-			if( parent.key == '4') camera().playPath(4);			
-			if( parent.key == 'm') camera().addKeyFrameToPath(4);
-			if( parent.key == 'M') camera().deletePath(4);
-		}
-		if( parent.key == '5' || parent.key == 'n' || parent.key == 'N' ) {
-			if( parent.key == '5') camera().playPath(5);			
-			if( parent.key == 'n') camera().addKeyFrameToPath(5);
-			if( parent.key == 'N') camera().deletePath(5);
-		}
-	}
-	
-	/**
-	 * Displays the help text describing how interactivity actions are binded to the keyboard and mouse.
-	 */
-	public void help() {
-		parent.textFont(font);
-		parent.textMode(SCREEN);
-		
-		String textToDisplay = new String();
-		textToDisplay += "KEYBOARD\n";
-		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
-		textToDisplay += "a/g: Toggle axis/grid drawn\n";
-		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
-		textToDisplay += "h: Toggle the display of this help\n";
-		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
-		textToDisplay += "(o)O/p: (un)set revolve around point / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
-		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
-		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
-		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
-		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play camera key frame interpolators\n";
-		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
-		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
-		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
-		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
-		textToDisplay += "MOUSE MODIFIERS (applied to left button)\n";
-		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
-		//parent.textAlign(CENTER, CENTER);
-		//parent.textAlign(RIGHT);		
-		parent.fill(0, 255, 0);		
-		parent.textLeading(20);
-		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));		 
-	}
+	}	
 	
 	// 3. Drawing methods
 	
@@ -1460,27 +1176,396 @@ public class Scene implements MouseWheelListener, PConstants {
 		pupFlag = false;			
 	}
 	
-	// 7. Mouse customization
+	// 7. Keyboard customization
 	
-	// 8. Keyboard customization
+	//protected void parseKeyXxxxMethods() throws Exception {
+	protected void parseKeyXxxxMethods() {
+		/**
+		PApplet.println(parent.getClass().getName());
+		Method m = parent.getClass().getMethod( "keyPressed" );
+		//m.invoke( this, new Object[]{e} );
+		PApplet.println(m.getName());
+		if (m.equals( PApplet.class.getMethod("keyPressed")))
+			PApplet.println("same");
+		else
+			PApplet.println("different");
+		*/
+		
+		/**
+		keyTyped()
+		 keyReleased()
+		 keyPressed()
+		 */
+		
+		boolean foundKP = true;
+		boolean foundKR = true;
+		boolean foundKT = true;		
+		
+		try {
+			parent.getClass().getDeclaredMethod( "keyPressed" );
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			foundKP = false;
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			//PApplet.println("method not declared");
+			foundKP = false;
+			//e.printStackTrace();
+		}
+		
+		try {
+			parent.getClass().getDeclaredMethod( "keyReleased" );
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			foundKR = false;
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			//PApplet.println("method not declared");
+			foundKR = false;
+			//e.printStackTrace();
+		}
+		
+		try {
+			parent.getClass().getDeclaredMethod( "keyTyped" );
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			foundKT = false;
+		} catch (NoSuchMethodException e) {
+			// TODO Auto-generated catch block
+			//PApplet.println("method not declared");
+			foundKT = false;
+			//e.printStackTrace();
+		}
+		
+		if(foundKP || foundKR || foundKT) {			
+			PApplet.println("It seems you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use:");
+			Iterator<String> itr = keyList.iterator();			
+			while(itr.hasNext()) {
+				PApplet.print(itr.next());
+				PApplet.print(" ");
+			}
+			PApplet.println();
+			PApplet.println("To avoid conflicts with proscene, you have two choices:");
+			PApplet.println("1. Use some of the keys not listed above.");
+			PApplet.println("2. Disable proscene keyboard handling while doing your keyboard manipulation by calling Scene.disableKeyboardHandling() " +
+					"(you can re-enable it later by calling Scene.enableKeyboardHandling()).");			
+		}
+	}
 	
-	// 9. Mouse, keyboard and event handlers
-	
-	//mouseClicked, mouseEntered, mouseExited, mousePressed, mouseReleased
-	
-	// /**
-	//only in interface MouseMotionListener
+	public List<String> getKeys() {
+		return keyList;
+	}
 	
 	/**
-	 * Implementation of the MouseMotionListener interface method.
+	private void removeKeys() {
+		keyList.clear();
+	}
+	*/
+	
+	private void addKeys() {
+		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-",
+				                                  "a","b","c","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
+				                                  "A","B","C","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));		
+	}
+	
+	public boolean isInKeyList(String key) {
+		return keyList.contains(key);
+	}
+	
+	/**
+	 * Returns {@code true} if the keyboard is currently being handled by proscene and {@code false} otherwise.
+	 * Set keyboard handling with {@link #enableMouseHandling(boolean)}.
 	 * <p>
+	 * Keyboard handling is enable by default.
+	 */
+	public boolean keyboardIsHandled() {
+		return keyboardHandling; 
+	}
+	
+	/**
+     * Toggles the state of {@link #keyboardIsHandled()}
+     */
+	public void toggleKeyboardHandling() {
+		enableKeyboardHandling(!keyboardHandling);
+	}
+	
+	/**
+	 * Enables or disables proscene keyboard handling according to {@code enable}
+	 * 
+	 * @see #keyboardIsHandled()
+	 */
+	public void enableKeyboardHandling(boolean enable) {
+		if(enable)
+			enableKeyboardHandling();
+		else
+			disableKeyboardHandling();
+	}
+	
+	/**
+	 * Enables proscene keyboard handling.
+	 * 
+	 * @see  #keyboardIsHandled()
+	 */
+	public void enableKeyboardHandling() {		
+		keyboardHandling = true;
+		parent.registerKeyEvent(this);
+	}
+	
+	/**
+	 * Disables proscene keyboard handling.
+	 * 
+	 * @see  #keyboardIsHandled()
+	 */
+	public void disableKeyboardHandling() {		
+		keyboardHandling = false;
+		parent.unregisterKeyEvent(this);
+	}
+	
+	/**
+	 * Method interface between proscene and processing to handle the keyboard.
+	 * 
+	 * @see #keyboardIsHandled()
+	 * @see #enableKeyboardHandling(boolean)
+	 */
+	public void keyEvent(KeyEvent e) {
+		switch (e.getID()) {
+		case KeyEvent.KEY_PRESSED:
+			break;
+		case KeyEvent.KEY_RELEASED:
+			this.defaultKeyBindings();
+			break;
+		case KeyEvent.KEY_TYPED:
+			break;
+		}
+	}
+	
+	/**
+	 * Associates the different interactions to default keys.
+	 */
+	public void defaultKeyBindings() {
+		if (parent.key == '+') {
+			camera().setFlySpeed(camera().flySpeed() * 1.5f);			
+		}
+		if (parent.key == '-') {
+			camera().setFlySpeed(camera().flySpeed() / 1.5f);			
+		}
+		if (parent.key == 'a' || parent.key == 'A') {
+			toggleAxisIsDrawn();			
+		}
+		if (parent.key == 'c' || parent.key == 'C') {
+			toggleCameraMode();			
+		}
+		if (parent.key == 'e' || parent.key == 'E') {
+			toggleCameraType();
+		}
+		if (parent.key == 'f' || parent.key == 'F') {
+			toggleFrameSelectionHintIsDrawn();
+		}
+		if (parent.key == 'g' || parent.key == 'G') {
+			toggleGridIsDrawn();
+		}
+		if (parent.key == 'h' || parent.key == 'H') {
+			toggleHelpIsDrawn();
+		}
+		if (parent.key == 'i' || parent.key == 'I') {
+			toggleDrawInteractiveFrame();
+		}
+		if (parent.key == 'r' || parent.key == 'R') {
+			toggleCameraPathsAreDrawn();
+		}
+		if (parent.key == 's') {			
+			camera().interpolateToFitScene();
+		}
+		if (parent.key == 'S') {
+			showAll();
+		}
+		if (parent.key == 'w' || parent.key == 'W') {
+			toggleDrawWithConstraint();
+		}
+		if (parent.key == 'o') {			
+			if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (!helpIsDrawn())
+				if (setRevolveAroundPointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+					rapFlag = true;
+					utilityTimer.start();
+				}
+		}
+		if (parent.key == 'O') {
+			camera().setRevolveAroundPoint(new PVector(0,0,0));
+			rapFlag = true;
+			utilityTimer.start();
+		}
+		if ((parent.key == 'p') || (parent.key == 'P')) {
+			if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (!helpIsDrawn()) {
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
+				if (wP.found) {
+					pupVec = wP.point; 
+					pupFlag = true;
+					utilityTimer.start();
+				}
+			}
+		}
+		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' ) {
+			if( parent.key == '1') camera().playPath(1);			
+			if( parent.key == 'j') {
+				camera().addKeyFrameToPath(1);
+				//debug
+				/**
+				PApplet.println("Frame " + camera().keyFrameInterpolator(1).numberOfKeyFrames() + " Position: "
+						+ camera().position().x + ", " +  camera().position().y + ", "+ camera().position().z + " Orientation: " 
+						+ camera().orientation().x + ", " + camera().orientation().y + ", " + camera().orientation().z + ", " + camera().orientation().w);
+			    // */
+			}
+			if( parent.key == 'J') camera().deletePath(1);			
+		}
+		if( parent.key == '2' || parent.key == 'k' || parent.key == 'K' ) {
+			if( parent.key == '2') camera().playPath(2);			
+			if( parent.key == 'k') camera().addKeyFrameToPath(2);
+			if( parent.key == 'K') camera().deletePath(2);
+		}
+		if( parent.key == '3' || parent.key == 'l' || parent.key == 'L' ) {
+			if( parent.key == '3') camera().playPath(3);			
+			if( parent.key == 'l') camera().addKeyFrameToPath(3);
+			if( parent.key == 'L') camera().deletePath(3);
+		}
+		if( parent.key == '4' || parent.key == 'm' || parent.key == 'M' ) {
+			if( parent.key == '4') camera().playPath(4);			
+			if( parent.key == 'm') camera().addKeyFrameToPath(4);
+			if( parent.key == 'M') camera().deletePath(4);
+		}
+		if( parent.key == '5' || parent.key == 'n' || parent.key == 'N' ) {
+			if( parent.key == '5') camera().playPath(5);			
+			if( parent.key == 'n') camera().addKeyFrameToPath(5);
+			if( parent.key == 'N') camera().deletePath(5);
+		}
+	}
+	
+	/**
+	 * Displays the help text describing how interactivity actions are binded to the keyboard and mouse.
+	 */
+	public void help() {
+		parent.textFont(font);
+		parent.textMode(SCREEN);
+		
+		String textToDisplay = new String();
+		textToDisplay += "KEYBOARD\n";
+		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
+		textToDisplay += "a/g: Toggle axis/grid drawn\n";
+		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
+		textToDisplay += "h: Toggle the display of this help\n";
+		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
+		textToDisplay += "(o)O/p: (un)set revolve around point / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
+		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
+		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
+		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
+		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play camera key frame interpolators\n";
+		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
+		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
+		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
+		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
+		textToDisplay += "MOUSE MODIFIERS (applied to left button)\n";
+		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
+		//parent.textAlign(CENTER, CENTER);
+		//parent.textAlign(RIGHT);		
+		parent.fill(0, 255, 0);		
+		parent.textLeading(20);
+		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));		 
+	}
+	
+	// 8. Mouse customization
+	
+	/**
+	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
+	 * Set mouse handling with {@link #enableMouseHandling(boolean)}.
+	 * <p>
+	 * Mouse handling is enable by default.
+	 */
+	public boolean mouseIsHandled() {
+		return mouseHandling; 
+	}
+	
+	/**
+     * Toggles the state of {@link #mouseIsHandled()}
+     */
+	public void toggleMouseHandling() {
+		enableMouseHandling(!mouseHandling);
+	}
+	
+	/**
+	 * Enables or disables proscene mouse handling according to {@code enable}
+	 * 
+	 * @see #mouseIsHandled()
+	 */
+	public void enableMouseHandling(boolean enable) {
+		if(enable)
+			enableMouseHandling();
+		else
+			disableMouseHandling();
+	}
+	
+	/**
+	 * Enables proscene mouse handling.
+	 * 
+	 * @see #mouseIsHandled()
+	 */
+	public void enableMouseHandling() {
+		mouseHandling = true;
+		parent.registerMouseEvent(this);
+	}
+	
+	/**
+	 * Disables proscene mouse handling.
+	 * 
+	 * 
+	 * @see #mouseIsHandled()
+	 */
+	public void disableMouseHandling() {
+		mouseHandling = false;
+		parent.unregisterMouseEvent(this);
+	}
+	
+	/**
+	 * Method interface between proscene and processing to handle the mouse.
+	 * 
+	 * @see #mouseIsHandled()
+	 * @see #enableMouseHandling(boolean)
+	 */
+	public void mouseEvent(MouseEvent e) {		
+		switch (e.getID()) {
+		case MouseEvent.MOUSE_CLICKED:
+			this.mouseClicked(e);
+		break;
+		case MouseEvent.MOUSE_DRAGGED:
+			this.mouseDragged(e);
+		break;
+		case MouseEvent.MOUSE_MOVED:
+			this.mouseMoved(e);
+		break;
+		case MouseEvent.MOUSE_PRESSED:
+			this.mousePressed(e);
+		break;
+		case MouseEvent.MOUSE_RELEASED:
+			this.mouseReleased(e);
+		break;
+	    }			
+	}
+	
+	/**
 	 * Sets the Camera from processing camera parameters.
 	 * <p>
 	 * {@link #setMouseGrabber(MouseGrabber)} to the MouseGrabber that grabs
 	 * the mouse (or to {@code null} if none of them grab it).
 	 */
 	public void mouseMoved(MouseEvent event) {
-		if ( mouseIsHandled() ) {
+		//if ( mouseIsHandled() ) {
 			//need in order to make mousewheel work properly
 			setMouseGrabber(null);
 			for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
@@ -1488,11 +1573,10 @@ public class Scene implements MouseWheelListener, PConstants {
 				if(mg.grabsMouse())
 					setMouseGrabber(mg);
 			}
-		}
+		//}
 	}
 	
-	/** Implementation of the MouseMotionListener interface method.
-	 * <p>
+	/**
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
 	 * {@link remixlab.proscene.MouseGrabber#mousePressEvent(MouseEvent, Camera)} is called.
 	 * Otherwise, the {@link #camera()} or the {@link #interactiveFrame()} interprets
@@ -1501,7 +1585,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		if ( mouseIsHandled() ) {
+		//if ( mouseIsHandled() ) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
 	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
@@ -1587,19 +1671,17 @@ public class Scene implements MouseWheelListener, PConstants {
 			}	
 			camera().frame().mousePressEvent(event, camera());
 		}
-		}
+		//}
 	}
 	
 	/**
-	 * Implementation of the MouseMotionListener interface method.
-	 * <p>
 	 * Mouse drag event is sent to the {@link #mouseGrabber()} (if any) or to the
 	 * {@link #camera()} or the {@link #interactiveFrame()}, depending on mouse bindings.
 	 * 
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		if ( mouseIsHandled() ) {
+		//if ( mouseIsHandled() ) {
 		// /**
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
@@ -1634,17 +1716,15 @@ public class Scene implements MouseWheelListener, PConstants {
 			//if (camera() != null ) if (camera().frame() != null ) camera().frame().mouseMoveEvent(event, camera());
 			camera().frame().mouseMoveEvent(event, camera());
 		}
-		}
+		//}
 	}
 	
 	/**
-	 * Implementation of the MouseMotionListener interface method.
-	 * <p>
 	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
 	public void mouseReleased(MouseEvent event) {
-		if ( mouseIsHandled() ) {
+		//if ( mouseIsHandled() ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
 	    	camera().frame().mouseReleaseEvent(event, camera());
@@ -1669,17 +1749,15 @@ public class Scene implements MouseWheelListener, PConstants {
 		else {
 			camera().frame().mouseReleaseEvent(event, camera());
 		}
-		}
+		//}
     }
 	
 	/**
-	 * Implementation of the MouseListener interface method.
-	 * <p>
 	 * Implements mouse double click events: left button aligns scene,
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		if ( mouseIsHandled() && ( event.getClickCount() == 2 ) ) {
+		if ( /**mouseIsHandled() && */ ( event.getClickCount() == 2 ) ) {
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
@@ -1717,31 +1795,14 @@ public class Scene implements MouseWheelListener, PConstants {
 			}
 		}
 		}
-	}
+	}	
 	
 	/**
-	 * Implementation of the MouseMotionListener interface method.
-	 * <p>
-	 * Current implementation is empty.
-	 */ 
-	public void mouseEntered(MouseEvent event) {}
-	
-	/**
-	 * Implementation of the MouseMotionListener interface method.
-	 * <p>
-	 * Current implementation is empty.
-	 */
-	public void mouseExited(MouseEvent event) {}	
-	
-	/**
-	 * Implementation of the MouseWheelListener interface method.
-	 * <p>
 	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-	//public void mouseWheelMoved(MouseEvent event) {
-		if ( mouseIsHandled() ) {
+		//if ( mouseIsHandled() ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
@@ -1771,10 +1832,10 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
 			camera().frame().mouseWheelEvent(event, camera());			
 		}
-		}
+		//}
 	}
 	
-	// 10. Processing objects
+	// 9. Processing objects
 	
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}.

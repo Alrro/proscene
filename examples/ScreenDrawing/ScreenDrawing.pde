@@ -73,8 +73,6 @@ void draw() {
   scene.endDraw();
 }
 
-// To take full advantage of proscene 3d navigation power keyPressed() should always
-// call Scene.defaultKeyBindings()
 void keyPressed() {
   if(key == 'y' && mousePressed) {
     // to draw on screen first disable proscene mouse handling
@@ -86,7 +84,5 @@ void keyPressed() {
     scene.enableMouseHandling();
     if (key == 'x')
       points.clear();
-    else
-      scene.defaultKeyBindings();
   }
 }
