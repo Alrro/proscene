@@ -1241,7 +1241,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 		
 		if(foundKP || foundKR || foundKT) {			
-			PApplet.println("It seems you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use:");
+			PApplet.println("It seems that you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use:");
 			Iterator<String> itr = keyList.iterator();			
 			while(itr.hasNext()) {
 				PApplet.print(itr.next());
