@@ -33,8 +33,8 @@ public class Cam1 extends PApplet {
     //Scene scene;
 
     public void setup() {
-        //size(640, 360, P3D);
-        size(640, 360, OPENGL);
+        size(640, 360, P3D);
+        //size(640, 360, OPENGL);
         scene = new Scene(this);
         cullingCamera = new CullingCamera(this);
         scene.setCamera(cullingCamera);

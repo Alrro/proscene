@@ -6,11 +6,14 @@ public class BasicFrustum extends PApplet {
 	Scene scene;
 	CullingCamera cullingCamera;
 	
+	static boolean entirely;
+	static BoxNode Root;
+	
 	public void setup()	{		
 		size(640, 360, P3D);
 		PVector p = new PVector(100, 70, 130);		
-		BoxNode.Root = new BoxNode(p, PVector.mult(p, -1.0f));
-		BoxNode.Root.buildBoxHierarchy(4);
+		Root = new BoxNode(p, PVector.mult(p, -1.0f));
+		Root.buildBoxHierarchy(4);
         scene = new Scene(this);        
         cullingCamera = new CullingCamera(this);
         scene.setCamera(cullingCamera);
@@ -22,7 +25,7 @@ public class BasicFrustum extends PApplet {
 	public void draw() {		
 		background(0);
 		scene.beginDraw();
-		BoxNode.Root.drawIfAllChildrenAreVisible(this, cullingCamera);
+		Root.drawIfAllChildrenAreVisible(this, cullingCamera);
 		cullingCamera.computeFrustumPlanesEquations();	
 		scene.endDraw();
 	}

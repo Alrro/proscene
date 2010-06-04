@@ -13,11 +13,14 @@ import processing.core.PVector;
  * @author nakednous
  */
 public class DoubleCam extends PApplet {
+	
+	static boolean entirely;
+	static BoxNode Root;
 
     public void setup() {    	
     	PVector v = new PVector(100, 70, 130);		
-		BoxNode.Root = new BoxNode(v, PVector.mult(v, -1.0f));
-		BoxNode.Root.buildBoxHierarchy(4);
+		Root = new BoxNode(v, PVector.mult(v, -1.0f));
+		Root.buildBoxHierarchy(4);
     	
     	Panel p = new Panel();
         Cam1.getInstance().init();

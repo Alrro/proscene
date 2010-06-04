@@ -44,9 +44,11 @@ public class CullingCamera extends Camera {
 				return false;
 		}
 		
-		if (BoxNode.entirely)
+		//if (BoxNode.entirely)
+		if (ViewFrustumCulling.entirely)
 		    // Entirely visible : the eight points are on the inside side of the 6 planes
-		    BoxNode.entirely = allInForAllPlanes;
+		    //BoxNode.entirely = allInForAllPlanes;
+			ViewFrustumCulling.entirely = allInForAllPlanes;
 
 		  // Too conservative, but tangent cases are too expensive to detect
 		  return true;

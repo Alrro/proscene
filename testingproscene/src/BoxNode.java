@@ -7,8 +7,8 @@ public class BoxNode {
 	int level;
 	// Lazy static member, so that it is shared by viewers
 	//static PVector p = new PVector(100, 70, 130);
-	static BoxNode Root;
-	static boolean entirely;
+	//static BoxNode Root;
+	//static boolean entirely;
 	
 	BoxNode(PVector P1, PVector P2) {
 		p1 = P1;
@@ -17,8 +17,8 @@ public class BoxNode {
 	}
 	
 	public void draw(PApplet parent) {		
-		parent.colorMode(PApplet.RGB, 1);
-		parent.stroke(parent.color(0.3f*level, 0.2f, 1.0f-0.3f*level));
+		//parent.colorMode(PApplet.RGB, 1);
+		parent.stroke(parent.color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
 		parent.strokeWeight(level+1);
 		
 		parent.beginShape();		
@@ -43,13 +43,15 @@ public class BoxNode {
 		parent.vertex(p2.x, p1.y, p1.z);
 		parent.vertex(p2.x, p1.y, p2.z);
 		parent.endShape();
-		parent.colorMode(PApplet.RGB, 255);
+		//parent.colorMode(PApplet.RGB, 255);
 	}
 	
 	public void drawIfAllChildrenAreVisible(PApplet parent, CullingCamera camera) {
-	    BoxNode.entirely = true;
+	    //BoxNode.entirely = true;
+		ViewFrustumCulling.entirely = true;
 	    if (camera.aaBoxIsVisible(p1, p2)) {
-			if (BoxNode.entirely)
+			//if (BoxNode.entirely)
+	    	if (ViewFrustumCulling.entirely)
 				draw(parent);
 			else
 				if (child[0]!=null)

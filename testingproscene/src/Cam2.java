@@ -34,8 +34,8 @@ public class Cam2 extends PApplet {
     //Scene scene2;
 
     public void setup() {
-        //this.size(640, 360, P3D);
-    	this.size(640, 360, OPENGL);
+        this.size(640, 360, P3D);
+    	//this.size(640, 360, OPENGL);
         scene2 = new Scene(this);
         scene2.setRadius(1000);
         scene2.showAll();

@@ -13,6 +13,6 @@ import processing.core.*;
  */
 public class DrawingCommands {
 	public static void cmmnds(PApplet p) {
-		 BoxNode.Root.drawIfAllChildrenAreVisible(p, Cam1.cullingCamera);
+		 DoubleCam.Root.drawIfAllChildrenAreVisible(p, Cam1.cullingCamera);
 	}
 }
