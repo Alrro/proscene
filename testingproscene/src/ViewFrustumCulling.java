@@ -75,7 +75,7 @@ public class ViewFrustumCulling extends PApplet {
 	class AuxViewer extends PApplet {
 		Scene s;
 		Camera mainCam = null;
-		boolean flag = false;
+		boolean flag = true;
 		
 		public void setup() {
 			size(640, 360, P3D);		
@@ -100,20 +100,22 @@ public class ViewFrustumCulling extends PApplet {
 		
 		public void draw() {
 			background(0);
+			
+			if(mainCam == null)
+				if(viewer.scene()!=null)
+					if(viewer.scene().camera() != null)
+						setMainCameraReference(viewer.scene().camera());
+				
+				
 			s.beginDraw();
-			//Root.drawIfAllChildrenAreVisible(this, cullingCamera);
 			cmmnds(this);			
-			if (mainCam != null)
+			if (mainCam != null && flag)
 	        	DrawingUtils.drawCamera(this, mainCam);	        
 			s.endDraw();
 		}
 		
 		public void keyPressed() {
 			if (key == 'x') {
-				if(flag) 
-					setMainCameraReference(viewer.scene().camera());
-				else
-					setMainCameraReference(null);
 				flag = !flag;
 	        }		
 		}			
