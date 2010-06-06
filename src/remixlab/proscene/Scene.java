@@ -45,10 +45,7 @@ import javax.swing.Timer;
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
  * <p>
  * To use a Scene, you can instantiate a Scene object directly or you can implement your own derived Scene
- * class. You also need to call {@link #defaultKeyBindings()} from your PApplet.keyPressed() function.
- * That's all there is to it.
- * <p>
- * If you instantiate your own Scene object you should implement your {@link PApplet#draw()} as usual,
+ * class. If you instantiate your own Scene object you should implement your {@link PApplet#draw()} as usual,
  * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus, for instance,
  * if the following code define the body of your {@link PApplet#draw()}:
  * <p>
@@ -208,6 +205,7 @@ public class Scene implements MouseWheelListener, PConstants {
         keyList = new ArrayList<String>();
         addKeys();       
 		parseKeyXxxxMethods();
+		parseMouseXxxxMethods();
 		
 		//called only once
 		init();
@@ -1178,25 +1176,13 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	// 7. Keyboard customization
 	
-	//protected void parseKeyXxxxMethods() throws Exception {
-	protected void parseKeyXxxxMethods() {
-		/**
-		PApplet.println(parent.getClass().getName());
-		Method m = parent.getClass().getMethod( "keyPressed" );
-		//m.invoke( this, new Object[]{e} );
-		PApplet.println(m.getName());
-		if (m.equals( PApplet.class.getMethod("keyPressed")))
-			PApplet.println("same");
-		else
-			PApplet.println("different");
-		*/
-		
-		/**
-		keyTyped()
-		 keyReleased()
-		 keyPressed()
-		 */
-		
+	/**
+	 * Parses the sketch to find if any KeyXxxx method has been implemented. If this is the case,
+	 * print a warning message telling the user what to do to avoid possible conflicts with proscene.
+	 * <p>
+	 * The methods sought are: {@code keyPressed}, {@code keyReleased}, and {@code keyTyped}. 
+	 */
+	protected void parseKeyXxxxMethods() {		
 		boolean foundKP = true;
 		boolean foundKR = true;
 		boolean foundKT = true;		
@@ -1204,40 +1190,28 @@ public class Scene implements MouseWheelListener, PConstants {
 		try {
 			parent.getClass().getDeclaredMethod( "keyPressed" );
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			foundKP = false;
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			//PApplet.println("method not declared");
 			foundKP = false;
-			//e.printStackTrace();
 		}
 		
 		try {
 			parent.getClass().getDeclaredMethod( "keyReleased" );
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			foundKR = false;
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			//PApplet.println("method not declared");
 			foundKR = false;
-			//e.printStackTrace();
 		}
 		
 		try {
 			parent.getClass().getDeclaredMethod( "keyTyped" );
 		} catch (SecurityException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			foundKT = false;
 		} catch (NoSuchMethodException e) {
-			// TODO Auto-generated catch block
-			//PApplet.println("method not declared");
 			foundKT = false;
-			//e.printStackTrace();
 		}
 		
 		if(foundKP || foundKR || foundKT) {			
@@ -1248,13 +1222,18 @@ public class Scene implements MouseWheelListener, PConstants {
 				PApplet.print(" ");
 			}
 			PApplet.println();
-			PApplet.println("To avoid conflicts with proscene, you have two choices:");
+			PApplet.println("To avoid possible conflicts with proscene, you have two choices:");
 			PApplet.println("1. Use some of the keys not listed above.");
 			PApplet.println("2. Disable proscene keyboard handling while doing your keyboard manipulation by calling Scene.disableKeyboardHandling() " +
 					"(you can re-enable it later by calling Scene.enableKeyboardHandling()).");			
 		}
 	}
 	
+	/**
+	 * Returns the list of keys that are handled by proscene.
+	 * 
+	 * @see #isInKeyList(String)
+	 */
 	public List<String> getKeys() {
 		return keyList;
 	}
@@ -1265,12 +1244,23 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	*/
 	
+	/**
+	 * Internal method used to add all the keys to the list of keys handled by proscene.
+	 * 
+	 * @see #isInKeyList(String)
+	 * @see #getKeys()
+	 */
 	private void addKeys() {
 		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-",
 				                                  "a","b","c","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
 				                                  "A","B","C","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));		
 	}
 	
+	/**
+	 * Returns {@code true} if {@code key} is in the list of keys that are handled by proscene.
+	 * 
+	 * @see #getKeys()
+	 */
 	public boolean isInKeyList(String key) {
 		return keyList.contains(key);
 	}
@@ -1481,6 +1471,72 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	// 8. Mouse customization
+	
+	/**
+	 * Parses the sketch to find if any mouseXxxx method has been implemented. If this is the case,
+	 * print a warning message telling the user what to do to avoid possible conflicts with proscene.
+	 * <p>
+	 * The methods sought are: {@code mouseDragged}, {@code mouseMoved}, {@code mouseReleased},
+	 * {@code mousePressed}, and {@code mouseClicked}.
+	 */
+	protected void parseMouseXxxxMethods() {
+		boolean foundMD = true;
+		boolean foundMM = true;
+		boolean foundMR = true;
+		boolean foundMP = true;
+		boolean foundMC = true;		
+		
+		try {
+			parent.getClass().getDeclaredMethod( "mouseDragged" );
+		} catch (SecurityException e) {			
+			e.printStackTrace();
+			foundMD = false;
+		} catch (NoSuchMethodException e) {			
+			foundMD = false;
+		}
+		
+		try {
+			parent.getClass().getDeclaredMethod( "mouseMoved" );
+		} catch (SecurityException e) {			
+			e.printStackTrace();
+			foundMM = false;
+		} catch (NoSuchMethodException e) {
+			foundMM = false;
+		}
+		
+		try {
+			parent.getClass().getDeclaredMethod( "mouseReleased" );
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			foundMR = false;
+		} catch (NoSuchMethodException e) {
+			foundMR = false;
+		}
+		
+		try {
+			parent.getClass().getDeclaredMethod( "mousePressed" );
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			foundMP = false;
+		} catch (NoSuchMethodException e) {
+			foundMP = false;
+		}
+		
+		try {
+			parent.getClass().getDeclaredMethod( "mouseClicked" );
+		} catch (SecurityException e) {
+			e.printStackTrace();
+			foundMC = false;
+		} catch (NoSuchMethodException e) {
+			foundMC = false;
+		}			
+		
+		if(foundMD || foundMM || foundMR || foundMP || foundMC) {			
+			PApplet.println("It seems that you have implemented some mouseXxxxMethod in your sketch! Please bear in mind that proscene overrides processing" +
+					" mouse event methods to handle the camera for you. To avoid posibble conflicts you can disable proscene mouse handling while doing your" +
+					" mouse manipulation by calling Scene.disableMouseHandling() (you can re-enable it later by calling Scene.enableMouseHandling()).");
+		}		
+	}
 	
 	/**
 	 * Returns {@code true} if mouse is currently being handled by proscene and {@code false} otherwise.
