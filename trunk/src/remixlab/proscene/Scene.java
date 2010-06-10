@@ -114,6 +114,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsAnICamFrame;
 	
+	// F r u s t u m   p l a n e   c o e f f i c i e n t s
+	protected boolean fpCoefficientsUpdate;	
+	
 	// D I S P L A Y   F L A G S
 	boolean axisIsDrwn;	// world axis
 	boolean gridIsDrwn;	// world XY grid
@@ -161,8 +164,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		pupFlag = false;
 		
 		//readyToGo = false;
-		//mouseHandling = false;
-		cam = new Camera(parent);
+		cam = new Camera(this);
 		setCamera(camera());
 		
 		//setDefaultShortcuts();
@@ -194,7 +196,9 @@ public class Scene implements MouseWheelListener, PConstants {
         	}
         };
         utilityTimer = new Timer(1000, taskTimerPerformer);
-        utilityTimer.setRepeats(false);
+        utilityTimer.setRepeats(false);       
+        
+        disableFrustumUpdate();
         
         // E X C E P T I O N   H A N D L I N G
         beginDrawCalls = 0;
@@ -286,6 +290,27 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	// 2. State of the viewer
+    
+    //TODO doc me!
+    public boolean frustumUpdateIsEnable(){
+    	return fpCoefficientsUpdate; 
+    }
+    
+    public void toggleFrustumUpdate() {
+    	fpCoefficientsUpdate = !fpCoefficientsUpdate;
+    }
+    
+    public void disableFrustumUpdate() {
+    	enableFrustumUpdate(false);
+    }    
+    
+    public void enableFrustumUpdate() {
+    	enableFrustumUpdate(true);
+    }
+    
+    public void enableFrustumUpdate(boolean flag) {
+    	fpCoefficientsUpdate = flag;
+    }
     	
 	/**
 	 * Toggles the state of {@link #axisIsDrawn()}.
@@ -436,6 +461,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		//TODO: needs more testing
 		camera().computeProjectionMatrix();
 		camera().computeModelViewMatrix();
+		
+		if( frustumUpdateIsEnable() )
+			camera().updateFrustumPlanesCoefficients();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());

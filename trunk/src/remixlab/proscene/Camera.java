@@ -63,7 +63,7 @@ public class Camera implements Cloneable {
 		public boolean found;
 	}
 	int viewport[] = new int [4];
-	//next variables are needed for frustrum plane coefficients
+	//next variables are needed for frustum plane coefficients
 	PVector normal[] = new PVector[6];
 	float dist[] = new float[6];
 	
@@ -75,6 +75,10 @@ public class Camera implements Cloneable {
 	 */
 	public enum Type {
 		PERSPECTIVE, ORTHOGRAPHIC
+	};
+	
+	public enum Visibility {
+		VISIBLE, SEMIVISIBLE, INVISIBLE
 	};
 	
 	// F r a m e
@@ -104,20 +108,24 @@ public class Camera implements Cloneable {
 	protected KeyFrameInterpolator interpolationKfi;
 	protected InteractiveCameraFrame tempFrame;
 	
+	// F r u s t u m   p l a n e   c o e f f i c i e n t s
+	protected float fpCoefficients [][];
+	
 	// A t t a c h e d   S c e n e
 	boolean attachedToPCam;
 	
-	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
+	// P R O S C E N E   A N D   P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
+	public Scene scene;
 	public PApplet parent;
 	public PGraphics3D pg3d;
     	
 	/**
-	 * Convenience constructor that simply calls {@code this(true, p)}. 
+	 * Convenience constructor that simply calls {@code this(true, scn)}. 
 	 * 
-	 * @see #Camera(boolean, PApplet)
+	 * @see #Camera(boolean, Scene)
 	 */
-	public Camera(PApplet p) {
-		this(true, p);
+	public Camera(Scene scn) {
+		this(true, scn);
 	}
 
 	/**
@@ -136,10 +144,11 @@ public class Camera implements Cloneable {
 	 * {@link #physicalScreenWidth()} and {@link #focusDistance()}
 	 * documentations for default stereo parameter values.
 	 * 
-	 * @see #Camera(PApplet)
+	 * @see #Camera(Scene)
 	 */
-	public Camera(boolean attachedToScene, PApplet p) {
-		parent = p;
+	public Camera(boolean attachedToScene, Scene scn) {
+		scene = scn;
+		parent = scene.parent;
 		pg3d = (PGraphics3D) parent.g;  // g may change
 		attachedToPCam = attachedToScene;
 		
@@ -147,6 +156,8 @@ public class Camera implements Cloneable {
 			normal[i] = new PVector();
 		
 		fldOfView = Quaternion.PI / 4.0f;
+		
+		fpCoefficients = new float [6][4];
 		
 		//KeyFrames
 		interpolationKfi = new KeyFrameInterpolator(frame(), parent);
@@ -715,7 +726,7 @@ public class Camera implements Cloneable {
 	 * is resized (hence overwriting your values). 
 	 * <p> 
 	 * Non-positive dimension are silently replaced by a 1 pixel value to ensure
-	 * frustrum coherence. 
+	 * frustum coherence. 
 	 * <p> 
 	 * If your Camera is used without a Scene (offscreen rendering,
 	 * shadow maps), use {@link #setAspectRatio(float)} instead to define the
@@ -932,15 +943,90 @@ public class Camera implements Cloneable {
 		return 1.0f;	
 	}
 	
+	public float distanceToFrustumPlane(int index, PVector pos) {
+		if ( !scene.frustumUpdateIsEnable() )
+			PApplet.println("The camera frustum plane coefficients (needed by distanceToFrustumPlane) may be outdated. Plaease" +
+					"enable automatic updates of the coefficient in your PApplet.setup" +
+					"with Scene.enableFrustumUpdate()");
+		PVector myVec = new PVector(fpCoefficients[index][0], fpCoefficients[index][1], fpCoefficients[index][2]);
+		return PVector.dot(pos, myVec) - fpCoefficients[index][3];
+	}
+	
+	public boolean pointIsVisible(PVector point) {
+		if ( !scene.frustumUpdateIsEnable() )
+			PApplet.println("The camera frustum plane coefficients (needed by pointIsVisible) may be outdated. Plaease" +
+					"enable automatic updates of the coefficient in your PApplet.setup" +
+					"with Scene.enableFrustumUpdate()");
+		for (int i=0; i<6; ++i)
+		    if (distanceToFrustumPlane(i, point) > 0)
+		      return false;
+		  return true;
+	}
+	
+	public Visibility sphereIsVisible(PVector center, float radius) {
+		if ( !scene.frustumUpdateIsEnable() )
+			PApplet.println("The camera frustum plane coefficients (needed by sphereIsVisible) may be outdated. Plaease" +
+					"enable automatic updates of the coefficient in your PApplet.setup" +
+					"with Scene.enableFrustumUpdate()");
+		for (int i=0; i<6; ++i) {
+			float d = distanceToFrustumPlane(i, center);
+			if (d > radius)
+				return Camera.Visibility.INVISIBLE;
+			if (PApplet.abs(d) < radius)
+				return Camera.Visibility.SEMIVISIBLE;
+		}
+		return Camera.Visibility.VISIBLE;
+	}
+	
+	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
+		if ( !scene.frustumUpdateIsEnable() )
+			PApplet.println("The camera frustum plane coefficients (needed by aaBoxIsVisible) may be outdated. Plaease" +
+					"enable automatic updates of the coefficient in your PApplet.setup" +
+					"with Scene.enableFrustumUpdate()");
+		boolean allInForAllPlanes = true;
+		for (int i=0; i<6; ++i) {
+			boolean allOut = true;
+			for (int c=0; c<8; ++c) {
+				PVector pos = new PVector(((c&4)!=0)?p1.x:p2.x, ((c&2)!=0)?p1.y:p2.y, ((c&1)!=0)?p1.z:p2.z);
+				if (distanceToFrustumPlane(i, pos) > 0.0)
+					allInForAllPlanes = false;
+				else
+					allOut = false;
+			}			
+			// The eight points are on the outside side of this plane
+			if (allOut)
+				return Camera.Visibility.INVISIBLE;
+		}
+		
+		if (allInForAllPlanes)
+			return Camera.Visibility.VISIBLE;
+		
+		// Too conservative, but tangent cases are too expensive to detect
+		return Camera.Visibility.SEMIVISIBLE;
+	}
+	
+	//TODO doc me!
+	public void updateFrustumPlanesCoefficients() {
+		computeFrustumPlanesCoefficients(fpCoefficients);
+	}
+	
+	public float [][] getFrustumPlanesCoefficients() {
+		if ( !scene.frustumUpdateIsEnable() )
+			PApplet.println("The camera frustum plane coefficients may be outdated. Plaease" +
+					"enable automatic updates of the coefficient in your PApplet.setup" +
+					"with Scene.enableFrustumUpdate()");
+    	return fpCoefficients;
+	}
+	
 	/**
 	 * Convenience function that simply returns
-	 * {@code getFrustumPlanesCoefficients(new float [6][4])}
+	 * {@code computeFrustumPlanesCoefficients(new float [6][4])}
 	 * 
-	 * @see #getFrustumPlanesCoefficients(float[][])
+	 * @see #computeFrustumPlanesCoefficients(float[][])
 	 */
-	public float [][] getFrustumPlanesCoefficients() {
+	public float [][] computeFrustumPlanesCoefficients() {
 		// Computed once and for all
-		return getFrustumPlanesCoefficients(new float [6][4]);
+		return computeFrustumPlanesCoefficients(new float [6][4]);
 	}
 		
 	/**
@@ -968,8 +1054,12 @@ public class Camera implements Cloneable {
 	 * {@code // will reproduce the mainViewer's near and far clipping.}<br>
 	 * {@code gl.glClipPlane(GL.GL_CLIP_PLANE0, coef[2]);}<br>
 	 * {@code gl.glClipPlane(GL.GL_CLIP_PLANE1, coef[3]);}<br>
+	 * <p>
+	 * TODO you should not call this method
+	 * 
+	 * @see #computeFrustumPlanesCoefficients()
 	 */
-	public float[][] getFrustumPlanesCoefficients(float [][] coef) {
+	public float[][] computeFrustumPlanesCoefficients(float [][] coef) {
 		//soft check:	
 		if ( coef == null || (coef.length == 0 ))
 			coef = new float [6][4];
