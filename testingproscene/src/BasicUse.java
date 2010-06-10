@@ -10,7 +10,8 @@ public class BasicUse extends PApplet {
 		size(640, 360, OPENGL);
 		scene = new Scene(this);
 		//scene.camera().setUpVector(new PVector(0,-1,0));
-		//scene.camera().setUpVector(new PVector(0,0,1));		
+		//scene.camera().setUpVector(new PVector(0,0,1));
+		scene.enableFrustumUpdate();
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);
 		scene.showAll();
@@ -21,9 +22,13 @@ public class BasicUse extends PApplet {
 
 	public void draw() {
 		background(0);
-		scene.beginDraw();		
-		fill(204, 102, 0);
-		box(20, 30, 50);		
+		scene.beginDraw();
+		if( scene.camera().sphereIsVisible(new PVector(0,0,0), 40) == Camera.Visibility.SEMIVISIBLE )
+			fill(255, 0, 0);
+		else
+			fill(0, 255, 0);
+		sphere(40);
+		//box(20, 30, 50);		
 		scene.endDraw();
 	}
 	

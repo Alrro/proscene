@@ -2,14 +2,13 @@ import processing.core.*;
 import remixlab.proscene.*;
 
 public class CullingCamera extends Camera {
-	PApplet parent;
 	float planeCoefficients[][];
-	CullingCamera(PApplet p) {
-		super(p);
-		parent = p;
+	CullingCamera(Scene s) {
+		super(s);
 		planeCoefficients = new float [6][4];
 	}
 	
+	/**
 	public void computeFrustumPlanesEquations() {
 		//planeCoefficients = getFrustumPlanesCoefficients();
 		getFrustumPlanesCoefficients(planeCoefficients);
@@ -26,9 +25,10 @@ public class CullingCamera extends Camera {
 		      return false;
 		  return true;
 	}
+	*/
 	
 	//public boolean aaBoxIsVisible(PVector p1, PVector p2, boolean entirely) {
-	public boolean aaBoxIsVisible(PVector p1, PVector p2) {
+	public boolean AABoxIsVisible(PVector p1, PVector p2) {
 		boolean allInForAllPlanes = true;
 		for (int i=0; i<6; ++i) {
 			boolean allOut = true;
@@ -44,11 +44,11 @@ public class CullingCamera extends Camera {
 				return false;
 		}
 		
-		//if (BoxNode.entirely)
-		if (ViewFrustumCulling.entirely)
+		if (BasicFrustum.entirely)
+		//if (ViewFrustumCulling.entirely)
 		    // Entirely visible : the eight points are on the inside side of the 6 planes
-		    //BoxNode.entirely = allInForAllPlanes;
-			ViewFrustumCulling.entirely = allInForAllPlanes;
+		    BasicFrustum.entirely = allInForAllPlanes;
+			//ViewFrustumCulling.entirely = allInForAllPlanes;
 
 		  // Too conservative, but tangent cases are too expensive to detect
 		  return true;

@@ -9,12 +9,10 @@ public class ViewFrustumCulling extends PApplet {
 	Panel p1;
 	Panel p2;
 	
-	static boolean entirely;
 	static BoxNode Root;
 
 	public void cmmnds(PApplet p) {
-		if(viewer.cullingCamera != null)
-			Root.drawIfAllChildrenAreVisible(p, viewer.cullingCamera);
+		Root.drawIfAllChildrenAreVisible(p, viewer.s.camera());
 	}
 
 	public void setup() {
@@ -45,14 +43,11 @@ public class ViewFrustumCulling extends PApplet {
 	}
 
 	class Viewer extends PApplet {
-		Scene s;
-		CullingCamera cullingCamera; 
+		Scene s; 
 		public void setup() {
 			size(640, 360, P3D);
-	        //size(640, 360, OPENGL);
 	        s = new Scene(this);
-	        cullingCamera = new CullingCamera(this);
-	        s.setCamera(cullingCamera);
+	        s.enableFrustumUpdate();
 	        s.setHelpIsDrawn(false);
 	        s.setGridIsDrawn(true);
 	        s.setAxisIsDrawn(true);
@@ -66,8 +61,6 @@ public class ViewFrustumCulling extends PApplet {
 			background(0);
 			s.beginDraw();
 			cmmnds(this);
-			//Root.drawIfAllChildrenAreVisible(this, cullingCamera);
-			cullingCamera.computeFrustumPlanesEquations();
 			s.endDraw();
 		}		
 	}

@@ -46,20 +46,16 @@ public class BoxNode {
 		//parent.colorMode(PApplet.RGB, 255);
 	}
 	
-	public void drawIfAllChildrenAreVisible(PApplet parent, CullingCamera camera) {
-	    //BoxNode.entirely = true;
-		ViewFrustumCulling.entirely = true;
-	    if (camera.aaBoxIsVisible(p1, p2)) {
-			//if (BoxNode.entirely)
-	    	if (ViewFrustumCulling.entirely)
-				draw(parent);
+	public void drawIfAllChildrenAreVisible(PApplet parent, Camera camera) {
+		Camera.Visibility vis = camera.aaBoxIsVisible(p1, p2);
+		if ( vis == Camera.Visibility.VISIBLE )			
+			draw(parent);
+		else if ( vis == Camera.Visibility.SEMIVISIBLE )
+			if (child[0]!=null)
+				for (int i=0; i<8; ++i)
+					child[i].drawIfAllChildrenAreVisible(parent, camera);
 			else
-				if (child[0]!=null)
-					for (int i=0; i<8; ++i)
-						child[i].drawIfAllChildrenAreVisible(parent, camera);
-				else
-					draw(parent);
-		}
+				draw(parent);
 	}
 	
 	public void buildBoxHierarchy(int l) {

@@ -4,7 +4,6 @@ import remixlab.proscene.*;
 @SuppressWarnings("serial")
 public class BasicFrustum extends PApplet {
 	Scene scene;
-	CullingCamera cullingCamera;
 	
 	static boolean entirely;
 	static BoxNode Root;
@@ -15,8 +14,7 @@ public class BasicFrustum extends PApplet {
 		Root = new BoxNode(p, PVector.mult(p, -1.0f));
 		Root.buildBoxHierarchy(4);
         scene = new Scene(this);        
-        cullingCamera = new CullingCamera(this);
-        scene.setCamera(cullingCamera);
+        scene.enableFrustumUpdate();
         scene.setHelpIsDrawn(false);
         scene.setGridIsDrawn(true);
         scene.setAxisIsDrawn(true);
@@ -25,8 +23,7 @@ public class BasicFrustum extends PApplet {
 	public void draw() {		
 		background(0);
 		scene.beginDraw();
-		Root.drawIfAllChildrenAreVisible(this, cullingCamera);
-		cullingCamera.computeFrustumPlanesEquations();	
+		Root.drawIfAllChildrenAreVisible(this, scene.camera());
 		scene.endDraw();
 	}
 	

@@ -16,7 +16,7 @@ public class PointUnderPixel extends PApplet {
 	public void setup()	{
 		size(640, 360, OPENGL);
 		scene = new Scene(this);
-		GLCamera glCam = new GLCamera(this);
+		GLCamera glCam = new GLCamera(scene);
 		scene.setCamera(glCam);
 		scene.setGridIsDrawn(false);
 		scene.setAxisIsDrawn(false);
@@ -42,14 +42,13 @@ public class PointUnderPixel extends PApplet {
 	}
 	
 	class GLCamera extends Camera {
-		protected PGraphicsOpenGL pgl;
-		protected PApplet parent;    
+		protected PGraphicsOpenGL pgl; 
 	    protected GL gl;
 	    protected GLU glu;
 	    
-		public GLCamera(PApplet p) {
-			super(p);
-			parent = p;
+		public GLCamera(Scene s) {
+			super(s);
+			parent = s.parent;
 			pgl = (PGraphicsOpenGL)parent.g;
 	        gl = pgl.gl;
 	        glu = pgl.glu;

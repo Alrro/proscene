@@ -36,7 +36,7 @@ public class Cam1 extends PApplet {
         size(640, 360, P3D);
         //size(640, 360, OPENGL);
         scene = new Scene(this);
-        cullingCamera = new CullingCamera(this);
+        cullingCamera = new CullingCamera(scene);
         scene.setCamera(cullingCamera);
         scene.setHelpIsDrawn(false);
         scene.setGridIsDrawn(true);
@@ -48,7 +48,7 @@ public class Cam1 extends PApplet {
         scene.beginDraw();
         //cullingCamera.computeFrustumPlanesEquations();
         DrawingCommands.cmmnds(this);
-        cullingCamera.computeFrustumPlanesEquations();
+        //cullingCamera.computeFrustumPlanesEquations();
         scene.endDraw();	
     }
     
