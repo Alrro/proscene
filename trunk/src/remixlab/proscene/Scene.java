@@ -84,7 +84,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	public PGraphics3D pg3d;
+	//public PGraphics3D pg3d;
 	
 	// O B J E C T S
 	protected Camera cam;
@@ -143,7 +143,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public Scene(PApplet p) {
 		parent = p;		
-		pg3d = (PGraphics3D) parent.g;  // g may change
+		//pg3d = (PGraphics3D) parent.g;  // g may change
 	    	
 		//parent.addMouseListener(this);
 		//parent.addMouseMotionListener(this);
@@ -1940,7 +1940,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 		//if our camera() matrices are detached from the processing Camera matrices,
 		//we cache the processing camera projection matrix into our camera()
-		camera().setProjectionMatrix(pg3d.projection);
+		//camera().setProjectionMatrix(pg3d.projection);
+		camera().setProjectionMatrix(((PGraphics3D) parent.g).projection);
 	}
 	
 	/**
@@ -1954,6 +1955,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		//if our camera() matrices are detached from the processing Camera matrices,
 		//we cache the processing camera modelview matrix into our camera()
-		camera().setModelViewMatrix(pg3d.modelview);
+		//camera().setModelViewMatrix(pg3d.modelview);
+		camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
 	}	
 }
