@@ -945,8 +945,8 @@ public class Camera implements Cloneable {
 	
 	public float distanceToFrustumPlane(int index, PVector pos) {
 		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by distanceToFrustumPlane) may be outdated. Plaease" +
-					"enable automatic updates of the coefficient in your PApplet.setup" +
+			PApplet.println("The camera frustum plane coefficients (needed by distanceToFrustumPlane) may be outdated. Please " +
+					"enable automatic updates of the coefficient in your PApplet.setup " +
 					"with Scene.enableFrustumUpdate()");
 		PVector myVec = new PVector(fpCoefficients[index][0], fpCoefficients[index][1], fpCoefficients[index][2]);
 		return PVector.dot(pos, myVec) - fpCoefficients[index][3];
@@ -954,8 +954,8 @@ public class Camera implements Cloneable {
 	
 	public boolean pointIsVisible(PVector point) {
 		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by pointIsVisible) may be outdated. Plaease" +
-					"enable automatic updates of the coefficient in your PApplet.setup" +
+			PApplet.println("The camera frustum plane coefficients (needed by pointIsVisible) may be outdated. Please " +
+					"enable automatic updates of the coefficient in your PApplet.setup " +
 					"with Scene.enableFrustumUpdate()");
 		for (int i=0; i<6; ++i)
 		    if (distanceToFrustumPlane(i, point) > 0)
@@ -965,8 +965,8 @@ public class Camera implements Cloneable {
 	
 	public Visibility sphereIsVisible(PVector center, float radius) {
 		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by sphereIsVisible) may be outdated. Plaease" +
-					"enable automatic updates of the coefficient in your PApplet.setup" +
+			PApplet.println("The camera frustum plane coefficients (needed by sphereIsVisible) may be outdated. Please " +
+					"enable automatic updates of the coefficient in your PApplet.setup " +
 					"with Scene.enableFrustumUpdate()");
 		for (int i=0; i<6; ++i) {
 			float d = distanceToFrustumPlane(i, center);
@@ -980,8 +980,8 @@ public class Camera implements Cloneable {
 	
 	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
 		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by aaBoxIsVisible) may be outdated. Plaease" +
-					"enable automatic updates of the coefficient in your PApplet.setup" +
+			PApplet.println("The camera frustum plane coefficients (needed by aaBoxIsVisible) may be outdated. Please " +
+					"enable automatic updates of the coefficient in your PApplet.setup " +
 					"with Scene.enableFrustumUpdate()");
 		boolean allInForAllPlanes = true;
 		for (int i=0; i<6; ++i) {
@@ -1012,8 +1012,8 @@ public class Camera implements Cloneable {
 	
 	public float [][] getFrustumPlanesCoefficients() {
 		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients may be outdated. Plaease" +
-					"enable automatic updates of the coefficient in your PApplet.setup" +
+			PApplet.println("The camera frustum plane coefficients may be outdated. Please " +
+					"enable automatic updates of the coefficient in your PApplet.setup " +
 					"with Scene.enableFrustumUpdate()");
     	return fpCoefficients;
 	}
