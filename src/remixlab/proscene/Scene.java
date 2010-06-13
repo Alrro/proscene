@@ -1242,7 +1242,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			foundKT = false;
 		}
 		
-		if(foundKP || foundKR || foundKT) {			
+		if( (foundKP || foundKR || foundKT) &&
+		    (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
 			PApplet.println("It seems that you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use:");
 			Iterator<String> itr = keyList.iterator();			
 			while(itr.hasNext()) {
