@@ -31,33 +31,111 @@ import java.awt.Panel;
 import java.lang.reflect.*;
 
 public class Viewer extends PApplet {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	public PApplet parent;
 	public Panel panel;
-	Scene scene;
-	public int width, height;
-	public boolean registered;
+	public Scene scene;
+	//scene parameters
+	float radius;
+	boolean updateFrustum;
 	
-	public Viewer(final PApplet p, final int w, final int h) {
+	int width, height;
+	Method method;
+	Class<? extends PApplet> cls;
+	
+	//Aux viewers
+	public Viewer mainViewer;
+	public boolean showMainViewerCamera;
+	
+	public Viewer(PApplet p, String met, int w, int h, float r, boolean uFrustum) {
+		initialize(p,w,h);
+		method = searchDrawingMethod(method, met);		
+		if(method == null) 
+			method = searchDrawingMethod(method, "proscenium");
+		radius = r;
+		updateFrustum = uFrustum;
+	}
+	
+	public Viewer(PApplet p, int w, int h, float r, boolean uFrustum) {
+		initialize(p,w,h);
+		method = searchDrawingMethod(method, "proscenium");
+		radius = r;
+		updateFrustum = uFrustum;
+	}
+	
+	public Viewer(PApplet p, int w, int h, boolean uFrustum) {
+		initialize(p,w,h);
+		method = searchDrawingMethod(method, "proscenium");
+		updateFrustum = uFrustum;
+	}
+	
+	public Viewer(PApplet p, String met, int w, int h) {
+		initialize(p,w,h);
+		method = searchDrawingMethod(method, met);		
+		if(method == null) 
+			method = searchDrawingMethod(method, "proscenium");
+	}
+	
+	public Viewer(PApplet p, String met, int w, int h, boolean uFrustum) {
+		initialize(p,w,h);
+		method = searchDrawingMethod(method, met);		
+		//if(method == null)
+			//method = searchDrawingMethod(method, "proscenium");
+		updateFrustum = uFrustum;
+	}
+	
+	public Viewer(PApplet p, int w, int h) {
+		initialize(p,w,h);
+		method = searchDrawingMethod(method, "proscenium");
+	}
+	
+	//Aux viewers
+	public Viewer(PApplet p, Viewer mViewer, String met, int w, int h) {
+		initialize(p,w,h);
+		mainViewer = mViewer;
+		if(mainViewer != null)
+			showMainViewerCamera = true;
+		method = searchDrawingMethod(method, met);		
+		if(method == null) 
+			method = searchDrawingMethod(method, "proscenium");
+	}
+	
+	public Viewer(PApplet p, Viewer mViewer, int w, int h) {
+		initialize(p,w,h);
+		mainViewer = mViewer;
+		if(mainViewer != null)
+			showMainViewerCamera = true;
+		method = searchDrawingMethod(method, "proscenium");
+	}
+	
+	protected void initialize( PApplet p,   int w,   int h) {
 		parent = p;
 		width = w;
 		height = h;
-		registered = true;
 		panel = new Panel();		
 		panel.setEnabled(false);
 		panel.setVisible(false);		
 		panel.add(this);
 		parent.add(this.panel);
+		parent.validate();
 		panel.setEnabled(true);
 		panel.setVisible(true);
+		cls = parent.getClass();
+		method = null;
+		mainViewer = null;
+		showMainViewerCamera = false;
+		//scene parameters
+		radius = 100;
+		updateFrustum = false;
 	}
 	
 	public void setup() {
 		size(width, height, P3D);
 		scene = new Scene(this);
+		scene.setRadius(radius);
+		scene.enableFrustumUpdate(updateFrustum);
+		//scene.setAxisIsDrawn(updateFrustum);
+		//scene.enableFrustumUpdate(true);
+		scene.showAll();
 	}
 	
 	public Scene getScene() {
@@ -71,53 +149,55 @@ public class Viewer extends PApplet {
 	public void draw() {
 		background(0);
 		if (this!=null && scene != null) {
-		scene.beginDraw();
-		if(registered)
-			proscenium(scene.parent);
-		else
-			proscenium();
-		scene.endDraw();
+			scene.beginDraw();
+			
+			if(method != null)
+				drawingMethod(this);
+			else
+				proscenium();
+			
+			//aux viewer
+			if ((showMainViewerCamera) && (mainViewer.getScene() !=null))
+			      DrawingUtils.drawCamera(this, mainViewer.getScene().camera() );
+			scene.endDraw();
 		}
 	}
+	
+	// /**
+	public void keyPressed() {
+		if ( mainViewer != null ) {
+			if (key == 'x')
+				showMainViewerCamera = !showMainViewerCamera;
+		}		
+	}
+	// */
 	
 	public void proscenium() {}
 	
-	//public void proscenium() {
-	public void proscenium(final PApplet p) {
-		if(p!=null) {
-		boolean foundProscenium = true;
-		Method method = null;
-		
-		Class<? extends PApplet> cls = parent.getClass();
-		//parent.getClass().getName()
-		
+	protected Method searchDrawingMethod(Method method, String name) {		
 		try {
-			//method = cls.getDeclaredMethod( "proscenium", new Class[] {PApplet.class} );
-			method = parent.getClass().getDeclaredMethod( "proscenium", new Class[] {PApplet.class} );
-			//method = parent.getClass().getDeclaredMethod( "proscenium" );
-		} catch (final SecurityException e) {			
+			method = cls.getDeclaredMethod(name, new Class[] { PApplet.class });
+		} catch (SecurityException e) {
 			e.printStackTrace();
-			foundProscenium = false;
-		} catch (final NoSuchMethodException e) {			
-			foundProscenium = false;
+		} catch (NoSuchMethodException e) {
+			method = null;
 		}
-		if (foundProscenium && method != null) {
+		return method;
+	}
+	
+	public void drawingMethod(PApplet p) {
+		if (p!=null)
 			try {
-				method.invoke(parent, new Object [] {p});
-				//method.invoke(parent);
-			}  
-			catch(final IllegalAccessException e) {
+				method.invoke(parent, new Object[] { p });
+			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace(); }
-			catch (final InvocationTargetException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			catch (final IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
-		}		
-	}
-	}
+	}	
 }

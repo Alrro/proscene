@@ -12,7 +12,7 @@ public class OctreeNode {
   }
   
   public void draw(PApplet parent) {
-    parent.stroke(color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
+    parent.stroke(parent.color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
     parent.strokeWeight(level+1);
     
     parent.beginShape();
@@ -27,9 +27,9 @@ public class OctreeNode {
     parent.vertex(p2.x, p1.y, p2.z);
     parent.vertex(p1.x, p1.y, p2.z);
     parent.endShape();
-    //parent.endShape(CLOSE);
+    //parent.endShape(PApplet.CLOSE);
     
-    parent.beginShape(LINES);
+    parent.beginShape(PApplet.LINES);
     parent.vertex(p1.x, p2.y, p1.z);
     parent.vertex(p1.x, p2.y, p2.z);
     parent.vertex(p2.x, p2.y, p1.z);
@@ -39,21 +39,19 @@ public class OctreeNode {
     parent.endShape();
   }
   
-  public void drawIfAllChildrenAreVisible(PApplet parent, CullingCamera camera) {
-    ViewFrustumCulling.entirely = true;
-    if (camera.aaBoxIsVisible(p1, p2)) {
-      if (ViewFrustumCulling.entirely)
-        draw(parent);
-      else
+  public void drawIfAllChildrenAreVisible(PApplet parent, Camera camera) {
+    Camera.Visibility vis = camera.aaBoxIsVisible(p1, p2);
+    if ( vis == Camera.Visibility.VISIBLE )
+      draw(parent);
+    else if ( vis == Camera.Visibility.SEMIVISIBLE )
       if (child[0]!=null)
         for (int i=0; i<8; ++i)
           child[i].drawIfAllChildrenAreVisible(parent, camera);
       else
         draw(parent);
-    }
   }
   
-  public void buildOctreeHierarchy(int l) {
+  public void buildBoxHierarchy(int l) {
     level = l;
     PVector middle = PVector.mult(PVector.add(p1, p2), 1/2.0f);
     for (int i=0; i<8; ++i) {
@@ -61,7 +59,7 @@ public class OctreeNode {
       PVector point = new PVector(((i&4)!=0)?p1.x:p2.x, ((i&2)!=0)?p1.y:p2.y, ((i&1)!=0)?p1.z:p2.z);
       if (level > 0) {
         child[i] = new OctreeNode(point, middle);
-        child[i].buildOctreeHierarchy(level-1);
+        child[i].buildBoxHierarchy(level-1);
       }
       else
         child[i] = null;
