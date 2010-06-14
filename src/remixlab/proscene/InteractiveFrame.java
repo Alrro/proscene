@@ -336,7 +336,7 @@ public class InteractiveFrame extends Frame
 	 * Returns the influence of a mouse displacement on the InteractiveFrame
 	 * rotation. 
 	 * <p> 
-	 * Default value is 8.0. With an identical mouse displacement, a higher
+	 * Default value is 1.0. With an identical mouse displacement, a higher
 	 * value will generate a larger rotation (and inversely for lower values). A
 	 * 0.0 value will forbid InteractiveFrame mouse rotation (see also 
 	 * {@link #constraint()}).
@@ -401,18 +401,17 @@ public class InteractiveFrame extends Frame
 	}
 
 	/**
-	 * Returns the mouse wheel sensitivity. 
-	 * <p> 
-	 * Default value is 1.0. A higher value will make the wheel action more
-	 * efficient (usually meaning a faster zoom). Use a negative value to invert
-	 * the zoom in and out directions.
-	 * 
+	 * Returns the mouse wheel sensitivity.
+	 * <p>
+	 * Default value is 20.0. A higher value will make the wheel action more efficient (usually
+	 * meaning a faster zoom). Use a negative value to invert the zoom in and out directions.
+	 *  
 	 * @see #setWheelSensitivity(float)
 	 * @see #translationSensitivity()
 	 * @see #rotationSensitivity()
 	 * @see #spinningSensitivity()
 	 */
-	float wheelSensitivity() {
+	public float wheelSensitivity() {
 		return wheelSensitivity;
 	}
 

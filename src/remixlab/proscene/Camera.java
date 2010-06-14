@@ -81,6 +81,11 @@ public class Camera implements Cloneable {
 		VISIBLE, SEMIVISIBLE, INVISIBLE
 	};
 	
+	//TODO study me!
+	public enum Mode {
+		ARCBALL, FIRST_PERSON, THIRD_PERSON
+	};
+	
 	// F r a m e
 	private InteractiveCameraFrame frm;
 
@@ -1143,14 +1148,6 @@ public class Camera implements Cloneable {
 	    return coef;
 	}
 	
-	/**
-	public float distanceToFrustumPlane(int index, PVector pos) {
-		float planeCoefficients[][] = getFrustumPlanesCoefficients();
-		PVector myVec = new PVector(planeCoefficients[index][0],planeCoefficients[index][1], planeCoefficients[index][2]);
-		return PVector.dot(pos, myVec) - planeCoefficients[index][3];
-	}
-	*/
-
 	// 4. SCENE RADIUS AND CENTER
 
 	/**
@@ -1325,7 +1322,7 @@ public class Camera implements Cloneable {
 		return new WorldPoint(new PVector(0,0,0), false);
 	}
 
-	// 6. ASSOCIATED FRAME
+	// 6. ASSOCIATED FRAME AND FRAME WRAPPER FUNCTIONS
 
 	/**
 	 * Returns the InteractiveCameraFrame attached to the Camera. 
@@ -1358,6 +1355,66 @@ public class Camera implements Cloneable {
 
 		frm = icf;
 		interpolationKfi.setFrame(frame());
+	}
+	
+	/**
+	 * Convenience wrapper function that simply returns
+	 * {@code frame().spinningSensitivity()}
+	 * 
+	 * @see remixlab.proscene.InteractiveFrame#spinningSensitivity()
+	 */
+	public final float spinningSensitivity() {
+		return frame().spinningSensitivity();
+	}
+	
+	/**
+	 * Convenience wrapper function that simply calls
+	 * {@code frame().setSpinningSensitivity(sensitivity)}
+	 * 
+	 * @see remixlab.proscene.InteractiveFrame#setSpinningSensitivity(float)
+	 */
+	public final void setSpinningSensitivity(float sensitivity) {
+		frame().setSpinningSensitivity(sensitivity);
+	}
+	
+	/**
+	 * Convenience wrapper function that simply returns
+	 * {@code frame().rotationSensitivity()}
+	 * 
+	 * @see remixlab.proscene.InteractiveFrame#rotationSensitivity()
+	 */
+	public final float rotationSensitivity() {
+		return frame().rotationSensitivity();
+	}
+	
+	/**
+	 * Convenience wrapper function that simply calls
+	 * {@code frame().setRotationSensitivity(sensitivity)}
+	 * 
+	 * @see remixlab.proscene.InteractiveFrame#setRotationSensitivity(float)
+	 */
+	public final void setRotationSensitivity(float sensitivity) {
+		frame().setRotationSensitivity(sensitivity);
+	}
+	
+	/**
+	 * Convenience wrapper function that simply returns
+	 * {@code frame().translationSensitivity()}
+	 * 
+	 * @see remixlab.proscene.InteractiveFrame#translationSensitivity()
+	 */
+	public final float translationSensitivity() {
+		return frame().translationSensitivity();
+	}
+	
+	/**
+	 * Convenience wrapper function that simply calls
+	 * {@code frame().setTranslationSensitivity(sensitivity)}
+	 * 
+	 * @see remixlab.proscene.InteractiveFrame#setTranslationSensitivity(float)
+	 */
+	public final void setTranslationSensitivity(float sensitivity) {
+		frame().setTranslationSensitivity(sensitivity);
 	}
 	
 	// 7. KEYFRAMED PATHS

@@ -30,7 +30,6 @@ import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.Timer;
@@ -1245,9 +1244,11 @@ public class Scene implements MouseWheelListener, PConstants {
 		if(foundKP || foundKR || foundKT) {
 		//if( (foundKP || foundKR || foundKT) && (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
 			PApplet.println("It seems that you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use:");
-			Iterator<String> itr = keyList.iterator();			
-			while(itr.hasNext()) {
-				PApplet.print(itr.next());
+			for (String s: keyList) {
+				if(s == " ")
+					PApplet.print("space_bar");
+				else
+					PApplet.print(s);
 				PApplet.print(" ");
 			}
 			PApplet.println();
@@ -1280,9 +1281,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #getKeys()
 	 */
 	private void addKeys() {
-		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-",
-				                                  "a","b","c","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
-				                                  "A","B","C","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));		
+		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-"," ",
+				                                  "a","b","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
+				                                  "A","B","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));		
 	}
 	
 	/**
@@ -1366,17 +1367,23 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void defaultKeyBindings() {
 		if (parent.key == '+') {
-			camera().setFlySpeed(camera().flySpeed() * 1.5f);			
+			if( this.cameraIsInRevolveMode() )
+				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.5f);
+			else
+				camera().setFlySpeed(camera().flySpeed() * 1.5f);
 		}
 		if (parent.key == '-') {
-			camera().setFlySpeed(camera().flySpeed() / 1.5f);			
+			if( this.cameraIsInRevolveMode() )
+				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.5f);
+			else
+				camera().setFlySpeed(camera().flySpeed() / 1.5f);			
 		}
 		if (parent.key == 'a' || parent.key == 'A') {
 			toggleAxisIsDrawn();			
 		}
-		if (parent.key == 'c' || parent.key == 'C') {
+		if (parent.key == ' ') {
 			toggleCameraMode();			
-		}
+		}		
 		if (parent.key == 'e' || parent.key == 'E') {
 			toggleCameraType();
 		}
