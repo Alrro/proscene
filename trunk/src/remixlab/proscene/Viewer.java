@@ -34,60 +34,96 @@ public class Viewer extends PApplet {
 	public PApplet parent;
 	public Panel panel;
 	public Scene scene;
-	//scene parameters
-	float radius;
-	boolean updateFrustum;
 	
-	int width, height;
+	String scnConfigMethod;
+	
+	int width, height, color;
 	Method method;
-	Class<? extends PApplet> cls;
 	
+	/**
 	//Aux viewers
 	public Viewer mainViewer;
 	public boolean showMainViewerCamera;
+	*/
 	
-	public Viewer(PApplet p, String met, int w, int h, float r, boolean uFrustum) {
-		initialize(p,w,h);
-		method = searchDrawingMethod(method, met);		
+	public Viewer(PApplet p, String met, int w, int h, int c, String cScn) {
+		//initialize(p,w,h);
+		//1. Main container papplet
+		parent = p;
+		
+		//2. Viewer's size and color
+		width = w;
+		height = h;		
+		color = c;
+		
+		//3. Lay out (this block seems the one having trouble)
+		panel = new Panel();
+		//panel.setVisible(false);
+		panel.setEnabled(false);//testing
+		panel.add(this);	
+		parent.add(panel);
+		parent.validate();//testing
+		//panel.setVisible(true);
+		panel.setEnabled(true);//testing
+		
+		/**
+		panel = new Panel();		
+		panel.setEnabled(false);
+		panel.setVisible(false);		
+		panel.add(this);
+		parent.add(this.panel);
+		parent.validate();
+		panel.setEnabled(true);
+		panel.setVisible(true);
+		// */
+		//
+		
+		//4. Drawing method
+		method = null;
+		if(met != null)
+			method = searchDrawingMethod(method, met);		
 		if(method == null) 
 			method = searchDrawingMethod(method, "proscenium");
-		radius = r;
-		updateFrustum = uFrustum;
+		
+		//5. Configure method
+		scnConfigMethod = cScn;
+		
+		/**
+		//6. Auxiliary viewer
+		mainViewer = null;
+		showMainViewerCamera = false;
+		*/
 	}
 	
-	public Viewer(PApplet p, int w, int h, float r, boolean uFrustum) {
-		initialize(p,w,h);
-		method = searchDrawingMethod(method, "proscenium");
-		radius = r;
-		updateFrustum = uFrustum;
+	public Viewer(PApplet p, String met, int w, int h, int c) {
+		this(p, met, w, h, c, null);
 	}
 	
-	public Viewer(PApplet p, int w, int h, boolean uFrustum) {
-		initialize(p,w,h);
-		method = searchDrawingMethod(method, "proscenium");
-		updateFrustum = uFrustum;
+	public Viewer(PApplet p, int w, int h, int c, String cScn) {
+		this(p, null, w, h, c, cScn);
+	}
+	
+	public Viewer(PApplet p, int w, int h, int c) {
+		this(p, null, w, h, c, null);
+	}
+	
+	public Viewer(PApplet p, String met, int w, int h, String cScn) {
+		this(p, met, w, h, 0, cScn);
 	}
 	
 	public Viewer(PApplet p, String met, int w, int h) {
-		initialize(p,w,h);
-		method = searchDrawingMethod(method, met);		
-		if(method == null) 
-			method = searchDrawingMethod(method, "proscenium");
+		this(p, met, w, h, 0, null);
 	}
 	
-	public Viewer(PApplet p, String met, int w, int h, boolean uFrustum) {
-		initialize(p,w,h);
-		method = searchDrawingMethod(method, met);		
-		//if(method == null)
-			//method = searchDrawingMethod(method, "proscenium");
-		updateFrustum = uFrustum;
+	public Viewer(PApplet p, int w, int h, String cScn) {
+		this(p, null, w, h, 0, cScn);
 	}
 	
 	public Viewer(PApplet p, int w, int h) {
-		initialize(p,w,h);
-		method = searchDrawingMethod(method, "proscenium");
+		this(p, null, w, h, 0, null);
 	}
 	
+	/**
 	//Aux viewers
 	public Viewer(PApplet p, Viewer mViewer, String met, int w, int h) {
 		initialize(p,w,h);
@@ -106,48 +142,46 @@ public class Viewer extends PApplet {
 			showMainViewerCamera = true;
 		method = searchDrawingMethod(method, "proscenium");
 	}
-	
-	protected void initialize( PApplet p,   int w,   int h) {
-		parent = p;
-		width = w;
-		height = h;
-		panel = new Panel();		
-		panel.setEnabled(false);
-		panel.setVisible(false);		
-		panel.add(this);
-		parent.add(this.panel);
-		parent.validate();
-		panel.setEnabled(true);
-		panel.setVisible(true);
-		cls = parent.getClass();
-		method = null;
-		mainViewer = null;
-		showMainViewerCamera = false;
-		//scene parameters
-		radius = 100;
-		updateFrustum = false;
-	}
+	*/
 	
 	public void setup() {
 		size(width, height, P3D);
 		scene = new Scene(this);
-		scene.setRadius(radius);
-		scene.enableFrustumUpdate(updateFrustum);
-		//scene.setAxisIsDrawn(updateFrustum);
-		//scene.enableFrustumUpdate(true);
-		scene.showAll();
+		
+		if (scnConfigMethod != null)
+			configureScene(scene, scnConfigMethod);
 	}
 	
 	public Scene getScene() {
 		return scene;
 	}
 	
-	public void setScene(Scene scn) {
-		scene = scn;
+	public void configureScene(Scene scn, String name) {
+		Method sMethod = null;
+		try {
+			sMethod = parent.getClass().getDeclaredMethod(name, new Class[] { Scene.class });
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			sMethod = null;
+		}
+		if (sMethod!=null)
+			try {
+				sMethod.invoke(parent, new Object[] { scn });
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 	public void draw() {
-		background(0);
+		background(color);
 		if (this!=null && scene != null) {
 			scene.beginDraw();
 			
@@ -156,14 +190,17 @@ public class Viewer extends PApplet {
 			else
 				proscenium();
 			
+			/**
 			//aux viewer
 			if ((showMainViewerCamera) && (mainViewer.getScene() !=null))
 			      DrawingUtils.drawCamera(this, mainViewer.getScene().camera() );
+			*/
+			
 			scene.endDraw();
 		}
 	}
 	
-	// /**
+	 /**
 	public void keyPressed() {
 		if ( mainViewer != null ) {
 			if (key == 'x')
@@ -176,7 +213,7 @@ public class Viewer extends PApplet {
 	
 	protected Method searchDrawingMethod(Method method, String name) {		
 		try {
-			method = cls.getDeclaredMethod(name, new Class[] { PApplet.class });
+			method = parent.getClass().getDeclaredMethod(name, new Class[] { PApplet.class });
 		} catch (SecurityException e) {
 			e.printStackTrace();
 		} catch (NoSuchMethodException e) {
@@ -199,5 +236,5 @@ public class Viewer extends PApplet {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-	}	
+	}
 }

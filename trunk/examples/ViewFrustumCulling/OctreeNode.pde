@@ -12,7 +12,7 @@ public class OctreeNode {
   }
   
   public void draw(PApplet parent) {
-    parent.stroke(parent.color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
+    parent.stroke(color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
     parent.strokeWeight(level+1);
     
     parent.beginShape();
