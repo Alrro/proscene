@@ -364,10 +364,10 @@ public class InteractiveFrame extends Frame
 	 * <b>Note:</b> When the InteractiveFrame is used to move a <i>Camera</i>
 	 * (see the InteractiveCameraFrame class documentation), after zooming on
 	 * a small region of your scene, the camera may translate too fast. For a
-	 * camera, it is the Camera.revolveAroundPoint() that exactly matches the
+	 * camera, it is the Camera.arcballReferencePoint() that exactly matches the
 	 * mouse displacement. Hence, instead of changing the
 	 * {@link #translationSensitivity()}, solve the problem by (temporarily) setting
-	 * the {@link remixlab.proscene.Camera#revolveAroundPoint()} to a point
+	 * the {@link remixlab.proscene.Camera#arcballReferencePoint()} to a point
 	 * on the zoomed region).
 	 * 
 	 * @see #setTranslationSensitivity(float)

@@ -81,11 +81,6 @@ public class Camera implements Cloneable {
 		VISIBLE, SEMIVISIBLE, INVISIBLE
 	};
 	
-	//TODO study me!
-	public enum Mode {
-		ARCBALL, FIRST_PERSON, THIRD_PERSON
-	};
-	
 	// F r a m e
 	private InteractiveCameraFrame frm;
 
@@ -176,7 +171,7 @@ public class Camera implements Cloneable {
 		// Initial value (only scaled after this)
 		orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
 
-		// Also defines the revolveAroundPoint(), which changes orthoCoef.
+		// Also defines the arcballReferencePoint(), which changes orthoCoef.
 		setSceneCenter(new PVector(0.0f, 0.0f, 0.0f));
 
 		// Requires fieldOfView() when called with ORTHOGRAPHIC. Attention to
@@ -370,7 +365,7 @@ public class Camera implements Cloneable {
 	 * <p> 
 	 * When {@code noMove} is set to {@code false}, the orientation modification
 	 * is compensated by a translation, so that the
-	 * {@link #revolveAroundPoint()} stays projected at the same position on
+	 * {@link #arcballReferencePoint()} stays projected at the same position on
 	 * screen. This is especially useful when the Camera is an observer of the
 	 * scene (default mouse binding). 
 	 * <p> 
@@ -386,9 +381,9 @@ public class Camera implements Cloneable {
 
 		if (!noMove)
 			frame().setPosition(
-					PVector.sub(revolveAroundPoint(), (Quaternion.multiply(
+					PVector.sub(arcballReferencePoint(), (Quaternion.multiply(
 							frame().orientation(), q)).rotate(frame()
-							.coordinatesOf(revolveAroundPoint()))));
+							.coordinatesOf(arcballReferencePoint()))));
 
 		frame().rotate(q);
 
@@ -527,7 +522,7 @@ public class Camera implements Cloneable {
 	 * <p> 
 	 * With a {@link remixlab.proscene.Camera.Type#ORTHOGRAPHIC} {@link #type()}, the {@link #fieldOfView()} is
 	 * meaningless and the width and height of the Camera frustum are inferred
-	 * from the distance to the {@link #revolveAroundPoint()} using
+	 * from the distance to the {@link #arcballReferencePoint()} using
 	 * {@link #getOrthoWidthHeight()}. 
 	 * <p> 
 	 * Both types use {@link #zNear()} and {@link #zFar()} (to define their
@@ -542,15 +537,15 @@ public class Camera implements Cloneable {
 	 * <p> 
 	 * Changing the Camera Type alters the viewport and the objects' size can
 	 * be changed. This method guarantees that the two frustum match in a plane
-	 * normal to {@link #viewDirection()}, passing through the Revolve Around
-	 * Point (RAP).
+	 * normal to {@link #viewDirection()}, passing through the arcball reference
+	 * point.
 	 */
 	public final void setType(Type type) {
 		// make ORTHOGRAPHIC frustum fit PERSPECTIVE (at least in plane normal
 		// to viewDirection(), passing
 		// through RAP). Done only when CHANGING type since orthoCoef may have
 		// been changed with a
-		// setRevolveAroundPoint() in the meantime.
+		// setArcballReferencePoint in the meantime.
 		if ((type == Camera.Type.ORTHOGRAPHIC)
 				&& (type() == Camera.Type.PERSPECTIVE))
 			orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
@@ -646,7 +641,7 @@ public class Camera implements Cloneable {
 	 * ORTHOGRAPHIC and they are expressed in processing scene units.
 	 * <p> 
 	 * These values are proportional to the Camera (z projected) distance to
-	 * the {@link #revolveAroundPoint()}. When zooming on the object, the
+	 * the {@link #arcballReferencePoint()}. When zooming on the object, the
 	 * Camera is translated forward \e and its frustum is narrowed, making the
 	 * object appear bigger on screen, as intuitively expected. 
 	 * <p> 
@@ -657,7 +652,7 @@ public class Camera implements Cloneable {
 			target = new float[2];
 		}
 		float dist = orthoCoef
-				* PApplet.abs(cameraCoordinatesOf(revolveAroundPoint()).z);
+				* PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 		// #CONNECTION# fitScreenRegion
 		// 1. halfWidth
 		target[0] = dist * ((aspectRatio() < 1.0f) ? 1.0f : aspectRatio());
@@ -1212,12 +1207,12 @@ public class Camera implements Cloneable {
 	/**
 	 * Sets the {@link #sceneCenter()}. 
 	 * <p> 
-	 * <b>Attention:</b> This method also sets the {@link #revolveAroundPoint()}
+	 * <b>Attention:</b> This method also sets the {@link #arcballReferencePoint()}
 	 * to {@link #sceneCenter()}.
 	 */
 	public void setSceneCenter(PVector center) {
 		scnCenter = center;
-		setRevolveAroundPoint(sceneCenter());
+		setArcballReferencePoint(sceneCenter());
 	}
 
 	/**
@@ -1240,45 +1235,46 @@ public class Camera implements Cloneable {
 		setSceneRadius(0.5f * (PVector.sub(max, min)).mag());
 	}
 
-	// 5. REVOLVE AROUND POINT
+	// 5. ARCBALL REFERENCE POINT
 
 	/**
 	 * The point the Camera revolves around its
-	 * {@link remixlab.proscene.InteractiveCameraFrame#revolveAroundPoint()}. 
+	 * {@link remixlab.proscene.InteractiveCameraFrame#arcballReferencePoint()}
+	 * (when it's set in arcball mode).
 	 * <p> 
 	 * Default value is the {@link #sceneCenter()}. 
 	 * <p> 
 	 * <b>Attention:</b> {@link #setSceneCenter(PVector)} changes this value.
 	 */
-	public final PVector revolveAroundPoint() {
-		return frame().revolveAroundPoint();
+	public final PVector arcballReferencePoint() {
+		return frame().arcballReferencePoint();
 	}
 
 	/**
-	 * Changes the {@link #revolveAroundPoint()} to {@code rap} (defined in the
+	 * Changes the {@link #arcballReferencePoint()} to {@code rap} (defined in the
 	 * world coordinate system).
 	 */
-	public void setRevolveAroundPoint(PVector rap) {
+	public void setArcballReferencePoint(PVector rap) {
 		float prevDist = PApplet
-				.abs(cameraCoordinatesOf(revolveAroundPoint()).z);
+				.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 
-		frame().setRevolveAroundPoint(rap);
+		frame().setArcballReferencePoint(rap);
 
 		// orthoCoef is used to compensate for changes of the
-		// revolveAroundPoint, so that the image does
-		// not change when the revolveAroundPoint is changed in ORTHOGRAPHIC
+		// arcballReferencePoint, so that the image does
+		// not change when the arcballReferencePoint is changed in ORTHOGRAPHIC
 		// mode.
 		float newDist = PApplet
-				.abs(cameraCoordinatesOf(revolveAroundPoint()).z);
+				.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 		// Prevents division by zero when rap is set to camera position
 		if ((prevDist > 1E-9) && (newDist > 1E-9))
 			orthoCoef *= prevDist / newDist;
 	}
 	
 	/**
-	 * The {@link #revolveAroundPoint()} is set to the point located under {@code pixel}
+	 * The {@link #arcballReferencePoint()} is set to the point located under {@code pixel}
 	 * on screen. Returns {@code true} if a point was found under {@code pixel} and
-	 * {@code false} if none was found (in this case no {@link #revolveAroundPoint()}
+	 * {@code false} if none was found (in this case no {@link #arcballReferencePoint()}
 	 * is set).
 	 * <p>
 	 * Override {@link #pointUnderPixel(Point)} in your jogl-based camera class.
@@ -1286,10 +1282,10 @@ public class Camera implements Cloneable {
 	 * Current implementation always returns {@code false}, meaning that no point was
 	 * set. 
 	 */	
-	public boolean setRevolveAroundPointFromPixel(Point pixel) {
+	public boolean setArcballReferencePointFromPixel(Point pixel) {
 		WorldPoint wP = pointUnderPixel(pixel);
 		if ( wP.found )
-			setRevolveAroundPoint( wP.point);		
+			setArcballReferencePoint( wP.point);		
 		return wP.found;
 	}
 	
@@ -2020,7 +2016,7 @@ public class Camera implements Cloneable {
 			break;
 		}
 		case ORTHOGRAPHIC: {
-			distance = PVector.dot(PVector.sub(center, revolveAroundPoint()),
+			distance = PVector.dot(PVector.sub(center, arcballReferencePoint()),
 									viewDirection())
                        + (radius / orthoCoef);
 			break;
@@ -2083,7 +2079,7 @@ public class Camera implements Cloneable {
 			break;
 			}
 		case ORTHOGRAPHIC: {			
-			final float dist = PVector.dot(PVector.sub(newCenter, revolveAroundPoint()), vd);			
+			final float dist = PVector.dot(PVector.sub(newCenter, arcballReferencePoint()), vd);			
 			final float distX = PVector.dist(pointX, newCenter) / orthoCoef / ((aspectRatio() < 1.0) ? 1.0f : aspectRatio());
             final float distY = PVector.dist(pointY, newCenter) / orthoCoef / ((aspectRatio() < 1.0) ? 1.0f / aspectRatio() : 1.0f);
             

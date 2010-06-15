@@ -42,8 +42,8 @@ import javax.swing.Timer;
  * InteractiveCameraFrame has to go to the <i>left</i>, so that the <i>scene</i> seems
  * to move to the right.
  * <p>
- * A InteractiveCameraFrame rotates around its {@link #revolveAroundPoint()}, which corresponds
- * to the associated {@link Camera#revolveAroundPoint()}.
+ * A InteractiveCameraFrame rotates around its {@link #arcballReferencePoint()}, which corresponds
+ * to the associated {@link Camera#arcballReferencePoint()}.
  * <p>
  * A InteractiveCameraFrame can also "fly" in the scene. It basically moves forward, and turns
  * according to the mouse motion. See {@link #flySpeed()}, {@link #flyUpVector()} and the
@@ -58,20 +58,20 @@ public class InteractiveCameraFrame extends InteractiveFrame {
     private Timer flyTimer;
     private ActionListener taskFlyPerformer;
     private PVector flyUpVec;    
-	private PVector revAroundPnt;
+	private PVector arcballRefPnt;
 
 	/**
 	 * Default constructor. 
 	 * <p> 
 	 * {@link #flySpeed()} is set to 0.0 and {@link #flyUpVector()} is (0,1,0).
-	 * The {@link #revolveAroundPoint()} is set to (0,0,0). 
+	 * The {@link #arcballReferencePoint()} is set to (0,0,0). 
 	 * <p> 
 	 * <b>Attention:</b> Created object is {@link #removeFromMouseGrabberPool()}.
 	 */
 	public InteractiveCameraFrame() {
 		drvSpd = 0.0f;
 		flyUpVec = new PVector(0.0f, 1.0f, 0.0f);
-		revAroundPnt = new PVector(0.0f, 0.0f, 0.0f);
+		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
 		
 		setFlySpeed(0.0f);	    
 	    removeFromMouseGrabberPool();
@@ -95,7 +95,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	public InteractiveCameraFrame clone() {
 		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
 		clonedICamFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
-		clonedICamFrame.revAroundPnt = new PVector(revAroundPnt.x, revAroundPnt.y, revAroundPnt.z);
+		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
 		clonedICamFrame.flyTimer = new Timer(10, taskFlyPerformer);
 		return clonedICamFrame;
 	}
@@ -103,11 +103,11 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	/**
 	 * Overloading of {@link remixlab.proscene.InteractiveFrame#spin()}.
 	 * <p> 
-	 * Rotates the InteractiveCameraFrame around its #revolveAroundPoint()
+	 * Rotates the InteractiveCameraFrame around its #arcballReferencePoint()
 	 * instead of its origin.
 	 */
 	public void spin() {
-		rotateAroundPoint(spinningQuaternion(), revolveAroundPoint());
+		rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
 	}
 	
     /**
@@ -173,11 +173,11 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	 * It is defined in the world coordinate system. Default value is (0,0,0). 
 	 * <p> 
 	 * When the InteractiveCameraFrame is associated to a Camera,
-	 * {@link remixlab.proscene.Camera#revolveAroundPoint()}
+	 * {@link remixlab.proscene.Camera#arcballReferencePoint()}
 	 * also returns this value.
 	 */	
-	public PVector revolveAroundPoint() {
-		return revAroundPnt;
+	public PVector arcballReferencePoint() {
+		return arcballRefPnt;
 	}
 	
 	/**
@@ -233,11 +233,11 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	}
 	
 	/**
-	 * Sets the {@link #revolveAroundPoint()}, defined in the
+	 * Sets the {@link #arcballReferencePoint()}, defined in the
 	 * world coordinate system.
 	 */
-	public void setRevolveAroundPoint(PVector revolveAroundPoint) {
-		revAroundPnt = revolveAroundPoint;
+	public void setArcballReferencePoint(PVector refP) {
+		arcballRefPnt = refP;
 	}
 
 	/**
@@ -264,7 +264,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			switch (camera.type()) {			
 			case PERSPECTIVE :
 				trans.mult(2.0f * PApplet.tan(camera.fieldOfView()/2.0f) *
-						PApplet.abs((camera.frame().coordinatesOf(revolveAroundPoint())).z) / camera.screenHeight());
+						PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z) / camera.screenHeight());
 			    break;
 			case ORTHOGRAPHIC : {
 				float [] wh = camera.getOrthoWidthHeight();				
@@ -305,7 +305,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		
 		case ZOOM: {
 			//#CONNECTION# wheelEvent() ZOOM case
-			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.revolveAroundPoint())).z),
+			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z),
 					                 0.2f*camera.sceneRadius());
 			PVector trans = new PVector(0.0f, 0.0f, -coef * -deltaY / camera.screenHeight());
 			translate(inverseTransformOf(trans));
@@ -319,7 +319,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}
 		
 		case ROTATE: {
-			PVector trans = camera.projectedCoordinatesOf(revolveAroundPoint());
+			PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 			Quaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
 			computeMouseSpeed(event);
@@ -329,7 +329,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}
 		
 		case SCREEN_ROTATE: {
-			PVector trans = camera.projectedCoordinatesOf(revolveAroundPoint());
+			PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 			float angle = PApplet.atan2(event.getY() - trans.y, event.getX() - trans.x) - PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 				angle = -angle;
@@ -363,7 +363,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			switch (camera.type()) {
 			case PERSPECTIVE :
 				trans.mult(2.0f * PApplet.tan(camera.fieldOfView()/2.0f) *
-					      PApplet.abs((camera.frame().coordinatesOf(revolveAroundPoint())).z) / camera.screenHeight());
+					      PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z) / camera.screenHeight());
 				break;
 			case ORTHOGRAPHIC : {
 				float [] wh = camera.getOrthoWidthHeight();
@@ -427,7 +427,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			float wheelSensitivityCoef = 8E-4f;
 			//#CONNECTION# mouseMoveEvent() ZOOM case
 			float coef = PApplet.max(
-					PApplet.abs((camera.frame().coordinatesOf(camera.revolveAroundPoint())).z),
+					PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z),
 					             0.2f*camera.sceneRadius());  
 			PVector trans = new PVector(0.0f, 0.0f,
 					coef * (-event.getWheelRotation()) * wheelSensitivity() * wheelSensitivityCoef);

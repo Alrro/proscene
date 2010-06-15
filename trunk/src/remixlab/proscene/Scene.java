@@ -62,6 +62,11 @@ import javax.swing.Timer;
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
 public class Scene implements MouseWheelListener, PConstants {
+	//TODO study me!
+	public enum Mode {
+		ARCBALL, FIRST_PERSON, THIRD_PERSON
+	};
+	
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
 	 */
@@ -77,7 +82,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	boolean zoomOnRegion;
 	boolean rotateScreen;
 	boolean translateScreen;
-	boolean rapFlag;
+	boolean arpFlag;
 	boolean pupFlag;
 	PVector pupVec;
 	
@@ -89,7 +94,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsACam;
-	boolean iFrameIsDrwn;	
+	boolean iFrameIsDrwn;
+	public Frame avtrFrame;
 	
 	// S C R E E N   C O O R D I N A T E S
 	float halfWidthSpace;
@@ -148,7 +154,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		//parent.addMouseMotionListener(this);
 		parent.addMouseWheelListener(this);
 		
-		//test: setting camera to revolveAround mode
+		//test: setting camera to arcball mode
 		cameraLeftButton = MouseAction.ROTATE;		
 		cameraMidButton = MouseAction.ZOOM;
 		cameraRightButton = MouseAction.TRANSLATE;
@@ -159,7 +165,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		zoomOnRegion = false;
 		rotateScreen = false;
 		translateScreen = false;
-		rapFlag = false;
+		arpFlag = false;
 		pupFlag = false;
 		
 		//readyToGo = false;
@@ -198,6 +204,9 @@ public class Scene implements MouseWheelListener, PConstants {
         utilityTimer.setRepeats(false);
         
         disableFrustumUpdate();
+        
+        // avatar frame for third person camera mode
+        avtrFrame = new Frame();
         
         // E X C E P T I O N   H A N D L I N G
         beginDrawCalls = 0;
@@ -358,12 +367,12 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
-	 * Tests if the {@link #camera()} is in revolve mode (also known as arc-ball).
+	 * Tests if the {@link #camera()} is in arc-ball mode.
 	 * The other {@link #camera()} mode is fly.
 	 * 
 	 * {@link #toggleCameraMode()}
 	 */
-	public boolean cameraIsInRevolveMode() {
+	public boolean cameraIsInArcballMode() {
 		return ( (cameraLeftButton == MouseAction.ROTATE)
 			  || (cameraMidButton == MouseAction.ROTATE) 
 			  || (cameraRightButton == MouseAction.ROTATE));
@@ -373,7 +382,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Toggles the {@link #camera()} mode between arc-ball and fly.
 	 */
 	public void toggleCameraMode() {		 
-		if ( cameraIsInRevolveMode() ) {
+		if ( cameraIsInArcballMode() ) {
 			camera().frame().updateFlyUpVector();
 			camera().frame().stopSpinning();
 			cameraLeftButton = MouseAction.MOVE_FORWARD;
@@ -501,7 +510,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		if( helpIsDrawn() ) help();
 		if( zoomOnRegion ) drawZoomWindowHint();
 		if( rotateScreen ) drawScreenRotateLineHint();
-		if( rapFlag ) drawRevolveAroundPointHint();
+		if( arpFlag ) drawArcballReferencePointHint();
 		if( pupFlag ) {
 			PVector v = camera().projectedCoordinatesOf( pupVec );
 			drawCross( v.x, v.y );
@@ -542,15 +551,15 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
-	 * Returns the revolve around point.
+	 * Returns the arcball reference point.
 	 * <p>
-	 * Convenience wrapper function that simply returns {@code camera().revolveAroundPoint()}
+	 * Convenience wrapper function that simply returns {@code camera().arcballReferencePoint()}
 	 * 
 	 * @see #setCenter(PVector)
 	 * {@link #radius()}
 	 */
-	public PVector revolveAroundPoint() {
-		return camera().revolveAroundPoint();
+	public PVector arcballReferencePoint() {
+		return camera().arcballReferencePoint();
 	}
 	
 	/**
@@ -599,18 +608,18 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	/**
 	 * Convenience wrapper function that simply returns
-	 * {@code camera().setRevolveAroundPointFromPixel(pixel)}.
+	 * {@code camera().setArcballReferencePointFromPixel(pixel)}.
 	 * <p>
 	 * Current implementation set no
-	 * {@link remixlab.proscene.Camera#revolveAroundPoint()}. Override
+	 * {@link remixlab.proscene.Camera#arcballReferencePoint()}. Override
 	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
 	 * based camera for this to work.
 	 * 
-	 * @see remixlab.proscene.Camera#setRevolveAroundPointFromPixel(Point)
+	 * @see remixlab.proscene.Camera#setArcballReferencePointFromPixel(Point)
 	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
 	 */
-	public boolean setRevolveAroundPointFromPixel(Point pixel) {
-		return camera().setRevolveAroundPointFromPixel(pixel);
+	public boolean setArcballReferencePointFromPixel(Point pixel) {
+		return camera().setArcballReferencePointFromPixel(pixel);
 	}
 	
 	/**
@@ -862,8 +871,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();			
 		float p2x = (float) lCorner.getX();
-		float p2y = (float) lCorner.getY();
+		float p2y = (float) lCorner.getY();		
 		beginScreenDrawing();
+		parent.pushStyle();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(2);
 		parent.noFill();		
@@ -872,9 +882,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent.vertex(xCoord(p2x), yCoord(p1y), zCoord());
 		parent.vertex(xCoord(p2x), yCoord(p2y), zCoord());
 		parent.vertex(xCoord(p1x), yCoord(p2y), zCoord());
-		parent.endShape(CLOSE);		
-		parent.strokeWeight(1);
-		parent.noStroke();
+		parent.endShape(CLOSE);
+		parent.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -885,32 +894,32 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected void drawScreenRotateLineHint() {
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();
-		PVector p2 = camera().projectedCoordinatesOf(revolveAroundPoint());
+		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
+		parent.pushStyle();
 		parent.stroke(255, 255, 255);
 		parent.strokeWeight(2);
 		parent.noFill();
 		parent.beginShape(LINE);
 		parent.vertex(xCoord(p1x), yCoord(p1y), zCoord());
 		parent.vertex(xCoord(p2.x), yCoord(p2.y), zCoord());		
-		parent.endShape();		
-		parent.strokeWeight(1);
-		parent.noStroke();
+		parent.endShape();
+		parent.popStyle();
 		endScreenDrawing();
 	}
 	
 	/**
-	 * Draws visual hint (a cross on the screen) when the {@link #revolveAroundPoint()}
+	 * Draws visual hint (a cross on the screen) when the {@link #arcballReferencePoint()}
 	 * is being set.
 	 * <p>
 	 * Simply calls {@link #drawCross(float, float)} on
-	 * {@code camera().projectedCoordinatesOf(revolveAroundPoint())} {@code x} and 
+	 * {@code camera().projectedCoordinatesOf(arcballReferencePoint())} {@code x} and 
 	 * {@code y} coordinates.
 	 * 
 	 * @see #drawCross(float, float)
 	 */	
-	protected void drawRevolveAroundPointHint() {
-		PVector p = camera().projectedCoordinatesOf(revolveAroundPoint());
+	protected void drawArcballReferencePointHint() {
+		PVector p = camera().projectedCoordinatesOf(arcballReferencePoint());
 		drawCross(p.x, p.y);
 	}
 	
@@ -965,24 +974,22 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
 	 * of size {@code size}. {@code strokeWeight} defined the weight of the stroke.
 	 * 
-	 * @see #drawRevolveAroundPointHint()
+	 * @see #drawArcballReferencePointHint()
 	 */
 	public void drawCross(int color, float px, float py, float size, int strokeWeight) {		
+		beginScreenDrawing();
+		parent.pushStyle();
 		parent.stroke(color);
 		parent.strokeWeight(strokeWeight);
 		parent.noFill();
-		
-		beginScreenDrawing();		
 		parent.beginShape(LINES);
 		parent.vertex(xCoord(px - size), yCoord(py), zCoord());
 		parent.vertex(xCoord(px + size), yCoord(py), zCoord());
 		parent.vertex(xCoord(px), yCoord(py - size), zCoord());
 		parent.vertex(xCoord(px), yCoord(py + size), zCoord());
 		parent.endShape();
+		parent.popStyle();
 		endScreenDrawing();
-		
-		parent.strokeWeight(1);
-		parent.noStroke();
 	}
 	
 	/**
@@ -997,10 +1004,11 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void drawFilledCircle(int color, PVector center, float radius) {
 		float x = center.x;
 		float y = center.y;
-		float angle, x2, y2;
+		float angle, x2, y2;		
+		beginScreenDrawing();
+		parent.pushMatrix();
 		parent.noStroke();
 		parent.fill(color);
-		beginScreenDrawing();
 		parent.beginShape(TRIANGLE_FAN);
 		parent.vertex(xCoord(x), yCoord(y), zCoord());
 		for (angle=0.0f;angle<=TWO_PI; angle+=0.157f) {
@@ -1009,6 +1017,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		    parent.vertex(xCoord(x2), yCoord(y2), zCoord());
 		}		
 		parent.endShape();
+		parent.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1024,15 +1033,18 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void drawFilledSquare(int color, PVector center, float edge) {
 		float x = center.x;
 		float y = center.y;
-		parent.noStroke();
-		parent.fill(color);
+		
 		beginScreenDrawing();
+		parent.pushMatrix();
+		parent.noStroke();
+		parent.fill(color);		
 		parent.beginShape(QUADS);
 		parent.vertex(xCoord(x-edge), yCoord(y+edge), zCoord());
 		parent.vertex(xCoord(x+edge), yCoord(y+edge), zCoord());
 		parent.vertex(xCoord(x+edge), yCoord(y-edge), zCoord());
 		parent.vertex(xCoord(x-edge), yCoord(y-edge), zCoord());
 		parent.endShape();
+		parent.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1047,11 +1059,14 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {		
 		float x = center.x;
 		float y = center.y;
+		
+		beginScreenDrawing();
+		parent.pushStyle();
+		
 		parent.stroke(color);
 		parent.strokeWeight(strokeWeight);
 		parent.noFill();
 		
-		beginScreenDrawing();
 		parent.beginShape();		
 		parent.vertex(xCoord((x-length)), yCoord((y-length)+(0.6f*length)), zCoord());		
 		parent.vertex(xCoord(x-length), yCoord(y-length), zCoord());
@@ -1074,12 +1089,12 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent.vertex(xCoord((x-length)+(0.6f*length)), yCoord(y+length), zCoord());
 		parent.vertex(xCoord(x-length), yCoord(y+length), zCoord());
 		parent.vertex(xCoord(x-length), yCoord((y+length)-(0.6f*length)), zCoord());
-		parent.endShape();		
+		parent.endShape();
+		
+		parent.popStyle();
 		endScreenDrawing();
 		
 		drawCross(color, center.x, center.y, 0.6f*length, strokeWeight);
-		
-		parent.strokeWeight(1);
 	}
 	
 	/**
@@ -1194,10 +1209,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	/**
 	 * Called from the timer to stop displaying the point under pixel and
-	 * revolve around point visual hints. 
+	 * arcball reference point visual hints. 
 	 */
 	protected void unSetTimerFlag() {
-		rapFlag = false;
+		arpFlag = false;
 		pupFlag = false;			
 	}
 	
@@ -1367,13 +1382,13 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void defaultKeyBindings() {
 		if (parent.key == '+') {
-			if( this.cameraIsInRevolveMode() )
+			if( this.cameraIsInArcballMode() )
 				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.5f);
 			else
 				camera().setFlySpeed(camera().flySpeed() * 1.5f);
 		}
 		if (parent.key == '-') {
-			if( this.cameraIsInRevolveMode() )
+			if( this.cameraIsInArcballMode() )
 				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.5f);
 			else
 				camera().setFlySpeed(camera().flySpeed() / 1.5f);			
@@ -1416,14 +1431,14 @@ public class Scene implements MouseWheelListener, PConstants {
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
 						        "See the Point Under Pixel example!");
 			else if (!helpIsDrawn())
-				if (setRevolveAroundPointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-					rapFlag = true;
+				if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+					arpFlag = true;
 					utilityTimer.start();
 				}
 		}
 		if (parent.key == 'O') {
-			camera().setRevolveAroundPoint(new PVector(0,0,0));
-			rapFlag = true;
+			camera().setArcballReferencePoint(new PVector(0,0,0));
+			arpFlag = true;
 			utilityTimer.start();
 		}
 		if ((parent.key == 'p') || (parent.key == 'P')) {
@@ -1488,7 +1503,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
-		textToDisplay += "(o)O/p: (un)set revolve around point / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
+		textToDisplay += "(o)O/p: (un)set arcball center / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
 		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
 		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
 		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
