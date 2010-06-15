@@ -710,6 +710,7 @@ public class KeyFrameInterpolator implements Cloneable {
 		}
 		
 		if ( mask != 0 ) {
+			parent.pushStyle();
 			parent.strokeWeight(2);
 			
 			if ( (mask & 1) != 0 ) {
@@ -740,9 +741,8 @@ public class KeyFrameInterpolator implements Cloneable {
 						parent.popMatrix();
 					}
 			}
-			parent.strokeWeight(1);			
-		}		
-		parent.noStroke();
+			parent.popStyle();			
+		}
 	}
 	
 	/**

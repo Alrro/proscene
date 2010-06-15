@@ -223,18 +223,18 @@ public class Viewer extends PApplet {
 	}
 	
 	public void drawingMethod(PApplet p) {
-		if (p!=null)
+		if (p!=null && method!=null)
 			try {
 				method.invoke(parent, new Object[] { p });
 			} catch (IllegalAccessException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			} catch (InvocationTargetException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			} catch (IllegalArgumentException e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
+				//e.printStackTrace();
 			}
 	}
 }

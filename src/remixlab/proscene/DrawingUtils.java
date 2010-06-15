@@ -32,6 +32,9 @@ import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
  * Utility class that implements some drawing methods used among proscene classes.
  */
 public class DrawingUtils implements PConstants {
+	//needed for drawCamera	
+	static protected Frame tmpFrame = new Frame();
+	
 	// 1. SCENE
 	
 	/**
@@ -190,6 +193,7 @@ public class DrawingUtils implements PConstants {
 		//parent.noLights();
 		
 		parent.beginShape(LINES);
+		parent.pushStyle();
 		parent.strokeWeight(2);
 		// The X
 		parent.stroke(255, 178, 178);
@@ -223,11 +227,10 @@ public class DrawingUtils implements PConstants {
 			parent.vertex(-charWidth, -charHeight, charShift);
 			parent.vertex( charWidth, -charHeight, charShift);
 		}
-		parent.endShape();
-		parent.strokeWeight(1);	    
-		parent.noStroke();
+		parent.endShape();		
 		
 		// Z axis
+		parent.noStroke();
 		parent.fill(178, 178, 255);
 		drawArrow(parent, length, 0.01f*length);		
 		
@@ -245,7 +248,7 @@ public class DrawingUtils implements PConstants {
 		drawArrow(parent, length, 0.01f*length);
 		parent.popMatrix();
 		
-		//parent.lights();		
+		parent.popStyle();		
 	}
 	
 	/**
@@ -324,7 +327,7 @@ public class DrawingUtils implements PConstants {
 	 * @see #drawAxis(PApplet, float) 
 	 */
 	public static void drawGrid(PApplet parent, float size, int nbSubdivisions) {
-		//parent.noLights();		
+		parent.pushStyle();		
 		parent.stroke(170, 170, 170);
 		parent.strokeWeight(1);
 		parent.beginShape(LINES);
@@ -336,9 +339,7 @@ public class DrawingUtils implements PConstants {
 			parent.vertex( size, pos);
 		}
 		parent.endShape();
-		parent.strokeWeight(1);
-		parent.noStroke();		
-		//parent.lights();
+		parent.popStyle();
 	}
 	
 	// 2. CAMERA
@@ -421,12 +422,10 @@ public class DrawingUtils implements PConstants {
 	public static void drawCamera(PApplet parent, Camera camera, int color, boolean drawFarPlane, float scale) {
 		parent.pushMatrix();
 		
-		parent.applyMatrix(camera.frame().worldMatrix());
-		//TODO: use something like:
-		//frame().applyTransformation(parent);
-		
-		//parent.applyMatrix(myFr.matrix());
-		//myFr.applyTransformation(parent);
+		//parent.applyMatrix(camera.frame().worldMatrix());
+		//same as the previous line, but maybe mode efficient
+		tmpFrame.fromMatrix(camera.frame().worldMatrix());
+		tmpFrame.applyTransformation(parent);	
 		
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
 		PVector []points = new PVector[2];
@@ -456,6 +455,7 @@ public class DrawingUtils implements PConstants {
 		int farIndex = drawFarPlane?1:0;
 		
 		// Near and (optionally) far plane(s)
+		parent.pushStyle();
 		parent.noStroke();
 		parent.fill(color);
 		parent.beginShape(PApplet.QUADS);
@@ -538,9 +538,7 @@ public class DrawingUtils implements PConstants {
 				}
 		}
 		
-		parent.noFill();//check me!
-		//parent.stroke(170);//check me!
-		parent.strokeWeight(1);
+		parent.popStyle();
 		
 		parent.popMatrix();
 	}
@@ -562,6 +560,8 @@ public class DrawingUtils implements PConstants {
 		float baseHalfWidth  = 0.3f * halfWidth;
 		
 		// Frustum outline
+		parent.pushStyle();
+		
 		parent.noFill();
 		parent.stroke(color);
 		parent.beginShape();
@@ -612,7 +612,6 @@ public class DrawingUtils implements PConstants {
 		}		
 		parent.endShape();
 		
-		parent.noFill();
-		parent.stroke(color);
+		parent.popStyle();
 	}
 }
