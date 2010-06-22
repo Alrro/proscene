@@ -45,7 +45,8 @@ import javax.swing.Timer;
 public class InteractiveFrame extends Frame
                                 implements MouseGrabber, Cloneable {
 	
-	static boolean horiz = true;//Two simultaneous InteractiveFrame require two mice!
+	//static boolean horiz = true;//Two simultaneous InteractiveFrame require two mice!
+	private boolean horiz;//Two simultaneous InteractiveFrame require two mice!
 	
 	/**
 	 * This enum defines the coordinate system convention which is defined as {@code LEFT_HANDED}
@@ -100,6 +101,7 @@ public class InteractiveFrame extends Frame
 	public InteractiveFrame() {
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		horiz = true;
 		
 		addInMouseGrabberPool();
 		isInCamPath = false;
@@ -125,7 +127,7 @@ public class InteractiveFrame extends Frame
 	}
 	
 	/**
-	 * Ad-hoc constructor needed to make editable a Camera path defined a by KeyFrameInterpolator.
+	 * Ad-hoc constructor needed to make editable a Camera path defined by KeyFrameInterpolator.
 	 * <p>
 	 * Constructs a Frame from the the {@code iFrame} {@link #translation()} and {@link #orientation()}
 	 * and immediately adds it to the {@link #mouseGrabberPool()}.
@@ -140,6 +142,7 @@ public class InteractiveFrame extends Frame
 		super(iFrame.translation(), iFrame.rotation());
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		horiz = true;
 		
 		addInMouseGrabberPool();
 		isInCamPath = true;

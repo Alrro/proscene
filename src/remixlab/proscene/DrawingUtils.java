@@ -423,7 +423,7 @@ public class DrawingUtils implements PConstants {
 		parent.pushMatrix();
 		
 		//parent.applyMatrix(camera.frame().worldMatrix());
-		//same as the previous line, but maybe mode efficient
+		//same as the previous line, but maybe more efficient
 		tmpFrame.fromMatrix(camera.frame().worldMatrix());
 		tmpFrame.applyTransformation(parent);	
 		
