@@ -30,6 +30,7 @@ import processing.core.*;
 import java.awt.Panel;
 import java.lang.reflect.*;
 
+@SuppressWarnings("serial")
 public class Viewer extends PApplet {
 	public PApplet parent;
 	public Panel panel;

@@ -62,9 +62,11 @@ import javax.swing.Timer;
  * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  */
 public class Scene implements MouseWheelListener, PConstants {
-	//TODO study me!
-	public enum Mode {
-		ARCBALL, FIRST_PERSON, THIRD_PERSON
+	/**
+	 * This enum defines the camera modes.
+	 */
+	public enum CameraMode {
+		ARCBALL, WALKTHROUGH, THIRD_PERSON
 	};
 	
 	/**
@@ -86,6 +88,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	boolean pupFlag;
 	PVector pupVec;
 	
+	//camera mode
+	private CameraMode cameraMode;
+	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
 	//public PGraphics3D pg3d;
@@ -95,7 +100,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsACam;
 	boolean iFrameIsDrwn;
-	public Frame avtrFrame;
 	
 	// S C R E E N   C O O R D I N A T E S
 	float halfWidthSpace;
@@ -135,8 +139,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected boolean mouseHandling;
 	protected boolean keyboardHandling;
 	final List<String> keyList;
-	//TODO hack
-	//private boolean readyToGo;
 	
 	//O N L I N E   H E L P
 	boolean helpIsDrwn;
@@ -147,17 +149,12 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * See the associated documentation. 
 	 */
 	public Scene(PApplet p) {
-		parent = p;		
-		//pg3d = (PGraphics3D) parent.g;  // g may change
-	    	
-		//parent.addMouseListener(this);
-		//parent.addMouseMotionListener(this);
+		parent = p;
+		
 		parent.addMouseWheelListener(this);
 		
-		//test: setting camera to arcball mode
-		cameraLeftButton = MouseAction.ROTATE;		
-		cameraMidButton = MouseAction.ZOOM;
-		cameraRightButton = MouseAction.TRANSLATE;
+		setCameraMode(CameraMode.ARCBALL);
+		
 		frameLeftButton = MouseAction.ROTATE;		
 		frameMidButton = MouseAction.ZOOM;
 		frameRightButton = MouseAction.TRANSLATE;
@@ -203,10 +200,7 @@ public class Scene implements MouseWheelListener, PConstants {
         utilityTimer = new Timer(1000, taskTimerPerformer);
         utilityTimer.setRepeats(false);
         
-        disableFrustumUpdate();
-        
-        // avatar frame for third person camera mode
-        avtrFrame = new Frame();
+        disableFrustumEquationsUpdate();
         
         // E X C E P T I O N   H A N D L I N G
         beginDrawCalls = 0;
@@ -299,24 +293,73 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	// 2. State of the viewer
     
-    //TODO doc me!
-    public boolean frustumUpdateIsEnable(){
+    /**
+     * Returns {@code true} if automatic update of the camera frustum plane equations is enabled and
+     * {@code false} otherwise. Computation of the equations is expensive and hence is disabled by default.
+     * 
+     * @see #toggleFrustumEquationsUpdate()
+	 * @see #disableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate(boolean)
+	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+     */
+    public boolean frustumEquationsUpdateIsEnable() {
     	return fpCoefficientsUpdate; 
     }
     
-    public void toggleFrustumUpdate() {
+    /**
+	 * Toggles automatic update of the camera frustum plane equations every frame. Computation of the equations
+	 * is expensive and hence is disabled by default.
+	 * 
+	 * @see #frustumEquationsUpdateIsEnable()
+	 * @see #disableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate(boolean)
+	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+     */
+    public void toggleFrustumEquationsUpdate() {
     	fpCoefficientsUpdate = !fpCoefficientsUpdate;
     }
     
-    public void disableFrustumUpdate() {
-    	enableFrustumUpdate(false);
-    }    
+    /**
+	 * Disables automatic update of the camera frustum plane equations every frame. Computation of the equations
+	 * is expensive and hence is disabled by default.
+	 * 
+	 * @see #frustumEquationsUpdateIsEnable()
+	 * @see #toggleFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate(boolean)
+	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+     */
+    public void disableFrustumEquationsUpdate() {
+    	enableFrustumEquationsUpdate(false);
+    }  
     
-    public void enableFrustumUpdate() {
-    	enableFrustumUpdate(true);
+    /**
+	 * Enables automatic update of the camera frustum plane equations every frame. Computation of the equations
+	 * is expensive and hence is disabled by default.
+	 * 
+	 * @see #frustumEquationsUpdateIsEnable()
+	 * @see #toggleFrustumEquationsUpdate()
+	 * @see #disableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate(boolean)
+	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+     */
+    public void enableFrustumEquationsUpdate() {
+    	enableFrustumEquationsUpdate(true);
     }
     
-    public void enableFrustumUpdate(boolean flag) {
+    /**
+	 * Enables or disables automatic update of the camera frustum plane equations every frame according to {@code flag}.
+	 * Computation of the equations is expensive and hence is disabled by default.
+	 * 
+	 * @see #frustumEquationsUpdateIsEnable()
+	 * @see #toggleFrustumEquationsUpdate()
+	 * @see #disableFrustumEquationsUpdate()
+	 * @see #enableFrustumEquationsUpdate()
+	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+     */
+    public void enableFrustumEquationsUpdate(boolean flag) {
     	fpCoefficientsUpdate = flag;
     }
     	
@@ -364,36 +407,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void toggleHelpIsDrawn() {
 		setHelpIsDrawn(!helpIsDrawn());
-	}
-	
-	/**
-	 * Tests if the {@link #camera()} is in arc-ball mode.
-	 * The other {@link #camera()} mode is fly.
-	 * 
-	 * {@link #toggleCameraMode()}
-	 */
-	public boolean cameraIsInArcballMode() {
-		return ( (cameraLeftButton == MouseAction.ROTATE)
-			  || (cameraMidButton == MouseAction.ROTATE) 
-			  || (cameraRightButton == MouseAction.ROTATE));
-	}
-	
-	/**
-	 * Toggles the {@link #camera()} mode between arc-ball and fly.
-	 */
-	public void toggleCameraMode() {		 
-		if ( cameraIsInArcballMode() ) {
-			camera().frame().updateFlyUpVector();
-			camera().frame().stopSpinning();
-			cameraLeftButton = MouseAction.MOVE_FORWARD;
-			cameraMidButton = MouseAction.LOOK_AROUND;
-			cameraRightButton = MouseAction.MOVE_BACKWARD;
-		}
-		else {
-			cameraLeftButton = MouseAction.ROTATE;
-			cameraMidButton = MouseAction.ZOOM;
-			cameraRightButton = MouseAction.TRANSLATE;
-		}		
 	}
 	
 	/**
@@ -470,8 +483,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		camera().computeProjectionMatrix();
 		camera().computeModelViewMatrix();
 		
-		if( frustumUpdateIsEnable() )
-			camera().updateFrustumPlanesCoefficients();
+		if( frustumEquationsUpdateIsEnable() )
+			camera().updateFrustumEquations();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
@@ -502,7 +515,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Displays some visual hints, such the {@link #help()} text.
 	 */
 	public void endDraw() {
-		//TODO: implement exception!
 		beginDrawCalls --;
 		if ( beginDrawCalls != 0 )
 			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
@@ -514,14 +526,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		if( pupFlag ) {
 			PVector v = camera().projectedCoordinatesOf( pupVec );
 			drawCross( v.x, v.y );
-		}
-		/**
-		//TODO hack to enable mouse handling only after first call to endDraw
-		if(!readyToGo) {
-			enableMouseHandling();
-			readyToGo = true;
 		}	
-		*/	
 	}
 	
 	// 4. Scene dimensions
@@ -1006,7 +1011,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		float y = center.y;
 		float angle, x2, y2;		
 		beginScreenDrawing();
-		parent.pushMatrix();
+		parent.pushStyle();
 		parent.noStroke();
 		parent.fill(color);
 		parent.beginShape(TRIANGLE_FAN);
@@ -1035,7 +1040,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		float y = center.y;
 		
 		beginScreenDrawing();
-		parent.pushMatrix();
+		parent.pushStyle();
 		parent.noStroke();
 		parent.fill(color);		
 		parent.beginShape(QUADS);
@@ -1216,7 +1221,85 @@ public class Scene implements MouseWheelListener, PConstants {
 		pupFlag = false;			
 	}
 	
-	// 7. Keyboard customization
+	// 7. Camera modes
+	
+	/**
+	 * Sets the camera mode according to {@code camMode}. Possible values are:
+	 * {@link remixlab.proscene.Scene.CameraMode#ARCBALL},
+	 * {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH}, and 
+	 * {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}
+	 * //TODO complete the doc
+	 * 
+	 * @see #getCameraMode()
+	 */
+	public void setCameraMode(CameraMode camMode) {
+		cameraMode = camMode;
+		switch (cameraMode) {
+		case ARCBALL :
+			cameraLeftButton = MouseAction.ROTATE;		
+			cameraMidButton = MouseAction.ZOOM;
+			cameraRightButton = MouseAction.TRANSLATE;
+			break;
+	    case WALKTHROUGH :
+	    	camera().frame().updateFlyUpVector();
+			camera().frame().stopSpinning();
+			cameraLeftButton = MouseAction.MOVE_FORWARD;
+			cameraMidButton = MouseAction.LOOK_AROUND;
+			cameraRightButton = MouseAction.MOVE_BACKWARD;
+	    	break;
+	    case THIRD_PERSON :
+	    	break;
+	    }		
+	}
+	
+	/**
+	 * Returns the current camera mode.
+	 * 
+	 * @see #setCameraMode(CameraMode)
+	 */
+	public CameraMode getCameraMode() {
+		return cameraMode;
+	}
+	
+	/**
+	 * Sets the next camera mode.
+	 * 
+	 * @see #setCameraMode(CameraMode)
+	 */
+	public void nextCameraMode() {
+		switch (cameraMode) {
+		case ARCBALL :
+			setCameraMode(CameraMode.WALKTHROUGH);
+			break;
+	    case WALKTHROUGH :
+	    	setCameraMode(CameraMode.THIRD_PERSON);
+	    	break;
+	    case THIRD_PERSON :
+	    	setCameraMode(CameraMode.ARCBALL);
+	    	break;
+	    }
+	}
+	
+	/**
+	 * Sets the previous camera mode.
+	 * 
+	 * @see #setCameraMode(CameraMode)
+	 */
+	public void previousCameraMode() {
+		switch (cameraMode) {
+		case ARCBALL :
+			setCameraMode(CameraMode.THIRD_PERSON);
+			break;
+	    case WALKTHROUGH :
+	    	setCameraMode(CameraMode.ARCBALL);
+	    	break;
+	    case THIRD_PERSON :
+	    	setCameraMode(CameraMode.WALKTHROUGH);
+	    	break;
+	    }
+	}
+	
+	// 8. Keyboard customization
 	
 	/**
 	 * Parses the sketch to find if any KeyXxxx method has been implemented. If this is the case,
@@ -1382,22 +1465,22 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void defaultKeyBindings() {
 		if (parent.key == '+') {
-			if( this.cameraIsInArcballMode() )
+			if( getCameraMode() == CameraMode.ARCBALL )
 				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.5f);
-			else
+			else if ( getCameraMode() == CameraMode.WALKTHROUGH )
 				camera().setFlySpeed(camera().flySpeed() * 1.5f);
 		}
 		if (parent.key == '-') {
-			if( this.cameraIsInArcballMode() )
+			if( getCameraMode() == CameraMode.ARCBALL )
 				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.5f);
-			else
+			else if ( getCameraMode() == CameraMode.WALKTHROUGH )
 				camera().setFlySpeed(camera().flySpeed() / 1.5f);			
 		}
 		if (parent.key == 'a' || parent.key == 'A') {
 			toggleAxisIsDrawn();			
 		}
 		if (parent.key == ' ') {
-			toggleCameraMode();			
+			nextCameraMode();	
 		}		
 		if (parent.key == 'e' || parent.key == 'E') {
 			toggleCameraType();
@@ -1498,9 +1581,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		String textToDisplay = new String();
 		textToDisplay += "KEYBOARD\n";
-		textToDisplay += "+/-: Increase/Decrease fly speed (only for fly camera mode)\n";
+		textToDisplay += "+/-: Increase/Decrease arcball rotation-sensitivity or walkthrough speed (depending on camera mode)\n";
 		textToDisplay += "a/g: Toggle axis/grid drawn\n";
-		textToDisplay += "c/e: Toggle camera mode (arcball or fly mode)/Toggle camera type (orthographic or perspective)\n";
+		textToDisplay += "space_bar/e: Toggle camera mode (arcball or walkthrough)/Toggle camera type (orthographic or perspective)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
 		textToDisplay += "(o)O/p: (un)set arcball center / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
@@ -1510,7 +1593,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play camera key frame interpolators\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
 		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
-		textToDisplay += "Fly mode: move forward, look around, and move backward\n";
+		textToDisplay += "Walkthrough mode: move forward, look around, and move backward\n";
 		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
 		textToDisplay += "MOUSE MODIFIERS (applied to left button)\n";
 		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
@@ -1521,7 +1604,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));		 
 	}
 	
-	// 8. Mouse customization
+	// 9. Mouse customization
 	
 	/**
 	 * Parses the sketch to find if any mouseXxxx method has been implemented. If this is the case,
@@ -1672,15 +1755,12 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * the mouse (or to {@code null} if none of them grab it).
 	 */
 	public void mouseMoved(MouseEvent event) {
-		//if ( mouseIsHandled() ) {
-			//need in order to make mousewheel work properly
-			setMouseGrabber(null);
-			for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
-				mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
-				if(mg.grabsMouse())
-					setMouseGrabber(mg);
-			}
-		//}
+		setMouseGrabber(null);
+		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
+			mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
+			if(mg.grabsMouse())
+				setMouseGrabber(mg);
+		}
 	}
 	
 	/**
@@ -1692,7 +1772,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		//if ( mouseIsHandled() ) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
 	    if ( event.isShiftDown() ) {
 	    	fCorner = event.getPoint();
@@ -1778,7 +1857,6 @@ public class Scene implements MouseWheelListener, PConstants {
 			}	
 			camera().frame().mousePressEvent(event, camera());
 		}
-		//}
 	}
 	
 	/**
@@ -1788,8 +1866,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		//if ( mouseIsHandled() ) {
-		// /**
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
 	    	if (zoomOnRegion) lCorner = event.getPoint();
@@ -1823,7 +1899,6 @@ public class Scene implements MouseWheelListener, PConstants {
 			//if (camera() != null ) if (camera().frame() != null ) camera().frame().mouseMoveEvent(event, camera());
 			camera().frame().mouseMoveEvent(event, camera());
 		}
-		//}
 	}
 	
 	/**
@@ -1831,7 +1906,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
 	public void mouseReleased(MouseEvent event) {
-		//if ( mouseIsHandled() ) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
 	    	camera().frame().mouseReleaseEvent(event, camera());
@@ -1856,7 +1930,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		else {
 			camera().frame().mouseReleaseEvent(event, camera());
 		}
-		//}
     }
 	
 	/**
@@ -1864,7 +1937,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * middle button shows entire scene, and right button centers scene.
 	 */
 	public void mouseClicked(MouseEvent event) {
-		if ( /**mouseIsHandled() && */ ( event.getClickCount() == 2 ) ) {
+		if ( event.getClickCount() == 2 ) {
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().mouseDoubleClickEvent(event, camera());
 		}
@@ -1909,7 +1982,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		//if ( mouseIsHandled() ) {
 		if ( mouseGrabber() != null )	{
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
@@ -1939,10 +2011,9 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
 			camera().frame().mouseWheelEvent(event, camera());			
 		}
-		//}
 	}
 	
-	// 9. Processing objects
+	// 10. Processing objects
 	
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}.

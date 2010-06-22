@@ -1167,7 +1167,7 @@ public class Frame implements Cloneable {
 	public final void fromMatrix(PMatrix3D pM) {
 		// m should be of size [4][4]
 		if (PApplet.abs(pM.m33) < 1E-8) {
-			// pending: catch the exception
+			// TODO pending: catch the exception
 			return;
 		}
 		

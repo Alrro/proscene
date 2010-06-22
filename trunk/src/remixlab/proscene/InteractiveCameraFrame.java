@@ -50,15 +50,14 @@ import javax.swing.Timer;
  * {@link Scene.MouseAction#MOVE_FORWARD} and {@link Scene.MouseAction#MOVE_BACKWARD}.
  */
 public class InteractiveCameraFrame extends InteractiveFrame {
-	
-	static PVector flyDisp = new PVector(0.0f, 0.0f, 0.0f);
-	
 	private float flySpd;
     private float drvSpd;
     private Timer flyTimer;
     private ActionListener taskFlyPerformer;
     private PVector flyUpVec;    
 	private PVector arcballRefPnt;
+	
+	private PVector flyDisp;
 
 	/**
 	 * Default constructor. 
@@ -72,6 +71,8 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		drvSpd = 0.0f;
 		flyUpVec = new PVector(0.0f, 1.0f, 0.0f);
 		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
+		
+		flyDisp = new PVector(0.0f, 0.0f, 0.0f);
 		
 		setFlySpeed(0.0f);	    
 	    removeFromMouseGrabberPool();
@@ -96,6 +97,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
 		clonedICamFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
+		clonedICamFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
 		clonedICamFrame.flyTimer = new Timer(10, taskFlyPerformer);
 		return clonedICamFrame;
 	}
@@ -181,7 +183,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	}
 	
 	/**
-	 * Called for continuous frame motion in fly mode (see Scene.MOVE_FORWARD).
+	 * Called for continuous frame motion in first person mode (see Scene.MOVE_FORWARD).
 	 */	
 	public void flyUpdate()	{		
 		flyDisp.set(0.0f, 0.0f, 0.0f);

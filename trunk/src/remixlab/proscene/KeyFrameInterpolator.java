@@ -168,7 +168,7 @@ public class KeyFrameInterpolator implements Cloneable {
     private List<Frame> path;
     // A s s o c i a t e d   f r a m e
     private Frame fr;
-    private static Frame myFrame;//needed for drawPath
+    private Frame myFrame;//needed for drawPath
 
     // R h y t h m
     private Timer timer;

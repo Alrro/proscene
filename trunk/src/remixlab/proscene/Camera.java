@@ -942,32 +942,83 @@ public class Camera implements Cloneable {
 	    }		
 		return 1.0f;	
 	}
-	
+
+	/**
+	 * Returns the signed distance between point {@code pos} and plane {@code index}. The distance is negative if the point
+	 * lies in the planes's frustum halfspace, and positive otherwise.
+	 * <p>
+	 * {@code index} is a value between {@code 0} and {@code 5} which respectively correspond to the left,
+	 * right, near, far, top and bottom Camera frustum planes.
+	 * <p>
+	 * <b>Attention:</b> The camera frustum plane equations should be updated before calling this method. You may compute them
+	 * explicitly (by calling {@link #computeFrustumEquations()} ) or enable them to be automatic updated in your Scene setup
+	 * (with {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
+	 * 
+	 * @see #pointIsVisible(PVector)
+	 * @see #sphereIsVisible(PVector, float)
+	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #computeFrustumEquations()
+	 * @see #updateFrustumEquations()
+	 * @see #getFrustumEquations()
+	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
+	 */
 	public float distanceToFrustumPlane(int index, PVector pos) {
-		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by distanceToFrustumPlane) may be outdated. Please " +
-					"enable automatic updates of the coefficient in your PApplet.setup " +
-					"with Scene.enableFrustumUpdate()");
+		if ( !scene.frustumEquationsUpdateIsEnable() )
+			PApplet.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please " +
+					"enable automatic updates of the equations in your PApplet.setup " +
+					"with Scene.enableFrustumEquationsUpdate()");
 		PVector myVec = new PVector(fpCoefficients[index][0], fpCoefficients[index][1], fpCoefficients[index][2]);
 		return PVector.dot(pos, myVec) - fpCoefficients[index][3];
 	}
 	
+	/**
+	 * Returns {@code true} if {@code point} is visible (i.e, lies within the frustum) and {@code false} otherwise.
+	 * <p>
+	 * <b>Attention:</b> The camera frustum plane equations should be updated before calling this method. You may compute them
+	 * explicitly (by calling {@link #computeFrustumEquations()} ) or enable them to be automatic updated in your Scene setup
+	 * (with {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
+	 * 
+	 * @see #distanceToFrustumPlane(int, PVector)
+	 * @see #sphereIsVisible(PVector, float)
+	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #computeFrustumEquations()
+	 * @see #updateFrustumEquations()
+	 * @see #getFrustumEquations()
+	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
+	 */
 	public boolean pointIsVisible(PVector point) {
-		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by pointIsVisible) may be outdated. Please " +
-					"enable automatic updates of the coefficient in your PApplet.setup " +
-					"with Scene.enableFrustumUpdate()");
+		if ( !scene.frustumEquationsUpdateIsEnable() )
+			PApplet.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please " +
+					"enable automatic updates of the equations in your PApplet.setup " +
+					"with Scene.enableFrustumEquationsUpdate()");
 		for (int i=0; i<6; ++i)
 		    if (distanceToFrustumPlane(i, point) > 0)
 		      return false;
-		  return true;
+		return true;
 	}
 	
+	/**
+	 * Returns {@link remixlab.proscene.Camera.Visibility#VISIBLE}, {@link remixlab.proscene.Camera.Visibility#INVISIBLE}, or
+	 * {@link remixlab.proscene.Camera.Visibility#SEMIVISIBLE}, depending whether the sphere (of radius {@code radius} and
+	 * center {@code center}) is visible, invisible, or semi-visible, respectively.
+	 * <p>
+	 * <b>Attention:</b> The camera frustum plane equations should be updated before calling this method. You may compute them
+	 * explicitly (by calling {@link #computeFrustumEquations()} ) or enable them to be automatic updated in your Scene setup
+	 * (with {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
+	 * 
+	 * @see #distanceToFrustumPlane(int, PVector)
+	 * @see #pointIsVisible(PVector)
+	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #computeFrustumEquations()
+	 * @see #updateFrustumEquations()
+	 * @see #getFrustumEquations()
+	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
+	 */
 	public Visibility sphereIsVisible(PVector center, float radius) {
-		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by sphereIsVisible) may be outdated. Please " +
-					"enable automatic updates of the coefficient in your PApplet.setup " +
-					"with Scene.enableFrustumUpdate()");
+		if ( !scene.frustumEquationsUpdateIsEnable() )
+			PApplet.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please " +
+					"enable automatic updates of the equations in your PApplet.setup " +
+					"with Scene.enableFrustumEquationsUpdate()");
 		for (int i=0; i<6; ++i) {
 			float d = distanceToFrustumPlane(i, center);
 			if (d > radius)
@@ -978,11 +1029,28 @@ public class Camera implements Cloneable {
 		return Camera.Visibility.VISIBLE;
 	}
 	
+	/**
+	 * Returns {@link remixlab.proscene.Camera.Visibility#VISIBLE}, {@link remixlab.proscene.Camera.Visibility#INVISIBLE}, or
+	 * {@link remixlab.proscene.Camera.Visibility#SEMIVISIBLE}, depending whether the axis aligned box (defined corners {@code p1}
+	 * and {@code p2}) is visible, invisible, or semi-visible, respectively.
+	 * <p>
+	 * <b>Attention:</b> The camera frustum plane equations should be updated before calling this method. You may compute them
+	 * explicitly (by calling {@link #computeFrustumEquations()} ) or enable them to be automatic updated in your Scene setup
+	 * (with {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
+	 * 
+	 * @see #distanceToFrustumPlane(int, PVector)
+	 * @see #pointIsVisible(PVector)
+	 * @see #sphereIsVisible(PVector, float)
+	 * @see #computeFrustumEquations()
+	 * @see #updateFrustumEquations()
+	 * @see #getFrustumEquations()
+	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
+	 */
 	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
-		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients (needed by aaBoxIsVisible) may be outdated. Please " +
-					"enable automatic updates of the coefficient in your PApplet.setup " +
-					"with Scene.enableFrustumUpdate()");
+		if ( !scene.frustumEquationsUpdateIsEnable() )
+			PApplet.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please " +
+					"enable automatic updates of the equations in your PApplet.setup " +
+					"with Scene.enableFrustumEquationsUpdate()");
 		boolean allInForAllPlanes = true;
 		for (int i=0; i<6; ++i) {
 			boolean allOut = true;
@@ -1005,35 +1073,75 @@ public class Camera implements Cloneable {
 		return Camera.Visibility.SEMIVISIBLE;
 	}
 	
-	//TODO doc me!
-	public void updateFrustumPlanesCoefficients() {
-		computeFrustumPlanesCoefficients(fpCoefficients);
+	/**
+	 * Updates the frustum plane equations according to the current camera setup /{@link #type()}, {@link #position()},
+	 * {@link #orientation()}, {@link #zNear()}, and {@link #zFar()} values), by simply calling {@link #computeFrustumEquations()}.
+	 * <p>
+	 * <b>Attention:</b> You should not call this method explicitly, unless you need the frustum equations to be updated only
+	 * occasionally (rare). Use {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()} which automatically update the
+	 * frustum equations every frame instead. 
+	 * 
+	 * @see #distanceToFrustumPlane(int, PVector)
+	 * @see #pointIsVisible(PVector)
+	 * @see #sphereIsVisible(PVector, float)
+	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #computeFrustumEquations()
+	 * @see #getFrustumEquations()
+	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
+	 */
+	public void updateFrustumEquations() {
+		computeFrustumEquations(fpCoefficients);
 	}
 	
-	public float [][] getFrustumPlanesCoefficients() {
-		if ( !scene.frustumUpdateIsEnable() )
-			PApplet.println("The camera frustum plane coefficients may be outdated. Please " +
-					"enable automatic updates of the coefficient in your PApplet.setup " +
-					"with Scene.enableFrustumUpdate()");
+	/**
+	 * Returns the frustum plane equations.
+	 * <p> 
+	 * The six 4-component vectors returned by this method, respectively correspond to the left,
+	 * right, near, far, top and bottom Camera frustum planes. Each vector holds a plane
+	 * equation of the form:
+	 * <p>
+	 * {@code a*x + b*y + c*z + d = 0}
+	 * <p>
+	 * where {@code a}, {@code b}, {@code c} and {@code d} are the 4 components of each vector,
+	 * in that order. 
+	 * <p>
+	 * <b>Attention:</b> The camera frustum plane equations should be updated before calling this method. You may compute them
+	 * explicitly (by calling {@link #computeFrustumEquations()} ) or enable them to be automatic updated in your Scene setup
+	 * (with {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
+	 * 
+	 * @see #distanceToFrustumPlane(int, PVector)
+	 * @see #pointIsVisible(PVector)
+	 * @see #sphereIsVisible(PVector, float)
+	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #computeFrustumEquations()
+	 * @see #updateFrustumEquations()
+	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
+	 */
+	public float [][] getFrustumEquations() {
+		if ( !scene.frustumEquationsUpdateIsEnable() )
+			PApplet.println("The camera frustum plane equations may be outdated. Please " +
+					"enable automatic updates of the equations in your PApplet.setup " +
+					"with Scene.enableFrustumEquationsUpdate()");
     	return fpCoefficients;
 	}
 	
 	/**
 	 * Convenience function that simply returns
 	 * {@code computeFrustumPlanesCoefficients(new float [6][4])}
+	 * <p>
+	 * <b>Attention:</b> You should not call this method explicitly, unless you need the frustum equations to be updated only
+	 * occasionally (rare). Use {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()} which automatically update the
+	 * frustum equations every frame instead.
 	 * 
-	 * @see #computeFrustumPlanesCoefficients(float[][])
+	 * @see #computeFrustumEquations(float[][])
 	 */
-	public float [][] computeFrustumPlanesCoefficients() {
-		// Computed once and for all
-		return computeFrustumPlanesCoefficients(new float [6][4]);
+	public float [][] computeFrustumEquations() {
+		return computeFrustumEquations(new float [6][4]);
 	}
 		
 	/**
-	 * Fills {@code coef} with the 6 plane equations of the camera frustum and returns it.
-	 * 
-	 * <p>
-	 * 
+	 * Fills {@code coef} with the 6 plane equations of the camera frustum and returns it. 
+	 * <p> 
 	 * The six 4-component vectors of {@code coef} respectively correspond to the left,
 	 * right, near, far, top and bottom Camera frustum planes. Each vector holds a plane
 	 * equation of the form:
@@ -1041,10 +1149,8 @@ public class Camera implements Cloneable {
 	 * {@code a*x + b*y + c*z + d = 0}
 	 * <p>
 	 * where {@code a}, {@code b}, {@code c} and {@code d} are the 4 components of each vector,
-	 * in that order.
-	 * 
-	 * <p>
-	 * 
+	 * in that order. 
+	 * <p> 
 	 * This format is compatible with the {@code gl.glClipPlane()} function. One camera frustum
 	 * plane can hence be applied in an other viewer to visualize the culling results:
 	 * <p>
@@ -1055,11 +1161,13 @@ public class Camera implements Cloneable {
 	 * {@code gl.glClipPlane(GL.GL_CLIP_PLANE0, coef[2]);}<br>
 	 * {@code gl.glClipPlane(GL.GL_CLIP_PLANE1, coef[3]);}<br>
 	 * <p>
-	 * TODO you should not call this method
+	 * <b>Attention:</b> You should not call this method explicitly, unless you need the frustum equations to be updated only
+	 * occasionally (rare). Use {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()} which automatically update the
+	 * frustum equations every frame instead.
 	 * 
-	 * @see #computeFrustumPlanesCoefficients()
+	 * @see #computeFrustumEquations()
 	 */
-	public float[][] computeFrustumPlanesCoefficients(float [][] coef) {
+	public float[][] computeFrustumEquations(float [][] coef) {
 		//soft check:	
 		if ( coef == null || (coef.length == 0 ))
 			coef = new float [6][4];
