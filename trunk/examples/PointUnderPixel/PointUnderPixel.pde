@@ -47,15 +47,11 @@ void setup() {
     boxes[i] = new Box(this);
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  background(0);
-  scene.beginDraw();
-  //3D drawing
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   for (int i = 0; i < boxes.length; i++)    
     boxes[i].draw();
-  scene.endDraw();
 }
 
 class GLCamera extends Camera {

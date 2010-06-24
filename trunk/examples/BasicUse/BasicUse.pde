@@ -14,20 +14,13 @@ Scene scene;
 
 void setup() {
   size(640, 360, P3D);
-  // Scene instantiation
-  scene = new Scene(this);
-  scene.setGridIsDrawn(true);
-  scene.setAxisIsDrawn(true);
+  //Scene instantiation
+  scene = new Scene(this);  
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-  scene.beginDraw();
-  // Actual scene
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   fill(204, 102, 0);
   box(20, 30, 50);
-  scene.endDraw();
 }

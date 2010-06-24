@@ -16,9 +16,7 @@ void viewerDrawing(PApplet p) {
 //Main viewer configuration method (we register it at the constructor which is found below in the setup)
 void configureViewerScene(Scene s) {
   //Computation of the frustum planes coefficients is expensive, so it's disabled by default 
-  s.enableFrustumUpdate();
-  s.setAxisIsDrawn();
-  s.setGridIsDrawn();
+  s.enableFrustumEquationsUpdate();
   s.setHelpIsDrawn(false);
 }
 

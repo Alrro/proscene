@@ -24,20 +24,15 @@ Scene scene;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.setAxisIsDrawn(true);
+  scene.setGridIsDrawn(false);
   scene.setRadius(150);
   scene.showAll();
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-  scene.beginDraw();
-
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   final float nbLines = 50.0f;
-
   beginShape(LINES);
   for (float i=0; i<nbLines; ++i) {
     float angle = 2.0f*PI*i/nbLines;
@@ -59,6 +54,4 @@ void draw() {
     vertex(100*cos(angle), 100*sin(angle), 0);
   }
   endShape();
-  
-  scene.endDraw();
 }

@@ -32,8 +32,6 @@ Scene scene;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.setGridIsDrawn(true);
-  scene.setAxisIsDrawn(true);
   
   //create a camera path and add some key frames:
   //key frames can be added at runtime with keys [j..n]
@@ -62,12 +60,9 @@ void setup() {
   scene.setCameraPathsAreDrawn(true);
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  background(0);
-  scene.beginDraw();
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   fill(204, 102, 0);
   box(20, 30, 50);
-  scene.endDraw();
 }

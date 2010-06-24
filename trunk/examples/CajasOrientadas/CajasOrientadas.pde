@@ -23,7 +23,7 @@ Sphere esfera;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.setGridIsDrawn(true);
+  scene.setAxisIsDrawn(false);
   scene.setRadius(160);
   scene.showAll();
   
@@ -37,20 +37,13 @@ void setup() {
     cajas[i] = new Box(this);
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-
-  scene.beginDraw();
-  // Here we are in the world coordinate system.
-  // Draw your scene here.
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   esfera.draw();
   for (int i = 0; i < cajas.length; i++) {
     // orient the boxes according to the sphere position
     cajas[i].setOrientation(esfera.getPosition());
     cajas[i].draw(true);
   }
-  scene.endDraw();
 }

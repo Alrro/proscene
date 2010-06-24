@@ -20,22 +20,21 @@ import remixlab.proscene.*;
 
 Scene scene;
 Lamp lamp;
-boolean visualHint;
 
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
+  scene.setAxisIsDrawn(false);
+  scene.setGridIsDrawn(false);
   scene.setHelpIsDrawn(false);
   scene.setFrameSelectionHintIsDrawn(true);
   lamp = new Lamp(this);
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  background(0);
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   lights();
-  scene.beginDraw();
   lamp.draw();
   //draw the ground
   noStroke();
@@ -50,5 +49,4 @@ void draw() {
   }
   endShape();
   }
-  scene.endDraw();
 }

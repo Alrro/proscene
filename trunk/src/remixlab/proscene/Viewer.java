@@ -28,24 +28,20 @@ package remixlab.proscene;
 import processing.core.*;
 
 import java.awt.Panel;
+import java.awt.Frame;
 import java.lang.reflect.*;
 
 @SuppressWarnings("serial")
 public class Viewer extends PApplet {
 	public PApplet parent;
 	public Panel panel;
+	//public java.awt.Frame panel;
 	public Scene scene;
 	
 	String scnConfigMethod;
 	
 	int width, height, color;
 	Method method;
-	
-	/**
-	//Aux viewers
-	public Viewer mainViewer;
-	public boolean showMainViewerCamera;
-	*/
 	
 	public Viewer(PApplet p, String met, int w, int h, int c, String cScn) {
 		//initialize(p,w,h);
@@ -59,6 +55,8 @@ public class Viewer extends PApplet {
 		
 		//3. Lay out (this block seems the one having trouble)
 		panel = new Panel();
+		//panel = new Frame();
+		
 		//panel.setVisible(false);
 		panel.setEnabled(false);//testing
 		panel.add(this);	
@@ -88,12 +86,6 @@ public class Viewer extends PApplet {
 		
 		//5. Configure method
 		scnConfigMethod = cScn;
-		
-		/**
-		//6. Auxiliary viewer
-		mainViewer = null;
-		showMainViewerCamera = false;
-		*/
 	}
 	
 	public Viewer(PApplet p, String met, int w, int h, int c) {
@@ -123,27 +115,6 @@ public class Viewer extends PApplet {
 	public Viewer(PApplet p, int w, int h) {
 		this(p, null, w, h, 0, null);
 	}
-	
-	/**
-	//Aux viewers
-	public Viewer(PApplet p, Viewer mViewer, String met, int w, int h) {
-		initialize(p,w,h);
-		mainViewer = mViewer;
-		if(mainViewer != null)
-			showMainViewerCamera = true;
-		method = searchDrawingMethod(method, met);		
-		if(method == null) 
-			method = searchDrawingMethod(method, "proscenium");
-	}
-	
-	public Viewer(PApplet p, Viewer mViewer, int w, int h) {
-		initialize(p,w,h);
-		mainViewer = mViewer;
-		if(mainViewer != null)
-			showMainViewerCamera = true;
-		method = searchDrawingMethod(method, "proscenium");
-	}
-	*/
 	
 	public void setup() {
 		size(width, height, P3D);
@@ -183,32 +154,13 @@ public class Viewer extends PApplet {
 	
 	public void draw() {
 		background(color);
-		if (this!=null && scene != null) {
-			scene.beginDraw();
-			
+		if (this!=null && scene != null) {			
 			if(method != null)
 				drawingMethod(this);
 			else
 				proscenium();
-			
-			/**
-			//aux viewer
-			if ((showMainViewerCamera) && (mainViewer.getScene() !=null))
-			      DrawingUtils.drawCamera(this, mainViewer.getScene().camera() );
-			*/
-			
-			scene.endDraw();
 		}
 	}
-	
-	 /**
-	public void keyPressed() {
-		if ( mainViewer != null ) {
-			if (key == 'x')
-				showMainViewerCamera = !showMainViewerCamera;
-		}		
-	}
-	// */
 	
 	public void proscenium() {}
 	

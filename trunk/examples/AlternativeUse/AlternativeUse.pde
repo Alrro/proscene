@@ -18,9 +18,10 @@ void setup() {
   scene = new MyScene(this);
 }
 
+// Make sure to define the draw() method, even if it's empty.
 void draw() {
-  background(0);
-  scene.draw();
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
 }
 
 class MyScene extends Scene {
@@ -32,10 +33,10 @@ class MyScene extends Scene {
   // Initialization stuff could have also been performed at
   // setup(), once after the Scene object have been instantiated 
   public void init() {
-    setGridIsDrawn(true);
-    setAxisIsDrawn(true);
+    setGridIsDrawn(false);
   }
 
+  //Define here what is actually going to be drawn.
   public void proscenium() {
     fill(204, 102, 0);
     box(20, 30, 50);

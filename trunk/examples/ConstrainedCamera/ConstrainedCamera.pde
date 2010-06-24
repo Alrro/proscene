@@ -37,7 +37,7 @@ void setup() {
   activeConstraint = 0;
   scene.camera().frame().setConstraint(constraints[activeConstraint]);
 
-  scene.setAxisIsDrawn(true);
+  scene.setGridIsDrawn(false);
 }
 
 static AxisPlaneConstraint.Type nextTranslationConstraintType(AxisPlaneConstraint.Type type) {
@@ -76,17 +76,13 @@ void changeConstraint() {
   scene.camera().frame().setConstraint(constraints[activeConstraint]);
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-  scene.beginDraw();
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   fill(204, 102, 0);
   box(20, 30, 50);
   fill(0, 0, 255);
   displayText();
-  scene.endDraw();
 }
 
 void displayType(AxisPlaneConstraint.Type type, int x, int y, char c) {

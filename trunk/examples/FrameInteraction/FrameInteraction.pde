@@ -20,22 +20,15 @@ void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setGridIsDrawn(true);
-  scene.setAxisIsDrawn(true);
   // A Scene has a single InteractiveFrame (null by default). We set
   // it here.
   scene.setInteractiveFrame(new InteractiveFrame());
   scene.interactiveFrame().translate(new PVector(30, 30, 0));
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-  scene.beginDraw();
-  // Here we are in the world coordinate system.
-  // Draw your scene here.
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   fill(204, 102, 0);
   box(20, 20, 40);
   // Save the current model view matrix
@@ -59,5 +52,4 @@ void draw() {
     box(10, 15, 20);
   }		
   popMatrix();
-  scene.endDraw();
 }
