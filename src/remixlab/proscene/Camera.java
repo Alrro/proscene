@@ -1565,7 +1565,7 @@ public class Camera implements Cloneable {
 	 * keyFrame path (resp. restore	the point of view). Use {@link #deletePath(int)} to clear the path.
 	 * <p>
 	 * The default keyboard shortcuts for this method are keys [j-n]. See
-	 * {@link remixlab.proscene.Scene#defaultKeyBindings()}.
+	 * {@link remixlab.proscene.Scene#setKeyBindings()}.
 	 * <p>
 	 * If you use directly this method and the {@link #keyFrameInterpolator(int)} does not exist,
 	 * a new one is created.
@@ -1614,7 +1614,7 @@ public class Camera implements Cloneable {
 	/**
 	 * Deletes the {@link #keyFrameInterpolator(int)} of index {@code key}. The default keyboard
 	 * shortcuts for this method are keys [J-N] (note the CAPS). See
-	 * {@link remixlab.proscene.Scene#defaultKeyBindings()}.
+	 * {@link remixlab.proscene.Scene#setKeyBindings()}.
 	 */
 	public void deletePath (int key) {
 		//TODO: info should go on the applet ;)

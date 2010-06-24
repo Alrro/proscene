@@ -44,24 +44,22 @@ import javax.swing.Timer;
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
  * <p>
  * To use a Scene, you can instantiate a Scene object directly or you can implement your own derived Scene
- * class. If you instantiate your own Scene object you should implement your {@link PApplet#draw()} as usual,
- * but enclosing your drawing calls between {@link #beginDraw()} and {@link #endDraw()}. Thus, for instance,
- * if the following code define the body of your {@link PApplet#draw()}:
+ * class. In the former case you should instantiate your own Scene object at the {@code PApplet.setup()}
+ * function. In the latter case (if you derive from Scene), you should implement {@link #proscenium()} which
+ * defines the objects in your scene (just make sure to define the {@code PApplet.draw()} method, even if
+ * it's empty). See the examples BasicUse and AlternativeUse for an illustration of both techniques.
  * <p>
- * {@code scene.beginDraw();}<br>
- * {@code processing drawing routines...}<br>
- * {@code scene.endDraw();}<br>
- * <p>
- * you would obtain full interactivity to manipulate your scene "for free".
- * <p>
- * If you derive from Scene instead, you should implement {@link #proscenium()} which
- * defines the objects in your scene. Then all you have to do is to call {@link #draw()}
- * from {@link PApplet#draw()}, e.g., {@code public void draw() {scene.draw();}}
- * (supposing {@code scene} is an instance of the Scene derived class).
- * <p>
- * See the examples BasicUse and AlternativeUse for an illustration of both techniques.
+ * <b>Attention:</b> To set the PApplet's background you should call one of the {@code Scene.background()}
+ * versions instead of any of the {@code PApplet.background()} ones. The background is set to black by default.
  */
 public class Scene implements MouseWheelListener, PConstants {
+	/**
+	 * This enum defines the papplet background mode which should be set by proscene.
+	 */
+	public enum BackgroundMode {
+		RGB, RGB_ALPHA, GRAY, GRAY_ALPHA, XYZ, XYZ_ALPHA, PIMAGE
+	}
+	
 	/**
 	 * This enum defines the camera modes.
 	 */
@@ -87,6 +85,12 @@ public class Scene implements MouseWheelListener, PConstants {
 	boolean arpFlag;
 	boolean pupFlag;
 	PVector pupVec;
+	
+	//background
+	private BackgroundMode backgroundMode;
+	int rgb;	
+	float gray, alpha, x, y, z;	
+	PImage image;
 	
 	//camera mode
 	private CameraMode cameraMode;
@@ -115,7 +119,6 @@ public class Scene implements MouseWheelListener, PConstants {
     private ActionListener taskTimerPerformer;
     
     // E X C E P T I O N   H A N D L I N G
-    protected int beginDrawCalls;
     protected int startCoordCalls;
 	
 	// M o u s e   G r a b b e r
@@ -146,7 +149,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
-	 * See the associated documentation. 
+	 * The PApplet background is set to black. See the associated documentation. 
 	 */
 	public Scene(PApplet p) {
 		parent = p;
@@ -169,9 +172,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		cam = new Camera(this);
 		setCamera(camera());
 		
-		//setDefaultShortcuts();
-		//setDefaultMouseBindings();
-		
 		glIFrame = null;
 		interactiveFrameIsACam = false;
 		iFrameIsDrwn = false;
@@ -184,8 +184,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		//showAll();It is set in setCamera()
 		
-		setAxisIsDrawn(false);
-		setGridIsDrawn(false);
+		setAxisIsDrawn(true);
+		setGridIsDrawn(true);
 		setHelpIsDrawn(true);	    
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
@@ -203,9 +203,12 @@ public class Scene implements MouseWheelListener, PConstants {
         disableFrustumEquationsUpdate();
         
         // E X C E P T I O N   H A N D L I N G
-        beginDrawCalls = 0;
         startCoordCalls = 0;       
         
+        background(0);
+        parent.registerPre(this);
+        parent.registerDraw(this);
+        //parent.registerPost(this);
         enableKeyboardHandling();
         enableMouseHandling();
         keyList = new ArrayList<String>();
@@ -292,6 +295,150 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	// 2. State of the viewer
+    
+    /**
+     * Internal use only. Call the proper PApplet background function at the beginning of
+     * {@link #pre()}.
+     * 
+     * @see #pre()
+     * @see #background(float)
+     * @see #background(int)
+     * @see #background(PImage)
+     * @see #background(float, float)
+     * @see #background(int, float)
+     * @see #background(float, float, float)
+     * @see #background(float, float, float, float)
+     */
+    protected void setBackground() {
+    	switch (backgroundMode) {
+		case RGB :
+			parent.background(rgb);
+			break;
+	    case RGB_ALPHA :
+	    	parent.background(rgb,alpha);
+	    	break;
+	    case GRAY :
+	    	parent.background(gray);
+	    	break;
+	    case GRAY_ALPHA :
+	    	parent.background(gray,alpha);
+	    	break;
+	    case XYZ :
+	    	parent.background(x,y,z);
+	    	break;
+	    case XYZ_ALPHA :
+	    	parent.background(x,y,z,alpha);
+	    	break;
+	    case PIMAGE :
+	    	parent.background(image);
+	    	break;
+	    }
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(int my_rgb) {
+    	rgb = my_rgb;
+    	backgroundMode = BackgroundMode.RGB;
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(int my_rgb, float my_alpha) {
+    	rgb = my_rgb;
+    	alpha = my_alpha;
+    	backgroundMode = BackgroundMode.RGB_ALPHA;
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(float my_gray) {
+    	gray = my_gray;
+    	backgroundMode = BackgroundMode.GRAY;
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(float my_gray, float my_alpha) {
+    	gray = my_gray;
+    	alpha = my_alpha;
+    	backgroundMode = BackgroundMode.GRAY_ALPHA;
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(float my_x, float my_y, float my_z) {
+    	x = my_x;
+    	y = my_y;
+    	z = my_z;
+    	backgroundMode = BackgroundMode.XYZ;
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(float my_x, float my_y, float my_z, float my_a) {
+    	x = my_x;
+    	y = my_y;
+    	z = my_z;
+    	alpha = my_a;
+    	backgroundMode = BackgroundMode.XYZ_ALPHA;
+    }
+    
+    /**
+     * Wrapper function for the {@code PApplet.background()} function with the same signature.
+     * Sets the color used for the background of the Processing window. The default background
+     * is black. See the processing documentation for details.
+     * <p>
+     * The {@code PApplet.background()} is automatically called at the beginning of the
+     * {@link #pre()} method (Hence you can call this function from where ever you want) and
+     * is used to clear the display window. 
+     */
+    public void background(PImage my_image) {
+    	image = my_image;
+    	backgroundMode = BackgroundMode.PIMAGE;
+    }    
     
     /**
      * Returns {@code true} if automatic update of the camera frustum plane equations is enabled and
@@ -451,37 +598,24 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void init() {}
 	
-	/** Main paint method.
+	/**
+	 * Paint method which is called just before your {@code PApplet.draw()} method. This method
+	 * is registered at the PApplet and hence you don't need to call it.
 	 * <p>
-	 * Calls the following methods, in that order:<br>
-	 * {@link #beginDraw()}: Sets processing camera parameters from the Camera and displays
-	 * axis and grid accordingly to user flags. <br>
-	 * {@link #proscenium()}: Main drawing method that could be overloaded.  <br>
-	 * {@link #endDraw()}: Displays some visual hints, such the {@link #help()} text.
-	 */
-    public void draw() {
-		beginDraw();
-		proscenium();
-		endDraw();
-	}
-    
-    /**
-     * Sets the processing camera parameters from {@link #camera()} and displays
-     * axis, grid and interactive frames' selection hints accordingly to user flags.
+     * First sets the background (see {@link #setBackground()}) and then sets the processing
+     * camera parameters from {@link #camera()} and displays axis, grid, interactive frames'
+     * selection hints and camera paths, accordingly to user flags.
      */
-	public void beginDraw() {		
-		//TODO would be nice to check if the background was set and to set it if not.
-		if ( beginDrawCalls != 0 )
-			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function implementation!");
-		beginDrawCalls ++;
-		
+    public void pre() {    	
+    	setBackground();
 		//We set the processing camera matrices from our remixlab.proscene.Camera
-		//setPProjectionMatrix();
-		//setPModelViewMatrix();
+		setPProjectionMatrix();
+		setPModelViewMatrix();
 		//same as the two previous lines:
-		//TODO: needs more testing
-		camera().computeProjectionMatrix();
-		camera().computeModelViewMatrix();
+		// TODO: needs more testing (it produces visual artifacts when using OPENGL and
+		// GLGRAPHICS renderers)    	
+		//camera().computeProjectionMatrix();
+		//camera().computeModelViewMatrix();
 		
 		if( frustumEquationsUpdateIsEnable() )
 			camera().updateFrustumEquations();
@@ -494,6 +628,30 @@ public class Scene implements MouseWheelListener, PConstants {
 			drawCameraPathSelectionHints();
 		} else {
 			camera().hideAllPaths();
+		}		
+	}
+	
+	/**
+	 * Paint method which is called just after your {@code PApplet.draw()} method. This method
+	 * is registered at the PApplet and hence you don't need to call it.
+	 * <p>
+	 * First calls {@link #proscenium()} which is the main drawing method that could be overloaded.
+	 * Then displays the {@link #help()} and some visual hints (such {@link #drawZoomWindowHint()},
+	 * {@link #drawScreenRotateLineHint()} and {@link #drawArcballReferencePointHint()}) according
+	 * to user interaction and flags.
+	 */
+    public void draw() {
+    	//alternative use only
+		proscenium();
+		
+		if( helpIsDrawn() ) help();		
+		
+		if( zoomOnRegion ) drawZoomWindowHint();
+		if( rotateScreen ) drawScreenRotateLineHint();
+		if( arpFlag ) drawArcballReferencePointHint();
+		if( pupFlag ) {
+			PVector v = camera().projectedCoordinatesOf( pupVec );
+			drawCross( v.x, v.y );
 		}
 	}
 	
@@ -503,31 +661,13 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * but no if you instantiate your own Scene object (in this case you should just overload
 	 * {@code PApplet.draw()} to define your scene).
 	 * <p> 
-	 * The processing camera set in {@link #beginDraw()} converts from the world to the camera
-	 * coordinate systems. Vertices given in {@code scene()} can then be considered as being
+	 * The processing camera set in {@link #pre()} converts from the world to the camera
+	 * coordinate systems. Vertices given in {@link #draw()} can then be considered as being
 	 * given in the world coordinate system. The camera is moved in this world using the mouse.
 	 * This representation is much more	intuitive than a camera-centric system (which for 
 	 * instance is the standard in OpenGL).
 	 */
 	public void proscenium() {}
-	
-	/**
-	 * Displays some visual hints, such the {@link #help()} text.
-	 */
-	public void endDraw() {
-		beginDrawCalls --;
-		if ( beginDrawCalls != 0 )
-			throw new RuntimeException("There should be exactly one beginDraw / endDraw calling pair. Check your draw function!");
-		
-		if( helpIsDrawn() ) help();
-		if( zoomOnRegion ) drawZoomWindowHint();
-		if( rotateScreen ) drawScreenRotateLineHint();
-		if( arpFlag ) drawArcballReferencePointHint();
-		if( pupFlag ) {
-			PVector v = camera().projectedCoordinatesOf( pupVec );
-			drawCross( v.x, v.y );
-		}	
-	}
 	
 	// 4. Scene dimensions
 	
@@ -1353,7 +1493,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			PApplet.println("To avoid possible conflicts with proscene, you have two choices:");
 			PApplet.println("1. Use some of the keys not listed above.");
 			PApplet.println("2. Disable proscene keyboard handling while doing your keyboard manipulation by calling Scene.disableKeyboardHandling() " +
-					"(you can re-enable it later by calling Scene.enableKeyboardHandling()).");			
+					"(you can re-enable it later by calling Scene.enableKeyboardHandling()).");	
+			PApplet.println();
 		}
 	}
 	
@@ -1453,7 +1594,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		case KeyEvent.KEY_PRESSED:
 			break;
 		case KeyEvent.KEY_RELEASED:
-			this.defaultKeyBindings();
+			setKeyBindings();
 			break;
 		case KeyEvent.KEY_TYPED:
 			break;
@@ -1461,9 +1602,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
-	 * Associates the different interactions to default keys.
+	 * Associates the different interactions to the keys.
 	 */
-	public void defaultKeyBindings() {
+	protected void setKeyBindings() {
 		if (parent.key == '+') {
 			if( getCameraMode() == CameraMode.ARCBALL )
 				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.5f);
@@ -1669,6 +1810,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			PApplet.println("It seems that you have implemented some mouseXxxxMethod in your sketch! Please bear in mind that proscene overrides processing" +
 					" mouse event methods to handle the camera for you. To avoid posibble conflicts you can disable proscene mouse handling while doing your" +
 					" mouse manipulation by calling Scene.disableMouseHandling() (you can re-enable it later by calling Scene.enableMouseHandling()).");
+			PApplet.println();
 		}		
 	}
 	
@@ -1728,7 +1870,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #mouseIsHandled()
 	 * @see #enableMouseHandling(boolean)
 	 */
-	public void mouseEvent(MouseEvent e) {		
+	public void mouseEvent(MouseEvent e) {
 		switch (e.getID()) {
 		case MouseEvent.MOUSE_CLICKED:
 			this.mouseClicked(e);

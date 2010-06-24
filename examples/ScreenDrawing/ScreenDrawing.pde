@@ -10,7 +10,7 @@
  * screen coordinates should be specified as:
  * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
  *
- * Press 'y' while pressing + moving the mouse to draw directly on the screen.
+ * Press 't' to toggle the screen drawing.
  *
  * Press 'x' to clean your screen drawing.
  *
@@ -40,14 +40,9 @@ void setup() {
   points = new ArrayList();  // Create an empty ArrayList
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-  
-  scene.beginDraw();
-    
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   // A. 3D drawing
   for (int i = 0; i < boxes.length; i++)
     boxes[i].draw();
@@ -59,6 +54,7 @@ void draw() {
   // screen coordinates should be specified as:
   // vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
   scene.beginScreenDrawing();
+  pushStyle();
   strokeWeight(8);
   stroke(183,67,158,127);
   noFill();
@@ -67,22 +63,18 @@ void draw() {
     vertex(scene.xCoord( ((Point) points.get(i)).x ),
            scene.yCoord( ((Point) points.get(i)).y ), scene.zCoord());
   endShape();
-  strokeWeight(1);
+  popStyle();
   scene.endScreenDrawing();
-  
-  scene.endDraw();
 }
 
 void keyPressed() {
-  if(key == 'y' && mousePressed) {
-    // to draw on screen first disable proscene mouse handling
-    scene.disableMouseHandling();
+  if ((key == 't') || (key == 'T'))
+    scene.toggleMouseHandling();
+  if ((key == 'x') || (key == 'X'))
+    points.clear();
+}
+
+void mouseDragged() {
+  if(!scene.mouseIsHandled())
     points.add(new Point(mouseX, mouseY));
-  }
-  else {
-    // re-enable proscene mouse handling
-    scene.enableMouseHandling();
-    if (key == 'x')
-      points.clear();
-  }
 }

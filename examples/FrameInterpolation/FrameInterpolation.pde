@@ -31,6 +31,8 @@ void setup() {
   size(640, 360, P3D);
   nbKeyFrames = 4;
   scene = new Scene(this);
+  scene.setAxisIsDrawn(false);
+  scene.setGridIsDrawn(false);
   scene.setRadius(70);
   scene.showAll();
   scene.setFrameSelectionHintIsDrawn(true);
@@ -49,11 +51,9 @@ void setup() {
   kfi.startInterpolation();
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  background(0);
-  scene.beginDraw();
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   pushMatrix();
   kfi.frame().applyTransformation(this);
   scene.drawAxis(30);
@@ -72,7 +72,6 @@ void draw() {
       
     popMatrix();
   }
-  scene.endDraw();
 }
 
 void keyPressed() {

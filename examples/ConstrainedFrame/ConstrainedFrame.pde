@@ -32,7 +32,7 @@ void setup() {
 
   scene = new Scene(this);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  scene.setAxisIsDrawn(true);
+  scene.setGridIsDrawn(false);
 
   constraints[0] = new LocalConstraint();
   // Note that a CameraConstraint(camera) would produce the same results:
@@ -86,13 +86,9 @@ void changeConstraint() {
   frame.setConstraint(constraints[activeConstraint]);
 }
 
-// Your actual scene drawing should be enclosed between the
-// Scene.beginDraw() and Scene.endDraw() pair.
 void draw() {
-  // Should always be defined before Scene.beginDraw()
-  background(0);
-  scene.beginDraw();
-
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   pushMatrix();
   //applyMatrix( frame.matrix() );
   //Same as the previous commented line, but a lot more efficient:
@@ -104,7 +100,6 @@ void draw() {
 
   fill(0, 0, 255);
   displayText();
-  scene.endDraw();
 }
 
 void displayType(AxisPlaneConstraint.Type type, int x, int y, char c) {
