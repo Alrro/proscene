@@ -1,46 +1,54 @@
 import processing.core.*;
 import remixlab.proscene.*;
 
-Viewer viewer;
-Viewer auxViewer;
-
+EmbeddedWindow w1, w2;
 OctreeNode Root;
 
-//Main viewer drawing method (we register it at the constructor which is found below in the setup)
-void viewerDrawing(PApplet p) {
-  //Uncomment the following line if you want to get rid of some exceptions
-  //if(viewer.getScene() != null) if(viewer.getScene().camera() != null)
-  Root.drawIfAllChildrenAreVisible(p, viewer.getScene().camera());
+void setup() {
+  PVector p = new PVector(100, 70, 130);
+  Root = new OctreeNode(p, PVector.mult(p, -1.0f));
+  Root.buildBoxHierarchy(4);
+  
+  w1 = new EmbeddedWindow(this, "Win1", 640, 360, P3D);
+  w2 = new EmbeddedWindow(this, "Win2", 640, 360, P3D);  
+  w1.addDrawHandler(this, "draw1");
+  w1.addSceneConfigHandler(this, "configureScene1");
+  w2.addDrawHandler(this, "draw2");
+  w2.addSceneConfigHandler(this, "configureScene2");
+  
+  add(w1);
+  add(w2);
+  
+  //pb1: If trying to configure the scene we get
+  //null pointer exceptions
+  //the hack is to register the config as above with: addSceneConfigHandler 
+  //w2.getScene().setRadius(200);
+  //w2.getScene().showAll();
+  
+  size(640, 740);
+  //pb2: If we use P3D then the octree is not properly updated
+  //when changing the camera position!
+  //size(640, 740, P3D);  
+  
+  noLoop();
 }
 
-//Main viewer configuration method (we register it at the constructor which is found below in the setup)
-void configureViewerScene(Scene s) {
-  //Computation of the frustum planes coefficients is expensive, so it's disabled by default 
+void configureScene1(Scene s) {
   s.enableFrustumEquationsUpdate();
-  s.setHelpIsDrawn(false);
 }
 
-//Auxiliary viewer drawing method (we register it at the constructor which is found below in the setup)
-void auxViewerDrawing(PApplet p) {
-  //Same as main viewer, but we also draw the main viewer camera
-  viewerDrawing(p);
-  DrawingUtils.drawCamera(p, viewer.getScene().camera() );
-}
-
-//Auxiliary viewer configuration method (we register it at the constructor which is found below in the setup)
-void configureAuxViewerScene(Scene s) {
+void configureScene2(Scene s) {
   s.setHelpIsDrawn(false);
   s.setRadius(200);
   s.showAll();
 }
 
-void setup() {
-  PVector v = new PVector(100, 70, 130);
-  Root = new OctreeNode(v, PVector.mult(v, -1.0f));
-  Root.buildBoxHierarchy(4);
-  viewer =  new Viewer(this, "viewerDrawing", 640, 360, "configureViewerScene");
-  auxViewer = new Viewer(this, "auxViewerDrawing", 640, 360, "configureAuxViewerScene");
-  viewer.init();
-  auxViewer.init();
-  size(640, 740);
+void draw1(Viewer v) {
+  Root.drawIfAllChildrenAreVisible(v, w1.getScene().camera());
+}
+
+void draw2(Viewer v) {
+  //same as draw1(v);
+  Root.drawIfAllChildrenAreVisible(v, w1.getScene().camera());
+  DrawingUtils.drawCamera( v, w1.getScene().camera());
 }

@@ -27,167 +27,60 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-import java.awt.Panel;
-import java.awt.Frame;
-import java.lang.reflect.*;
-
 @SuppressWarnings("serial")
 public class Viewer extends PApplet {
-	public PApplet parent;
-	public Panel panel;
-	//public java.awt.Frame panel;
+	// Must be set by WindowOwner 'owning' this PApplet
+	public WindowOwner owner;
+	// The applet width and height
+	public int appWidth, appHeight;
+	// applet graphics mode e.g. JAVA2D, P3D etc.
+	public String mode;
+	
 	public Scene scene;
 	
-	String scnConfigMethod;
+	public boolean config;
 	
-	int width, height, color;
-	Method method;
-	
-	public Viewer(PApplet p, String met, int w, int h, int c, String cScn) {
-		//initialize(p,w,h);
-		//1. Main container papplet
-		parent = p;
-		
-		//2. Viewer's size and color
-		width = w;
-		height = h;		
-		color = c;
-		
-		//3. Lay out (this block seems the one having trouble)
-		panel = new Panel();
-		//panel = new Frame();
-		
-		//panel.setVisible(false);
-		panel.setEnabled(false);//testing
-		panel.add(this);	
-		parent.add(panel);
-		parent.validate();//testing
-		//panel.setVisible(true);
-		panel.setEnabled(true);//testing
-		
-		/**
-		panel = new Panel();		
-		panel.setEnabled(false);
-		panel.setVisible(false);		
-		panel.add(this);
-		parent.add(this.panel);
-		parent.validate();
-		panel.setEnabled(true);
-		panel.setVisible(true);
-		// */
-		//
-		
-		//4. Drawing method
-		method = null;
-		if(met != null)
-			method = searchDrawingMethod(method, met);		
-		if(method == null) 
-			method = searchDrawingMethod(method, "proscenium");
-		
-		//5. Configure method
-		scnConfigMethod = cScn;
+	public Viewer(String mode){
+		super();
+		this.mode = mode;
+		config = true;
 	}
 	
-	public Viewer(PApplet p, String met, int w, int h, int c) {
-		this(p, met, w, h, c, null);
-	}
-	
-	public Viewer(PApplet p, int w, int h, int c, String cScn) {
-		this(p, null, w, h, c, cScn);
-	}
-	
-	public Viewer(PApplet p, int w, int h, int c) {
-		this(p, null, w, h, c, null);
-	}
-	
-	public Viewer(PApplet p, String met, int w, int h, String cScn) {
-		this(p, met, w, h, 0, cScn);
-	}
-	
-	public Viewer(PApplet p, String met, int w, int h) {
-		this(p, met, w, h, 0, null);
-	}
-	
-	public Viewer(PApplet p, int w, int h, String cScn) {
-		this(p, null, w, h, 0, cScn);
-	}
-	
-	public Viewer(PApplet p, int w, int h) {
-		this(p, null, w, h, 0, null);
-	}
-	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * The PApplet setup method to intialise the drawing surface
+	 */
 	public void setup() {
-		size(width, height, P3D);
+		size(appWidth, appHeight, mode);
 		scene = new Scene(this);
+	}
+	
+	/**
+	 * INTERNAL USE ONLY <br>
+	 * Use addDrawHandler in GWindow to activate this method
+	 */
+	public void draw() {
+		// /**
+		if (owner.getSceneConfigHandlerObject() != null && config) {
+			try {
+				owner.getSceneConfigHandlerMethod().invoke(owner.getSceneConfigHandlerObject(), new Object[] { scene } );
+				config = false;
+			} catch (Exception e) {
+				
+			}
+		}
+		// */
 		
-		if (scnConfigMethod != null)
-			configureScene(scene, scnConfigMethod);
+		if(owner.getDrawHandlerObject() != null){
+			try {
+				owner.getDrawHandlerMethod().invoke(owner.getDrawHandlerObject(), new Object[] { this } );
+			} catch (Exception e) {
+				
+			}
+		}
 	}
 	
 	public Scene getScene() {
 		return scene;
-	}
-	
-	public void configureScene(Scene scn, String name) {
-		Method sMethod = null;
-		try {
-			sMethod = parent.getClass().getDeclaredMethod(name, new Class[] { Scene.class });
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			sMethod = null;
-		}
-		if (sMethod!=null)
-			try {
-				sMethod.invoke(parent, new Object[] { scn });
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-	}
-	
-	public void draw() {
-		background(color);
-		if (this!=null && scene != null) {			
-			if(method != null)
-				drawingMethod(this);
-			else
-				proscenium();
-		}
-	}
-	
-	public void proscenium() {}
-	
-	protected Method searchDrawingMethod(Method method, String name) {		
-		try {
-			method = parent.getClass().getDeclaredMethod(name, new Class[] { PApplet.class });
-		} catch (SecurityException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			method = null;
-		}
-		return method;
-	}
-	
-	public void drawingMethod(PApplet p) {
-		if (p!=null && method!=null)
-			try {
-				method.invoke(parent, new Object[] { p });
-			} catch (IllegalAccessException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			} catch (InvocationTargetException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			} catch (IllegalArgumentException e) {
-				// TODO Auto-generated catch block
-				//e.printStackTrace();
-			}
-	}
+	}	
 }
