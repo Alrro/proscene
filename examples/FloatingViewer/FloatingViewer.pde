@@ -4,6 +4,7 @@ Scene scene;
 FloatingWindow fWin;
 OctreeNode Root;
 
+//pb1: I get some visual artifacts, specially in the main viewer
 void setup()	{
   size(640, 360, P3D);
   PVector p = new PVector(100, 70, 130);
@@ -14,7 +15,7 @@ void setup()	{
   scene.setHelpIsDrawn(false);
   
   fWin = new FloatingWindow(this, "Extra Viewer", 130, 100, 640, 360, false, P3D);
-  //pb1: occasionally we get null pointer exceptions
+  //pb2: occasionally we get null pointer exceptions
   fWin.getScene().setHelpIsDrawn(false);
   fWin.getScene().setRadius(200);
   fWin.getScene().showAll();
