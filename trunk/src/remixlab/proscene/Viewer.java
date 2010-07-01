@@ -40,7 +40,7 @@ public class Viewer extends PApplet {
 	
 	public boolean config;
 	
-	public Viewer(String mode){
+	public Viewer(String mode) {
 		super();
 		this.mode = mode;
 		config = true;

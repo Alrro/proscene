@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
+
 import java.awt.Point;
 import java.awt.event.*;
 import java.util.ArrayList;
@@ -54,6 +55,11 @@ import javax.swing.Timer;
  */
 public class Scene implements MouseWheelListener, PConstants {
 	/**
+	 * This enum defines the papplet running mode. Use only for debugging purposes when running the papplet within eclipse
+	 */
+	public enum RunningMode { SKETCH, ECLIPSE }
+	
+	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
 	 */
 	public enum BackgroundMode {
@@ -75,6 +81,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD,
 			SCREEN_ROTATE, ROLL, DRIVE,
 			SCREEN_TRANSLATE, ZOOM_ON_REGION };
+			
+	public RunningMode runningMode;
 	
 	//mouse actions for testing purposes
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -94,6 +102,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	//camera mode
 	private CameraMode cameraMode;
+	
+	// S I Z E
+	int width, height;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
@@ -153,7 +164,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public Scene(PApplet p) {
 		parent = p;
+		width = parent.width;
+		height = parent.height;
 		
+		runningMode = RunningMode.SKETCH;
 		parent.addMouseWheelListener(this);
 		
 		setCameraMode(CameraMode.ARCBALL);
@@ -203,9 +217,10 @@ public class Scene implements MouseWheelListener, PConstants {
         disableFrustumEquationsUpdate();
         
         // E X C E P T I O N   H A N D L I N G
-        startCoordCalls = 0;       
+        startCoordCalls = 0;
         
-        background(0);
+        image = null;        
+        background(0);        
         parent.registerPre(this);
         parent.registerDraw(this);
         //parent.registerPost(this);
@@ -232,7 +247,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
 	 */
-	public void setCamera (Camera camera) {
+	public void setCamera(Camera camera) {
 		if (camera == null)
 			return;
 		
@@ -428,17 +443,30 @@ public class Scene implements MouseWheelListener, PConstants {
     
     /**
      * Wrapper function for the {@code PApplet.background()} function with the same signature.
-     * Sets the color used for the background of the Processing window. The default background
+     * Sets the PImage used for the background of the Processing window. The default background
      * is black. See the processing documentation for details.
      * <p>
      * The {@code PApplet.background()} is automatically called at the beginning of the
      * {@link #pre()} method (Hence you can call this function from where ever you want) and
-     * is used to clear the display window. 
+     * is used to clear the display window.
+     * <p>
+     * <b>Attention:</b> If the sizes of the {@code img} and the PApplet differ, the {@code img}
+     * will be resized to accommodate the size of the PApplet. 
      */
-    public void background(PImage my_image) {
-    	image = my_image;
+    public void background(PImage img) {    	
+    	image = img;
+    	if ( ( image.width != parent.width ) || ( image.height != parent.height ) )
+    		image.resize(parent.width, parent.height); 	
     	backgroundMode = BackgroundMode.PIMAGE;
-    }    
+    }
+    
+    /**
+     * Returns the background image if any.
+     * @return image
+     */
+    public PImage getBackgroundImage() {
+    	return image;
+    }
     
     /**
      * Returns {@code true} if automatic update of the camera frustum plane equations is enabled and
@@ -606,19 +634,43 @@ public class Scene implements MouseWheelListener, PConstants {
      * camera parameters from {@link #camera()} and displays axis, grid, interactive frames'
      * selection hints and camera paths, accordingly to user flags.
      */
-    public void pre() {    	
-    	setBackground();
-		//We set the processing camera matrices from our remixlab.proscene.Camera
-		setPProjectionMatrix();
-		setPModelViewMatrix();
-		//same as the two previous lines:
-		// TODO: needs more testing (it produces visual artifacts when using OPENGL and
-		// GLGRAPHICS renderers)    	
-		//camera().computeProjectionMatrix();
-		//camera().computeModelViewMatrix();
+    public void pre() {
+    	//handle possible resize events
+    	//weird: we need to bypass the handling of a resize event when running the applet from eclipse
+    	if ( (runningMode == RunningMode.SKETCH) && (parent.frame.isResizable()) ) { 		
+    		if (backgroundMode == BackgroundMode.PIMAGE)
+    			this.background( this.image );    		
+    		if( (width != parent.width) || (height != parent.height) ) {
+    			PApplet.println("setting camera!");
+    			width = parent.width;
+    			height = parent.height;
+    			//weirdly enough we need to bypass what processing does
+    			//to the matrices when a resize event takes place
+    			camera().detachFromPCamera();    			
+    			camera().setScreenWidthAndHeight(width, height);
+    			camera().attachToPCamera();
+    		}
+    		else {
+        		//We set the processing camera matrices from our remixlab.proscene.Camera
+        		setPProjectionMatrix();
+        		setPModelViewMatrix();
+    		}
+    	}
+    	else {
+    		//We set the processing camera matrices from our remixlab.proscene.Camera
+    		setPProjectionMatrix();
+    		setPModelViewMatrix();
+    		//same as the two previous lines:
+    		// TODO: needs more testing (it produces visual artifacts when using OPENGL and
+    		// GLGRAPHICS renderers)    	
+    		//camera().computeProjectionMatrix();
+    		//camera().computeModelViewMatrix();
+		}		
 		
 		if( frustumEquationsUpdateIsEnable() )
 			camera().updateFrustumEquations();
+		
+		setBackground();
 		
 		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
 		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
@@ -629,8 +681,16 @@ public class Scene implements MouseWheelListener, PConstants {
 		} else {
 			camera().hideAllPaths();
 		}		
+		
+		if( zoomOnRegion ) drawZoomWindowHint();
+		if( rotateScreen ) drawScreenRotateLineHint();
+		if( arpFlag ) drawArcballReferencePointHint();
+		if( pupFlag ) {
+			PVector v = camera().projectedCoordinatesOf( pupVec );
+			drawCross( v.x, v.y );
+		}
 	}
-	
+    
 	/**
 	 * Paint method which is called just after your {@code PApplet.draw()} method. This method
 	 * is registered at the PApplet and hence you don't need to call it.
@@ -642,17 +702,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
     public void draw() {
     	//alternative use only
-		proscenium();
-		
-		if( helpIsDrawn() ) help();		
-		
-		if( zoomOnRegion ) drawZoomWindowHint();
-		if( rotateScreen ) drawScreenRotateLineHint();
-		if( arpFlag ) drawArcballReferencePointHint();
-		if( pupFlag ) {
-			PVector v = camera().projectedCoordinatesOf( pupVec );
-			drawCross( v.x, v.y );
-		}
+		proscenium();		
+		if( helpIsDrawn() ) help();
 	}
 	
 	/** The method that actually defines the scene.
@@ -1437,7 +1488,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    	setCameraMode(CameraMode.WALKTHROUGH);
 	    	break;
 	    }
-	}
+	}	
 	
 	// 8. Keyboard customization
 	

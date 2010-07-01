@@ -112,7 +112,7 @@ public class Camera implements Cloneable {
 	protected float fpCoefficients [][];
 	
 	// A t t a c h e d   S c e n e
-	boolean attachedToPCam;
+	private boolean attachedToPCam;
 	
 	// P R O S C E N E   A N D   P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public Scene scene;
@@ -122,10 +122,10 @@ public class Camera implements Cloneable {
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}. 
 	 * 
-	 * @see #Camera(boolean, Scene)
+	 * @see #Camera(Scene, boolean)
 	 */
 	public Camera(Scene scn) {
-		this(true, scn);
+		this(scn, true);
 	}
 
 	/**
@@ -146,7 +146,7 @@ public class Camera implements Cloneable {
 	 * 
 	 * @see #Camera(Scene)
 	 */
-	public Camera(boolean attachedToScene, Scene scn) {
+	public Camera(Scene scn, boolean attachedToScene) {
 		scene = scn;
 		parent = scene.parent;
 		pg3d = (PGraphics3D) parent.g;  // g may change
