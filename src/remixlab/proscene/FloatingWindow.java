@@ -5,10 +5,16 @@ import processing.core.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.lang.reflect.Method;
 
 @SuppressWarnings("serial")
 public class FloatingWindow extends Frame implements WindowOwner {
+	enum WindowBehaviour { SHUTDOWN_ON_EXIT, CLOSE_ON_EXIT }
+	
+	protected WindowBehaviour winBehaviour = WindowBehaviour.CLOSE_ON_EXIT;
+	
 	boolean regDraw = false;
 	
 	/** The object to handle the draw event */
@@ -58,7 +64,7 @@ public class FloatingWindow extends Frame implements WindowOwner {
 		viewer.appWidth = w;
 		viewer.appHeight = h;
 
-		windowCtorCore(x, y, w, h, noFrame, mode);
+		windowCtorCore(x, y, noFrame);
 		
 		super.setResizable(true);
 	}
@@ -73,7 +79,7 @@ public class FloatingWindow extends Frame implements WindowOwner {
 	 * @param noFrame
 	 * @param mode
 	 */
-	private void windowCtorCore(int x, int y, int w, int h, boolean noFrame, String mode){
+	private void windowCtorCore(int x, int y, boolean noFrame) {
 		//papplet.bkColor = papplet.color(0);
 		
 		viewer.resize(viewer.appWidth, viewer.appHeight);
@@ -87,7 +93,22 @@ public class FloatingWindow extends Frame implements WindowOwner {
 		// ensures that the animation thread is started and
 		// that other internal variables are properly set.
 		viewer.init();
-
+		
+		// add an exit on close listener
+		addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent evt) {
+				switch(winBehaviour) {
+				case CLOSE_ON_EXIT:
+					// close this frame
+					setVisible(false);
+					//dispose();
+					break;
+				case SHUTDOWN_ON_EXIT:
+					System.exit(0);
+					break;
+					}
+			}
+		});
 
 		// Pack the window, position it and make visible
 		setUndecorated(noFrame);

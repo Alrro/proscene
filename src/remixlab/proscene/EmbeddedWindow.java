@@ -55,7 +55,7 @@ public class EmbeddedWindow extends Panel implements WindowOwner {
 		viewer.appWidth = w;
 		viewer.appHeight = h;
 
-		windowCtorCore(w, h, mode);
+		windowCtorCore();
 		
 		//super.setResizable(true);
 	}
@@ -70,7 +70,7 @@ public class EmbeddedWindow extends Panel implements WindowOwner {
 	 * @param noFrame
 	 * @param mode
 	 */
-	private void windowCtorCore(int w, int h, String mode){
+	private void windowCtorCore() {
 		//papplet.bkColor = papplet.color(0);
 		
 		viewer.resize(viewer.appWidth, viewer.appHeight);
