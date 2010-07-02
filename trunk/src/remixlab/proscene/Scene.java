@@ -55,11 +55,6 @@ import javax.swing.Timer;
  */
 public class Scene implements MouseWheelListener, PConstants {
 	/**
-	 * This enum defines the papplet running mode. Use only for debugging purposes when running the papplet within eclipse
-	 */
-	public enum RunningMode { SKETCH, ECLIPSE }
-	
-	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
 	 */
 	public enum BackgroundMode {
@@ -81,8 +76,6 @@ public class Scene implements MouseWheelListener, PConstants {
 			MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD,
 			SCREEN_ROTATE, ROLL, DRIVE,
 			SCREEN_TRANSLATE, ZOOM_ON_REGION };
-			
-	public RunningMode runningMode;
 	
 	//mouse actions for testing purposes
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -167,7 +160,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		width = parent.width;
 		height = parent.height;
 		
-		runningMode = RunningMode.SKETCH;
 		parent.addMouseWheelListener(this);
 		
 		setCameraMode(CameraMode.ARCBALL);
@@ -182,7 +174,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		arpFlag = false;
 		pupFlag = false;
 		
-		//readyToGo = false;
 		cam = new Camera(this);
 		setCamera(camera());
 		
@@ -637,10 +628,11 @@ public class Scene implements MouseWheelListener, PConstants {
     public void pre() {
     	//handle possible resize events
     	//weird: we need to bypass the handling of a resize event when running the applet from eclipse
-    	if ( (runningMode == RunningMode.SKETCH) && (parent.frame.isResizable()) ) { 		
+    	if ( (parent.frame != null) && (parent.frame.isResizable()) ) {
     		if (backgroundMode == BackgroundMode.PIMAGE)
     			this.background( this.image );    		
     		if( (width != parent.width) || (height != parent.height) ) {
+    			//testing:
     			PApplet.println("setting camera!");
     			width = parent.width;
     			height = parent.height;
@@ -665,7 +657,7 @@ public class Scene implements MouseWheelListener, PConstants {
     		// GLGRAPHICS renderers)    	
     		//camera().computeProjectionMatrix();
     		//camera().computeModelViewMatrix();
-		}		
+		}
 		
 		if( frustumEquationsUpdateIsEnable() )
 			camera().updateFrustumEquations();
