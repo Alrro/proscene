@@ -1,21 +1,18 @@
-import processing.opengl.*;
 import remixlab.proscene.*;
 
-PImage b;
+PImage jean;
 Scene scene;
 
 void setup() {
   size(640, 360, P3D);
-  //size(640, 360, OPENGL);
   scene = new Scene(this);
   scene.enableFrustumEquationsUpdate();
-  //b = loadImage("pierre.png");
-  //scene.background(b);
+  jean = loadImage("pierre.png");
+  scene.background(jean);
   frame.setResizable(true);
 }
 
 void draw() {
-  //scene.background(b);
   noStroke();
   if( scene.camera().sphereIsVisible(new PVector(0,0,0), 40) == Camera.Visibility.SEMIVISIBLE )
     fill(255, 0, 0);

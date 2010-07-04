@@ -26,9 +26,9 @@
 package remixlab.proscene;
 
 import processing.core.*;
-
 import java.awt.Point;
 import java.awt.event.*;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -96,12 +96,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	//camera mode
 	private CameraMode cameraMode;
 	
-	// S I Z E
-	int width, height;
-	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	//public PGraphics3D pg3d;
+	public PGraphics3D pg3d;
+	int width, height;//size
 	
 	// O B J E C T S
 	protected Camera cam;
@@ -147,9 +145,17 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected boolean keyboardHandling;
 	final List<String> keyList;
 	
-	//O N L I N E   H E L P
+	// O N L I N E   H E L P
 	boolean helpIsDrwn;
 	PFont font;
+	
+	// R E G I S T E R   D R A W   M E T H O D
+	/** The object to handle the draw event */
+	protected Object drawHandlerObject;
+	/** The method in drawHandlerObject to execute */
+	protected Method drawHandlerMethod;
+	/** the name of the method to handle the event */ 
+	protected String drawHandlerMethodName;
 	
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
@@ -157,8 +163,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public Scene(PApplet p) {
 		parent = p;
+		pg3d = (PGraphics3D) parent.g;
 		width = parent.width;
-		height = parent.height;
+		height = parent.height;		
 		
 		parent.addMouseWheelListener(this);
 		
@@ -208,10 +215,10 @@ public class Scene implements MouseWheelListener, PConstants {
         disableFrustumEquationsUpdate();
         
         // E X C E P T I O N   H A N D L I N G
-        startCoordCalls = 0;
+        startCoordCalls = 0;       
         
-        image = null;        
-        background(0);        
+        image = null;
+        background(0);
         parent.registerPre(this);
         parent.registerDraw(this);
         //parent.registerPost(this);
@@ -221,6 +228,11 @@ public class Scene implements MouseWheelListener, PConstants {
         addKeys();       
 		parseKeyXxxxMethods();
 		parseMouseXxxxMethods();
+		
+		//register draw method
+		drawHandlerObject = null;
+		drawHandlerMethod = null; 
+		drawHandlerMethodName = null;
 		
 		//called only once
 		init();
@@ -238,7 +250,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
 	 */
-	public void setCamera(Camera camera) {
+	public void setCamera (Camera camera) {
 		if (camera == null)
 			return;
 		
@@ -430,7 +442,7 @@ public class Scene implements MouseWheelListener, PConstants {
     	z = my_z;
     	alpha = my_a;
     	backgroundMode = BackgroundMode.XYZ_ALPHA;
-    }
+    }    
     
     /**
      * Wrapper function for the {@code PApplet.background()} function with the same signature.
@@ -625,15 +637,13 @@ public class Scene implements MouseWheelListener, PConstants {
      * camera parameters from {@link #camera()} and displays axis, grid, interactive frames'
      * selection hints and camera paths, accordingly to user flags.
      */
-    public void pre() {
+	public void pre() {
     	//handle possible resize events
     	//weird: we need to bypass the handling of a resize event when running the applet from eclipse
     	if ( (parent.frame != null) && (parent.frame.isResizable()) ) {
     		if (backgroundMode == BackgroundMode.PIMAGE)
     			this.background( this.image );    		
     		if( (width != parent.width) || (height != parent.height) ) {
-    			//testing:
-    			PApplet.println("setting camera!");
     			width = parent.width;
     			height = parent.height;
     			//weirdly enough we need to bypass what processing does
@@ -682,20 +692,37 @@ public class Scene implements MouseWheelListener, PConstants {
 			drawCross( v.x, v.y );
 		}
 	}
-    
+	
 	/**
 	 * Paint method which is called just after your {@code PApplet.draw()} method. This method
 	 * is registered at the PApplet and hence you don't need to call it.
 	 * <p>
 	 * First calls {@link #proscenium()} which is the main drawing method that could be overloaded.
-	 * Then displays the {@link #help()} and some visual hints (such {@link #drawZoomWindowHint()},
+	 * then, if there's an additional drawing method registered at the Scene, calls it
+	 * (see {@link #addDrawHandler(Object, String)}). 
+	 * Finally, displays the {@link #help()} and some visual hints (such {@link #drawZoomWindowHint()},
 	 * {@link #drawScreenRotateLineHint()} and {@link #drawArcballReferencePointHint()}) according
 	 * to user interaction and flags.
+	 * 
+	 * @see #proscenium()
+	 * @see #addDrawHandler(Object, String)
 	 */
     public void draw() {
-    	//alternative use only
-		proscenium();		
-		if( helpIsDrawn() ) help();
+    	// 1. Alternative use only
+		proscenium();
+		
+		// 2. Draw external registered method		
+		if(drawHandlerObject != null) {
+			try {
+				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { parent } );
+			} catch (Exception e) {
+				PApplet.println("Something went wrong when invoking your " + drawHandlerMethodName + " method");
+				e.printStackTrace();
+			}
+		}
+		
+		// 3. Display the help
+		if( helpIsDrawn() ) help();		
 	}
 	
 	/** The method that actually defines the scene.
@@ -1480,7 +1507,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    	setCameraMode(CameraMode.WALKTHROUGH);
 	    	break;
 	    }
-	}	
+	}
 	
 	// 8. Keyboard customization
 	
@@ -2198,7 +2225,49 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 	}
 	
-	// 10. Processing objects
+	// 10. Register draw method	
+	
+	/**
+	 * Attempt to add a 'draw' handler method to the Scene. 
+	 * The default event handler is a method that returns void and has one single
+	 * PApplet parameter.
+	 * 
+	 * @param obj the object to handle the event
+	 * @param methodName the method to execute in the object handler class
+	 */
+	public void addDrawHandler(Object obj, String methodName) {
+		try {
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { PApplet.class } );			
+			drawHandlerObject = obj;
+			drawHandlerMethodName = methodName;
+		} catch (Exception e) {
+			PApplet.println("Something went wrong when registering your " + methodName + " method");
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Unregisters the 'draw' handler method (if any has previously been added to the Scene).
+	 * 
+	 * @see #addDrawHandler(Object, String)
+	 */
+	public void removeDrawHandler() {
+		drawHandlerMethod = null;			
+		drawHandlerObject = null;
+		drawHandlerMethodName = null;
+	}
+	
+	/**
+	 * Returns {@code true} if the user has registered a 'draw' handler
+	 * method to the Scene and {@code false} otherwise.
+	 */
+    public boolean hasRegisteredDraw() {
+    	if (drawHandlerMethodName == null)
+    		return false;
+    	return true;
+    }	
+	
+	// 11. Processing objects
 	
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}.
@@ -2219,8 +2288,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 		//if our camera() matrices are detached from the processing Camera matrices,
 		//we cache the processing camera projection matrix into our camera()
-		//camera().setProjectionMatrix(pg3d.projection);
-		camera().setProjectionMatrix(((PGraphics3D) parent.g).projection);
+		camera().setProjectionMatrix(pg3d.projection);
+		//camera().setProjectionMatrix(((PGraphics3D) parent.g).projection);
 	}
 	
 	/**
@@ -2234,7 +2303,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		//if our camera() matrices are detached from the processing Camera matrices,
 		//we cache the processing camera modelview matrix into our camera()
-		//camera().setModelViewMatrix(pg3d.modelview);
-		camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
+		camera().setModelViewMatrix(pg3d.modelview);
+		//camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
 	}	
 }
