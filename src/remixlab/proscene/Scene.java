@@ -44,11 +44,22 @@ import javax.swing.Timer;
  * A Scene has a full reach Camera, an two means to manipulate objects: an {@link #interactiveFrame()}
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
  * <p>
- * To use a Scene, you can instantiate a Scene object directly or you can implement your own derived Scene
- * class. In the former case you should instantiate your own Scene object at the {@code PApplet.setup()}
- * function. In the latter case (if you derive from Scene), you should implement {@link #proscenium()} which
- * defines the objects in your scene (just make sure to define the {@code PApplet.draw()} method, even if
- * it's empty). See the examples BasicUse and AlternativeUse for an illustration of both techniques.
+ * To use a Scene, you have three choices:
+ * <ol>
+ * <li> <b>Direct instantiation</b>. In this case you should instantiate your own Scene object at the
+ * {@code PApplet.setup()} function. 
+ * <li> <b>Inheritance</b>. In this case, once you declare a Scene derived class, you should implement
+ * {@link #proscenium()} which defines the objects in your scene (just make sure to define the
+ * {@code PApplet.draw()} method, even if it's empty).
+ * <li> <b>External draw handler registration</b>. You can even declare an external drawing method and then
+ * register it at the Scene with {@link #addDrawHandler(Object, String)}. That method should return
+ * {@code void} and have one single {@code PApplet} parameter. 
+ * </ol>
+ * <p>
+ * <b>Note:</b> In the last two cases make sure to define the {@code PApplet.draw()} method, even if it's empty.
+ * <p>
+ * See the examples <i>BasicUse</i>, <i>AlternativeUse</i> and <i>ViewFrustumCulling</i> for an illustration
+ * of these techniques.
  * <p>
  * <b>Attention:</b> To set the PApplet's background you should call one of the {@code Scene.background()}
  * versions instead of any of the {@code PApplet.background()} ones. The background is set to black by default.
@@ -89,6 +100,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	//background
 	private BackgroundMode backgroundMode;
+	private boolean enableBackground;
 	int rgb;	
 	float gray, alpha, x, y, z;	
 	PImage image;
@@ -217,6 +229,7 @@ public class Scene implements MouseWheelListener, PConstants {
         // E X C E P T I O N   H A N D L I N G
         startCoordCalls = 0;       
         
+        enableBackgroundHanddling();
         image = null;
         background(0);
         parent.registerPre(this);
@@ -313,6 +326,51 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	// 2. State of the viewer
+    
+    /**
+	 * Enables background handling in the Scene (see the different {@code background} functions),
+	 * otherwise the background should be set with the corresponding PApplet functions.
+	 * 
+	 * @see #toggleBackgroundHanddling()
+	 * @see #backgroundIsHandled()
+	 */
+    public void enableBackgroundHanddling() {
+    	enableBackground = true;
+    }
+    
+    /**
+	 * Disables background handling by the Scene. Hence the background should be set with the
+	 * corresponding PApplet functions.
+	 * 
+	 * @see #toggleBackgroundHanddling()
+	 * @see #backgroundIsHandled()
+	 */
+    public void disableBackgroundHanddling() {
+    	enableBackground = false;
+    }
+    
+    /**
+     * Returns {@code true} if the background is handled by the Scene and {@code false} otherwise.
+     * 
+     * @see #enableBackgroundHanddling()
+	 * @see #disableBackgroundHanddling()
+     */ 
+    public boolean backgroundIsHandled() {
+    	return enableBackground;
+    }
+    
+	/**
+	 * Toggles the state of the {@link #backgroundIsHandled()}.
+	 * 
+	 * @see #enableBackgroundHanddling()
+	 * @see #disableBackgroundHanddling()
+	 */
+    public void toggleBackgroundHanddling() {
+    	if(backgroundIsHandled())
+    		disableBackgroundHanddling();
+    	else
+    		enableBackgroundHanddling();
+    }
     
     /**
      * Internal use only. Call the proper PApplet background function at the beginning of
@@ -630,6 +688,30 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void init() {}
 	
 	/**
+	 * Internal use. Display various visual hints to be called from {@link #pre()} or {@link #draw()}
+	 * depending on the {@link #backgroundIsHandled()} state.
+	 */
+	private void displayVisualHints() {
+		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
+		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
+		if (frameSelectionHintIsDrawn()) drawSelectionHints();
+		if (cameraPathsAreDrawn()) {
+			camera().drawAllPaths();
+			drawCameraPathSelectionHints();
+		} else {
+			camera().hideAllPaths();
+		}		
+		
+		if( zoomOnRegion ) drawZoomWindowHint();
+		if( rotateScreen ) drawScreenRotateLineHint();
+		if( arpFlag ) drawArcballReferencePointHint();
+		if( pupFlag ) {
+			PVector v = camera().projectedCoordinatesOf( pupVec );
+			drawCross( v.x, v.y );
+		}
+	}
+	
+	/**
 	 * Paint method which is called just before your {@code PApplet.draw()} method. This method
 	 * is registered at the PApplet and hence you don't need to call it.
 	 * <p>
@@ -641,7 +723,7 @@ public class Scene implements MouseWheelListener, PConstants {
     	//handle possible resize events
     	//weird: we need to bypass the handling of a resize event when running the applet from eclipse
     	if ( (parent.frame != null) && (parent.frame.isResizable()) ) {
-    		if (backgroundMode == BackgroundMode.PIMAGE)
+    		if ( backgroundIsHandled() && (backgroundMode == BackgroundMode.PIMAGE) )
     			this.background( this.image );    		
     		if( (width != parent.width) || (height != parent.height) ) {
     			width = parent.width;
@@ -672,24 +754,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		if( frustumEquationsUpdateIsEnable() )
 			camera().updateFrustumEquations();
 		
-		setBackground();
-		
-		if (gridIsDrawn()) drawGrid(camera().sceneRadius());
-		if (axisIsDrawn()) drawAxis(camera().sceneRadius());
-		if (frameSelectionHintIsDrawn()) drawSelectionHints();
-		if (cameraPathsAreDrawn()) {
-			camera().drawAllPaths();
-			drawCameraPathSelectionHints();
-		} else {
-			camera().hideAllPaths();
-		}		
-		
-		if( zoomOnRegion ) drawZoomWindowHint();
-		if( rotateScreen ) drawScreenRotateLineHint();
-		if( arpFlag ) drawArcballReferencePointHint();
-		if( pupFlag ) {
-			PVector v = camera().projectedCoordinatesOf( pupVec );
-			drawCross( v.x, v.y );
+		if( backgroundIsHandled() ) {
+			setBackground();
+			displayVisualHints();		
 		}
 	}
 	
@@ -721,8 +788,12 @@ public class Scene implements MouseWheelListener, PConstants {
 			}
 		}
 		
-		// 3. Display the help
-		if( helpIsDrawn() ) help();		
+		// 3. Try to draw what should have been draw in the pre()
+		if( !backgroundIsHandled() ) 
+			displayVisualHints();
+		
+		// 4. Display the help
+		if( helpIsDrawn() ) help();				
 	}
 	
 	/** The method that actually defines the scene.
