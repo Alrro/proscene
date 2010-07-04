@@ -12,4 +12,6 @@ public class AuxiliarViewer extends NApplet {
     scene.showAll();
     scene.addDrawHandler(parentPApplet, "auxiliarViewerDrawing");
   }
+  
+  void draw() {}
 }
