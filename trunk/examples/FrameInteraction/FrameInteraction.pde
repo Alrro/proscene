@@ -1,15 +1,14 @@
 /**
- * Frame Interaction. 
- * by Jean Pierre Charalambos.
- * 
- * This example illustrates the three interactive frame mechanisms
- * built-in proscene: Camera, InteractiveFrame and MouseGrabber.
- *
- * Press 'i' to switch the interaction between the camera frame and
- * the interactive frame. You can also manipulate the interactive frame
- * by picking the blue box passing the mouse next its axis origin.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * <b>Frame Interaction</b> by Jean Pierre Charalambos.
+ * <p>
+ * This example illustrates the three interactive frame mechanisms built-in proscene:<br>
+ * Camera, InteractiveFrame and MouseGrabber.
+ * <p>
+ * Press <b>'i'<b> to switch the interaction between the camera frame and the interactive<br>
+ * frame. You can also manipulate the interactive frame by picking the blue box passing<br>
+ * the mouse next to its axis origin (press <b>'f'<b> to display a visual hint for that).
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

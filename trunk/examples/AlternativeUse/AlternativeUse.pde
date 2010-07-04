@@ -1,11 +1,9 @@
 /**
- * Alternative Use. 
- * by Jean Pierre Charalambos.
- * 
- * This example illustrates an alternative approach to using
- * proscene through inheritance.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * <b>Alternative Use</b> by Jean Pierre Charalambos.
+ * <p>
+ * This example illustrates an alternative approach to using proscene through inheritance.
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

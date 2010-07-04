@@ -1,11 +1,10 @@
 /**
- * Basic Use. 
- * by Jean Pierre Charalambos.
- * 
- * This example illustrates a direct approach to using proscene
- * by Scene proper instantiation.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * <b>Basic Use</b> by Jean Pierre Charalambos.
+ * <p>
+ * This example illustrates a direct approach to using proscene by Scene proper
+ * instantiation.
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

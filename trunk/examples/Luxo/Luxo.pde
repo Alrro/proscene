@@ -1,19 +1,18 @@
 /**
- * Luxo. 
- * by Jean Pierre Charalambos. 
- *
+ * <b>Luxo</b> by Jean Pierre Charalambos. 
+ * <p>
  * A more complex example that combines InteractiveFrames, selection and constraints.
- * 
- * This example displays a famous luxo lamp (Pixar) that can be interactively
+ * <p>
+ * This example displays a famous luxo lamp (Pixar) that can be interactively<br>
  * manipulated with the mouse. It illustrates the use of several InteractiveFrames
  * in the same scene.
- *
- * Click on a frame visual hint to select a part of the lamp, and then move it with
+ * <p>
+ * Click on a frame visual hint to select a part of the lamp, and then move it with<br>
  * the mouse.
- *
+ * <p>
  * Press 'f' to toggle the drawing of the frames' visual hints.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;
