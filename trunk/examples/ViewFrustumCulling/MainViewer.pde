@@ -6,8 +6,8 @@ public class MainViewer extends NApplet {
     scene = new Scene(this);
     scene.enableFrustumEquationsUpdate();
     scene.setHelpIsDrawn(false);
-    scene.setGridIsDrawn(true);
-    scene.setAxisIsDrawn(true);
+    scene.setGridIsDrawn(false);
+    scene.setAxisIsDrawn(false);
   }
   
   Scene getScene() {
