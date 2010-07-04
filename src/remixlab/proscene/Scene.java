@@ -1553,7 +1553,9 @@ public class Scene implements MouseWheelListener, PConstants {
 			setCameraMode(CameraMode.WALKTHROUGH);
 			break;
 	    case WALKTHROUGH :
-	    	setCameraMode(CameraMode.THIRD_PERSON);
+	    	//setCameraMode(CameraMode.THIRD_PERSON);
+	    	//TODO hack for the beta release:
+	    	setCameraMode(CameraMode.ARCBALL);
 	    	break;
 	    case THIRD_PERSON :
 	    	setCameraMode(CameraMode.ARCBALL);
@@ -1569,7 +1571,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void previousCameraMode() {
 		switch (cameraMode) {
 		case ARCBALL :
-			setCameraMode(CameraMode.THIRD_PERSON);
+			//setCameraMode(CameraMode.THIRD_PERSON);
+			//TODO hack for the beta release:
+	    	setCameraMode(CameraMode.WALKTHROUGH);
 			break;
 	    case WALKTHROUGH :
 	    	setCameraMode(CameraMode.ARCBALL);

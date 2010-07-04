@@ -1,17 +1,15 @@
 /**
- * Cajas Orientadas. 
- * by Jean Pierre Charalambos.
- * 
- * This example illustrates some basic Frame properties, particularly how
- * to orient them. Select and move the sphere (holding the right mouse button
- * pressed) to see how the boxes will immediately be oriented towards it.
- * You can also pick and move the boxes and still they will be oriented
- * towards the sphere.
- *
+ * <b>Cajas Orientadas</b> by Jean Pierre Charalambos.
+ * <p>
+ * This example illustrates some basic Frame properties, particularly how to orient them.<br>
+ * Select and move the sphere (holding the right mouse button pressed) to see how the<br>
+ * boxes will immediately be oriented towards it.<br> You can also pick and move the boxes<br>
+ * and still they will be oriented towards the sphere.
+ * <p>
  * This example illustrates some functionality which was needed by the
- * http://cajas.sourceforge.net/ project.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * <a href="http://cajas.sourceforge.net/">Cajas</a> project.
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

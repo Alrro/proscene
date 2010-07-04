@@ -1,23 +1,22 @@
 /**
- * Frame Interpolation.
- * by Jean Pierre Charalambos.
- * 
- * This example (together with Camera Interpolation) illustrates the
- * KeyFrameInterpolator functionality.
- *
- * KeyFrameInterpolator smoothly interpolate its attached Frame over time on
- * a path defined by Frames. The interpolation can be started/stopped/reset,
- * played in loop, played at a different speed, etc...
- *
- * In this example, the path is defined by four InteractivedFrames which can be
- * moved with the mouse. The interpolating path is updated accordingly. The path
- * and the interpolating axis are drawn using KeyFrameInterpolator.drawPath().
- *
- * The Camera holds 5 KeyFrameInterpolators, binded to [j..n]/[J..N]/[1..5] keys:
- * set/reset/play the key frame interpolators, respectively. Press 'r' to display
- * all the key frame camera paths (if any).
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * <b>Frame Interpolation</b> by Jean Pierre Charalambos.
+ * <p>
+ * This example (together with Camera Interpolation) illustrates the KeyFrameInterpolator<br>
+ * functionality.
+ * <p>
+ * KeyFrameInterpolator smoothly interpolate its attached Frame over time on a path<br>
+ * defined by Frames. The interpolation can be started/stopped/reset, played in loop,<br>
+ * played at a different speed, etc...
+ * <p>
+ * In this example, the path is defined by four InteractivedFrames which can be moved<br>
+ * with the mouse. The interpolating path is updated accordingly. The path and the<br>
+ * interpolating axis are drawn using KeyFrameInterpolator.drawPath().
+ * <p>
+ * The Camera holds 5 KeyFrameInterpolators, binded to <b>[j..n]/[J..N]/[1..5]</b> keys:<br>
+ * set/reset/play the key frame interpolators, respectively. Press <b>'r'</b> to display all<br>
+ * the key frame camera paths (if any).
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

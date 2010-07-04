@@ -1,23 +1,23 @@
 /**
- * Point Under Pixel.
- * by Jean Pierre Charalambos.
- * 
+ * <b>Point Under Pixel</b> by Jean Pierre Charalambos.
+ * <p>
  * This example illustrates 3D world point picking.
- *
- * Press 'o' to select the camera revolve around point, or press 'p' to select a
- * point for the camera to zoom in. Note that in both cases the point is defined
- * in 3D world coordinates, but it will be set from the mouse position (which is a
- * point defined in 2D screen coordinates) at the time the key press takes place.
- * Nothing happens if there's no scene point under the mouse. 
- *
- * Press 'O' to reset the revolve around point position (it will be set to to its
+ * <p>
+ * Press <b>'o'</b> to select the camera revolve around point, or press <b>'p'</b> to select a<br>
+ * point for the camera to zoom in. Note that in both cases the point is defined<br>
+ * in 3D world coordinates, but it will be set from the mouse position (which is a<br>
+ * point defined in 2D screen coordinates) at the time the key press takes place.<br>
+ * Nothing happens if there's no scene point under the mouse.
+ * <p>
+ * Press <b>'O'</b> to reset the revolve around point position (it will be set to to its<br>
  * default value: (0,0,0)).
- *
+ * <p>
  * This example requires OpenGL to read the pixel depth. 
- *
- * Press 'h' to toggle the mouse and keyboard navigation help. Note that the point
- * picking mechanism is disable when the help is display (otherwise the help text
- * can interfere).
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * <p>
+ * <b>Note</b> that the point picking mechanism is disable when the help is display<br>
+ * (otherwise the help text can interfere).
  */
 
 import java.awt.Point;

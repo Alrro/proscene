@@ -1,4 +1,12 @@
-import remixlab.proscene.*;
+/**
+ * Octree Node. 
+ * by Jean Pierre Charalambos.
+ * 
+ * This class is part of the View Frustum Culling example.
+ * This class holds the octree hierarchy culled against the main viewer camera.
+ *
+ * Press 'h' to toggle the mouse and keyboard navigation help.
+ */
 
 public class OctreeNode {
   PVector p1, p2;
