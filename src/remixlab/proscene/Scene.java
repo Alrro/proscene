@@ -2052,7 +2052,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	/**
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
-	 * {@link remixlab.proscene.MouseGrabber#mousePressEvent(MouseEvent, Camera)} is called.
+	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)} is called.
 	 * Otherwise, the {@link #camera()} or the {@link #interactiveFrame()} interprets
 	 * the mouse displacements,	depending on mouse bindings.
 	 * 
@@ -2060,7 +2060,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void mousePressed(MouseEvent event) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
-	    if ( event.isShiftDown() ) {
+	    if ( event.isShiftDown() ) {	    	
 	    	fCorner = event.getPoint();
 	    	lCorner = event.getPoint();
 			zoomOnRegion = true;
@@ -2075,7 +2075,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    	translateScreen = true;
 	    	camera().frame().startAction(Scene.MouseAction.SCREEN_TRANSLATE, withConstraint);
 	    }
-	    camera().frame().mousePressEvent(event, camera()); //totally necessary
+	    camera().frame().mousePressed(event.getPoint(), camera()); //totally necessary
 	    }
 		else
 		if ( mouseGrabber() != null ) {
@@ -2102,11 +2102,11 @@ public class Scene implements MouseWheelListener, PConstants {
 						break;
 						}
 					}
-					iFrame.mousePressEvent(event, camera());
+					iFrame.mousePressed(event.getPoint(), camera());
 				}
 			}
 			else
-				mouseGrabber().mousePressEvent(event, camera());
+				mouseGrabber().mousePressed(event.getPoint(), camera());
 		}
 		else if ( interactiveFrameIsDrawn() ) {
 			switch (event.getButton()) {
@@ -2124,7 +2124,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 				}
 			}	
-			interactiveFrame().mousePressEvent(event, camera());
+			interactiveFrame().mousePressed(event.getPoint(), camera());
 		}
 		else {
 			switch (event.getButton()) {
@@ -2142,7 +2142,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 				}
 			}	
-			camera().frame().mousePressEvent(event, camera());
+			camera().frame().mousePressed(event.getPoint(), camera());
 		}
 	}
 	
@@ -2158,19 +2158,19 @@ public class Scene implements MouseWheelListener, PConstants {
 	    	if (zoomOnRegion) lCorner = event.getPoint();
 	    	else if (rotateScreen) {
 	    		fCorner = event.getPoint();
-	    		camera().frame().mouseMoveEvent(event, camera());
+	    		camera().frame().mouseDragged(event.getPoint(), camera());
 	    	}
 	    	else //translateScreen
-	    		camera().frame().mouseMoveEvent(event, camera());
+	    		camera().frame().mouseDragged(event.getPoint(), camera());
 		} else if ( mouseGrabber()!= null ) {
 			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if (mouseGrabber().grabsMouse())
 				if ( mouseGrabberIsAnICamFrame )
 					//TODO: implement me
 					//mouseGrabber().mouseMoveEvent(event, camera());
-					((InteractiveFrame)mouseGrabber()).mouseMoveEvent(event, camera());
+					((InteractiveFrame)mouseGrabber()).mouseDragged(event.getPoint(), camera());
 				else
-					mouseGrabber().mouseMoveEvent(event, camera());
+					mouseGrabber().mouseDragged(event.getPoint(), camera());
 			else
 				setMouseGrabber(null);
 		}
@@ -2178,13 +2178,13 @@ public class Scene implements MouseWheelListener, PConstants {
 		//even the tougher condition is not enough 
 		//else if ( (interactiveFrameIsDrawn()) && (interactiveFrame()!=null) ) {
 		else if ( interactiveFrameIsDrawn() ) {
-			interactiveFrame().mouseMoveEvent(event, camera());
+			interactiveFrame().mouseDragged(event.getPoint(), camera());
 		}
 		else {
 			//TODO weird null pointer exception when moving dragging the at Constrained* examples instantiation (specially in ConstrainedFrame)
 			//even the tougher condition is not enough
 			//if (camera() != null ) if (camera().frame() != null ) camera().frame().mouseMoveEvent(event, camera());
-			camera().frame().mouseMoveEvent(event, camera());
+			camera().frame().mouseDragged(event.getPoint(), camera());
 		}
 	}
 	
@@ -2195,7 +2195,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void mouseReleased(MouseEvent event) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
-	    	camera().frame().mouseReleaseEvent(event, camera());
+	    	camera().frame().mouseReleased(event.getPoint(), camera());
 			zoomOnRegion = false;
 			rotateScreen = false;
 			translateScreen = false;
@@ -2204,18 +2204,18 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (mouseGrabber() != null ) {
     		if ( mouseGrabberIsAnICamFrame )
     			//mouseGrabber().mouseReleaseEvent(event, camera());
-    			((InteractiveFrame)mouseGrabber()).mouseReleaseEvent(event, camera());
+    			((InteractiveFrame)mouseGrabber()).mouseReleased(event.getPoint(), camera());
     		else
-    			mouseGrabber().mouseReleaseEvent(event, camera());
+    			mouseGrabber().mouseReleased(event.getPoint(), camera());
     		mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() , camera());
     		if (!(mouseGrabber().grabsMouse()))
     			setMouseGrabber(null);
     	}
     	else if ( interactiveFrameIsDrawn() ) {
-    		interactiveFrame().mouseReleaseEvent(event, camera());
+    		interactiveFrame().mouseReleased(event.getPoint(), camera());
 		}
 		else {
-			camera().frame().mouseReleaseEvent(event, camera());
+			camera().frame().mouseReleased(event.getPoint(), camera());
 		}
     }
 	
@@ -2226,7 +2226,14 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void mouseClicked(MouseEvent event) {
 		if ( event.getClickCount() == 2 ) {
 		if ( mouseGrabber() != null ) {
-			mouseGrabber().mouseDoubleClickEvent(event, camera());
+			//TODO needs to test: event.getModifiers
+			//if ( !event.isAltDown() && !event.isAltGraphDown() && !event.isControlDown() && !event.isMetaDown() && !event.isShiftDown() ); 
+			//if (event.getModifiers() == 0)
+			switch (event.getButton()) {
+				case MouseEvent.BUTTON1: ((InteractiveFrame)mouseGrabber()).alignWithFrame(camera().frame()); break;
+				case MouseEvent.BUTTON3: ((InteractiveFrame)mouseGrabber()).projectOnLine(camera().position(), camera().viewDirection()); break;
+				default: break;
+			}
 		}
 		else if ( interactiveFrameIsDrawn() ) {
 			switch (event.getButton()) {
@@ -2277,11 +2284,11 @@ public class Scene implements MouseWheelListener, PConstants {
 				}
 				else {
 					iFrame.startAction(MouseAction.ZOOM, withConstraint);
-					iFrame.mouseWheelEvent(event, camera());
+					iFrame.mouseWheelMoved(event.getWheelRotation(), camera());
 				}
 			}
 			else
-				mouseGrabber().mouseWheelEvent(event, camera());
+				mouseGrabber().mouseWheelMoved(event.getWheelRotation(), camera());
 			//test
 			/**
 			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() , camera());
@@ -2292,11 +2299,11 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 		else if ( interactiveFrameIsDrawn() ) {
 			interactiveFrame().startAction(MouseAction.ZOOM, withConstraint);
-			interactiveFrame().mouseWheelEvent(event, camera());
+			interactiveFrame().mouseWheelMoved(event.getWheelRotation(), camera());
 		}
 		else {
 			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
-			camera().frame().mouseWheelEvent(event, camera());			
+			camera().frame().mouseWheelMoved(event.getWheelRotation(), camera());			
 		}
 	}
 	

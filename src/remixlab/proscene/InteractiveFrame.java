@@ -497,18 +497,18 @@ public class InteractiveFrame extends Frame
 	/**
 	 * Initiates the InteractiveFrame mouse manipulation. 
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mousePressEvent(MouseEvent, Camera)}.
+	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)}.
 	 * 
 	 * The mouse behavior depends on which button is pressed.
 	 * 
-	 * @see #mouseMoveEvent(MouseEvent, Camera)
-	 * @see #mouseReleaseEvent(MouseEvent, Camera)
+	 * @see #mouseDragged(Point, Camera)
+	 * @see #mouseReleased(Point, Camera)
 	 */	
-	public void mousePressEvent(MouseEvent event, Camera camera) {		
+	public void mousePressed(Point eventPoint, Camera camera) {		
 		if (grabsMouse())
 			keepsGrabbingMouse = true;
 		
-		prevPos = pressPos = event.getPoint();
+		prevPos = pressPos = eventPoint;
 	}
 
 	/**
@@ -522,16 +522,16 @@ public class InteractiveFrame extends Frame
 	 * @see remixlab.proscene.Camera#screenHeight()
 	 * @see remixlab.proscene.Camera#fieldOfView()
 	*/
-	public void mouseMoveEvent(MouseEvent event, Camera camera) {
+	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = prevPos.y - event.getY();
+			deltaY = prevPos.y - eventPoint.y;
 		else
-			deltaY = event.getY() - prevPos.y;
+			deltaY = eventPoint.y - prevPos.y;
 		
 		switch (action) {
 		case TRANSLATE:	{
-			Point delta = new Point((event.getX() - prevPos.x), deltaY);				
+			Point delta = new Point((eventPoint.x - prevPos.x), deltaY);				
 			PVector trans = new PVector((float)delta.getX(), (float)-delta.getY(), 0.0f);
 			// Scale to fit the screen mouse displacement
 			switch (camera.type()) {
@@ -569,7 +569,7 @@ public class InteractiveFrame extends Frame
 			//TODO: needs testing to see if it works correctly when left-handed is set			
 			PVector trans = camera.projectedCoordinatesOf(position());
 			float prev_angle = PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
-			float angle = PApplet.atan2(event.getY()-trans.y, event.getX()-trans.x);
+			float angle = PApplet.atan2(eventPoint.y-trans.y, eventPoint.x-trans.x);
 			PVector axis = transformOf(camera.frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f)));
 			Quaternion rot;
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
@@ -577,7 +577,7 @@ public class InteractiveFrame extends Frame
 			else
 				rot = new Quaternion(axis, angle-prev_angle);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
-			computeMouseSpeed(event);
+			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
 			break;
@@ -586,9 +586,9 @@ public class InteractiveFrame extends Frame
 		case SCREEN_TRANSLATE: {
 			//TODO: needs testing to see if it works correctly when left-handed is set
 			PVector trans = new PVector();
-			int dir = mouseOriginalDirection(event);
+			int dir = mouseOriginalDirection(eventPoint);
 			if (dir == 1)
-				trans.set((event.getX() - prevPos.x), 0.0f, 0.0f);
+				trans.set((eventPoint.x - prevPos.x), 0.0f, 0.0f);
 			else if (dir == -1)
 				trans.set(0.0f, -deltaY, 0.0f);
 			switch (camera.type()) {
@@ -614,7 +614,7 @@ public class InteractiveFrame extends Frame
 		
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(position());
-			Quaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
+			Quaternion rot = deformedBallQuaternion(eventPoint.x, eventPoint.y, trans.x, trans.y, camera);
 			trans.set(-rot.x, -rot.y, -rot.z);
 			trans = camera.frame().orientation().rotate(trans);
 			trans = transformOf(trans);
@@ -622,7 +622,7 @@ public class InteractiveFrame extends Frame
 			rot.y = trans.y;
 			rot.z = trans.z;
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
-			computeMouseSpeed(event);
+			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
 			break;
@@ -635,7 +635,7 @@ public class InteractiveFrame extends Frame
 			}
 		
 		if (action != Scene.MouseAction.NO_MOUSE_ACTION) {
-			prevPos = event.getPoint();
+			prevPos = eventPoint;
 		}
 	}
 
@@ -643,7 +643,7 @@ public class InteractiveFrame extends Frame
 	 * Stops the InteractiveFrame mouse manipulation. 
 	 * <p> 
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseReleaseEvent(MouseEvent, Camera)}. 
+	 * {@link remixlab.proscene.MouseGrabber#mouseReleased(Point, Camera)}. 
 	 * <p> 
 	 * If the action was ROTATE MouseAction, a continuous spinning is possible if the speed
 	 * of the mouse cursor is larger than {@link #spinningSensitivity()} when the button is
@@ -652,7 +652,7 @@ public class InteractiveFrame extends Frame
 	 * @see #startSpinning(int)
 	 * @see #isSpinning() 
 	 */
-	public void mouseReleaseEvent(MouseEvent event, Camera camera) {		
+	public void mouseReleased(Point event, Camera camera) {		
 		keepsGrabbingMouse = false;
 
 		if (prevConstraint != null)
@@ -664,40 +664,21 @@ public class InteractiveFrame extends Frame
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
-	
-	/**
-	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseDoubleClickEvent(MouseEvent, Camera)}. 
-	 * <p> 
-	 * Left button double click aligns the InteractiveFrame with the {@code camera} axis
-	 * (see {@link #alignWithFrame(Frame)}). Right button projects the InteractiveFrame
-	 * on the {@code camera} view direction.
-	 */
-	public void mouseDoubleClickEvent(MouseEvent event, Camera camera) {
-		//TODO needs to test: event.getModifiers
-		if ( !event.isAltDown() && !event.isAltGraphDown() && !event.isControlDown() && !event.isMetaDown() && !event.isShiftDown() ); 
-		//if (event.getModifiers() == 0)
-			switch (event.getButton()) {
-			case MouseEvent.BUTTON1: alignWithFrame(camera.frame()); break;
-			case MouseEvent.BUTTON2: projectOnLine(camera.position(), camera.viewDirection()); break;
-			default: break;
-			}		
-	}
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseWheelEvent(MouseWheelEvent, Camera)}. 
+	 * {@link remixlab.proscene.MouseGrabber#mouseWheelMoved(int, Camera)}. 
 	 * <p> 
 	 * Using the wheel is equivalent to a ZOOM MouseAction.
 	 * 
 	 * @see #setWheelSensitivity(float)
 	 */
-	public void mouseWheelEvent(MouseWheelEvent event, Camera camera) {
+	public void mouseWheelMoved(int rotation, Camera camera) {
 		if (action == Scene.MouseAction.ZOOM) {
 			float wheelSensitivityCoef = 8E-4f;
 			// PVector trans(0.0, 0.0,
 			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
-			PVector trans = new PVector(0.0f, 0.0f, event.getWheelRotation()
+			PVector trans = new PVector(0.0f, 0.0f, rotation
 					* wheelSensitivity() * wheelSensitivityCoef
 					* (PVector.sub(camera.position(), position())).mag());
 
@@ -760,10 +741,10 @@ public class InteractiveFrame extends Frame
 	/**
 	 * Updates mouse speed, measured in pixels/milliseconds. Should be called by
 	 * any method which wants to use mouse speed. Currently used to trigger
-	 * spinning in {@link #mouseReleaseEvent(MouseEvent, Camera)}.
+	 * spinning in {@link #mouseReleased(Point, Camera)}.
 	 */
-	protected void computeMouseSpeed(MouseEvent event) {		
-		float dist = (float) Point.distance(event.getX(), event.getY(), prevPos.getX(), prevPos.getY());
+	protected void computeMouseSpeed(Point eventPoint) {		
+		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos.getX(), prevPos.getY());
 
 		if (startedTime == 0) {
 			delay = 0;
@@ -785,9 +766,9 @@ public class InteractiveFrame extends Frame
 	 * vertical. Returns 0 if this could not be determined yet (perfect diagonal
 	 * motion, rare).
 	 */
-	protected int mouseOriginalDirection(MouseEvent event) {				
+	protected int mouseOriginalDirection(Point eventPoint) {				
 		if (!dirIsFixed) {
-			Point delta = new Point((event.getX() - pressPos.x), (event.getY() - pressPos.y));
+			Point delta = new Point((eventPoint.x - pressPos.x), (eventPoint.y - pressPos.y));
 			dirIsFixed = PApplet.abs(delta.x) != PApplet.abs(delta.y);
 			horiz = PApplet.abs(delta.x) > PApplet.abs(delta.y);
 		}
