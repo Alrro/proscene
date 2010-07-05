@@ -25,7 +25,7 @@
 
 package remixlab.proscene;
 
-import java.awt.event.*;
+import java.awt.Point;
 import java.util.*;
 
 /**
@@ -114,39 +114,33 @@ public interface MouseGrabber {
      * button is pressed. 
      * <p> 
      * The MouseGrabber will typically start an action or change its state when a
-     * mouse button is pressed. {@link #mouseMoveEvent(MouseEvent, Camera)} (called at
+     * mouse button is pressed. {@link #mouseDragged(Point, Camera)} (called at
      * each mouse displacement) will then update the MouseGrabber accordingly and 
-     * {@link #mouseReleaseEvent(MouseEvent, Camera)} (called when the mouse button
+     * {@link #mouseReleased(Point, Camera)} (called when the mouse button
      * is released) will terminate this action.
      */
-    void mousePressEvent(MouseEvent event, Camera camera);
+    void mousePressed(Point eventPoint, Camera camera);
     
     /**
      * Callback method called when the MouseGrabber {@link #grabsMouse()} and the mouse
      * is moved while a button is pressed. 
      * <p> 
      * This method will typically update the state of the MouseGrabber from the mouse
-     * displacement. See the {@link #mousePressEvent(MouseEvent, Camera)} documentation
+     * displacement. See the {@link #mousePressed(Point, Camera)} documentation
      * for details.
      */
-    void mouseMoveEvent(MouseEvent event, Camera camera);
+    void mouseDragged(Point eventPoint, Camera camera);
     
     /**
      * Mouse release event callback method.
      * 
-     * @see #mousePressEvent(MouseEvent, Camera)
+     * @see #mousePressed(Point, Camera)
      */
-    void mouseReleaseEvent(MouseEvent event, Camera camera);
-    
-    /**
-     * Callback method called when the MouseGrabber {@link #grabsMouse()} and a mouse
-     * button is double clicked.
-     */     
-    void mouseDoubleClickEvent(MouseEvent event, Camera camera);
-    
+    void mouseReleased(Point eventPoint, Camera camera);
+        
     /**
      * Callback method called when the MouseGrabber {@link #grabsMouse()} and the mouse
      * wheel is used.
      */
-    void mouseWheelEvent(MouseWheelEvent event, Camera camera);    
+    void mouseWheelMoved(int rotation, Camera camera);    
 }

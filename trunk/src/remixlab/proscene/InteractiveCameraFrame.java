@@ -244,23 +244,23 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseMoveEvent(MouseEvent, Camera)}.
+	 * {@link remixlab.proscene.InteractiveFrame#mouseDragged(Point, Camera)}.
 	 * 
 	 * <p>
 	 * 
 	 * Motion depends on mouse binding. The resulting displacements are basically inverted
 	 * from those of an InteractiveFrame.
 	 */
-	public void mouseMoveEvent(MouseEvent event, Camera camera) {		
+	public void mouseDragged(Point eventPoint, Camera camera) {		
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = event.getY() - prevPos.y;
+			deltaY = eventPoint.y - prevPos.y;
 		else
-			deltaY = prevPos.y - event.getY();
+			deltaY = prevPos.y - eventPoint.y;
 		
 		switch (action) {
 		case TRANSLATE: {			
-			Point delta = new Point(prevPos.x - event.getX(), deltaY);
+			Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
 			PVector trans = new PVector((float)delta.x, (float)-delta.y, 0.0f);
 			// Scale to fit the screen mouse displacement
 			switch (camera.type()) {			
@@ -280,7 +280,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}
 		
 		case MOVE_FORWARD: {
-			Quaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
+			Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
 			rotate(rot);
 			//#CONNECTION# wheelEvent MOVE_FORWARD case
 			// actual translation is made in flyUpdate().
@@ -289,7 +289,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}
 		
 		case MOVE_BACKWARD: {
-			Quaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
+			Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
 			rotate(rot);
 			// actual translation is made in flyUpdate().
 			//translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
@@ -298,7 +298,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		
 		case DRIVE: {
 			//TODO: perhaps needs more testing
-			Quaternion rot = turnQuaternion(event.getX(), camera);
+			Quaternion rot = turnQuaternion(eventPoint.x, camera);
 			rotate(rot);
 			// actual translation is made in flyUpdate().
 			drvSpd = 0.01f * -deltaY;
@@ -315,16 +315,16 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}
 		
 		case LOOK_AROUND: {
-			Quaternion rot = pitchYawQuaternion(event.getX(), event.getY(), camera);
+			Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
 			rotate(rot);
 			break;
 			}
 		
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-			Quaternion rot = deformedBallQuaternion(event.getX(), event.getY(), trans.x, trans.y, camera);
+			Quaternion rot = deformedBallQuaternion(eventPoint.x, eventPoint.y, trans.x, trans.y, camera);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
-			computeMouseSpeed(event);
+			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
 			break;
@@ -332,12 +332,12 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		
 		case SCREEN_ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-			float angle = PApplet.atan2(event.getY() - trans.y, event.getX() - trans.x) - PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
+			float angle = PApplet.atan2(eventPoint.y - trans.y, eventPoint.x - trans.x) - PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 				angle = -angle;
 			Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 			//#CONNECTION# These two methods should go together (spinning detection and activation)
-			computeMouseSpeed(event);
+			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
 			updateFlyUpVector();
@@ -345,7 +345,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}
 		
 		case ROLL: {
-			float angle = Quaternion.PI * (event.getX() - prevPos.x) / camera.screenWidth();
+			float angle = Quaternion.PI * (eventPoint.x - prevPos.x) / camera.screenWidth();
 			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 				angle = -angle;
 			Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
@@ -357,9 +357,9 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		
 		case SCREEN_TRANSLATE: {
 			PVector trans = new PVector();			
-			int dir = mouseOriginalDirection(event);
+			int dir = mouseOriginalDirection(eventPoint);
 			if (dir == 1)
-				trans.set((prevPos.x - event.getX()), 0.0f, 0.0f);
+				trans.set((prevPos.x - eventPoint.x), 0.0f, 0.0f);
 			else if (dir == -1)
 				trans.set(0.0f, -deltaY, 0.0f);			
 			switch (camera.type()) {
@@ -386,15 +386,15 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		}
 		
 		if (action != Scene.MouseAction.NO_MOUSE_ACTION) {
-			prevPos = event.getPoint();
+			prevPos = eventPoint;
 		}
 	}
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseReleaseEvent(MouseEvent, Camera)}.
+	 * {@link remixlab.proscene.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */	
-	public void mouseReleaseEvent(MouseEvent event, Camera camera) {		
+	public void mouseReleased(Point eventPoint, Camera camera) {
 		if ((action == Scene.MouseAction.MOVE_FORWARD)  || 
 			(action == Scene.MouseAction.MOVE_BACKWARD) || 
 			(action == Scene.MouseAction.DRIVE))
@@ -402,28 +402,29 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 
 		  if (action == Scene.MouseAction.ZOOM_ON_REGION) {
 			  //the rectangle needs to be normalized!
-			  int w = PApplet.abs(event.getX() - pressPos.x);			  
-			  int tlX = pressPos.x < event.getX() ? pressPos.x : event.getX();
-			  int h = PApplet.abs(event.getY() - pressPos.y);
-			  int tlY  = pressPos.y < event.getY() ? pressPos.y : event.getY();
+			  int w = PApplet.abs(eventPoint.x - pressPos.x);			  
+			  int tlX = pressPos.x < eventPoint.x ? pressPos.x : eventPoint.x;
+			  int h = PApplet.abs(eventPoint.y - pressPos.y);
+			  int tlY  = pressPos.y < eventPoint.y ? pressPos.y : eventPoint.y;
 			  
-			  if (event.getButton() == MouseEvent.BUTTON3)
-				  camera.fitScreenRegion( new Rectangle (tlX, tlY, w, h) );
-			  else
+			  //overkill:
+			  //if (event.getButton() == MouseEvent.BUTTON3)//right button
+				  //camera.fitScreenRegion( new Rectangle (tlX, tlY, w, h) );
+			  //else
 				  camera.interpolateToZoomOnRegion(new Rectangle (tlX, tlY, w, h));
 		  }
-		  super.mouseReleaseEvent(event, camera);
+		  super.mouseReleased(eventPoint, camera);
 	}
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelEvent(MouseWheelEvent, Camera)}. 
+	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelMoved(int, Camera)}. 
 	 * <p>  
 	 * The wheel behavior depends on the wheel binded action. Current possible actions are ZOOM, 
 	 * MOVE_FORWARD, MOVE_BACKWARD. ZOOM speed depends on #wheelSensitivity() MOVE_FORWARD and
 	 * MOVE_BACKWARD depend on #flySpeed().
 	 */
-	public void mouseWheelEvent(MouseWheelEvent event, Camera camera) {
+	public void mouseWheelMoved(int rotation, Camera camera) {
 		switch (action) {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
@@ -432,7 +433,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 					PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z),
 					             0.2f*camera.sceneRadius());  
 			PVector trans = new PVector(0.0f, 0.0f,
-					coef * (-event.getWheelRotation()) * wheelSensitivity() * wheelSensitivityCoef);
+					coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
 			break;
 		      }
@@ -440,7 +441,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		    case MOVE_BACKWARD:
 		      //#CONNECTION# mouseMoveEvent() MOVE_FORWARD case
 		      translate(inverseTransformOf(new PVector(0.0f, 0.0f, 
-		    		  0.2f*flySpeed()*(-event.getWheelRotation()))));
+		    		  0.2f*flySpeed()*(-rotation))));
 		      break;
 		    default:
 		      break;

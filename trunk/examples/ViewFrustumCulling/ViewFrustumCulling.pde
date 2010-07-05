@@ -7,7 +7,7 @@
  * A second viewer displays an external view of the scene that exhibits the clipping<br>
  * (using DrawingUtils.drawCamera() to display the frustum). 
  * <p>
- * This example requires the <a href="http://github.com/acsmith/napplet">napplet</a> library.
+ * This example requires the <a href="http://github.com/acsmith/napplet">napplet</a> library
  * (download it <a href="http://github.com/acsmith/napplet/downloads">here</a>).
  * <p>
  * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
