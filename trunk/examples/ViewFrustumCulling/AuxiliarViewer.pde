@@ -21,10 +21,10 @@ public class AuxiliarViewer extends NApplet {
     scene.setHelpIsDrawn(false);    
     scene.setRadius(200);
     scene.showAll();
-    // we add the external drawing method declared in the View Furstum Class
-    scene.addDrawHandler(parentPApplet, "auxiliarViewerDrawing");
   }
   
-  // dummy declaration (the drawing has been defined externally)
-  void draw() {}
+  void draw() {
+    Root.drawIfAllChildrenAreVisible(this, ((MainViewer)mainNApplet).getScene().camera());
+    DrawingUtils.drawCamera(this, ((MainViewer)mainNApplet).getScene().camera());
+  }
 }

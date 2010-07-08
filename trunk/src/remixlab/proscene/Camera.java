@@ -1287,6 +1287,10 @@ public class Camera implements Cloneable {
 		setFocusDistance(sceneRadius() / PApplet.tan(fieldOfView() / 2.0f));
 
 		setFlySpeed(0.01f * sceneRadius());
+		
+		//if there's an avatar we change its fly speed as well
+		if( scene.interactiveFrameIsAnAvatar && (scene.glIFrame != null) )
+			((InteractiveAvatarFrame)scene.interactiveFrame()).setFlySpeed(0.01f * scene.radius());
 	}
 
 	/**
@@ -1631,7 +1635,7 @@ public class Camera implements Cloneable {
 	 * <p>
 	 * If this path is not being played (see {@link #playPath(int)} and 
 	 * {@link remixlab.proscene.KeyFrameInterpolator#interpolationIsStarted()}),
-	 * resets it to is its starting position
+	 * resets it to its starting position
 	 * (see {@link remixlab.proscene.KeyFrameInterpolator#resetInterpolation()}). If the
 	 * path is played, simply stops interpolation.
 	 */
@@ -2366,6 +2370,17 @@ public class Camera implements Cloneable {
 		
 		interpolationKfi.startInterpolation();
 	}
+	
+	//TODO stop all interpolations
+	public boolean interpolationIsStarted() {
+		it = kfi.keySet().iterator();
+		while (it.hasNext()) {
+			Integer key = it.next();
+			if (kfi.get(key).interpolationIsStarted())
+				return true;
+		}
+		return interpolationKfi.interpolationIsStarted();
+	}	
 
 	// 13. STEREO PARAMETERS
 

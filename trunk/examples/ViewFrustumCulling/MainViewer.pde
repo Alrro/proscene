@@ -21,7 +21,7 @@ public class MainViewer extends NApplet {
     scene.setAxisIsDrawn(false);
   }
   
-  // We need to pass the scene to the auxiliar viwer
+  // We need to pass the scene to the auxiliar viewer
   Scene getScene() {
     return scene;
   }

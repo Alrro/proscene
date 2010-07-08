@@ -460,7 +460,7 @@ public class InteractiveFrame extends Frame
 	 * Returns {@code true} when the InteractiveFrame is being manipulated with the mouse.
 	 * Can be used to change the display of the manipulated object during manipulation.
 	 */
-	boolean isInInteraction() {
+	public boolean isInInteraction() {
 		return action != Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 
@@ -550,6 +550,7 @@ public class InteractiveFrame extends Frame
 			// And then down to frame
 			if (referenceFrame() != null) trans = referenceFrame().transformOf(trans);
 			translate(trans);
+			prevPos = eventPoint;
 			break;
 			}
 		
@@ -562,6 +563,7 @@ public class InteractiveFrame extends Frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
 			translate(trans);
+			prevPos = eventPoint;
 			break;
 			}
 		
@@ -580,6 +582,7 @@ public class InteractiveFrame extends Frame
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
+			prevPos = eventPoint;
 			break;
 			}
 		
@@ -609,6 +612,7 @@ public class InteractiveFrame extends Frame
 				trans = referenceFrame().transformOf(trans);
 			
 			translate(trans);
+			prevPos = eventPoint;
 			break;
 			}
 		
@@ -625,18 +629,19 @@ public class InteractiveFrame extends Frame
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
-			break;
+			prevPos = eventPoint;
+			break;			
 			}
 		
 		case NO_MOUSE_ACTION:
 			// Possible when the InteractiveFrame is a MouseGrabber. This method is then called without startAction
 			// because of mouseTracking.
 			break;
-			}
-		
-		if (action != Scene.MouseAction.NO_MOUSE_ACTION) {
+			
+		default:
 			prevPos = eventPoint;
-		}
+			break;
+		}			
 	}
 
 	/**

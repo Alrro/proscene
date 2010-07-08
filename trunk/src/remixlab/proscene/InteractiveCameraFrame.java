@@ -27,37 +27,24 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-import java.awt.event.*;
 import java.awt.Rectangle;
 import java.awt.Point;
-import javax.swing.Timer;
 
 /**
- * The InteractiveCameraFrame class represents a InteractiveFrame with Camera
+ * The InteractiveCameraFrame class represents an InteractiveFrame with Camera
  * specific mouse bindings.
  * <p>
- * A InteractiveCameraFrame is a specialization of a InteractiveFrame, designed to be set as the
- * {@link Camera#frame()}. Mouse motions are basically interpreted in a negated way: when the
- * mouse goes to the right, the InteractiveFrame translation goes to the right, while the
- * InteractiveCameraFrame has to go to the <i>left</i>, so that the <i>scene</i> seems
- * to move to the right.
+ * An InteractiveCameraFrame is a specialization of an InteractiveAvatarFrame (hence it can "fly"
+ * in the Scene), designed to be set as the {@link Camera#frame()}. Mouse motions are basically interpreted
+ * in a negated way: when the mouse goes to the right, the InteractiveFrame (and the InteractiveAvatarFrame)
+ * translation goes to the right, while the InteractiveCameraFrame has to go to the <i>left</i>, so that the
+ * <i>scene</i> seems to move to the right.
  * <p>
- * A InteractiveCameraFrame rotates around its {@link #arcballReferencePoint()}, which corresponds
+ * An InteractiveCameraFrame rotates around its {@link #arcballReferencePoint()}, which corresponds
  * to the associated {@link Camera#arcballReferencePoint()}.
- * <p>
- * A InteractiveCameraFrame can also "fly" in the scene. It basically moves forward, and turns
- * according to the mouse motion. See {@link #flySpeed()}, {@link #flyUpVector()} and the
- * {@link Scene.MouseAction#MOVE_FORWARD} and {@link Scene.MouseAction#MOVE_BACKWARD}.
  */
-public class InteractiveCameraFrame extends InteractiveFrame {
-	private float flySpd;
-    private float drvSpd;
-    private Timer flyTimer;
-    private ActionListener taskFlyPerformer;
-    private PVector flyUpVec;    
+public class InteractiveCameraFrame extends InteractiveAvatarFrame {	    
 	private PVector arcballRefPnt;
-	
-	private PVector flyDisp;
 
 	/**
 	 * Default constructor. 
@@ -67,22 +54,9 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	 * <p> 
 	 * <b>Attention:</b> Created object is {@link #removeFromMouseGrabberPool()}.
 	 */
-	public InteractiveCameraFrame() {
-		drvSpd = 0.0f;
-		flyUpVec = new PVector(0.0f, 1.0f, 0.0f);
-		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
-		
-		flyDisp = new PVector(0.0f, 0.0f, 0.0f);
-		
-		setFlySpeed(0.0f);	    
+	public InteractiveCameraFrame() {		 
 	    removeFromMouseGrabberPool();
-	           
-        taskFlyPerformer = new ActionListener() {
-        	public void actionPerformed(ActionEvent evt) {
-        		flyUpdate();
-        	}
-        };
-        flyTimer = new Timer(10, taskFlyPerformer);
+		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);		
 	}
 	
 	/**
@@ -94,11 +68,8 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */	
 	public InteractiveCameraFrame clone() {
-		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
-		clonedICamFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
-		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
-		clonedICamFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
-		clonedICamFrame.flyTimer = new Timer(10, taskFlyPerformer);
+		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();		
+		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);		
 		return clonedICamFrame;
 	}
 	
@@ -111,64 +82,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	public void spin() {
 		rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
 	}
-	
-    /**
-     * Returns the fly speed, expressed in processing scene units. 
-     * <p> 
-     * It corresponds to the incremental displacement that is periodically
-     * applied to the InteractiveCameraFrame position when a 
-     * Scene.MOVE_FORWARD or Scene.MOVE_BACKWARD
-     * Scene.MouseAction is proceeded.  
-     * <p>   
-     * <b>Attention:</b> When the InteractiveCameraFrame is set as the
-     * {@link remixlab.proscene.Camera#frame()}, this value is set
-     * according to the {@link remixlab.proscene.Scene#radius()} by
-     * {@link remixlab.proscene.Scene#setRadius(float)}.
-     */
-    float flySpeed() { 
-    	return flySpd; 
-    }
-	
-	/**
-	 * Sets the flySpeed(), defined in processing scene units. 
-	 * <p> 
-	 * Default value is 0.0, but it is modified according to the
-	 * {@link remixlab.proscene.Scene#radius()} when the InteractiveCameraFrame
-	 * is set as the {@link remixlab.proscene.Camera#frame()}.
-	 */
-    public void setFlySpeed(float speed) { 
-    	flySpd = speed;
-    }
-    
-    /**
-     * Returns the up vector used in fly mode, expressed in the world coordinate system. 
-     * <p> 
-     * Fly mode corresponds to the {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD} and 
-     * {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD} remixlab.proscene.Scene.MouseAction
-     * bindings. In these modes, horizontal displacements of the
-     * mouse rotate the InteractiveCameraFrame around this vector. Vertical
-     * displacements rotate always around the Camera {@code X} axis. 
-     * <p> 
-     * Default value is (0,1,0), but it is updated by the Camera when set as its
-     * {@link remixlab.proscene.Camera#frame()}. {@link remixlab.proscene.Camera#setOrientation(Quaternion)}
-     * and {@link remixlab.proscene.Camera#setUpVector(PVector)} modify this value and should be used
-     * instead. 
-     */
-    public PVector flyUpVector() {
-    	return flyUpVec;
-    }
-
-    /**
-     * Sets the {@link #flyUpVector()}, defined in the world coordinate system. 
-     * <p> 
-     * Default value is (0,1,0), but it is updated by the Camera when
-     * set as its {@link remixlab.proscene.Camera#frame()}. Use
-     * {@link remixlab.proscene.Camera#setUpVector(PVector)} instead in that case.
-     */
-    public void setFlyUpVector(PVector up) { 
-    	flyUpVec = up;
-    }
-	
+    	
 	/**
 	 * Returns the point the InteractiveCameraFrame revolves around when rotated. 
 	 * <p> 
@@ -180,58 +94,6 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	 */	
 	public PVector arcballReferencePoint() {
 		return arcballRefPnt;
-	}
-	
-	/**
-	 * Called for continuous frame motion in first person mode (see Scene.MOVE_FORWARD).
-	 */	
-	public void flyUpdate()	{		
-		flyDisp.set(0.0f, 0.0f, 0.0f);
-		switch (action) {
-		case MOVE_FORWARD:
-			flyDisp.z = -flySpeed();
-			translate(localInverseTransformOf(flyDisp));
-			break;
-	    case MOVE_BACKWARD:
-	    	flyDisp.z = flySpeed();
-	    	translate(localInverseTransformOf(flyDisp));
-	    	break;
-	    case DRIVE:
-	    	flyDisp.z = flySpeed() * drvSpd;
-	    	translate(localInverseTransformOf(flyDisp));
-	    	break;
-	    default:
-	    	break;
-	    }	
-	}
-	
-	/**
-	 * Protected method that simply calls {@code startAction(action, true)}.
-	 * 
-	 * @see #startAction(Scene.MouseAction, boolean)
-	 */
-	protected void startAction(
-			Scene.MouseAction action) {
-		startAction(action, true);
-	}
-	
-	/**
-	 * Protected internal method used to handle mouse events.
-	 */
-	protected void startAction(Scene.MouseAction a, boolean withConstraint) {
-		super.startAction(a, withConstraint);
-		
-		switch (action) {
-		case MOVE_FORWARD:
-	    case MOVE_BACKWARD:
-	    case DRIVE:
-	    	flyTimer.setRepeats(true);
-	    	flyTimer.setDelay(10);
-	    	flyTimer.start();
-	    	break;
-	    default:
-	    	break;
-	    }
 	}
 	
 	/**
@@ -258,7 +120,10 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 		else
 			deltaY = prevPos.y - eventPoint.y;
 		
-		switch (action) {
+		if ( (action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) || 
+			 (action == Scene.MouseAction.LOOK_AROUND) || (action == Scene.MouseAction.ROLL) || (action == Scene.MouseAction.ZOOM_ON_REGION) || (action == Scene.MouseAction.NO_MOUSE_ACTION) )
+			super.mouseDragged(eventPoint, camera);
+		else switch (action) {
 		case TRANSLATE: {			
 			Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
 			PVector trans = new PVector((float)delta.x, (float)-delta.y, 0.0f);
@@ -276,34 +141,9 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 				}
 			}			
 			translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+			prevPos = eventPoint;
 			break;
-			}
-		
-		case MOVE_FORWARD: {
-			Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
-			rotate(rot);
-			//#CONNECTION# wheelEvent MOVE_FORWARD case
-			// actual translation is made in flyUpdate().
-			//translate(inverseTransformOf(Vec(0.0, 0.0, -flySpeed())));
-			break;
-			}
-		
-		case MOVE_BACKWARD: {
-			Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
-			rotate(rot);
-			// actual translation is made in flyUpdate().
-			//translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
-			break;
-			}
-		
-		case DRIVE: {
-			//TODO: perhaps needs more testing
-			Quaternion rot = turnQuaternion(eventPoint.x, camera);
-			rotate(rot);
-			// actual translation is made in flyUpdate().
-			drvSpd = 0.01f * -deltaY;
-			break;
-			}
+			}		
 		
 		case ZOOM: {
 			//#CONNECTION# wheelEvent() ZOOM case
@@ -311,14 +151,9 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 					                 0.2f*camera.sceneRadius());
 			PVector trans = new PVector(0.0f, 0.0f, -coef * -deltaY / camera.screenHeight());
 			translate(inverseTransformOf(trans));
+			prevPos = eventPoint;
 			break;
-			}
-		
-		case LOOK_AROUND: {
-			Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
-			rotate(rot);
-			break;
-			}
+			}		
 		
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
@@ -327,6 +162,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
+			prevPos = eventPoint;
 			break;
 			}
 		
@@ -341,17 +177,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			setSpinningQuaternion(rot);
 			spin();
 			updateFlyUpVector();
-			break;
-			}
-		
-		case ROLL: {
-			float angle = Quaternion.PI * (eventPoint.x - prevPos.x) / camera.screenWidth();
-			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
-				angle = -angle;
-			Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
-			rotate(rot);
-			setSpinningQuaternion(rot);
-			updateFlyUpVector();
+			prevPos = eventPoint;
 			break;
 			}
 		
@@ -376,17 +202,13 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			}		
 			
 			translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+			prevPos = eventPoint;
 			break;
 			}
 		
-		case ZOOM_ON_REGION:
-			
-		case NO_MOUSE_ACTION:
-			break;		
-		}
-		
-		if (action != Scene.MouseAction.NO_MOUSE_ACTION) {
+		default:
 			prevPos = eventPoint;
+			break;
 		}
 	}
 	
@@ -395,11 +217,6 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 	 * {@link remixlab.proscene.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */	
 	public void mouseReleased(Point eventPoint, Camera camera) {
-		if ((action == Scene.MouseAction.MOVE_FORWARD)  || 
-			(action == Scene.MouseAction.MOVE_BACKWARD) || 
-			(action == Scene.MouseAction.DRIVE))
-		    flyTimer.stop();
-
 		  if (action == Scene.MouseAction.ZOOM_ON_REGION) {
 			  //the rectangle needs to be normalized!
 			  int w = PApplet.abs(eventPoint.x - pressPos.x);			  
@@ -413,6 +230,7 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			  //else
 				  camera.interpolateToZoomOnRegion(new Rectangle (tlX, tlY, w, h));
 		  }
+		  
 		  super.mouseReleased(eventPoint, camera);
 	}
 	
@@ -431,66 +249,31 @@ public class InteractiveCameraFrame extends InteractiveFrame {
 			//#CONNECTION# mouseMoveEvent() ZOOM case
 			float coef = PApplet.max(
 					PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z),
-					             0.2f*camera.sceneRadius());  
-			PVector trans = new PVector(0.0f, 0.0f,
-					coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
+					0.2f*camera.sceneRadius());
+			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
 			break;
-		      }
-		    case MOVE_FORWARD:
-		    case MOVE_BACKWARD:
-		      //#CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-		      translate(inverseTransformOf(new PVector(0.0f, 0.0f, 
-		    		  0.2f*flySpeed()*(-rotation))));
-		      break;
-		    default:
-		      break;
-		    }
-
-		  // #CONNECTION# startAction should always be called before
-		  if (prevConstraint != null)
-		    setConstraint(prevConstraint);
-		  
-		  int finalDrawAfterWheelEventDelay = 400;
-
-		  // Starts (or prolungates) the timer.
-		  flyTimer.setRepeats(false);
-		  flyTimer.setDelay(finalDrawAfterWheelEventDelay);
-		  flyTimer.start();
-
-		  action = Scene.MouseAction.NO_MOUSE_ACTION;
-	}
-	
-	/**
-	 * This method will be called by the Camera when its orientation is changed,
-	 * so that the {@link #flyUpVector()} (private) is changed accordingly.
-	 * You should not need to call this method.
-	 */
-	protected final void updateFlyUpVector() {
-	  flyUpVec = inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
-	}
-	
-	/**
-	 * Returns a Quaternion that is a rotation around current camera Y,
-	 * proportional to the horizontal mouse position.
-	 */
-	private final Quaternion turnQuaternion(int x, Camera camera)	{
-	  return new Quaternion(new PVector(0.0f, 1.0f, 0.0f), rotationSensitivity()*(prevPos.x-x)/camera.screenWidth());
-	}
-
-	/**
-	 * Returns a Quaternion that is the composition of two rotations, inferred
-	 * from the mouse pitch (X axis) and yaw ({@link #flyUpVector()} axis).
-	 */
-	private final Quaternion pitchYawQuaternion(int x, int y, Camera camera) {
-		int deltaY;
-		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = y-prevPos.y;
-		else
-			deltaY = prevPos.y-y;
+			}
+		case MOVE_FORWARD:
+		case MOVE_BACKWARD:
+			//#CONNECTION# mouseMoveEvent() MOVE_FORWARD case
+			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f*flySpeed()*(-rotation))));
+			break;
+		default:
+			break;
+		}
 		
-		Quaternion rotX = new Quaternion(new PVector(1.0f, 0.0f, 0.0f), rotationSensitivity()*deltaY/camera.screenHeight());
-	    Quaternion rotY = new Quaternion(transformOf(flyUpVector()), rotationSensitivity()*(prevPos.x-x)/camera.screenWidth());
-	    return Quaternion.multiply(rotY, rotX);
+		// #CONNECTION# startAction should always be called before
+		if (prevConstraint != null)
+			setConstraint(prevConstraint);
+		
+		int finalDrawAfterWheelEventDelay = 400;
+		
+		// Starts (or prolungates) the timer.
+		flyTimer.setRepeats(false);
+		flyTimer.setDelay(finalDrawAfterWheelEventDelay);
+		flyTimer.start();
+		
+		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 }
