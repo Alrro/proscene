@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
+
 import java.awt.Point;
 import java.awt.event.*;
 import java.lang.reflect.Method;
@@ -117,6 +118,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsACam;
+	boolean interactiveFrameIsAnAvatar;
 	boolean iFrameIsDrwn;
 	
 	// S C R E E N   C O O R D I N A T E S
@@ -161,6 +163,13 @@ public class Scene implements MouseWheelListener, PConstants {
 	boolean helpIsDrwn;
 	PFont font;
 	
+	// T H I R D   P E R S O N
+	private float trackingDistance;
+	private float azimuth;
+	private float inclination;
+	private PVector camRelPos;
+	//private PVector target;
+	
 	// R E G I S T E R   D R A W   M E T H O D
 	/** The object to handle the draw event */
 	protected Object drawHandlerObject;
@@ -198,6 +207,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		glIFrame = null;
 		interactiveFrameIsACam = false;
+		interactiveFrameIsAnAvatar = false;
 		iFrameIsDrwn = false;
 		
 		setMouseGrabber(null);
@@ -213,6 +223,12 @@ public class Scene implements MouseWheelListener, PConstants {
 		setHelpIsDrawn(true);	    
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
+		
+		//third person
+		camRelPos = new PVector();
+		setTrackingDistance(radius()/3);
+		setAzimuth(0);
+		setInclination(PApplet.PI/2);
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -296,8 +312,14 @@ public class Scene implements MouseWheelListener, PConstants {
 		glIFrame = frame;		
 		interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) &&
 				                  (interactiveFrame() instanceof InteractiveCameraFrame));
+		interactiveFrameIsAnAvatar = ( !(interactiveFrame() instanceof InteractiveCameraFrame) &&
+                (interactiveFrame() instanceof InteractiveAvatarFrame) );
+		
 		if (glIFrame == null)
 			iFrameIsDrwn = false;
+
+		if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+			((InteractiveAvatarFrame)interactiveFrame()).setFlySpeed(0.01f * radius());			
 	}
 	
 	/**
@@ -735,12 +757,22 @@ public class Scene implements MouseWheelListener, PConstants {
     			camera().attachToPCamera();
     		}
     		else {
+    			if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().interpolationIsStarted() ) {		    			
+        			camera().setPosition( glIFrame.inverseCoordinatesOf(camRelPos) );
+        			camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+        			camera().lookAt( glIFrame.position() );
+        		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
         		setPProjectionMatrix();
         		setPModelViewMatrix();
     		}
     	}
-    	else {
+    	else {    		
+    		if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().interpolationIsStarted()  ) {		    			
+    			camera().setPosition( glIFrame.inverseCoordinatesOf(camRelPos));
+    			camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+    			camera().lookAt( glIFrame.position() );
+    		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
     		setPProjectionMatrix();
     		setPModelViewMatrix();
@@ -856,7 +888,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #setCenter(PVector)
 	 */
 	public void setRadius(float radius) {
-		camera().setSceneRadius(radius);
+		camera().setSceneRadius(radius);		
 	}
 	
 	/**
@@ -1513,24 +1545,58 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #getCameraMode()
 	 */
-	public void setCameraMode(CameraMode camMode) {
-		cameraMode = camMode;
-		switch (cameraMode) {
+	public void setCameraMode(CameraMode camMode) {		
+		switch (camMode) {
 		case ARCBALL :
+			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+	    		glIFrame.addInMouseGrabberPool();
+			setDrawInteractiveFrame(false);
 			cameraLeftButton = MouseAction.ROTATE;		
 			cameraMidButton = MouseAction.ZOOM;
 			cameraRightButton = MouseAction.TRANSLATE;
+			frameLeftButton = MouseAction.ROTATE;		
+			frameMidButton = MouseAction.ZOOM;
+			frameRightButton = MouseAction.TRANSLATE;
+			if( getCameraMode() == CameraMode.THIRD_PERSON )
+				camera().interpolateToFitScene();
 			break;
 	    case WALKTHROUGH :
+	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+	    		glIFrame.addInMouseGrabberPool();
+	    	setDrawInteractiveFrame(false);
 	    	camera().frame().updateFlyUpVector();
 			camera().frame().stopSpinning();
 			cameraLeftButton = MouseAction.MOVE_FORWARD;
 			cameraMidButton = MouseAction.LOOK_AROUND;
 			cameraRightButton = MouseAction.MOVE_BACKWARD;
+			frameLeftButton = MouseAction.ROTATE;		
+			frameMidButton = MouseAction.ZOOM;
+			frameRightButton = MouseAction.TRANSLATE;
+			if( getCameraMode() == CameraMode.THIRD_PERSON )
+				camera().interpolateToFitScene();
 	    	break;
-	    case THIRD_PERSON :
+	    case THIRD_PERSON :	    	
+	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {glIFrame.removeFromMouseGrabberPool();
+	    		setDrawInteractiveFrame();
+	    		camera().frame().updateFlyUpVector();//?
+				camera().frame().stopSpinning();
+				((InteractiveAvatarFrame)(glIFrame)).updateFlyUpVector();
+				((InteractiveAvatarFrame)(glIFrame)).stopSpinning();
+		    	frameLeftButton = MouseAction.MOVE_FORWARD;		
+				frameMidButton = MouseAction.LOOK_AROUND;
+				frameRightButton = MouseAction.MOVE_BACKWARD;
+				//small animation ;)
+				if ( !camera().interpolationIsStarted() ) {
+					Camera cam = camera().clone();
+					cam.setPosition( glIFrame.inverseCoordinatesOf(camRelPos) );
+					cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+					cam.lookAt( glIFrame.position() );
+					camera().interpolateTo(cam.frame());
+				}
+	    	}
 	    	break;
-	    }		
+	    }
+		cameraMode = camMode;
 	}
 	
 	/**
@@ -1547,15 +1613,16 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
-	public void nextCameraMode() {
+	public void nextCameraMode() {		
 		switch (cameraMode) {
 		case ARCBALL :
 			setCameraMode(CameraMode.WALKTHROUGH);
 			break;
 	    case WALKTHROUGH :
-	    	//setCameraMode(CameraMode.THIRD_PERSON);
-	    	//TODO hack for the beta release:
-	    	setCameraMode(CameraMode.ARCBALL);
+	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+	    		setCameraMode(CameraMode.THIRD_PERSON);
+	    	else
+	    		setCameraMode(CameraMode.ARCBALL);
 	    	break;
 	    case THIRD_PERSON :
 	    	setCameraMode(CameraMode.ARCBALL);
@@ -1571,14 +1638,15 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void previousCameraMode() {
 		switch (cameraMode) {
 		case ARCBALL :
-			//setCameraMode(CameraMode.THIRD_PERSON);
-			//TODO hack for the beta release:
-	    	setCameraMode(CameraMode.WALKTHROUGH);
+			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+				setCameraMode(CameraMode.THIRD_PERSON);
+			else
+				setCameraMode(CameraMode.WALKTHROUGH);
 			break;
 	    case WALKTHROUGH :
 	    	setCameraMode(CameraMode.ARCBALL);
 	    	break;
-	    case THIRD_PERSON :
+	    case THIRD_PERSON :	    	
 	    	setCameraMode(CameraMode.WALKTHROUGH);
 	    	break;
 	    }
@@ -1786,12 +1854,12 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (parent.key == 'r' || parent.key == 'R') {
 			toggleCameraPathsAreDrawn();
 		}
-		if (parent.key == 's') {			
+		if ( (parent.key == 's') && (getCameraMode() != CameraMode.THIRD_PERSON) ) {
 			camera().interpolateToFitScene();
-		}
-		if (parent.key == 'S') {
+		}		
+		if ( (parent.key) == 'S' && (getCameraMode() != CameraMode.THIRD_PERSON) ) {
 			showAll();
-		}
+		}		
 		if (parent.key == 'w' || parent.key == 'W') {
 			toggleDrawWithConstraint();
 		}
@@ -1810,7 +1878,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			arpFlag = true;
 			utilityTimer.start();
 		}
-		if ((parent.key == 'p') || (parent.key == 'P')) {
+		if ((parent.key == 'p') || (parent.key == 'P') && (getCameraMode() != CameraMode.THIRD_PERSON) ) {
 			if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
 						        "See the Point Under Pixel example!");
@@ -1823,7 +1891,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				}
 			}
 		}
-		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' ) {
+		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '1') camera().playPath(1);			
 			if( parent.key == 'j') {
 				camera().addKeyFrameToPath(1);
@@ -1834,24 +1902,24 @@ public class Scene implements MouseWheelListener, PConstants {
 						+ camera().orientation().x + ", " + camera().orientation().y + ", " + camera().orientation().z + ", " + camera().orientation().w);
 			    // */
 			}
-			if( parent.key == 'J') camera().deletePath(1);			
+			if( parent.key == 'J') camera().deletePath(1);
 		}
-		if( parent.key == '2' || parent.key == 'k' || parent.key == 'K' ) {
+		if( parent.key == '2' || parent.key == 'k' || parent.key == 'K' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '2') camera().playPath(2);			
 			if( parent.key == 'k') camera().addKeyFrameToPath(2);
 			if( parent.key == 'K') camera().deletePath(2);
 		}
-		if( parent.key == '3' || parent.key == 'l' || parent.key == 'L' ) {
+		if( parent.key == '3' || parent.key == 'l' || parent.key == 'L' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '3') camera().playPath(3);			
 			if( parent.key == 'l') camera().addKeyFrameToPath(3);
 			if( parent.key == 'L') camera().deletePath(3);
 		}
-		if( parent.key == '4' || parent.key == 'm' || parent.key == 'M' ) {
+		if( parent.key == '4' || parent.key == 'm' || parent.key == 'M' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '4') camera().playPath(4);			
 			if( parent.key == 'm') camera().addKeyFrameToPath(4);
 			if( parent.key == 'M') camera().deletePath(4);
 		}
-		if( parent.key == '5' || parent.key == 'n' || parent.key == 'N' ) {
+		if( parent.key == '5' || parent.key == 'n' || parent.key == 'N' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '5') camera().playPath(5);			
 			if( parent.key == 'n') camera().addKeyFrameToPath(5);
 			if( parent.key == 'N') camera().deletePath(5);
@@ -2347,10 +2415,55 @@ public class Scene implements MouseWheelListener, PConstants {
     	if (drawHandlerMethodName == null)
     		return false;
     	return true;
-    }	
+    }
+    
+    // 11. Third person
+    
+    public float trackingDistance() {
+    	return trackingDistance;
+    }
+    
+    public void setTrackingDistance(float d) {
+    	trackingDistance = d;
+    	computeCameraRelativePosition();
+    }
+    
+    public float azimuth() {
+    	return azimuth;
+    }
+    
+    public void setAzimuth(float a) {
+    	azimuth = a;
+    	computeCameraRelativePosition();
+    }
+    
+    public float inclination() {
+    	return inclination;
+    }
+    
+    public void setInclination(float i) {
+    	inclination = i;
+    	computeCameraRelativePosition();
+    }
+    
+    /**
+    public PVector target() {
+    	return target;
+    }
+    
+    public void setTarget(PVector t) {
+    	target = t;
+    }
+    */
+    
+    protected void computeCameraRelativePosition() {
+    	camRelPos.x = trackingDistance() * PApplet.sin(inclination()) * PApplet.sin(azimuth());
+    	camRelPos.y = trackingDistance() * PApplet.cos(inclination());
+    	camRelPos.z = trackingDistance() * PApplet.sin(inclination()) * PApplet.cos(azimuth());    	
+    }
 	
-	// 11. Processing objects
-	
+	// 12. Processing objects
+    
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}.
 	 * Calls {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the

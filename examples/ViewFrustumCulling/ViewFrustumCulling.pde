@@ -32,14 +32,6 @@ void setup() {
   nappletManager.createNApplet("AuxiliarViewer", 0, 360);
 }
 
-// Since we need to pass the main viewer scene to the auxiliar viewer, we declare its
-// drawing here. We then add the drawing at the AuxiliarViewer class.
-void auxiliarViewerDrawing(PApplet p) {
-  Root.drawIfAllChildrenAreVisible(p, ((MainViewer)mainNApplet).getScene().camera());
-  DrawingUtils.drawCamera(p, ((MainViewer)mainNApplet).getScene().camera());
-}
-
 void draw() {  
   background(50);
 }
-
