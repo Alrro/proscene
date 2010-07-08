@@ -313,13 +313,13 @@ public class Scene implements MouseWheelListener, PConstants {
 		interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) &&
 				                  (interactiveFrame() instanceof InteractiveCameraFrame));
 		interactiveFrameIsAnAvatar = ( !(interactiveFrame() instanceof InteractiveCameraFrame) &&
-                (interactiveFrame() instanceof InteractiveAvatarFrame) );
+                (interactiveFrame() instanceof InteractiveDrivableFrame) );
 		
 		if (glIFrame == null)
 			iFrameIsDrwn = false;
 
 		if( interactiveFrameIsAnAvatar && (glIFrame != null) )
-			((InteractiveAvatarFrame)interactiveFrame()).setFlySpeed(0.01f * radius());			
+			((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());			
 	}
 	
 	/**
@@ -759,7 +759,7 @@ public class Scene implements MouseWheelListener, PConstants {
     		else {
     			if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().interpolationIsStarted() ) {		    			
         			camera().setPosition( glIFrame.inverseCoordinatesOf(camRelPos) );
-        			camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+        			camera().setUpVector( ((InteractiveDrivableFrame)glIFrame).flyUpVector() );
         			camera().lookAt( glIFrame.position() );
         		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
@@ -770,7 +770,7 @@ public class Scene implements MouseWheelListener, PConstants {
     	else {    		
     		if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().interpolationIsStarted()  ) {		    			
     			camera().setPosition( glIFrame.inverseCoordinatesOf(camRelPos));
-    			camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+    			camera().setUpVector( ((InteractiveDrivableFrame)glIFrame).flyUpVector() );
     			camera().lookAt( glIFrame.position() );
     		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
@@ -1580,8 +1580,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	    		setDrawInteractiveFrame();
 	    		camera().frame().updateFlyUpVector();//?
 				camera().frame().stopSpinning();
-				((InteractiveAvatarFrame)(glIFrame)).updateFlyUpVector();
-				((InteractiveAvatarFrame)(glIFrame)).stopSpinning();
+				((InteractiveDrivableFrame)(glIFrame)).updateFlyUpVector();
+				((InteractiveDrivableFrame)(glIFrame)).stopSpinning();
 		    	frameLeftButton = MouseAction.MOVE_FORWARD;		
 				frameMidButton = MouseAction.LOOK_AROUND;
 				frameRightButton = MouseAction.MOVE_BACKWARD;
@@ -1589,7 +1589,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				if ( !camera().interpolationIsStarted() ) {
 					Camera cam = camera().clone();
 					cam.setPosition( glIFrame.inverseCoordinatesOf(camRelPos) );
-					cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+					cam.setUpVector( ((InteractiveDrivableFrame)glIFrame).flyUpVector() );
 					cam.lookAt( glIFrame.position() );
 					camera().interpolateTo(cam.frame());
 				}
@@ -1891,7 +1891,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				}
 			}
 		}
-		if( parent.key == '1' || parent.key == 'j' || parent.key == 'J' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '1' || parent.key == 'j' || parent.key == 'J') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '1') camera().playPath(1);			
 			if( parent.key == 'j') {
 				camera().addKeyFrameToPath(1);
@@ -1904,22 +1904,22 @@ public class Scene implements MouseWheelListener, PConstants {
 			}
 			if( parent.key == 'J') camera().deletePath(1);
 		}
-		if( parent.key == '2' || parent.key == 'k' || parent.key == 'K' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '2' || parent.key == 'k' || parent.key == 'K') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '2') camera().playPath(2);			
 			if( parent.key == 'k') camera().addKeyFrameToPath(2);
 			if( parent.key == 'K') camera().deletePath(2);
 		}
-		if( parent.key == '3' || parent.key == 'l' || parent.key == 'L' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '3' || parent.key == 'l' || parent.key == 'L') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '3') camera().playPath(3);			
 			if( parent.key == 'l') camera().addKeyFrameToPath(3);
 			if( parent.key == 'L') camera().deletePath(3);
 		}
-		if( parent.key == '4' || parent.key == 'm' || parent.key == 'M' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '4' || parent.key == 'm' || parent.key == 'M') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '4') camera().playPath(4);			
 			if( parent.key == 'm') camera().addKeyFrameToPath(4);
 			if( parent.key == 'M') camera().deletePath(4);
 		}
-		if( parent.key == '5' || parent.key == 'n' || parent.key == 'N' && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '5' || parent.key == 'n' || parent.key == 'N') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '5') camera().playPath(5);			
 			if( parent.key == 'n') camera().addKeyFrameToPath(5);
 			if( parent.key == 'N') camera().deletePath(5);

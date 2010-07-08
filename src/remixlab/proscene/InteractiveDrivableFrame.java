@@ -38,7 +38,7 @@ import javax.swing.Timer;
  * See {@link #flySpeed()}, {@link #flyUpVector()} and the {@link Scene.MouseAction#MOVE_FORWARD}
  * and {@link Scene.MouseAction#MOVE_BACKWARD}.
  */
-public class InteractiveAvatarFrame extends InteractiveFrame {
+public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected float flySpd;
 	protected float drvSpd;
 	protected Timer flyTimer;
@@ -53,7 +53,7 @@ public class InteractiveAvatarFrame extends InteractiveFrame {
 	 * <p> 
 	 * <b>Attention:</b> Created object is {@link #removeFromMouseGrabberPool()}.
 	 */
-	public InteractiveAvatarFrame() {
+	public InteractiveDrivableFrame() {
 		drvSpd = 0.0f;
 		flyUpVec = new PVector(0.0f, 1.0f, 0.0f);
 				
@@ -77,8 +77,8 @@ public class InteractiveAvatarFrame extends InteractiveFrame {
 	 *  
 	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */	
-	public InteractiveAvatarFrame clone() {
-		InteractiveAvatarFrame clonedIAvtrFrame = (InteractiveAvatarFrame) super.clone();
+	public InteractiveDrivableFrame clone() {
+		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);		
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
 		clonedIAvtrFrame.flyTimer = new Timer(10, taskFlyPerformer);

@@ -188,9 +188,9 @@ public class InteractiveFrame extends Frame
 	 * @see remixlab.proscene.Frame#clone()
 	 */
 	public InteractiveFrame clone() {
-		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
-		clonedIFrame.prevPos = new Point(prevPos.x, prevPos.y);
-		clonedIFrame.pressPos = new Point(pressPos.x, pressPos.y);
+		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();		
+		//clonedIFrame.prevPos = new Point(prevPos.x, prevPos.y);
+		//clonedIFrame.pressPos = new Point(pressPos.x, pressPos.y);
 		clonedIFrame.spngTimer = new Timer(10, taskPerformer);
 		return clonedIFrame;
 	}

@@ -43,7 +43,7 @@ import java.awt.Point;
  * An InteractiveCameraFrame rotates around its {@link #arcballReferencePoint()}, which corresponds
  * to the associated {@link Camera#arcballReferencePoint()}.
  */
-public class InteractiveCameraFrame extends InteractiveAvatarFrame {	    
+public class InteractiveCameraFrame extends InteractiveDrivableFrame {	    
 	private PVector arcballRefPnt;
 
 	/**
