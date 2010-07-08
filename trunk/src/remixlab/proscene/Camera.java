@@ -1290,7 +1290,7 @@ public class Camera implements Cloneable {
 		
 		//if there's an avatar we change its fly speed as well
 		if( scene.interactiveFrameIsAnAvatar && (scene.glIFrame != null) )
-			((InteractiveAvatarFrame)scene.interactiveFrame()).setFlySpeed(0.01f * scene.radius());
+			((InteractiveDrivableFrame)scene.interactiveFrame()).setFlySpeed(0.01f * scene.radius());
 	}
 
 	/**
