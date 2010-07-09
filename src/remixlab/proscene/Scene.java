@@ -107,7 +107,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	PImage image;
 	
 	//camera mode
-	private CameraMode cameraMode;
+	private CameraMode camMode;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
@@ -163,11 +163,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	boolean helpIsDrwn;
 	PFont font;
 	
-	// T H I R D   P E R S O N
-	private float trackingDistance;
-	private float azimuth;
-	private float inclination;
-	private PVector camRelPos;
+	// T H I R D   P E R S O N	
 	//private PVector target;
 	
 	// R E G I S T E R   D R A W   M E T H O D
@@ -225,10 +221,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		setCameraPathsAreDrawn(false);
 		
 		//third person
-		camRelPos = new PVector();
-		setTrackingDistance(radius()/3);
-		setAzimuth(0);
-		setInclination(PApplet.PI/2);
+		//TODO
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -313,13 +306,16 @@ public class Scene implements MouseWheelListener, PConstants {
 		interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) &&
 				                  (interactiveFrame() instanceof InteractiveCameraFrame));
 		interactiveFrameIsAnAvatar = ( !(interactiveFrame() instanceof InteractiveCameraFrame) &&
-                (interactiveFrame() instanceof InteractiveDrivableFrame) );
+                (interactiveFrame() instanceof InteractiveAvatarFrame) );
 		
 		if (glIFrame == null)
 			iFrameIsDrwn = false;
 
-		if( interactiveFrameIsAnAvatar && (glIFrame != null) )
-			((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());			
+		if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {
+			if ( ((InteractiveAvatarFrame)interactiveFrame()).trackingDistance() == 0 )
+				((InteractiveAvatarFrame)interactiveFrame()).setTrackingDistance(radius()/3);
+			((InteractiveAvatarFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
+		}			
 	}
 	
 	/**
@@ -757,9 +753,10 @@ public class Scene implements MouseWheelListener, PConstants {
     			camera().attachToPCamera();
     		}
     		else {
-    			if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().interpolationIsStarted() ) {		    			
-        			camera().setPosition( glIFrame.inverseCoordinatesOf(camRelPos) );
-        			camera().setUpVector( ((InteractiveDrivableFrame)glIFrame).flyUpVector() );
+    			if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
+        			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );        			
+        			//camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+        			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
         			camera().lookAt( glIFrame.position() );
         		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
@@ -768,9 +765,10 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     	}
     	else {    		
-    		if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().interpolationIsStarted()  ) {		    			
-    			camera().setPosition( glIFrame.inverseCoordinatesOf(camRelPos));
-    			camera().setUpVector( ((InteractiveDrivableFrame)glIFrame).flyUpVector() );
+    		if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {		    			
+    			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );    			
+    			//camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+    			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
     			camera().lookAt( glIFrame.position() );
     		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
@@ -1545,8 +1543,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #getCameraMode()
 	 */
-	public void setCameraMode(CameraMode camMode) {		
-		switch (camMode) {
+	public void setCameraMode(CameraMode cMode) {		
+		switch (cMode) {
 		case ARCBALL :
 			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
 	    		glIFrame.addInMouseGrabberPool();
@@ -1580,23 +1578,24 @@ public class Scene implements MouseWheelListener, PConstants {
 	    		setDrawInteractiveFrame();
 	    		camera().frame().updateFlyUpVector();//?
 				camera().frame().stopSpinning();
-				((InteractiveDrivableFrame)(glIFrame)).updateFlyUpVector();
-				((InteractiveDrivableFrame)(glIFrame)).stopSpinning();
+				((InteractiveAvatarFrame)(glIFrame)).updateFlyUpVector();
+				((InteractiveAvatarFrame)(glIFrame)).stopSpinning();
 		    	frameLeftButton = MouseAction.MOVE_FORWARD;		
 				frameMidButton = MouseAction.LOOK_AROUND;
 				frameRightButton = MouseAction.MOVE_BACKWARD;
 				//small animation ;)
-				if ( !camera().interpolationIsStarted() ) {
-					Camera cam = camera().clone();
-					cam.setPosition( glIFrame.inverseCoordinatesOf(camRelPos) );
-					cam.setUpVector( ((InteractiveDrivableFrame)glIFrame).flyUpVector() );
-					cam.lookAt( glIFrame.position() );
-					camera().interpolateTo(cam.frame());
-				}
+				if ( camera().anyInterpolationIsStarted() ) 
+					camera().stopAllInterpolations();
+				Camera cam = camera().clone();
+				cam.setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );				
+				//cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+				cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
+				cam.lookAt( glIFrame.position() );
+				camera().interpolateTo(cam.frame());				
 	    	}
 	    	break;
 	    }
-		cameraMode = camMode;
+		camMode = cMode;
 	}
 	
 	/**
@@ -1605,7 +1604,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #setCameraMode(CameraMode)
 	 */
 	public CameraMode getCameraMode() {
-		return cameraMode;
+		return camMode;
 	}
 	
 	/**
@@ -1614,7 +1613,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #setCameraMode(CameraMode)
 	 */
 	public void nextCameraMode() {		
-		switch (cameraMode) {
+		switch (camMode) {
 		case ARCBALL :
 			setCameraMode(CameraMode.WALKTHROUGH);
 			break;
@@ -1636,7 +1635,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #setCameraMode(CameraMode)
 	 */
 	public void previousCameraMode() {
-		switch (cameraMode) {
+		switch (camMode) {
 		case ARCBALL :
 			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
 				setCameraMode(CameraMode.THIRD_PERSON);
@@ -1702,7 +1701,7 @@ public class Scene implements MouseWheelListener, PConstants {
 					PApplet.print(s);
 				PApplet.print(" ");
 			}
-			PApplet.println();
+			PApplet.println("and also the key-codes: left, right, up and down");
 			PApplet.println("To avoid possible conflicts with proscene, you have two choices:");
 			PApplet.println("1. Use some of the keys not listed above.");
 			PApplet.println("2. Disable proscene keyboard handling while doing your keyboard manipulation by calling Scene.disableKeyboardHandling() " +
@@ -1807,7 +1806,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		case KeyEvent.KEY_PRESSED:
 			break;
 		case KeyEvent.KEY_RELEASED:
-			setKeyBindings();
+			keyReleased();
 			break;
 		case KeyEvent.KEY_TYPED:
 			break;
@@ -1817,19 +1816,97 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Associates the different interactions to the keys.
 	 */
-	protected void setKeyBindings() {
+	protected void keyReleased() {
 		if (parent.key == '+') {
-			if( getCameraMode() == CameraMode.ARCBALL )
+			switch (getCameraMode()) {
+			case ARCBALL:
 				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.5f);
-			else if ( getCameraMode() == CameraMode.WALKTHROUGH )
+				break;
+			case WALKTHROUGH:
 				camera().setFlySpeed(camera().flySpeed() * 1.5f);
+				break;
+			case THIRD_PERSON:
+				((InteractiveAvatarFrame)glIFrame).setFlySpeed(
+						((InteractiveAvatarFrame)glIFrame).flySpeed() * 1.5f);
+				break;
+			}			
 		}
 		if (parent.key == '-') {
-			if( getCameraMode() == CameraMode.ARCBALL )
+			switch (getCameraMode()) {
+			case ARCBALL:
 				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.5f);
-			else if ( getCameraMode() == CameraMode.WALKTHROUGH )
-				camera().setFlySpeed(camera().flySpeed() / 1.5f);			
+				break;
+			case WALKTHROUGH:
+				camera().setFlySpeed(camera().flySpeed() / 1.5f);
+				break;
+			case THIRD_PERSON:
+				((InteractiveAvatarFrame)glIFrame).setFlySpeed(
+						((InteractiveAvatarFrame)glIFrame).flySpeed() / 1.5f);
+				break;
+			}			
 		}
+		if (parent.keyCode == UP) {
+			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
+					new PVector(0.0f,  -10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f)));
+			else
+				camera().frame().translate(camera().frame().inverseTransformOf(
+					new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
+		}
+		if (parent.keyCode == DOWN) {
+			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
+					new PVector(0.0f,  10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f)));
+			else
+				camera().frame().translate(camera().frame().inverseTransformOf(
+					new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
+		}
+		if (parent.keyCode == LEFT) {
+			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
+					new PVector(-10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f,  0.0f)));
+			else
+				camera().frame().translate(camera().frame().inverseTransformOf(
+					new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
+		}
+		if (parent.keyCode == RIGHT) {
+			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
+					new PVector(10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f,  0.0f)));
+			else
+				camera().frame().translate(camera().frame().inverseTransformOf(
+						new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));				
+		}
+		// /**
+		if ( (parent.key == 'c') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+			((InteractiveAvatarFrame)glIFrame).setAzimuth(
+					((InteractiveAvatarFrame)glIFrame).azimuth() + PApplet.PI/32 );
+		}
+		if ( (parent.key == 'C') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+			((InteractiveAvatarFrame)glIFrame).setAzimuth(
+					((InteractiveAvatarFrame)glIFrame).azimuth() - PApplet.PI/32 );
+		}
+		// */
+		// /**
+		if ( (parent.key == 'd') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+			((InteractiveAvatarFrame)glIFrame).setTrackingDistance(
+					((InteractiveAvatarFrame)glIFrame).trackingDistance() + radius()/20 );
+		}
+		if ( (parent.key == 'D') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+			((InteractiveAvatarFrame)glIFrame).setTrackingDistance(
+					((InteractiveAvatarFrame)glIFrame).trackingDistance() - radius()/20 );
+		}
+		// */
+		// /**
+		if ( (parent.key == 't') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+			((InteractiveAvatarFrame)glIFrame).setInclination(
+					((InteractiveAvatarFrame)glIFrame).inclination() + PApplet.PI/32 );
+		}
+		if ( (parent.key == 'T') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+			((InteractiveAvatarFrame)glIFrame).setInclination(
+					((InteractiveAvatarFrame)glIFrame).inclination() - PApplet.PI/32 );
+		}
+		// */
 		if (parent.key == 'a' || parent.key == 'A') {
 			toggleAxisIsDrawn();			
 		}
@@ -2419,33 +2496,6 @@ public class Scene implements MouseWheelListener, PConstants {
     
     // 11. Third person
     
-    public float trackingDistance() {
-    	return trackingDistance;
-    }
-    
-    public void setTrackingDistance(float d) {
-    	trackingDistance = d;
-    	computeCameraRelativePosition();
-    }
-    
-    public float azimuth() {
-    	return azimuth;
-    }
-    
-    public void setAzimuth(float a) {
-    	azimuth = a;
-    	computeCameraRelativePosition();
-    }
-    
-    public float inclination() {
-    	return inclination;
-    }
-    
-    public void setInclination(float i) {
-    	inclination = i;
-    	computeCameraRelativePosition();
-    }
-    
     /**
     public PVector target() {
     	return target;
@@ -2455,12 +2505,6 @@ public class Scene implements MouseWheelListener, PConstants {
     	target = t;
     }
     */
-    
-    protected void computeCameraRelativePosition() {
-    	camRelPos.x = trackingDistance() * PApplet.sin(inclination()) * PApplet.sin(azimuth());
-    	camRelPos.y = trackingDistance() * PApplet.cos(inclination());
-    	camRelPos.z = trackingDistance() * PApplet.sin(inclination()) * PApplet.cos(azimuth());    	
-    }
 	
 	// 12. Processing objects
     

@@ -339,10 +339,10 @@ public class Camera implements Cloneable {
 	 * It is orthogonal to {@link #viewDirection()} and to {@link #rightVector()}. 
 	 * <p> 
 	 * It corresponds to the Y axis of the associated {@link #frame()} (actually returns
-	 * {@code frame().inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f))}
+	 * {@code frame().yAxis()}
 	 */
 	public PVector upVector() {
-		return frame().inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
+		return frame().yAxis();
 	}
 
 	/**
@@ -443,11 +443,10 @@ public class Camera implements Cloneable {
 	 * Set using {@link #setUpVector(PVector)}, {@link #lookAt(PVector)} or
 	 * {@link #setOrientation(Quaternion)}.
 	 * <p> 
-	 * Simply returns {@code frame().inverseTransformOf(new PVector(1.0f, 0.0f,
-	 * 0.0f))}.
+	 * Simply returns {@code frame().xAxis()}.
 	 */
 	public PVector rightVector() {
-		return frame().inverseTransformOf(new PVector(1.0f, 0.0f, 0.0f));
+		return frame().xAxis();
 	}
 
 	/**
@@ -1569,7 +1568,7 @@ public class Camera implements Cloneable {
 	 * keyFrame path (resp. restore	the point of view). Use {@link #deletePath(int)} to clear the path.
 	 * <p>
 	 * The default keyboard shortcuts for this method are keys [j-n]. See
-	 * {@link remixlab.proscene.Scene#setKeyBindings()}.
+	 * {@link remixlab.proscene.Scene#keyReleased()}.
 	 * <p>
 	 * If you use directly this method and the {@link #keyFrameInterpolator(int)} does not exist,
 	 * a new one is created.
@@ -1609,6 +1608,8 @@ public class Camera implements Cloneable {
 				PApplet.println("Path " + key + " stopped");
 			}
 			else {
+				if ( anyInterpolationIsStarted() )
+					stopAllInterpolations();
 				kfi.get(key).startInterpolation();
 				PApplet.println("Path " + key + " started");
 			}
@@ -1618,7 +1619,7 @@ public class Camera implements Cloneable {
 	/**
 	 * Deletes the {@link #keyFrameInterpolator(int)} of index {@code key}. The default keyboard
 	 * shortcuts for this method are keys [J-N] (note the CAPS). See
-	 * {@link remixlab.proscene.Scene#setKeyBindings()}.
+	 * {@link remixlab.proscene.Scene#keyReleased()}.
 	 */
 	public void deletePath (int key) {
 		//TODO: info should go on the applet ;)
@@ -2246,8 +2247,10 @@ public class Camera implements Cloneable {
 	 * @see #fitScreenRegion(Rectangle)
 	 */
 	public void interpolateToZoomOnRegion(Rectangle rectangle) {
-		if (interpolationKfi.interpolationIsStarted())
-			interpolationKfi.stopInterpolation();
+		//if (interpolationKfi.interpolationIsStarted())
+			//interpolationKfi.stopInterpolation();
+		if ( anyInterpolationIsStarted() )
+			stopAllInterpolations();
 		
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
@@ -2285,8 +2288,10 @@ public class Camera implements Cloneable {
 		if( !target.found )
 			return target;
 		
-		if (interpolationKfi.interpolationIsStarted())
-			interpolationKfi.stopInterpolation();
+		//if (interpolationKfi.interpolationIsStarted())
+			//interpolationKfi.stopInterpolation();		
+		if ( anyInterpolationIsStarted() )
+			stopAllInterpolations();
 		
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
@@ -2322,8 +2327,10 @@ public class Camera implements Cloneable {
 	 * @see #interpolateToZoomOnPixel(Point)
 	 */
 	public void interpolateToFitScene() {
-		if (interpolationKfi.interpolationIsStarted())
-			interpolationKfi.stopInterpolation();
+		//if (interpolationKfi.interpolationIsStarted())
+			//interpolationKfi.stopInterpolation();		
+		if ( anyInterpolationIsStarted() )
+			stopAllInterpolations();
 		
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
@@ -2360,9 +2367,11 @@ public class Camera implements Cloneable {
 	 * @see #interpolateToFitScene()
 	 * @see #interpolateToZoomOnPixel(Point)
 	 */
-	public void interpolateTo(Frame fr, float duration) {
-		if (interpolationKfi.interpolationIsStarted())
-			interpolationKfi.stopInterpolation();
+	public void interpolateTo(Frame fr, float duration) {		
+		//if (interpolationKfi.interpolationIsStarted())
+			//interpolationKfi.stopInterpolation();
+		if ( anyInterpolationIsStarted() )
+			stopAllInterpolations();
 		
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
@@ -2372,7 +2381,7 @@ public class Camera implements Cloneable {
 	}
 	
 	//TODO stop all interpolations
-	public boolean interpolationIsStarted() {
+	public boolean anyInterpolationIsStarted() {
 		it = kfi.keySet().iterator();
 		while (it.hasNext()) {
 			Integer key = it.next();
@@ -2380,7 +2389,18 @@ public class Camera implements Cloneable {
 				return true;
 		}
 		return interpolationKfi.interpolationIsStarted();
-	}	
+	}
+	
+	public void stopAllInterpolations() {
+		it = kfi.keySet().iterator();
+		while (it.hasNext()) {
+			Integer key = it.next();
+			if (kfi.get(key).interpolationIsStarted())
+				kfi.get(key).stopInterpolation();
+		}
+		if (interpolationKfi.interpolationIsStarted())
+			interpolationKfi.stopInterpolation();
+	}
 
 	// 13. STEREO PARAMETERS
 
