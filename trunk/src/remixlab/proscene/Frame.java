@@ -927,6 +927,39 @@ public class Frame implements Cloneable {
 		}
 		return res;
 	}
+	
+	/**
+	 * Returns the x-axis of the frame, represented as a normalized vector defined in the world
+	 * coordinate system.
+	 * 
+	 * @see #yAxis()
+	 * @see #zAxis()
+	 */
+	public PVector xAxis() {
+		return inverseTransformOf(new PVector(1.0f, 0.0f, 0.0f));		
+	}
+	
+	/**
+	 * Returns the y-axis of the frame, represented as a normalized vector defined in the world
+	 * coordinate system.
+	 * 
+	 * @see #xAxis()
+	 * @see #zAxis() 
+	 */
+	public PVector yAxis() {
+		return inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
+	}
+	
+	/**
+	 * Returns the z-axis of the frame, represented as a normalized vector defined in the world
+	 * coordinate system.
+	 * 
+	 * @see #xAxis()
+	 * @see #yAxis() 
+	 */
+	public PVector zAxis() {
+		return inverseTransformOf(new PVector(0.0f, 0.0f, 1.0f));
+	}
 
 	/**
 	 * Returns the Frame transform of a vector {@code src} defined in the

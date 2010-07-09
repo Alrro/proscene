@@ -34,10 +34,11 @@ import java.awt.Point;
  * The InteractiveCameraFrame class represents an InteractiveFrame with Camera
  * specific mouse bindings.
  * <p>
- * An InteractiveCameraFrame is a specialization of an InteractiveAvatarFrame (hence it can "fly"
+ * An InteractiveCameraFrame is a specialization of an InteractiveDrivableFrame (hence it can "fly"
  * in the Scene), designed to be set as the {@link Camera#frame()}. Mouse motions are basically interpreted
- * in a negated way: when the mouse goes to the right, the InteractiveFrame (and the InteractiveAvatarFrame)
- * translation goes to the right, while the InteractiveCameraFrame has to go to the <i>left</i>, so that the
+ * in a negated way: when the mouse goes to the right, the InteractiveFrame (and the
+ * InteractiveDrivableFrame and the InteractiveAvatarFrame) translation goes to the right,
+ * while the InteractiveCameraFrame has to go to the <i>left</i>, so that the
  * <i>scene</i> seems to move to the right.
  * <p>
  * An InteractiveCameraFrame rotates around its {@link #arcballReferencePoint()}, which corresponds

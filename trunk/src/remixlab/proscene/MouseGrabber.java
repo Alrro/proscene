@@ -50,7 +50,7 @@ import java.util.*;
  * from this pool using {@link #removeFromMouseGrabberPool()}.
  */
 public interface MouseGrabber {
-	
+	//TODO to be declared in the scene? think in multiview!
 	final static List<MouseGrabber> MouseGrabberPool = new ArrayList<MouseGrabber>();
 	
 	/**
