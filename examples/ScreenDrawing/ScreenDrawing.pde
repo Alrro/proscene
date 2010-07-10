@@ -65,9 +65,9 @@ void draw() {
 }
 
 void keyPressed() {
-  if ((key == 't') || (key == 'T'))
+  if ((key == 'x') || (key == 'x'))
     scene.toggleMouseHandling();
-  if ((key == 'x') || (key == 'X'))
+  if ((key == 'y') || (key == 'Y'))
     points.clear();
 }
 

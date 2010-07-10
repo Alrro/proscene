@@ -543,7 +543,7 @@ public class Scene implements MouseWheelListener, PConstants {
      * Returns the background image if any.
      * @return image
      */
-    public PImage getBackgroundImage() {
+    public PImage backgroundImage() {
     	return image;
     }
     
@@ -674,6 +674,16 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
+	 * Toggles the {@link #camera()} kind between PROSCENE and STANDARD.
+	 */
+	public void toggleCameraKind() {
+		if ( camera().kind() == Camera.Kind.PROSCENE )
+			setCameraKind(Camera.Kind.STANDARD);
+		else
+			setCameraKind(Camera.Kind.PROSCENE);		
+	}
+	
+	/**
 	 * Toggles the {@link #interactiveFrame()} interactivity on and off.
 	 */
 	public void toggleDrawInteractiveFrame() {
@@ -753,7 +763,7 @@ public class Scene implements MouseWheelListener, PConstants {
     			camera().attachToPCamera();
     		}
     		else {
-    			if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
+    			if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
         			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );        			
         			//camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
         			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
@@ -765,7 +775,7 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     	}
     	else {    		
-    		if( getCameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {		    			
+    		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {		    			
     			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );    			
     			//camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
     			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
@@ -983,10 +993,32 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Sets the {@link #camera()} type.
 	 */
 	public void setCameraType(Camera.Type type) {
-		if ( type != camera().type() ) {
-			camera().setType(type);		
+		if ( type != camera().type() ) { 
+			if( ( cameraMode() != CameraMode.THIRD_PERSON) || ( cameraType() == Camera.Type.ORTHOGRAPHIC ) ) //TODO can use camera.kind.standard and ortho?
+				camera().setType(type);		
 		}
 	}
+	
+	/**
+	 * Returns the current {@link #camera()} kind.
+	 */
+	public final Camera.Kind cameraKind() {
+		return camera().kind();
+	}
+	
+	/**
+	 * Sets the {@link #camera()} kind.
+	 */
+	public void setCameraKind(Camera.Kind kind) {
+		if ( kind != camera().kind() ) { 
+			camera().setKind(kind);
+			if (kind == Camera.Kind.PROSCENE)
+				PApplet.println("Changing camera kind to Proscene");
+			else
+				PApplet.println("Changing camera kind to Standard");
+		}
+	}
+	
 	
 	/**
 	 * Returns the {@link PApplet#width} to {@link PApplet#height} aspect ratio of the
@@ -1113,7 +1145,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance according to {@code draw}
 	 */
     public void setDrawInteractiveFrame(boolean draw) {
-    	if (draw && (glIFrame == null))
+    	if ((draw && (glIFrame == null)) || ((!draw) && ( cameraMode() == CameraMode.THIRD_PERSON ) ) )
     		return;
     	iFrameIsDrwn = draw;
 	}
@@ -1541,7 +1573,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}
 	 * //TODO complete the doc
 	 * 
-	 * @see #getCameraMode()
+	 * @see #cameraMode()
 	 */
 	public void setCameraMode(CameraMode cMode) {		
 		switch (cMode) {
@@ -1555,7 +1587,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			frameLeftButton = MouseAction.ROTATE;		
 			frameMidButton = MouseAction.ZOOM;
 			frameRightButton = MouseAction.TRANSLATE;
-			if( getCameraMode() == CameraMode.THIRD_PERSON )
+			if( cameraMode() == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
 			break;
 	    case WALKTHROUGH :
@@ -1570,11 +1602,13 @@ public class Scene implements MouseWheelListener, PConstants {
 			frameLeftButton = MouseAction.ROTATE;		
 			frameMidButton = MouseAction.ZOOM;
 			frameRightButton = MouseAction.TRANSLATE;
-			if( getCameraMode() == CameraMode.THIRD_PERSON )
+			if( cameraMode() == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
 	    	break;
-	    case THIRD_PERSON :	    	
-	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {glIFrame.removeFromMouseGrabberPool();
+	    case THIRD_PERSON :
+	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {
+	    		setCameraType(Camera.Type.PERSPECTIVE);//TODO can use camera.kind.standard and ortho?
+	    		glIFrame.removeFromMouseGrabberPool();	    		
 	    		setDrawInteractiveFrame();
 	    		camera().frame().updateFlyUpVector();//?
 				camera().frame().stopSpinning();
@@ -1603,7 +1637,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
-	public CameraMode getCameraMode() {
+	public CameraMode cameraMode() {
 		return camMode;
 	}
 	
@@ -1715,7 +1749,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #isInKeyList(String)
 	 */
-	public List<String> getKeys() {
+	public List<String> keys() {
 		return keyList;
 	}
 	
@@ -1729,18 +1763,18 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Internal method used to add all the keys to the list of keys handled by proscene.
 	 * 
 	 * @see #isInKeyList(String)
-	 * @see #getKeys()
+	 * @see #keys()
 	 */
 	private void addKeys() {
 		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-"," ",
-				                                  "a","b","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
-				                                  "A","B","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));		
+				                                  "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","r","s","t"/**,"u","v"*/,"w",
+				                                  "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T"/**,"U"*/,"W"}));	
 	}
 	
 	/**
 	 * Returns {@code true} if {@code key} is in the list of keys that are handled by proscene.
 	 * 
-	 * @see #getKeys()
+	 * @see #keys()
 	 */
 	public boolean isInKeyList(String key) {
 		return keyList.contains(key);
@@ -1818,35 +1852,35 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	protected void keyReleased() {
 		if (parent.key == '+') {
-			switch (getCameraMode()) {
+			switch (cameraMode()) {
 			case ARCBALL:
-				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.5f);
+				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);
 				break;
 			case WALKTHROUGH:
-				camera().setFlySpeed(camera().flySpeed() * 1.5f);
+				camera().setFlySpeed(camera().flySpeed() * 1.2f);
 				break;
 			case THIRD_PERSON:
 				((InteractiveAvatarFrame)glIFrame).setFlySpeed(
-						((InteractiveAvatarFrame)glIFrame).flySpeed() * 1.5f);
+						((InteractiveAvatarFrame)glIFrame).flySpeed() * 1.2f);
 				break;
 			}			
 		}
 		if (parent.key == '-') {
-			switch (getCameraMode()) {
+			switch (cameraMode()) {
 			case ARCBALL:
-				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.5f);
+				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.2f);
 				break;
 			case WALKTHROUGH:
-				camera().setFlySpeed(camera().flySpeed() / 1.5f);
+				camera().setFlySpeed(camera().flySpeed() / 1.2f);
 				break;
 			case THIRD_PERSON:
 				((InteractiveAvatarFrame)glIFrame).setFlySpeed(
-						((InteractiveAvatarFrame)glIFrame).flySpeed() / 1.5f);
+						((InteractiveAvatarFrame)glIFrame).flySpeed() / 1.2f);
 				break;
 			}			
 		}
 		if (parent.keyCode == UP) {
-			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
 					new PVector(0.0f,  -10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f)));
 			else
@@ -1854,7 +1888,7 @@ public class Scene implements MouseWheelListener, PConstants {
 					new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
 		}
 		if (parent.keyCode == DOWN) {
-			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
 					new PVector(0.0f,  10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f)));
 			else
@@ -1862,7 +1896,7 @@ public class Scene implements MouseWheelListener, PConstants {
 					new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
 		}
 		if (parent.keyCode == LEFT) {
-			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
 					new PVector(-10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f,  0.0f)));
 			else
@@ -1870,41 +1904,47 @@ public class Scene implements MouseWheelListener, PConstants {
 					new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
 		}
 		if (parent.keyCode == RIGHT) {
-			if ( getCameraMode() == CameraMode.THIRD_PERSON )
+			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
 					new PVector(10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f,  0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 						new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));				
 		}
-		// /**
-		if ( (parent.key == 'c') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key == 'c') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			((InteractiveAvatarFrame)glIFrame).setAzimuth(
-					((InteractiveAvatarFrame)glIFrame).azimuth() + PApplet.PI/32 );
+					((InteractiveAvatarFrame)glIFrame).azimuth() + PApplet.PI/64 );
 		}
-		if ( (parent.key == 'C') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key == 'C') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			((InteractiveAvatarFrame)glIFrame).setAzimuth(
-					((InteractiveAvatarFrame)glIFrame).azimuth() - PApplet.PI/32 );
+					((InteractiveAvatarFrame)glIFrame).azimuth() - PApplet.PI/64 );
 		}
-		// */
-		// /**
-		if ( (parent.key == 'd') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key == 'd') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			((InteractiveAvatarFrame)glIFrame).setTrackingDistance(
-					((InteractiveAvatarFrame)glIFrame).trackingDistance() + radius()/20 );
+					((InteractiveAvatarFrame)glIFrame).trackingDistance() + radius()/50 );
 		}
-		if ( (parent.key == 'D') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key == 'D') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			((InteractiveAvatarFrame)glIFrame).setTrackingDistance(
-					((InteractiveAvatarFrame)glIFrame).trackingDistance() - radius()/20 );
+					((InteractiveAvatarFrame)glIFrame).trackingDistance() - radius()/50 );
 		}
-		// */
-		// /**
-		if ( (parent.key == 't') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key == 't') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			((InteractiveAvatarFrame)glIFrame).setInclination(
-					((InteractiveAvatarFrame)glIFrame).inclination() + PApplet.PI/32 );
+					((InteractiveAvatarFrame)glIFrame).inclination() + PApplet.PI/64 );
 		}
-		if ( (parent.key == 'T') && (getCameraMode() == CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key == 'T') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			((InteractiveAvatarFrame)glIFrame).setInclination(
-					((InteractiveAvatarFrame)glIFrame).inclination() - PApplet.PI/32 );
+					((InteractiveAvatarFrame)glIFrame).inclination() - PApplet.PI/64 );
+		}
+		/**
+		//experimental for Camera.Kind.STANDARD
+		if ( (parent.key == 'u') && (camera().kind() == Camera.Kind.STANDARD) ) {
+			camera().changeOrthoFrustumSize(true);		
+		}
+		if ( (parent.key == 'U') && (camera().kind() == Camera.Kind.STANDARD) ) {
+			camera().changeOrthoFrustumSize(false);
+		}
+		if ( parent.key == 'v') {
+			this.toggleCameraKind();
 		}
 		// */
 		if (parent.key == 'a' || parent.key == 'A') {
@@ -1931,10 +1971,13 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (parent.key == 'r' || parent.key == 'R') {
 			toggleCameraPathsAreDrawn();
 		}
-		if ( (parent.key == 's') && (getCameraMode() != CameraMode.THIRD_PERSON) ) {
-			camera().interpolateToFitScene();
+		if ( (parent.key == 's') && (cameraMode() != CameraMode.THIRD_PERSON) ) {
+			if( (cameraKind() == Camera.Kind.STANDARD) && ( cameraType() == Camera.Type.ORTHOGRAPHIC ) )
+				showAll();
+			else
+				camera().interpolateToFitScene();
 		}		
-		if ( (parent.key) == 'S' && (getCameraMode() != CameraMode.THIRD_PERSON) ) {
+		if ( (parent.key) == 'S' && (cameraMode() != CameraMode.THIRD_PERSON) ) {
 			showAll();
 		}		
 		if (parent.key == 'w' || parent.key == 'W') {
@@ -1955,7 +1998,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			arpFlag = true;
 			utilityTimer.start();
 		}
-		if ((parent.key == 'p') || (parent.key == 'P') && (getCameraMode() != CameraMode.THIRD_PERSON) ) {
+		if ((parent.key == 'p') || (parent.key == 'P') && (cameraMode() != CameraMode.THIRD_PERSON) ) {
 			if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
 						        "See the Point Under Pixel example!");
@@ -1968,7 +2011,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				}
 			}
 		}
-		if( (parent.key == '1' || parent.key == 'j' || parent.key == 'J') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '1' || parent.key == 'j' || parent.key == 'J') && (cameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '1') camera().playPath(1);			
 			if( parent.key == 'j') {
 				camera().addKeyFrameToPath(1);
@@ -1981,22 +2024,22 @@ public class Scene implements MouseWheelListener, PConstants {
 			}
 			if( parent.key == 'J') camera().deletePath(1);
 		}
-		if( (parent.key == '2' || parent.key == 'k' || parent.key == 'K') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '2' || parent.key == 'k' || parent.key == 'K') && (cameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '2') camera().playPath(2);			
 			if( parent.key == 'k') camera().addKeyFrameToPath(2);
 			if( parent.key == 'K') camera().deletePath(2);
 		}
-		if( (parent.key == '3' || parent.key == 'l' || parent.key == 'L') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '3' || parent.key == 'l' || parent.key == 'L') && (cameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '3') camera().playPath(3);			
 			if( parent.key == 'l') camera().addKeyFrameToPath(3);
 			if( parent.key == 'L') camera().deletePath(3);
 		}
-		if( (parent.key == '4' || parent.key == 'm' || parent.key == 'M') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '4' || parent.key == 'm' || parent.key == 'M') && (cameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '4') camera().playPath(4);			
 			if( parent.key == 'm') camera().addKeyFrameToPath(4);
 			if( parent.key == 'M') camera().deletePath(4);
 		}
-		if( (parent.key == '5' || parent.key == 'n' || parent.key == 'N') && (getCameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '5' || parent.key == 'n' || parent.key == 'N') && (cameraMode() != CameraMode.THIRD_PERSON)) {
 			if( parent.key == '5') camera().playPath(5);			
 			if( parent.key == 'n') camera().addKeyFrameToPath(5);
 			if( parent.key == 'N') camera().deletePath(5);
