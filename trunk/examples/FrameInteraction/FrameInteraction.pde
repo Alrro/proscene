@@ -18,10 +18,9 @@ Scene scene;
 void setup() {  
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-  // A Scene has a single InteractiveFrame (null by default). We set
-  // it here.
-  scene.setInteractiveFrame(new InteractiveFrame());
+  // A Scene has a single InteractiveFrame (null by default). We set it here.
+  // Since we want to illustrate the THIRD-PERSON camera mode, we define an InteractiveAvatarFrame.
+  scene.setInteractiveFrame(new InteractiveAvatarFrame());
   scene.interactiveFrame().translate(new PVector(30, 30, 0));
 }
 
@@ -36,7 +35,7 @@ void draw() {
   // applyMatrix(scene.interactiveFrame().matrix()) is handy but inefficient 
   scene.interactiveFrame().applyTransformation(this); //optimum
   // Draw an axis using the Scene static function
-  scene.drawAxis(70);
+  scene.drawAxis(20);
   // Draw a second box attached to the interactive frame
   if (scene.interactiveFrame().grabsMouse()) {
     fill(255, 0, 0);

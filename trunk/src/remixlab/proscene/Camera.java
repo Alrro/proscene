@@ -77,9 +77,22 @@ public class Camera implements Cloneable {
 		PERSPECTIVE, ORTHOGRAPHIC
 	};
 	
+	/**
+	 * Enumerates the different visibility state an object may have respect to the camera frustum.
+	 * <p>
+	 * This type mainly defines different camera projection matrix. Many other
+	 * methods take this Type into account.
+	 */
 	public enum Visibility {
 		VISIBLE, SEMIVISIBLE, INVISIBLE
 	};
+	
+	/**
+	 * Enumerates the Camera kind.
+	 */
+	public enum Kind {
+		PROSCENE, STANDARD
+	}
 	
 	// F r a m e
 	private InteractiveCameraFrame frm;
@@ -93,6 +106,11 @@ public class Camera implements Cloneable {
 	private float zClippingCoef;
 	private float orthoCoef;
 	private Type tp; // PERSPECTIVE or ORTHOGRAPHIC
+	private Kind knd; // PROSCENE  or STANDARD
+	private float orthoSize;
+	private float stdZNear;
+	private float stdZFar;
+	
 	private PMatrix3D modelViewMat;
 	private PMatrix3D projectionMat;
 
@@ -173,10 +191,15 @@ public class Camera implements Cloneable {
 
 		// Also defines the arcballReferencePoint(), which changes orthoCoef.
 		setSceneCenter(new PVector(0.0f, 0.0f, 0.0f));
+		
+		setKind( Kind.PROSCENE );		
+		orthoSize = 1;//only for standard kind, but we initialize it here
+		setStandardZNear(0.001f);//only for standard kind, but we initialize it here
+		setStandardZFar(1000.0f);//only for standard kind, but we initialize it here
 
 		// Requires fieldOfView() when called with ORTHOGRAPHIC. Attention to
 		// projectionMat below.
-		setType(Camera.Type.PERSPECTIVE);
+		setType(Camera.Type.PERSPECTIVE);		
 
 		setZNearCoefficient(0.005f);
 		setZClippingCoefficient(PApplet.sqrt(3.0f));
@@ -530,6 +553,43 @@ public class Camera implements Cloneable {
 	public final Type type() {
 		return tp;
 	}
+	
+	//TODO doc me!
+	//TODO doc also znear, zfar, and getOrthoWidthHeight()
+	public final Kind kind() {
+		return knd;		
+	}
+	
+	public void setStandardZNear(float zN) {
+		stdZNear = zN;
+	}
+	
+	public float standardZNear() {
+		return stdZNear; 
+	}
+	
+    public void setStandardZFar(float zF) {
+    	stdZFar = zF;
+	}
+    
+    public float standardZFar() {
+		return stdZFar; 
+	}
+	
+	public void setKind(Kind k) {
+		knd = k;		
+	}
+	
+	public void changeOrthoFrustumSize(boolean augment) {
+		if (augment)
+			orthoSize *= 1.01f;
+		else
+			orthoSize /= 1.01f;
+	}
+	
+	public float standardOrthoFrustumSize() {
+		return orthoSize;
+	}
 
 	/**
 	 * Defines the Camera {@link #type()}. 
@@ -545,8 +605,7 @@ public class Camera implements Cloneable {
 		// through RAP). Done only when CHANGING type since orthoCoef may have
 		// been changed with a
 		// setArcballReferencePoint in the meantime.
-		if ((type == Camera.Type.ORTHOGRAPHIC)
-				&& (type() == Camera.Type.PERSPECTIVE))
+		if ((type == Camera.Type.ORTHOGRAPHIC)	&& (type() == Camera.Type.PERSPECTIVE))
 			orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
 
 		this.tp = type;
@@ -646,18 +705,26 @@ public class Camera implements Cloneable {
 	 * <p> 
 	 * Overload this method to change this behavior if desired.
 	 */
-	public float[] getOrthoWidthHeight(float[] target) {
+	public float[] getOrthoWidthHeight(float[] target) {		
 		if ((target == null) || (target.length != 2)) {
 			target = new float[2];
 		}
-		float dist = orthoCoef
-				* PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
-		// #CONNECTION# fitScreenRegion
-		// 1. halfWidth
-		target[0] = dist * ((aspectRatio() < 1.0f) ? 1.0f : aspectRatio());
-		// 2. halfHeight
-		target[1] = dist
-				* ((aspectRatio() < 1.0f) ? 1.0f / aspectRatio() : 1.0f);
+		
+		if ( kind() == Kind.STANDARD ) {			
+			float dist = sceneRadius() * standardOrthoFrustumSize();
+			// 1. halfWidth
+			target[0] = dist * ((aspectRatio() < 1.0f) ? 1.0f : aspectRatio());
+			// 2. halfHeight
+			target[1] = dist * ((aspectRatio() < 1.0f) ? 1.0f / aspectRatio() : 1.0f);
+		}		
+		else {
+			float dist = orthoCoef * PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
+			// #CONNECTION# fitScreenRegion
+			// 1. halfWidth
+			target[0] = dist * ((aspectRatio() < 1.0f) ? 1.0f : aspectRatio());
+			// 2. halfHeight
+			target[1] = dist * ((aspectRatio() < 1.0f) ? 1.0f / aspectRatio() : 1.0f);		
+		}
 
 		return target;
 	}
@@ -824,6 +891,9 @@ public class Camera implements Cloneable {
 	 * system. This follows the {@code gluPerspective} standard.
 	 */
 	public float zNear() {
+		if ( kind() == Kind.STANDARD )
+		    return standardZNear();
+		
 		float z = distanceToSceneCenter() - zClippingCoefficient()
 				* sceneRadius();
 
@@ -855,6 +925,8 @@ public class Camera implements Cloneable {
 	 * @see #zNear()
 	 */
 	public float zFar() {
+		if ( kind() == Kind.STANDARD )
+			return this.standardZFar();
 		return distanceToSceneCenter() + zClippingCoefficient() * sceneRadius();
 	}
 
@@ -2120,6 +2192,12 @@ public class Camera implements Cloneable {
 	 * @see #setUpVector(PVector, boolean)
 	 */
 	public void fitSphere(PVector center, float radius) {
+		if ( (kind() == Kind.STANDARD) && (type() == Type.ORTHOGRAPHIC) ) {
+			orthoSize = 1;
+			lookAt(sceneCenter());
+			return;
+		}
+		
 		float distance = 0.0f;
 		switch (type()) {
 		case PERSPECTIVE: {
@@ -2129,15 +2207,12 @@ public class Camera implements Cloneable {
 			break;
 		}
 		case ORTHOGRAPHIC: {
-			distance = PVector.dot(PVector.sub(center, arcballReferencePoint()),
-									viewDirection())
-                       + (radius / orthoCoef);
+			distance = PVector.dot(PVector.sub(center, arcballReferencePoint()), viewDirection()) + (radius / orthoCoef);
 			break;
 		}
 		}
 
-		PVector newPos = PVector.sub(center, PVector.mult(viewDirection(),
-				distance));
+		PVector newPos = PVector.sub(center, PVector.mult(viewDirection(), distance));
 		frame().setPositionWithConstraint(newPos);
 	}
 
