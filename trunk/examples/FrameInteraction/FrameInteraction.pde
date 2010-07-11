@@ -19,8 +19,7 @@ void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
   // A Scene has a single InteractiveFrame (null by default). We set it here.
-  // Since we want to illustrate the THIRD-PERSON camera mode, we define an InteractiveAvatarFrame.
-  scene.setInteractiveFrame(new InteractiveAvatarFrame());
+  scene.setInteractiveFrame(new InteractiveFrame());
   scene.interactiveFrame().translate(new PVector(30, 30, 0));
 }
 

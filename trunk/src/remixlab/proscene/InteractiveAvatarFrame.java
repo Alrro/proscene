@@ -11,7 +11,7 @@ import processing.core.*;
  * ({@link #azimuth()}, {@link #inclination()} and {@link #trackingDistance()}) respect to
  * the origin of the InteractiveAvatarFrame.   
  */
-public class InteractiveAvatarFrame extends InteractiveDrivableFrame {
+public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements Trackable {
 	private float trackingDist;
 	private float azmth;
 	private float inc;
@@ -22,16 +22,7 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame {
 		setTrackingDistance(0);
 		setAzimuth(0);
 		setInclination(PApplet.PI/2);
-	}
-	
-	//subir a la clase frame and rename it as worldY?
-	public PVector upVector() {
-		return yAxis();
-	}
-	
-	public PVector cameraPosition() {
-		return inverseCoordinatesOf(camRelPos);
-	}
+	}	
 	
 	public float trackingDistance() {
     	return trackingDist;
@@ -60,7 +51,12 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame {
     	computeCameraPosition();
     }
     
-    protected void computeCameraPosition() {
+    //Interface implementation
+    public PVector cameraPosition() {
+		return inverseCoordinatesOf(camRelPos);
+	}
+    
+    public void computeCameraPosition() {
     	camRelPos.x = trackingDistance() * PApplet.sin(inclination()) * PApplet.sin(azimuth());
     	camRelPos.y = trackingDistance() * PApplet.cos(inclination());
     	camRelPos.z = trackingDistance() * PApplet.sin(inclination()) * PApplet.cos(azimuth());    	
