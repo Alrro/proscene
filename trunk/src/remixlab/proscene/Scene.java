@@ -764,8 +764,7 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     		else {
     			if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
-        			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );        			
-        			//camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+        			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );
         			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
         			camera().lookAt( glIFrame.position() );
         		}
@@ -776,8 +775,7 @@ public class Scene implements MouseWheelListener, PConstants {
     	}
     	else {    		
     		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {		    			
-    			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );    			
-    			//camera().setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+    			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );
     			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
     			camera().lookAt( glIFrame.position() );
     		} 			
@@ -1575,7 +1573,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #cameraMode()
 	 */
-	public void setCameraMode(CameraMode cMode) {		
+	public void setCameraMode(CameraMode cMode) {
+		CameraMode prevCamMode = cameraMode();
+		camMode = cMode;
 		switch (cMode) {
 		case ARCBALL :
 			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
@@ -1587,7 +1587,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			frameLeftButton = MouseAction.ROTATE;		
 			frameMidButton = MouseAction.ZOOM;
 			frameRightButton = MouseAction.TRANSLATE;
-			if( cameraMode() == CameraMode.THIRD_PERSON )
+			if( prevCamMode == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
 			break;
 	    case WALKTHROUGH :
@@ -1602,7 +1602,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			frameLeftButton = MouseAction.ROTATE;		
 			frameMidButton = MouseAction.ZOOM;
 			frameRightButton = MouseAction.TRANSLATE;
-			if( cameraMode() == CameraMode.THIRD_PERSON )
+			if( prevCamMode == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
 	    	break;
 	    case THIRD_PERSON :
@@ -1621,15 +1621,13 @@ public class Scene implements MouseWheelListener, PConstants {
 				if ( camera().anyInterpolationIsStarted() ) 
 					camera().stopAllInterpolations();
 				Camera cam = camera().clone();
-				cam.setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );				
-				//cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).flyUpVector() );
+				cam.setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );	
 				cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
 				cam.lookAt( glIFrame.position() );
 				camera().interpolateTo(cam.frame());				
 	    	}
 	    	break;
-	    }
-		camMode = cMode;
+	    }		
 	}
 	
 	/**
