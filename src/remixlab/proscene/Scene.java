@@ -765,7 +765,7 @@ public class Scene implements MouseWheelListener, PConstants {
     		else {
     			if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
         			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );
-        			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
+        			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).yAxis() );
         			camera().lookAt( glIFrame.position() );
         		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
@@ -776,7 +776,7 @@ public class Scene implements MouseWheelListener, PConstants {
     	else {    		
     		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {		    			
     			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );
-    			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
+    			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).yAxis() );
     			camera().lookAt( glIFrame.position() );
     		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
@@ -1574,10 +1574,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #cameraMode()
 	 */
 	public void setCameraMode(CameraMode cMode) {
-		CameraMode prevCamMode = cameraMode();
-		camMode = cMode;
+		CameraMode prevCamMode = cameraMode();		
 		switch (cMode) {
 		case ARCBALL :
+			camMode = cMode;
 			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
 	    		glIFrame.addInMouseGrabberPool();
 			setDrawInteractiveFrame(false);
@@ -1589,8 +1589,10 @@ public class Scene implements MouseWheelListener, PConstants {
 			frameRightButton = MouseAction.TRANSLATE;
 			if( prevCamMode == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
+			
 			break;
 	    case WALKTHROUGH :
+	    	camMode = cMode;
 	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) )
 	    		glIFrame.addInMouseGrabberPool();
 	    	setDrawInteractiveFrame(false);
@@ -1607,6 +1609,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    	break;
 	    case THIRD_PERSON :
 	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {
+	    		camMode = cMode;
 	    		setCameraType(Camera.Type.PERSPECTIVE);//TODO can use camera.kind.standard and ortho?
 	    		glIFrame.removeFromMouseGrabberPool();	    		
 	    		setDrawInteractiveFrame();
@@ -1622,7 +1625,7 @@ public class Scene implements MouseWheelListener, PConstants {
 					camera().stopAllInterpolations();
 				Camera cam = camera().clone();
 				cam.setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );	
-				cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).upVector() );
+				cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).yAxis() );
 				cam.lookAt( glIFrame.position() );
 				camera().interpolateTo(cam.frame());				
 	    	}
