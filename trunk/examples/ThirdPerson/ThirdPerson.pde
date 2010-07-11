@@ -6,25 +6,18 @@ InteractiveAvatarFrame avatar;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.setRadius(200);
-  scene.setCenter(new PVector(100,100,0));
+  scene.setRadius(400);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
   
   avatar = new InteractiveAvatarFrame();
-  avatar.translate(new PVector(0,0,-10));
-  Quaternion q = new Quaternion(new PVector(1,0,0), PI/2);
-  avatar.rotate(q);
-  q.fromAxisAngle(new PVector(0,-1,0), PI/4);
-  avatar.rotate(q);
-  
-  avatar.setTrackingDistance(200);
+  avatar.setTrackingDistance(300);
   avatar.setAzimuth(PI/12);
   avatar.setInclination(avatar.inclination() + PI/6);
   
   WorldConstraint baseConstraint = new WorldConstraint();
-  baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,0.0f,1.0f));
-  baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,0.0f,1.0f));
+  baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,1.0f,0.0f));
+  baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,1.0f,0.0f));
   avatar.setConstraint(baseConstraint);
   
   scene.setInteractiveFrame(avatar);
@@ -50,9 +43,9 @@ void draw() {
   noStroke();
   fill(120, 120, 120);
   beginShape();
-  vertex(-100, -100, 0);
-  vertex(400, -100, 0);
-  vertex(400, 400, 0);
-  vertex(-100, 400, 0);
+  vertex(-400, 10, -400);
+  vertex(400, 10, -400);
+  vertex(400, 10, 400);
+  vertex(-400, 10, 400);
   endShape(CLOSE);
 }
