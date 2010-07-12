@@ -118,8 +118,11 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsACam;
-	boolean interactiveFrameIsAnAvatar;
+	// boolean interactiveFrameIsAnAvatar;
 	boolean iFrameIsDrwn;
+	protected Trackable trck;
+	boolean avatarIsInteractiveDrivableFrame;
+	boolean avatarIsInteractiveAvatarFrame;
 	
 	// S C R E E N   C O O R D I N A T E S
 	float halfWidthSpace;
@@ -198,13 +201,14 @@ public class Scene implements MouseWheelListener, PConstants {
 		arpFlag = false;
 		pupFlag = false;
 		
+		avatarIsInteractiveDrivableFrame = false;//also init in setAvatar, but we need it here to properly init the camera 
+		avatarIsInteractiveAvatarFrame = false;//also init in setAvatar, but we need it here to properly init the camera
+		
 		cam = new Camera(this);
 		setCamera(camera());
 		
-		glIFrame = null;
-		interactiveFrameIsACam = false;
-		interactiveFrameIsAnAvatar = false;
-		iFrameIsDrwn = false;
+		setInteractiveFrame(null);
+		setAvatar(null);	
 		
 		setMouseGrabber(null);
 		mouseGrabberIsAnIFrame = false;
@@ -219,9 +223,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		setHelpIsDrawn(true);	    
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
-		
-		//third person
-		//TODO
 		
 		font = parent.createFont("Arial", 12);
 		
@@ -294,28 +295,71 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public InteractiveFrame interactiveFrame() {
 		return glIFrame;
-	} 
+	}
+	
+	//TODO doc me
+	public Trackable trackableAvatar() {
+		return trck;
+	}
+	
+	//TODO doc me
+	public void setAvatar(Trackable t) {
+		trck = t;
+		avatarIsInteractiveAvatarFrame = false;
+		avatarIsInteractiveDrivableFrame = false;
+		if (trackableAvatar() instanceof InteractiveAvatarFrame) {
+			avatarIsInteractiveAvatarFrame = true;
+			avatarIsInteractiveDrivableFrame = true;
+			if ( ((InteractiveAvatarFrame)trackableAvatar()).trackingDistance() == 0 )
+				((InteractiveAvatarFrame)trackableAvatar()).setTrackingDistance(radius()/3);
+			((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
+			if(!isInKeyList("c"))
+				keyList.add("c");
+			if(!isInKeyList("C"))
+				keyList.add("C");
+			if(!isInKeyList("d"))
+				keyList.add("d");
+			if(!isInKeyList("D"))
+				keyList.add("D");
+			if(!isInKeyList("t"))
+				keyList.add("t");
+			if(!isInKeyList("T"))
+				keyList.add("T");			
+			//keyList.addAll(Arrays.asList(new String[]{"c","C","d","D","t","T"}));
+			PApplet.println("You have set an InteractiveAvatarFrame. The key bindings for the avatar (available when you set you camera mode to " +
+					"THIRD_PERSON) are: " +
+					"c/C: azimuth; " +
+					"d/D: tracking distance, and; " +
+					"t/T: inclination.");
+		}
+		else
+			if (trackableAvatar() instanceof InteractiveDrivableFrame) {
+				avatarIsInteractiveAvatarFrame = false;
+				avatarIsInteractiveDrivableFrame = true;
+				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
+		}
+	}
+	
+	public void unsetAvatar() {
+		trck = null;
+		avatarIsInteractiveAvatarFrame = false;
+		avatarIsInteractiveDrivableFrame = false;
+		keyList.removeAll(Arrays.asList(new String[]{"c","C","d","D","t","T"}));
+	}
 	
 	/**
 	 * Sets {@code frame} as the InteractiveFrame associated to this Scene.
 	 * 
 	 * @see #interactiveFrame()
 	 */
-	public void setInteractiveFrame (InteractiveFrame frame) {
-		glIFrame = frame;		
-		interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) &&
-				                  (interactiveFrame() instanceof InteractiveCameraFrame));
-		interactiveFrameIsAnAvatar = ( !(interactiveFrame() instanceof InteractiveCameraFrame) &&
-                (interactiveFrame() instanceof InteractiveAvatarFrame) );
-		
-		if (glIFrame == null)
-			iFrameIsDrwn = false;
-
-		if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {
-			if ( ((InteractiveAvatarFrame)interactiveFrame()).trackingDistance() == 0 )
-				((InteractiveAvatarFrame)interactiveFrame()).setTrackingDistance(radius()/3);
-			((InteractiveAvatarFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
-		}			
+	public void setInteractiveFrame(InteractiveFrame frame) {		
+		glIFrame = frame;               
+        interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) && (interactiveFrame() instanceof InteractiveCameraFrame));
+        if (glIFrame == null)
+        	iFrameIsDrwn = false;
+        else
+        	if ( glIFrame instanceof Trackable )
+        		setAvatar((Trackable)glIFrame);
 	}
 	
 	/**
@@ -764,9 +808,9 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     		else {
     			if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
-        			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );
-        			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).yAxis() );
-        			camera().lookAt( glIFrame.position() );
+        			camera().setPosition( trackableAvatar().cameraPosition() );
+        			camera().setUpVector( trackableAvatar().upVector() );
+        			camera().lookAt( trackableAvatar().target() );
         		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
         		setPProjectionMatrix();
@@ -774,10 +818,10 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     	}
     	else {    		
-    		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {		    			
-    			camera().setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );
-    			cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).yAxis() );
-    			camera().lookAt( glIFrame.position() );
+    		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {
+    			camera().setPosition( trackableAvatar().cameraPosition() );
+    			camera().setUpVector( trackableAvatar().upVector() );
+    			camera().lookAt( trackableAvatar().target() );
     		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
     		setPProjectionMatrix();
@@ -1578,8 +1622,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		switch (cMode) {
 		case ARCBALL :
 			camMode = cMode;
-			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
-	    		glIFrame.addInMouseGrabberPool();
+			if( avatarIsInteractiveDrivableFrame )
+	    		((InteractiveDrivableFrame)trackableAvatar()).addInMouseGrabberPool();
 			setDrawInteractiveFrame(false);
 			cameraLeftButton = MouseAction.ROTATE;		
 			cameraMidButton = MouseAction.ZOOM;
@@ -1593,8 +1637,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			break;
 	    case WALKTHROUGH :
 	    	camMode = cMode;
-	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) )
-	    		glIFrame.addInMouseGrabberPool();
+	    	if( avatarIsInteractiveDrivableFrame )
+	    		((InteractiveDrivableFrame)trackableAvatar()).addInMouseGrabberPool();
 	    	setDrawInteractiveFrame(false);
 	    	camera().frame().updateFlyUpVector();
 			camera().frame().stopSpinning();
@@ -1608,26 +1652,29 @@ public class Scene implements MouseWheelListener, PConstants {
 				camera().interpolateToFitScene();
 	    	break;
 	    case THIRD_PERSON :
-	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) ) {
+	    	if( trackableAvatar() != null ) {
 	    		camMode = cMode;
 	    		setCameraType(Camera.Type.PERSPECTIVE);//TODO can use camera.kind.standard and ortho?
-	    		glIFrame.removeFromMouseGrabberPool();	    		
+	    		if( avatarIsInteractiveDrivableFrame )
+		    		((InteractiveDrivableFrame)trackableAvatar()).removeFromMouseGrabberPool();
 	    		setDrawInteractiveFrame();
 	    		camera().frame().updateFlyUpVector();//?
 				camera().frame().stopSpinning();
-				((InteractiveAvatarFrame)(glIFrame)).updateFlyUpVector();
-				((InteractiveAvatarFrame)(glIFrame)).stopSpinning();
+				if ( avatarIsInteractiveDrivableFrame ) {
+					((InteractiveDrivableFrame)(trackableAvatar())).updateFlyUpVector();
+					((InteractiveDrivableFrame)(trackableAvatar())).stopSpinning();
+				}
 		    	frameLeftButton = MouseAction.MOVE_FORWARD;		
 				frameMidButton = MouseAction.LOOK_AROUND;
 				frameRightButton = MouseAction.MOVE_BACKWARD;
 				//small animation ;)
 				if ( camera().anyInterpolationIsStarted() ) 
 					camera().stopAllInterpolations();
-				Camera cam = camera().clone();
-				cam.setPosition( ((InteractiveAvatarFrame)glIFrame).cameraPosition() );	
-				cam.setUpVector( ((InteractiveAvatarFrame)glIFrame).yAxis() );
-				cam.lookAt( glIFrame.position() );
-				camera().interpolateTo(cam.frame());				
+				Camera cm = camera().clone();
+				cm.setPosition( trackableAvatar().cameraPosition() );
+    			cm.setUpVector( trackableAvatar().upVector() );
+    			cm.lookAt( trackableAvatar().target() );    			
+				camera().interpolateTo(cm.frame());				
 	    	}
 	    	break;
 	    }		
@@ -1647,13 +1694,13 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
-	public void nextCameraMode() {		
+	public void nextCameraMode() {
 		switch (camMode) {
 		case ARCBALL :
 			setCameraMode(CameraMode.WALKTHROUGH);
 			break;
 	    case WALKTHROUGH :
-	    	if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+	    	if( trackableAvatar() != null )
 	    		setCameraMode(CameraMode.THIRD_PERSON);
 	    	else
 	    		setCameraMode(CameraMode.ARCBALL);
@@ -1672,7 +1719,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	public void previousCameraMode() {
 		switch (camMode) {
 		case ARCBALL :
-			if( interactiveFrameIsAnAvatar && (glIFrame != null) )
+			if( trackableAvatar() != null )
 				setCameraMode(CameraMode.THIRD_PERSON);
 			else
 				setCameraMode(CameraMode.WALKTHROUGH);
@@ -1767,9 +1814,14 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #keys()
 	 */
 	private void addKeys() {
+		/**
+		 Pending:
+		 1. c,C,d,D,t,T: interactiveAvatarFrame
+		 2. u,U,v: camera.kind
+		 */
 		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-"," ",
-				                                  "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","r","s","t"/**,"u","v"*/,"w",
-				                                  "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","R","S","T"/**,"U"*/,"W"}));	
+				                                  "a","b","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
+				                                  "A","B","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));	
 	}
 	
 	/**
@@ -1861,8 +1913,9 @@ public class Scene implements MouseWheelListener, PConstants {
 				camera().setFlySpeed(camera().flySpeed() * 1.2f);
 				break;
 			case THIRD_PERSON:
-				((InteractiveAvatarFrame)glIFrame).setFlySpeed(
-						((InteractiveAvatarFrame)glIFrame).flySpeed() * 1.2f);
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)trackableAvatar()).setFlySpeed(
+							((InteractiveDrivableFrame)trackableAvatar()).flySpeed() * 1.2f);
 				break;
 			}			
 		}
@@ -1875,66 +1928,77 @@ public class Scene implements MouseWheelListener, PConstants {
 				camera().setFlySpeed(camera().flySpeed() / 1.2f);
 				break;
 			case THIRD_PERSON:
-				((InteractiveAvatarFrame)glIFrame).setFlySpeed(
-						((InteractiveAvatarFrame)glIFrame).flySpeed() / 1.2f);
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)trackableAvatar()).setFlySpeed(
+							((InteractiveDrivableFrame)trackableAvatar()).flySpeed() / 1.2f);
 				break;
 			}			
 		}
 		if (parent.keyCode == UP) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )
-				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
-					new PVector(0.0f,  -10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f)));
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
+					new PVector(0.0f,  -10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
 		}
 		if (parent.keyCode == DOWN) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )
-				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
-					new PVector(0.0f,  10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f)));
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
+					new PVector(0.0f,  10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
 		}
 		if (parent.keyCode == LEFT) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )
-				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
-					new PVector(-10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f,  0.0f)));
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
+					new PVector(-10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f,  0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
 		}
 		if (parent.keyCode == RIGHT) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON )
-				((InteractiveAvatarFrame)glIFrame).translate(((InteractiveAvatarFrame)glIFrame).inverseTransformOf(
-					new PVector(10.0f*((InteractiveAvatarFrame)glIFrame).flySpeed(), 0.0f,  0.0f)));
+			if ( cameraMode() == CameraMode.THIRD_PERSON )				
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
+							new PVector(10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f,  0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 						new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));				
 		}
 		if ( (parent.key == 'c') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			((InteractiveAvatarFrame)glIFrame).setAzimuth(
-					((InteractiveAvatarFrame)glIFrame).azimuth() + PApplet.PI/64 );
+			if( avatarIsInteractiveAvatarFrame )
+				((InteractiveAvatarFrame)trackableAvatar()).setAzimuth(
+						((InteractiveAvatarFrame)trackableAvatar()).azimuth() + PApplet.PI/64 );
 		}
 		if ( (parent.key == 'C') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			((InteractiveAvatarFrame)glIFrame).setAzimuth(
-					((InteractiveAvatarFrame)glIFrame).azimuth() - PApplet.PI/64 );
+			if( avatarIsInteractiveAvatarFrame )
+				((InteractiveAvatarFrame)trackableAvatar()).setAzimuth(
+					((InteractiveAvatarFrame)trackableAvatar()).azimuth() - PApplet.PI/64 );
 		}
 		if ( (parent.key == 'd') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			((InteractiveAvatarFrame)glIFrame).setTrackingDistance(
-					((InteractiveAvatarFrame)glIFrame).trackingDistance() + radius()/50 );
+			if( avatarIsInteractiveAvatarFrame )
+				((InteractiveAvatarFrame)trackableAvatar()).setTrackingDistance(
+					((InteractiveAvatarFrame)trackableAvatar()).trackingDistance() + radius()/50 );
 		}
 		if ( (parent.key == 'D') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			((InteractiveAvatarFrame)glIFrame).setTrackingDistance(
-					((InteractiveAvatarFrame)glIFrame).trackingDistance() - radius()/50 );
+			if( avatarIsInteractiveAvatarFrame )
+				((InteractiveAvatarFrame)trackableAvatar()).setTrackingDistance(
+					((InteractiveAvatarFrame)trackableAvatar()).trackingDistance() - radius()/50 );
 		}
 		if ( (parent.key == 't') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			((InteractiveAvatarFrame)glIFrame).setInclination(
-					((InteractiveAvatarFrame)glIFrame).inclination() + PApplet.PI/64 );
+			if( avatarIsInteractiveAvatarFrame )
+				((InteractiveAvatarFrame)trackableAvatar()).setInclination(
+					((InteractiveAvatarFrame)trackableAvatar()).inclination() + PApplet.PI/64 );
 		}
 		if ( (parent.key == 'T') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			((InteractiveAvatarFrame)glIFrame).setInclination(
-					((InteractiveAvatarFrame)glIFrame).inclination() - PApplet.PI/64 );
+			if( avatarIsInteractiveAvatarFrame )
+				((InteractiveAvatarFrame)trackableAvatar()).setInclination(
+					((InteractiveAvatarFrame)trackableAvatar()).inclination() - PApplet.PI/64 );
 		}
 		/**
 		//experimental for Camera.Kind.STANDARD

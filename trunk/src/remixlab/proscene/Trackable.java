@@ -40,6 +40,10 @@ public interface Trackable {
 	 */
 	public PVector cameraPosition();
 	
+	public PVector upVector();
+	
+	public PVector target();
+	
 	/**
 	 * Computes the camera position according to some specific InteractiveFrame
 	 * parameters which depends on the type of interaction that is to be implemented.
