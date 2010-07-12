@@ -28,20 +28,39 @@ package remixlab.proscene;
 import processing.core.PVector;
 
 /**
- * Interface for InteractiveFrame objects that are to be tracked by a Camera.
+ * Interface for objects that are to be tracked by a proscene Camera when its mode
+ * is THIRD_PERSON.
+ * <p>
+ * <h3>How does it work ?</h3> 
+ * All objects that are to be tracked by the {@link remixlab.proscene.Scene#camera()}
+ * (known as avatars) should implement this interface. To setup an avatar you
+ * should then call {@link remixlab.proscene.Scene#setAvatar(Trackable)}.
+ * The avatar will be tracked by the {@link remixlab.proscene.Scene#camera()} when
+ * the {@link remixlab.proscene.Scene#cameraMode()} is set to THIRD_PERSON.
  */
 
 public interface Trackable {
 	/**
-	 * Returns the position of the Camera that tracks the InteractiveFrame object
-	 * in the world coordinate system.
+	 * Returns the position of the object tracking Camera in the world coordinate system.
 	 *   
 	 * @return PVector holding the camera position defined in the world coordinate system. 
 	 */
 	public PVector cameraPosition();
 	
+	/**
+	 * Returns the vector to be set as the {@link remixlab.proscene.Camera#upVector()}
+	 * by the object tracking Camera.
+	 * 
+	 * @return PVector holding the camera up-vector defined in the world coordinate system.
+	 */
 	public PVector upVector();
 	
+	/**
+	 * Returns the target point to be set as the {@link remixlab.proscene.Camera#lookAt(PVector)}
+	 * by the object tracking Camera. 
+	 * 
+	 * @return PVector holding the camera look-at vector defined in the world coordinate system.
+	 */
 	public PVector target();
 	
 	/**

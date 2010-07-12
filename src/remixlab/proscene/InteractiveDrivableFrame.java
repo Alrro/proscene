@@ -52,8 +52,6 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
 	 * Default constructor. 
 	 * <p> 
 	 * {@link #flySpeed()} is set to 0.0 and {@link #flyUpVector()} is (0,1,0).
-	 * <p> 
-	 * <b>Attention:</b> Created object is {@link #removeFromMouseGrabberPool()}.
 	 */
 	public InteractiveDrivableFrame() {
 		drvSpd = 0.0f;
@@ -91,14 +89,14 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
      * Returns the fly speed, expressed in processing scene units. 
      * <p> 
      * It corresponds to the incremental displacement that is periodically
-     * applied to the InteractiveAvatarFrame position when a 
-     * Scene.MOVE_FORWARD or Scene.MOVE_BACKWARD
-     * Scene.MouseAction is proceeded.  
+     * applied to the InteractiveDrivableFrame position when a {@link Scene.MouseAction#MOVE_FORWARD} or
+     * {@link Scene.MouseAction#MOVE_BACKWARD} Scene.MouseAction is proceeded.  
      * <p>   
-     * <b>Attention:</b> When the InteractiveAvatarFrame is set as the {@link remixlab.proscene.Camera#frame()}
-     * (which indeed is an instance of an InteractiveCameraFrame) or When the InteractiveAvatarFrame is
-     * set as the {@link remixlab.proscene.Scene#interactiveFrame()}, this value is set according to the
-     * {@link remixlab.proscene.Scene#radius()} by {@link remixlab.proscene.Scene#setRadius(float)}.
+     * <b>Attention:</b> When the InteractiveDrivableFrame is set as the {@link remixlab.proscene.Camera#frame()}
+     * (which indeed is an instance of the InteractiveCameraFrame class) or when it is set as the
+     * {@link remixlab.proscene.Scene#avatar()} (which indeed is an instance of the InteractiveAvatarFrame class),
+     * this value is set according to the {@link remixlab.proscene.Scene#radius()} by
+     * {@link remixlab.proscene.Scene#setRadius(float)}.
      */
     public float flySpeed() { 
     	return flySpd; 
@@ -108,10 +106,11 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
 	 * Sets the {@link #flySpeed()}, defined in processing scene units. 
 	 * <p> 
 	 * Default value is 0.0, but it is modified according to the
-	 * {@link remixlab.proscene.Scene#radius()} when he InteractiveAvatarFrame is set as the
-	 * {@link remixlab.proscene.Camera#frame()} (which indeed is an instance of an
-	 * InteractiveCameraFrame) or when the InteractiveAvatarFrame is set as the
-	 * {@link remixlab.proscene.Scene#interactiveFrame()}.
+	 * {@link remixlab.proscene.Scene#radius()} when the InteractiveDrivableFrame is set as the
+	 * {@link remixlab.proscene.Camera#frame()} (which indeed is an instance of the
+	 * InteractiveCameraFrame class) or when the InteractiveDrivableFrame is set as the
+	 * {@link remixlab.proscene.Scene#avatar()} (which indeed is an instance of the InteractiveAvatarFrame
+	 * class).
 	 */
     public void setFlySpeed(float speed) { 
     	flySpd = speed;
@@ -121,12 +120,11 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
      * Returns the up vector used in fly mode, expressed in the world coordinate system. 
      * <p> 
      * Fly mode corresponds to the {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD} and 
-     * {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD} remixlab.proscene.Scene.MouseAction
+     * {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD} Scene.MouseAction
      * bindings. In these modes, horizontal displacements of the
-     * mouse rotate the InteractiveAvatarFrame around this vector. Vertical
-     * displacements rotate always around the Camera {@code X} axis. 
+     * mouse rotate the InteractiveDrivableFrame around this vector. Vertical
+     * displacements rotate always around the frame {@code X} axis. 
      * <p> 
-     * //TODO: check this!!! 
      * Default value is (0,1,0), but it is updated by the Camera when set as its
      * {@link remixlab.proscene.Camera#frame()}. {@link remixlab.proscene.Camera#setOrientation(Quaternion)}
      * and {@link remixlab.proscene.Camera#setUpVector(PVector)} modify this value and should be used
@@ -139,7 +137,6 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
     /**
      * Sets the {@link #flyUpVector()}, defined in the world coordinate system. 
      * <p>
-     * //TODO: check this!!!
      * Default value is (0,1,0), but it is updated by the Camera when
      * set as its {@link remixlab.proscene.Camera#frame()}. Use
      * {@link remixlab.proscene.Camera#setUpVector(PVector)} instead in that case.
@@ -149,7 +146,7 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
     }
 	
 	/**
-	 * Called for continuous frame motion in first person mode (see Scene.MOVE_FORWARD).
+	 * Called for continuous frame motion in first person mode (see {@link Scene.MouseAction#MOVE_FORWARD}).
 	 */	
 	public void flyUpdate()	{		
 		flyDisp.set(0.0f, 0.0f, 0.0f);
@@ -294,7 +291,7 @@ public abstract class InteractiveDrivableFrame extends InteractiveFrame {
 	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelMoved(int, Camera)}. 
 	 * <p>  
 	 * The wheel behavior depends on the wheel binded action. Current possible actions are ZOOM, 
-	 * MOVE_FORWARD, MOVE_BACKWARD. ZOOM speed depends on #wheelSensitivity() MOVE_FORWARD and
+	 * MOVE_FORWARD and MOVE_BACKWARD. ZOOM speed depends on #wheelSensitivity() MOVE_FORWARD and
 	 * MOVE_BACKWARD depend on #flySpeed().
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {

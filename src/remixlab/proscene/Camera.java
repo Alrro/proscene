@@ -47,6 +47,13 @@ import java.util.Iterator;
  * matrices (default), or they can be set as independent PMatrix3D objects
  * (which may be useful for off-screen computations). See {@link #isAttachedToPCamera()},
  * {@link #attachToPCamera()} and {@link #detachFromPCamera()}.
+ * <p>
+ * There are to {@link #kind()} of Cameras: PROSCENE (default) and STANDARD. The
+ * former kind dynamically sets up the {@link #zNear()} and {@link #zFar()} values, in
+ * order to provide optimal precision of the z-buffer. The latter kind provides fixed
+ * values to both of them ({@link #setStandardZNear(float)} and
+ * {@link #setStandardZFar(float)}).
+ * 
  */
 public class Camera implements Cloneable {
 	/**
@@ -554,39 +561,85 @@ public class Camera implements Cloneable {
 		return tp;
 	}
 	
-	//TODO doc me!
-	//TODO doc also znear, zfar, and getOrthoWidthHeight()
+	/**
+	 * Returns the kind of the Camera: PROSCENE or STANDARD.
+	 */
 	public final Kind kind() {
 		return knd;		
 	}
 	
-	public void setStandardZNear(float zN) {
-		stdZNear = zN;
-	}
-	
-	public float standardZNear() {
-		return stdZNear; 
-	}
-	
-    public void setStandardZFar(float zF) {
-    	stdZFar = zF;
-	}
-    
-    public float standardZFar() {
-		return stdZFar; 
-	}
-	
+	/**
+	 * Sets the kind of the Camera: PROSCENE or STANDARD.
+	 */
 	public void setKind(Kind k) {
 		knd = k;		
 	}
 	
-	public void changeOrthoFrustumSize(boolean augment) {
+	/**
+	 * Sets the value of the {@link #zNear()}. Meaningful only when the Camera {@link #kind()}
+	 * is STANDARD. This value is set to 0.001 by default.
+	 * 
+	 * @see #zNear()
+	 * @see #zFar()
+	 */
+	public void setStandardZNear(float zN) {
+		stdZNear = zN;
+	}
+	
+	/**
+	 * Returns the value of the {@link #zNear()}. Meaningful only when the Camera {@link #kind()}
+	 * is STANDARD. 
+	 * 
+	 * @see #zNear()
+	 * @see #zFar()
+	 */
+	public float standardZNear() {
+		return stdZNear; 
+	}
+	
+	/**
+	 * Sets the value of the {@link #zFar()}. Meaningful only when the Camera {@link #kind()}
+	 * is STANDARD.  This value is set to 1000 by default.
+	 * 
+	 * @see #zNear()
+	 * @see #zFar()
+	 */
+    public void setStandardZFar(float zF) {
+    	stdZFar = zF;
+	}
+    
+    /**
+	 * Returns the value of the {@link #zFar()}. Meaningful only when the Camera {@link #kind()}
+	 * is STANDARD. 
+	 * 
+	 * @see #zNear()
+	 * @see #zFar()
+	 */
+    public float standardZFar() {
+		return stdZFar; 
+	}	
+	
+	/**
+	 * Changes the size of the frustum. If {@code augment} is true the frustum size is augmented,
+	 * otherwise it is diminished. Meaningful only when the Camera {@link #kind()} is STANDARD
+	 * and the Camera {@link #type()} is ORTHOGRAPHIC.
+	 * 
+	 * @see #standardOrthoFrustumSize()
+	 */
+	public void changeStandardOrthoFrustumSize(boolean augment) {
 		if (augment)
 			orthoSize *= 1.01f;
 		else
 			orthoSize /= 1.01f;
 	}
 	
+	/**
+	 * Returns the frustum size. This value is used to set {@link #getOrthoWidthHeight()}.
+	 * Meaningful only when the Camera {@link #kind()} is STANDARD and the Camera
+	 * {@link #type()} is ORTHOGRAPHIC.
+	 * 
+	 * @see #getOrthoWidthHeight()
+	 */
 	public float standardOrthoFrustumSize() {
 		return orthoSize;
 	}
@@ -698,11 +751,15 @@ public class Camera implements Cloneable {
 	 * These values are only valid and used when the Camera is of {@link #type()}
 	 * ORTHOGRAPHIC and they are expressed in processing scene units.
 	 * <p> 
-	 * These values are proportional to the Camera (z projected) distance to
-	 * the {@link #arcballReferencePoint()}. When zooming on the object, the
-	 * Camera is translated forward \e and its frustum is narrowed, making the
-	 * object appear bigger on screen, as intuitively expected. 
-	 * <p> 
+	 * When the Camera {@link #kind()} is PROSCENE, these values are proportional
+	 * to the Camera (z projected) distance to the {@link #arcballReferencePoint()}.
+	 * When zooming on the object, the Camera is translated forward \e and its
+	 * frustum is narrowed, making the object appear bigger on screen, as
+	 * intuitively expected. 
+	 * <p>
+	 * When the Camera {@link #kind()} is STANDARD, these values are defined as
+	 * {@link #sceneRadius()} * {@link #standardOrthoFrustumSize()}.
+	 * <p>
 	 * Overload this method to change this behavior if desired.
 	 */
 	public float[] getOrthoWidthHeight(float[] target) {		
@@ -857,8 +914,9 @@ public class Camera implements Cloneable {
 
 	/**
 	 * Returns the near clipping plane distance used by the Camera projection
-	 * matrix. 
+	 * matrix. The returned value depends on the Camera {@link #kind()}:
 	 * <p> 
+	 * <h3>1. If the camera kind is PROSCENE</h3>
 	 * The clipping planes' positions depend on the {@link #sceneRadius()} and
 	 * {@link #sceneCenter()} rather than being fixed small-enough and
 	 * large-enough values. A good scene dimension approximation will hence
@@ -881,7 +939,10 @@ public class Camera implements Cloneable {
 	 * <p> 
 	 * See also the {@link #zFar()}, {@link #zClippingCoefficient()} and
 	 * {@link #zNearCoefficient()} documentations. 
-	 * <p> 
+	 * <p>
+	 * <h3>2. If the camera kind is STANDARD</h3>
+	 * Simply returns {@link #standardZNear()}
+	 * <P>
 	 * If you need a completely different zNear computation, overload the
 	 * {@link #zNear()} and {@link #zFar()} methods in a new class that publicly inherits from
 	 * Camera and use {@link remixlab.proscene.Scene#setCamera(Camera)}. 
@@ -889,6 +950,8 @@ public class Camera implements Cloneable {
 	 * <b>Attention:</b> The value is always positive although the clipping
 	 * plane is positioned at a negative z value in the Camera coordinate
 	 * system. This follows the {@code gluPerspective} standard.
+	 * 
+	 * @see #zFar()
 	 */
 	public float zNear() {
 		if ( kind() == Kind.STANDARD )
@@ -914,13 +977,16 @@ public class Camera implements Cloneable {
 
 	/**
 	 * Returns the far clipping plane distance used by the Camera projection
-	 * matrix. 
+	 * matrix.  The returned value depends on the Camera {@link #kind()}:
 	 * <p> 
+	 * <h3>1. If the camera kind is PROSCENE</h3> 
 	 * The far clipping plane is positioned at a distance equal to {@code
 	 * zClippingCoefficient() * sceneRadius()} behind the {@link #sceneCenter()}:
 	 * <p>
 	 * {@code zFar = distanceToSceneCenter() +
-	 * zClippingCoefficient()*sceneRadius();}<br>
+	 * zClippingCoefficient()*sceneRadius()}<br>
+	 * <h3>2. If the camera kind is STANDARD</h3>
+	 * Simply returns {@link #standardZFar()}. 
 	 * 
 	 * @see #zNear()
 	 */
@@ -1345,7 +1411,9 @@ public class Camera implements Cloneable {
 	 * <p> 
 	 * <b>Attention:</b> This methods also sets {@link #focusDistance()} to
 	 * {@code sceneRadius() / tan(fieldOfView()/2)} and {@link #flySpeed()} to
-	 * 1% of {@link #sceneRadius()}.
+	 * 1% of {@link #sceneRadius()} (if there's an Scene
+	 * {@link remixlab.proscene.Scene#avatar()} and it is an instance of
+	 * InteractiveDrivableFrame it also sets {@code flySpeed} to the same value).
 	 */
 	public void setSceneRadius(float radius) {
 		if (radius <= 0.0f) {
@@ -1360,8 +1428,8 @@ public class Camera implements Cloneable {
 		setFlySpeed(0.01f * sceneRadius());
 		
 		//if there's an avatar we change its fly speed as well
-		if( scene.avatarIsInteractiveDrivableFrame )//TODO check this agianst scene!
-			((InteractiveDrivableFrame)scene.trackableAvatar()).setFlySpeed(0.01f * scene.radius());
+		if( scene.avatarIsInteractiveDrivableFrame )
+			((InteractiveDrivableFrame)scene.avatar()).setFlySpeed(0.01f * scene.radius());
 	}
 
 	/**
@@ -2186,7 +2254,11 @@ public class Camera implements Cloneable {
 	 * {@link #fieldOfView()} are unchanged. 
 	 * <p> 
 	 * You should therefore orientate the Camera before you call this method.
-	 * 
+	 * <p>
+	 * <b>Attention:</b> If the Camera {@link #kind()} is STANDARD, simply resets
+	 * the {@link #standardOrthoFrustumSize()} to 1 and then calls
+	 * {@code lookAt(sceneCenter())}.
+	 *  
 	 * @see #lookAt(PVector)
 	 * @see #setOrientation(Quaternion)
 	 * @see #setUpVector(PVector, boolean)
