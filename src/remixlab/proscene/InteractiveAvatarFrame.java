@@ -56,6 +56,14 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
 		return inverseCoordinatesOf(camRelPos);
 	}
     
+    public PVector upVector() {
+    	return yAxis();
+    }
+	
+	public PVector target() {
+		return position();		
+	}
+    
     public void computeCameraPosition() {
     	camRelPos.x = trackingDistance() * PApplet.sin(inclination()) * PApplet.sin(azimuth());
     	camRelPos.y = trackingDistance() * PApplet.cos(inclination());
