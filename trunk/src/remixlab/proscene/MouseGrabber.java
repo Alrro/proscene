@@ -36,7 +36,7 @@ import java.util.*;
  * <p> 
  * <h3>How does it work ?</h3>
  * All the created MouseGrabbers are grouped in a mouse grabber pool.
- * The Scene parse this pool, calling all the MouseGrabbers'
+ * The Scene parses this pool, calling all the MouseGrabbers'
  * {@link #checkIfGrabsMouse(int, int, Camera)} methods that {@link #setGrabsMouse(boolean)}
  * if desired (method calls should actually be performed on concrete class instances
  * such as InteractiveFrame). 

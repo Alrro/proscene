@@ -297,21 +297,31 @@ public class Scene implements MouseWheelListener, PConstants {
 		return glIFrame;
 	}
 	
-	//TODO doc me
-	public Trackable trackableAvatar() {
+	/**
+	 * Returns the avatar object to be tracked by the Camera when {@link #cameraMode()} is
+	 * THIRD_PERSON. Simply returns {@code null} if no avatar has been set.
+	 */
+	public Trackable avatar() {
 		return trck;
 	}
 	
-	//TODO doc me
+	/**
+	 * Sets the avatar object to be tracked by the Camera when {@link #cameraMode()} is
+	 * THIRD_PERSON.
+	 * <p>
+	 * <b>Attention: </b> If {@code t} is an instance of the InteractiveAvatarFrame class,
+	 * the {@link remixlab.proscene.InteractiveAvatarFrame#trackingDistance()} is set to
+	 * {@link #radius()}/3. 
+	 */
 	public void setAvatar(Trackable t) {
 		trck = t;
 		avatarIsInteractiveAvatarFrame = false;
 		avatarIsInteractiveDrivableFrame = false;
-		if (trackableAvatar() instanceof InteractiveAvatarFrame) {
+		if (avatar() instanceof InteractiveAvatarFrame) {
 			avatarIsInteractiveAvatarFrame = true;
 			avatarIsInteractiveDrivableFrame = true;
-			if ( ((InteractiveAvatarFrame)trackableAvatar()).trackingDistance() == 0 )
-				((InteractiveAvatarFrame)trackableAvatar()).setTrackingDistance(radius()/3);
+			if ( ((InteractiveAvatarFrame)avatar()).trackingDistance() == 0 )
+				((InteractiveAvatarFrame)avatar()).setTrackingDistance(radius()/3);
 			((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
 			if(!isInKeyList("c"))
 				keyList.add("c");
@@ -333,7 +343,7 @@ public class Scene implements MouseWheelListener, PConstants {
 					"t/T: inclination.");
 		}
 		else
-			if (trackableAvatar() instanceof InteractiveDrivableFrame) {
+			if (avatar() instanceof InteractiveDrivableFrame) {
 				avatarIsInteractiveAvatarFrame = false;
 				avatarIsInteractiveDrivableFrame = true;
 				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
@@ -808,9 +818,9 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     		else {
     			if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
-        			camera().setPosition( trackableAvatar().cameraPosition() );
-        			camera().setUpVector( trackableAvatar().upVector() );
-        			camera().lookAt( trackableAvatar().target() );
+        			camera().setPosition( avatar().cameraPosition() );
+        			camera().setUpVector( avatar().upVector() );
+        			camera().lookAt( avatar().target() );
         		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
         		setPProjectionMatrix();
@@ -819,9 +829,9 @@ public class Scene implements MouseWheelListener, PConstants {
     	}
     	else {    		
     		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {
-    			camera().setPosition( trackableAvatar().cameraPosition() );
-    			camera().setUpVector( trackableAvatar().upVector() );
-    			camera().lookAt( trackableAvatar().target() );
+    			camera().setPosition( avatar().cameraPosition() );
+    			camera().setUpVector( avatar().upVector() );
+    			camera().lookAt( avatar().target() );
     		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
     		setPProjectionMatrix();
@@ -1609,11 +1619,35 @@ public class Scene implements MouseWheelListener, PConstants {
 	// 7. Camera modes
 	
 	/**
-	 * Sets the camera mode according to {@code camMode}. Possible values are:
-	 * {@link remixlab.proscene.Scene.CameraMode#ARCBALL},
-	 * {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH}, and 
-	 * {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}
-	 * //TODO complete the doc
+	 * Sets the camera mode according to {@code camMode}. The possibilities are:
+	 * <h3>1. {@link remixlab.proscene.Scene.CameraMode#ARCBALL}</h3>
+	 * The mouse actions are then set as follows:
+	 * <h4>a. {@link #camera()}</h4>
+	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#ROTATE}.<br>
+	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#ZOOM}.<br>
+	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#TRANSLATE}.<br>
+	 * <h4>b. {@link #interactiveFrame()}</h4>
+	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#ROTATE}.<br>
+	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#ZOOM}.<br>
+	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#TRANSLATE}.<br>
+	 * <h3>2. {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH}</h3>
+	 * The mouse actions are then set as follows:
+	 * <h4>a. {@link #camera()}</h4>
+	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD}.<br>
+	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}.<br>
+	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD}.<br>
+	 * <h4>b. {@link #interactiveFrame()}</h4>
+	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#ROTATE}.<br>
+	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#ZOOM}.<br>
+	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#TRANSLATE}.<br>
+	 * <h3>3. {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}</h3>
+	 * The mouse actions are then set as follows:
+	 * <h4>a. {@link #camera()}</h4>
+	 * The {@link #camera()} will simply track the {@link #avatar()}.
+	 * <h4>b. {@link #interactiveFrame()}</h4>
+	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD}.<br>
+	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}.<br>
+	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD}.<br>
 	 * 
 	 * @see #cameraMode()
 	 */
@@ -1623,7 +1657,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		case ARCBALL :
 			camMode = cMode;
 			if( avatarIsInteractiveDrivableFrame )
-	    		((InteractiveDrivableFrame)trackableAvatar()).addInMouseGrabberPool();
+	    		((InteractiveDrivableFrame)avatar()).addInMouseGrabberPool();
 			setDrawInteractiveFrame(false);
 			cameraLeftButton = MouseAction.ROTATE;		
 			cameraMidButton = MouseAction.ZOOM;
@@ -1638,7 +1672,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    case WALKTHROUGH :
 	    	camMode = cMode;
 	    	if( avatarIsInteractiveDrivableFrame )
-	    		((InteractiveDrivableFrame)trackableAvatar()).addInMouseGrabberPool();
+	    		((InteractiveDrivableFrame)avatar()).addInMouseGrabberPool();
 	    	setDrawInteractiveFrame(false);
 	    	camera().frame().updateFlyUpVector();
 			camera().frame().stopSpinning();
@@ -1652,17 +1686,17 @@ public class Scene implements MouseWheelListener, PConstants {
 				camera().interpolateToFitScene();
 	    	break;
 	    case THIRD_PERSON :
-	    	if( trackableAvatar() != null ) {
+	    	if( avatar() != null ) {
 	    		camMode = cMode;
 	    		setCameraType(Camera.Type.PERSPECTIVE);//TODO can use camera.kind.standard and ortho?
 	    		if( avatarIsInteractiveDrivableFrame )
-		    		((InteractiveDrivableFrame)trackableAvatar()).removeFromMouseGrabberPool();
+		    		((InteractiveDrivableFrame)avatar()).removeFromMouseGrabberPool();
 	    		setDrawInteractiveFrame();
 	    		camera().frame().updateFlyUpVector();//?
 				camera().frame().stopSpinning();
 				if ( avatarIsInteractiveDrivableFrame ) {
-					((InteractiveDrivableFrame)(trackableAvatar())).updateFlyUpVector();
-					((InteractiveDrivableFrame)(trackableAvatar())).stopSpinning();
+					((InteractiveDrivableFrame)(avatar())).updateFlyUpVector();
+					((InteractiveDrivableFrame)(avatar())).stopSpinning();
 				}
 		    	frameLeftButton = MouseAction.MOVE_FORWARD;		
 				frameMidButton = MouseAction.LOOK_AROUND;
@@ -1671,9 +1705,9 @@ public class Scene implements MouseWheelListener, PConstants {
 				if ( camera().anyInterpolationIsStarted() ) 
 					camera().stopAllInterpolations();
 				Camera cm = camera().clone();
-				cm.setPosition( trackableAvatar().cameraPosition() );
-    			cm.setUpVector( trackableAvatar().upVector() );
-    			cm.lookAt( trackableAvatar().target() );    			
+				cm.setPosition( avatar().cameraPosition() );
+    			cm.setUpVector( avatar().upVector() );
+    			cm.lookAt( avatar().target() );    			
 				camera().interpolateTo(cm.frame());				
 	    	}
 	    	break;
@@ -1691,6 +1725,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	/**
 	 * Sets the next camera mode.
+	 * <p>
+	 * The order is: {@link remixlab.proscene.Scene.CameraMode#ARCBALL}
+	 * -> {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH} ->
+	 * {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}.
 	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
@@ -1700,7 +1738,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			setCameraMode(CameraMode.WALKTHROUGH);
 			break;
 	    case WALKTHROUGH :
-	    	if( trackableAvatar() != null )
+	    	if( avatar() != null )
 	    		setCameraMode(CameraMode.THIRD_PERSON);
 	    	else
 	    		setCameraMode(CameraMode.ARCBALL);
@@ -1714,12 +1752,17 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Sets the previous camera mode.
 	 * 
+	 * <p>
+	 * The order is: {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}
+	 * <- {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH} <-
+	 * {@link remixlab.proscene.Scene.CameraMode#ARCBALL}.
+	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
 	public void previousCameraMode() {
 		switch (camMode) {
 		case ARCBALL :
-			if( trackableAvatar() != null )
+			if( avatar() != null )
 				setCameraMode(CameraMode.THIRD_PERSON);
 			else
 				setCameraMode(CameraMode.WALKTHROUGH);
@@ -1914,8 +1957,8 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 			case THIRD_PERSON:
 				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)trackableAvatar()).setFlySpeed(
-							((InteractiveDrivableFrame)trackableAvatar()).flySpeed() * 1.2f);
+					((InteractiveDrivableFrame)avatar()).setFlySpeed(
+							((InteractiveDrivableFrame)avatar()).flySpeed() * 1.2f);
 				break;
 			}			
 		}
@@ -1929,16 +1972,16 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 			case THIRD_PERSON:
 				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)trackableAvatar()).setFlySpeed(
-							((InteractiveDrivableFrame)trackableAvatar()).flySpeed() / 1.2f);
+					((InteractiveDrivableFrame)avatar()).setFlySpeed(
+							((InteractiveDrivableFrame)avatar()).flySpeed() / 1.2f);
 				break;
 			}			
 		}
 		if (parent.keyCode == UP) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
-					new PVector(0.0f,  -10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f)));
+					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
+					new PVector(0.0f,  -10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
@@ -1946,8 +1989,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (parent.keyCode == DOWN) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
-					new PVector(0.0f,  10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f)));
+					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
+					new PVector(0.0f,  10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
@@ -1955,8 +1998,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (parent.keyCode == LEFT) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )
 				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
-					new PVector(-10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f,  0.0f)));
+					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
+					new PVector(-10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f,  0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
@@ -1964,41 +2007,41 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (parent.keyCode == RIGHT) {
 			if ( cameraMode() == CameraMode.THIRD_PERSON )				
 				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)trackableAvatar()).translate(((InteractiveDrivableFrame)trackableAvatar()).inverseTransformOf(
-							new PVector(10.0f*((InteractiveDrivableFrame)trackableAvatar()).flySpeed(), 0.0f,  0.0f)));
+					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
+							new PVector(10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f,  0.0f)));
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 						new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));				
 		}
 		if ( (parent.key == 'c') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)trackableAvatar()).setAzimuth(
-						((InteractiveAvatarFrame)trackableAvatar()).azimuth() + PApplet.PI/64 );
+				((InteractiveAvatarFrame)avatar()).setAzimuth(
+						((InteractiveAvatarFrame)avatar()).azimuth() + PApplet.PI/64 );
 		}
 		if ( (parent.key == 'C') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)trackableAvatar()).setAzimuth(
-					((InteractiveAvatarFrame)trackableAvatar()).azimuth() - PApplet.PI/64 );
+				((InteractiveAvatarFrame)avatar()).setAzimuth(
+					((InteractiveAvatarFrame)avatar()).azimuth() - PApplet.PI/64 );
 		}
 		if ( (parent.key == 'd') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)trackableAvatar()).setTrackingDistance(
-					((InteractiveAvatarFrame)trackableAvatar()).trackingDistance() + radius()/50 );
+				((InteractiveAvatarFrame)avatar()).setTrackingDistance(
+					((InteractiveAvatarFrame)avatar()).trackingDistance() + radius()/50 );
 		}
 		if ( (parent.key == 'D') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)trackableAvatar()).setTrackingDistance(
-					((InteractiveAvatarFrame)trackableAvatar()).trackingDistance() - radius()/50 );
+				((InteractiveAvatarFrame)avatar()).setTrackingDistance(
+					((InteractiveAvatarFrame)avatar()).trackingDistance() - radius()/50 );
 		}
 		if ( (parent.key == 't') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)trackableAvatar()).setInclination(
-					((InteractiveAvatarFrame)trackableAvatar()).inclination() + PApplet.PI/64 );
+				((InteractiveAvatarFrame)avatar()).setInclination(
+					((InteractiveAvatarFrame)avatar()).inclination() + PApplet.PI/64 );
 		}
 		if ( (parent.key == 'T') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
 			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)trackableAvatar()).setInclination(
-					((InteractiveAvatarFrame)trackableAvatar()).inclination() - PApplet.PI/64 );
+				((InteractiveAvatarFrame)avatar()).setInclination(
+					((InteractiveAvatarFrame)avatar()).inclination() - PApplet.PI/64 );
 		}
 		/**
 		//experimental for Camera.Kind.STANDARD

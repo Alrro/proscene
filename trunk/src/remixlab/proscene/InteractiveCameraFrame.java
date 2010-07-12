@@ -36,7 +36,7 @@ import java.awt.Point;
  * <p>
  * An InteractiveCameraFrame is a specialization of an InteractiveDrivableFrame (hence it can "fly"
  * in the Scene), designed to be set as the {@link Camera#frame()}. Mouse motions are basically interpreted
- * in a negated way: when the mouse goes to the right, the InteractiveFrame (and the
+ * in a negated way: when the mouse goes to the right, the InteractiveFrame (and also the
  * InteractiveDrivableFrame and the InteractiveAvatarFrame) translation goes to the right,
  * while the InteractiveCameraFrame has to go to the <i>left</i>, so that the
  * <i>scene</i> seems to move to the right.
@@ -107,10 +107,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseDragged(Point, Camera)}.
-	 * 
-	 * <p>
-	 * 
+	 * {@link remixlab.proscene.InteractiveFrame#mouseDragged(Point, Camera)}. 
+	 * <p> 
 	 * Motion depends on mouse binding. The resulting displacements are basically inverted
 	 * from those of an InteractiveFrame.
 	 */
@@ -239,9 +237,11 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * Overloading of
 	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelMoved(int, Camera)}. 
 	 * <p>  
-	 * The wheel behavior depends on the wheel binded action. Current possible actions are ZOOM, 
-	 * MOVE_FORWARD, MOVE_BACKWARD. ZOOM speed depends on #wheelSensitivity() MOVE_FORWARD and
-	 * MOVE_BACKWARD depend on #flySpeed().
+	 * The wheel behavior depends on the wheel binded action. Current possible actions are
+	 * {@link remixlab.proscene.Scene.MouseAction#ZOOM}, {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD}
+	 * and {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD}.
+	 * {@link remixlab.proscene.Scene.MouseAction#ZOOM} speed depends on #wheelSensitivity() the other two
+	 * depend on #flySpeed().
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {
 		switch (action) {
