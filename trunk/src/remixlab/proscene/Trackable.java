@@ -41,23 +41,21 @@ import processing.core.PVector;
 
 public interface Trackable {
 	/**
-	 * Returns the position of the object tracking Camera in the world coordinate system.
+	 * Returns the position of the tracking Camera in the world coordinate system.
 	 *   
 	 * @return PVector holding the camera position defined in the world coordinate system. 
 	 */
 	public PVector cameraPosition();
 	
 	/**
-	 * Returns the vector to be set as the {@link remixlab.proscene.Camera#upVector()}
-	 * by the object tracking Camera.
+	 * Returns the vector to be set as the {@link remixlab.proscene.Camera#upVector()}.
 	 * 
 	 * @return PVector holding the camera up-vector defined in the world coordinate system.
 	 */
 	public PVector upVector();
 	
 	/**
-	 * Returns the target point to be set as the {@link remixlab.proscene.Camera#lookAt(PVector)}
-	 * by the object tracking Camera. 
+	 * Returns the target point to be set as the {@link remixlab.proscene.Camera#lookAt(PVector)}. 
 	 * 
 	 * @return PVector holding the camera look-at vector defined in the world coordinate system.
 	 */

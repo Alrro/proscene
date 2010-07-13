@@ -1,14 +1,3 @@
-/**
- * Auxiliar Viewer. 
- * by Jean Pierre Charalambos.
- * 
- * This class is part of the View Frustum Culling example.
- * This class displays an external view of the main viewer scene
- * that exhibits the clipping.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
- */
-
 public class AuxiliarViewer extends NApplet {
   Scene scene;
   
@@ -24,7 +13,12 @@ public class AuxiliarViewer extends NApplet {
   }
   
   void draw() {
-    Root.drawIfAllChildrenAreVisible(this, ((MainViewer)mainNApplet).getScene().camera());
+    noStroke();
+    if( ((MainViewer)mainNApplet).getScene().camera().sphereIsVisible(new PVector(0,0,0), 40) == Camera.Visibility.SEMIVISIBLE )
+      fill(255, 0, 0);
+    else
+      fill(0, 255, 0);
+    sphere(40);    
     DrawingUtils.drawCamera(this, ((MainViewer)mainNApplet).getScene().camera());
   }
 }
