@@ -358,9 +358,12 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
-	 * Sets {@code frame} as the InteractiveFrame associated to this Scene.
+	 * Sets {@code frame} as the InteractiveFrame associated to this Scene. If {@code frame}
+	 * is instance of Trackable it is also automatically set as the Scene {@link #avatar()}
+	 * (by automatically calling {@code setAvatar((Trackable) frame)}).
 	 * 
 	 * @see #interactiveFrame()
+	 * @see #setAvatar(Trackable)
 	 */
 	public void setInteractiveFrame(InteractiveFrame frame) {		
 		glIFrame = frame;               
@@ -2046,10 +2049,10 @@ public class Scene implements MouseWheelListener, PConstants {
 		/**
 		//experimental for Camera.Kind.STANDARD
 		if ( (parent.key == 'u') && (camera().kind() == Camera.Kind.STANDARD) ) {
-			camera().changeOrthoFrustumSize(true);		
+			camera().changeStandardOrthoFrustumSize(true);		
 		}
 		if ( (parent.key == 'U') && (camera().kind() == Camera.Kind.STANDARD) ) {
-			camera().changeOrthoFrustumSize(false);
+			camera().changeStandardOrthoFrustumSize(false);
 		}
 		if ( parent.key == 'v') {
 			this.toggleCameraKind();
