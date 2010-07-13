@@ -144,6 +144,7 @@ public class Scene implements MouseWheelListener, PConstants {
     protected int startCoordCalls;
 	
 	// M o u s e   G r a b b e r
+    protected final List<MouseGrabber> MouseGrabberPool;
 	MouseGrabber mouseGrbbr;
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsAnICamFrame;
@@ -188,7 +189,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent = p;
 		pg3d = (PGraphics3D) parent.g;
 		width = parent.width;
-		height = parent.height;		
+		height = parent.height;
+		
+		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		
 		parent.addMouseWheelListener(this);
 		
@@ -261,6 +264,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	}	
 	
 	// 1. Associated objects
+	
+	public List<MouseGrabber> mouseGrabberPool() {
+		return MouseGrabberPool;
+	}
 		
 	/**
 	 * Returns the associated Camera, never {@code null}.
@@ -1333,7 +1340,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #drawCameraPathSelectionHints()
 	 */
 	protected void drawSelectionHints() {
-		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {			
+		for (MouseGrabber mg: MouseGrabberPool) {
 			InteractiveFrame iF = (InteractiveFrame) mg;//downcast needed
 			if ( !iF.isInCameraPath() ) {
 				PVector center = camera().projectedCoordinatesOf( iF.position() );
@@ -1352,7 +1359,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #drawSelectionHints()
 	 */
 	protected void drawCameraPathSelectionHints() {
-		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {			
+		for (MouseGrabber mg: MouseGrabberPool) {			
 			InteractiveFrame iF = (InteractiveFrame) mg;//downcast needed
 			if ( iF.isInCameraPath() ) {
 				PVector center = camera().projectedCoordinatesOf( iF.position() );
@@ -2367,7 +2374,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public void mouseMoved(MouseEvent event) {
 		setMouseGrabber(null);
-		for (MouseGrabber mg: MouseGrabber.MouseGrabberPool) {
+		for (MouseGrabber mg: MouseGrabberPool) {
 			mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if(mg.grabsMouse())
 				setMouseGrabber(mg);

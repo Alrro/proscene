@@ -88,6 +88,9 @@ public class InteractiveFrame extends Frame
 	protected boolean grbsMouse;
 	
 	protected boolean isInCamPath;
+	
+	// P R O S C E N E   A N D   P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
+	public Scene scene;
 
 	/**
 	 * Default constructor.
@@ -98,7 +101,9 @@ public class InteractiveFrame extends Frame
 	 * {@link #translationSensitivity()}, {@link #spinningSensitivity()} and
 	 * {@link #wheelSensitivity()}).
 	 */
-	public InteractiveFrame() {
+	public InteractiveFrame(Scene scn) {
+		scene = scn;
+		
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
@@ -138,8 +143,9 @@ public class InteractiveFrame extends Frame
 	 * 
 	 * @see remixlab.proscene.Camera#addKeyFrameToPath(int)
 	 */
-	protected InteractiveFrame(InteractiveCameraFrame iFrame) {
+	protected InteractiveFrame(Scene scn, InteractiveCameraFrame iFrame) {
 		super(iFrame.translation(), iFrame.rotation());
+		scene = scn;
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
@@ -218,7 +224,7 @@ public class InteractiveFrame extends Frame
 	 * See {@link remixlab.proscene.MouseGrabber#getMouseGrabberPool()}.
 	 */
 	public List<MouseGrabber> getMouseGrabberPool() {
-		return MouseGrabber.MouseGrabberPool;		
+		return scene.mouseGrabberPool();
 	}
 	
 	/**
@@ -257,7 +263,7 @@ public class InteractiveFrame extends Frame
 	
 	/**
 	 * Returns {@code true} if the MouseGrabber is currently in the
-	 * {@link #mouseGrabberPool()} list. 
+	 * {@link #getMouseGrabberPool()} list. 
 	 * <p> 
 	 * Default value is {@code true}. When set to {@code false} using
 	 * {@link #removeFromMouseGrabberPool()}, the Scene no longer
@@ -265,14 +271,14 @@ public class InteractiveFrame extends Frame
 	 * Use {@link #addInMouseGrabberPool()} to insert it back.
 	 */
     public boolean isInMouseGrabberPool() {
-		return MouseGrabber.MouseGrabberPool.contains(this);
+    	return scene.mouseGrabberPool().contains(this);
     }
     
 	/**
-	 * Adds the MouseGrabber in the {@link #mouseGrabberPool()}. 
+	 * Adds the MouseGrabber in the {@link #getMouseGrabberPool()}. 
 	 * <p> 
 	 * All created MouseGrabber are automatically added in the
-	 * {@link #mouseGrabberPool()} by the constructor. Trying to add a
+	 * {@link #getMouseGrabberPool()} by the constructor. Trying to add a
 	 * MouseGrabber that already {@link #isInMouseGrabberPool()} has no effect. 
 	 * <p> 
 	 * Use {@link #removeFromMouseGrabberPool()} to remove the MouseGrabber
@@ -281,30 +287,30 @@ public class InteractiveFrame extends Frame
 	 * can no longer grab mouse focus. Use {@link #isInMouseGrabberPool()} to know
 	 * the current state of the MouseGrabber.
 	 */
-    public void addInMouseGrabberPool() {    	
+    public void addInMouseGrabberPool() {
 		if (!isInMouseGrabberPool())
-			MouseGrabber.MouseGrabberPool.add(this);
+			scene.mouseGrabberPool().add(this);
     }
     
 	/**
-	 * Removes the MouseGrabber from the {@link #mouseGrabberPool()}. 
+	 * Removes the MouseGrabber from the {@link #getMouseGrabberPool()}. 
 	 * <p> 
 	 * See {@link #addInMouseGrabberPool()} for details. Removing a MouseGrabber
-	 * that is not in {@link #mouseGrabberPool()} has no effect.
+	 * that is not in {@link #getMouseGrabberPool()} has no effect.
 	 */
     public void removeFromMouseGrabberPool() {
-    	MouseGrabber.MouseGrabberPool.remove(this);
+    	scene.mouseGrabberPool().remove(this);
     }
     
 	/**
-	 * Clears the {@link #mouseGrabberPool()}. 
+	 * Clears the {@link #getMouseGrabberPool()}. 
 	 * <p> 
-	 * Use this method only if it is faster to clear the {@link #mouseGrabberPool()}
+	 * Use this method only if it is faster to clear the {@link #getMouseGrabberPool()}
 	 * and then to add back a few MouseGrabbers than to remove each one independently.
 	 * Use Scene.setMouseTracking(false) instead if you want to disable mouse grabbing.
 	 */
     public void clearMouseGrabberPool() {
-		MouseGrabber.MouseGrabberPool.clear();
+    	scene.mouseGrabberPool().clear();
     }
     
 	/**
@@ -829,13 +835,5 @@ public class InteractiveFrame extends Frame
 
 	  float d = x*x + y*y;
 	  return d < size_limit ? PApplet.sqrt(size2 - d) : size_limit/PApplet.sqrt(d);
-	}
-	
-	/**
-	 * Static version of {@link #getMouseGrabberPool()}. 
-	 * @return {@link MouseGrabber#MouseGrabberPool}
-	 */
-	public static List<MouseGrabber> mouseGrabberPool() {
-		return MouseGrabber.MouseGrabberPool;
-	}
+	}	
 }

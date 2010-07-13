@@ -53,7 +53,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * <p> 
 	 * {@link #flySpeed()} is set to 0.0 and {@link #flyUpVector()} is (0,1,0).
 	 */
-	public InteractiveDrivableFrame() {
+	public InteractiveDrivableFrame(Scene scn) {
+		super(scn);
 		drvSpd = 0.0f;
 		flyUpVec = new PVector(0.0f, 1.0f, 0.0f);
 				

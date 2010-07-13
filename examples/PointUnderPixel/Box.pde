@@ -31,9 +31,9 @@ public class Box {
   float w, h, d;
   int c;
 
-  Box(PApplet p) {
-    parent = p;
-    iFrame = new InteractiveFrame();
+  Box(Scene scn) {
+    parent = scn.parent;
+    iFrame = new InteractiveFrame(scn);
     setSize();
     setColor();
     setPosition();

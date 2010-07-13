@@ -41,7 +41,7 @@ void setup() {
   rotDir   = 0;
   activeConstraint = 0;
 
-  frame = new InteractiveFrame();
+  frame = new InteractiveFrame(scene);
   frame.translate(new PVector(20, 20, 0));
   scene.setInteractiveFrame(frame);
   frame.setConstraint(constraints[activeConstraint]);
