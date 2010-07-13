@@ -1489,9 +1489,9 @@ public class Camera implements Cloneable {
 	// 5. ARCBALL REFERENCE POINT
 
 	/**
-	 * The point the Camera revolves around its
-	 * {@link remixlab.proscene.InteractiveCameraFrame#arcballReferencePoint()}
-	 * (when it's set in arcball mode).
+	 * The point the Camera revolves around with the
+	 * {@link remixlab.proscene.Scene.MouseAction#ROTATE} mouse binding.
+	 * Defined in world coordinate system.
 	 * <p> 
 	 * Default value is the {@link #sceneCenter()}. 
 	 * <p> 
