@@ -42,7 +42,7 @@ void setup() {
   keyFrame = new InteractiveFrame[nbKeyFrames];
   // Create an initial path
   for (int i=0; i<nbKeyFrames; i++) {
-    keyFrame[i] = new InteractiveFrame();
+    keyFrame[i] = new InteractiveFrame(scene);
     keyFrame[i].setPosition(-100 + 200*i/(nbKeyFrames-1), 0, 0);
     kfi.addKeyFrame(keyFrame[i]);
   }
@@ -76,10 +76,8 @@ void draw() {
 void keyPressed() {
   if ((key == ENTER) || (key == RETURN))
   kfi.toggleInterpolation();
-  if (key == CODED) {
-    if (keyCode == UP)
-      kfi.setInterpolationSpeed(kfi.interpolationSpeed()+0.25f);
-    if (keyCode == DOWN)
-      kfi.setInterpolationSpeed(kfi.interpolationSpeed()-0.25f);
-  }
+  if ( key == 'u')
+    kfi.setInterpolationSpeed(kfi.interpolationSpeed()-0.25f);
+  if ( key == 'v')
+    kfi.setInterpolationSpeed(kfi.interpolationSpeed()+0.25f);  
 }

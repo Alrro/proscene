@@ -188,7 +188,7 @@ public class Camera implements Cloneable {
 		interpolationKfi = new KeyFrameInterpolator(frame(), parent);
 		kfi = new HashMap<Integer, KeyFrameInterpolator>();
 		
-		setFrame(new InteractiveCameraFrame());		
+		setFrame(new InteractiveCameraFrame(scene));
 
 		// Requires fieldOfView() to define focusDistance()
 		setSceneRadius(100);
@@ -1700,7 +1700,7 @@ public class Camera implements Cloneable {
 	 * Adds the current Camera {@link #position()} and {@link #orientation()} as a keyFrame to
 	 * path {@code key}. If {@code editablePath} is {@code true}, builds an InteractiveFrame (from
 	 * the current Camera {@link #position()} and {@link #orientation()}) before adding it
-	 * (see {@link remixlab.proscene.InteractiveFrame#InteractiveFrame(InteractiveCameraFrame)}).
+	 * (see {@link remixlab.proscene.InteractiveFrame#InteractiveFrame(Scene, InteractiveCameraFrame)}).
 	 * In the latter mode the resulting created path will be editable.
 	 * <p>
 	 * This method can also be used if you simply want to save a Camera point of view (a path
@@ -1723,7 +1723,7 @@ public class Camera implements Cloneable {
 		}
 		
 		if (editablePath)
-			kfi.get(key).addKeyFrame(new InteractiveFrame(frame()));
+			kfi.get(key).addKeyFrame(new InteractiveFrame(scene, frame()));
 		else
 			kfi.get(key).addKeyFrame(frame(), false);
 		
@@ -2403,7 +2403,7 @@ public class Camera implements Cloneable {
 		interpolationKfi.addKeyFrame(frame(), false);
 		
 		// Small hack: attach a temporary frame to take advantage of fitScreenRegion without modifying frame
-		tempFrame = new InteractiveCameraFrame();
+		tempFrame = new InteractiveCameraFrame(scene);
 		InteractiveCameraFrame originalFrame = frame();
 		tempFrame.setPosition(new PVector(frame().position().x, frame().position().y, frame().position().z));
 		tempFrame.setOrientation(new Quaternion (frame().orientation()));
@@ -2447,7 +2447,7 @@ public class Camera implements Cloneable {
 				                     0.4f, false);
 		
 		// Small hack: attach a temporary frame to take advantage of lookAt without modifying frame		
-		tempFrame = new InteractiveCameraFrame();
+		tempFrame = new InteractiveCameraFrame(scene);
 		InteractiveCameraFrame originalFrame = frame();		
 		tempFrame.setPosition(PVector.add(PVector.mult(frame().position(), coef), PVector.mult(target.point, (1.0f-coef)) ));
 		tempFrame.setOrientation( new Quaternion(frame().orientation()) );
@@ -2483,7 +2483,7 @@ public class Camera implements Cloneable {
 		interpolationKfi.addKeyFrame(frame(), false);
 		
 		// Small hack: attach a temporary frame to take advantage of showEntireScene without modifying frame
-		tempFrame = new InteractiveCameraFrame();
+		tempFrame = new InteractiveCameraFrame(scene);
 		InteractiveCameraFrame originalFrame = frame();
 		tempFrame.setPosition(new PVector(frame().position().x, frame().position().y, frame().position().z));
 		tempFrame.setOrientation(new Quaternion (frame().orientation()));

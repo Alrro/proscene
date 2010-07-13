@@ -49,10 +49,7 @@ import java.util.*;
  * If you want to (temporarily) disable a specific MouseGrabbers, you can remove it
  * from this pool using {@link #removeFromMouseGrabberPool()}.
  */
-public interface MouseGrabber {
-	//TODO to be declared in the scene? think in multiview!
-	final static List<MouseGrabber> MouseGrabberPool = new ArrayList<MouseGrabber>();
-	
+public interface MouseGrabber {	
 	/**
 	 * Returns a list containing references to all the active MouseGrabbers. 
 	 * <p> 

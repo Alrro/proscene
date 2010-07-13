@@ -10,7 +10,7 @@ void setup() {
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
   
-  avatar = new InteractiveAvatarFrame();
+  avatar = new InteractiveAvatarFrame(scene);
   avatar.setTrackingDistance(300);
   avatar.setAzimuth(PI/12);
   avatar.setInclination(avatar.inclination() + PI/6);

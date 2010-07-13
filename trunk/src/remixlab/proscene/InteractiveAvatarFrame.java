@@ -26,7 +26,8 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
 	 * 
 	 * @see remixlab.proscene.Scene#setAvatar(Trackable)
 	 */
-	public InteractiveAvatarFrame() {
+	public InteractiveAvatarFrame(Scene scn) {
+		super(scn);
 		camRelPos = new PVector();
 		setTrackingDistance(0);
 		setAzimuth(0);

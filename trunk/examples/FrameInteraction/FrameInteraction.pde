@@ -19,7 +19,7 @@ void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
   // A Scene has a single InteractiveFrame (null by default). We set it here.
-  scene.setInteractiveFrame(new InteractiveFrame());
+  scene.setInteractiveFrame(new InteractiveFrame(scene));
   scene.interactiveFrame().translate(new PVector(30, 30, 0));
 }
 

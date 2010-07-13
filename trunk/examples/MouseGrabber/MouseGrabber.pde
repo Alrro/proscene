@@ -25,7 +25,7 @@ void setup() {
   // create an array of boxes with random positions
   boxes = new Box[30];
   for (int i = 0; i < boxes.length; i++) {
-    boxes[i] = new Box(this);
+    boxes[i] = new Box(scene);
     boxes[i].setSize(20, 20, 20);
     boxes[i].setColor(color(0,0,255));
   }
