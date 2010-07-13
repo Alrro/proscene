@@ -32,15 +32,15 @@ import java.awt.Point;
 import javax.swing.Timer;
 
 /**
- * The InteractiveDrivableFrame is an abstract class that represents an InteractiveFrame
- * that can "fly" in the scene. It is the base class of all objects that are drivable in 
+ * The InteractiveDrivableFrame represents an InteractiveFrame that can "fly" in the scene.
+ * It is the base class of all objects that are drivable in 
  * the Scene: InteractiveAvatarFrame and InteractiveCameraFrame.
  * <p>
  * An InteractiveDrivableFrame basically moves forward, and turns according to the mouse motion.
  * See {@link #flySpeed()}, {@link #flyUpVector()} and the {@link Scene.MouseAction#MOVE_FORWARD}
  * and {@link Scene.MouseAction#MOVE_BACKWARD}.
  */
-public abstract class InteractiveDrivableFrame extends InteractiveFrame {
+public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected float flySpd;
 	protected float drvSpd;
 	protected Timer flyTimer;

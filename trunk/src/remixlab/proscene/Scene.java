@@ -89,9 +89,12 @@ public class Scene implements MouseWheelListener, PConstants {
 			SCREEN_ROTATE, ROLL, DRIVE,
 			SCREEN_TRANSLATE, ZOOM_ON_REGION };
 	
-	//mouse actions for testing purposes
+	//mouse actions
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
 	protected MouseAction frameLeftButton, frameMidButton, frameRightButton;
+	//mouse actions special cases (drive and roll) (walkthrough and third_person)
+	protected MouseAction cameraShiftLeftButton, cameraShiftRightButton;
+	protected MouseAction frameShiftLeftButton, frameShiftRightButton;
 	boolean zoomOnRegion;
 	boolean rotateScreen;
 	boolean translateScreen;
@@ -190,10 +193,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent.addMouseWheelListener(this);
 		
 		setCameraMode(CameraMode.ARCBALL);
-		
-		frameLeftButton = MouseAction.ROTATE;		
-		frameMidButton = MouseAction.ZOOM;
-		frameRightButton = MouseAction.TRANSLATE;
 		
 		zoomOnRegion = false;
 		rotateScreen = false;
@@ -1662,12 +1661,20 @@ public class Scene implements MouseWheelListener, PConstants {
 			if( avatarIsInteractiveDrivableFrame )
 	    		((InteractiveDrivableFrame)avatar()).addInMouseGrabberPool();
 			setDrawInteractiveFrame(false);
+			//camera
 			cameraLeftButton = MouseAction.ROTATE;		
 			cameraMidButton = MouseAction.ZOOM;
 			cameraRightButton = MouseAction.TRANSLATE;
+			//interactive frame
 			frameLeftButton = MouseAction.ROTATE;		
 			frameMidButton = MouseAction.ZOOM;
 			frameRightButton = MouseAction.TRANSLATE;
+			//special cases:
+			cameraShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
+			cameraShiftRightButton = MouseAction.NO_MOUSE_ACTION;
+			frameShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
+			frameShiftRightButton = MouseAction.NO_MOUSE_ACTION;			
+			
 			if( prevCamMode == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
 			
@@ -1681,10 +1688,16 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().frame().stopSpinning();
 			cameraLeftButton = MouseAction.MOVE_FORWARD;
 			cameraMidButton = MouseAction.LOOK_AROUND;
-			cameraRightButton = MouseAction.MOVE_BACKWARD;
+			cameraRightButton = MouseAction.MOVE_BACKWARD;			
 			frameLeftButton = MouseAction.ROTATE;		
 			frameMidButton = MouseAction.ZOOM;
-			frameRightButton = MouseAction.TRANSLATE;
+			frameRightButton = MouseAction.TRANSLATE;			
+			//special cases:
+			cameraShiftLeftButton = MouseAction.ROLL;
+			cameraShiftRightButton = MouseAction.DRIVE;
+			frameShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
+			frameShiftRightButton = MouseAction.NO_MOUSE_ACTION;
+			
 			if( prevCamMode == CameraMode.THIRD_PERSON )
 				camera().interpolateToFitScene();
 	    	break;
@@ -1701,9 +1714,17 @@ public class Scene implements MouseWheelListener, PConstants {
 					((InteractiveDrivableFrame)(avatar())).updateFlyUpVector();
 					((InteractiveDrivableFrame)(avatar())).stopSpinning();
 				}
-		    	frameLeftButton = MouseAction.MOVE_FORWARD;		
-				frameMidButton = MouseAction.LOOK_AROUND;
+				cameraLeftButton = MouseAction.NO_MOUSE_ACTION;
+				cameraMidButton = MouseAction.NO_MOUSE_ACTION;
+				cameraRightButton = MouseAction.NO_MOUSE_ACTION;
+		    	frameLeftButton = MouseAction.MOVE_FORWARD;
+				frameMidButton = MouseAction.LOOK_AROUND;		    	
 				frameRightButton = MouseAction.MOVE_BACKWARD;
+				//special cases:
+				cameraShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
+				cameraShiftRightButton = MouseAction.NO_MOUSE_ACTION;
+				frameShiftLeftButton = MouseAction.ROLL;
+				frameShiftRightButton = MouseAction.DRIVE;
 				//small animation ;)
 				if ( camera().anyInterpolationIsStarted() ) 
 					camera().stopAllInterpolations();
@@ -1980,38 +2001,42 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 			}			
 		}
-		if (parent.keyCode == UP) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON )
+		if (parent.keyCode == UP) {			
+			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
 				if ( avatarIsInteractiveDrivableFrame )
 					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
 					new PVector(0.0f,  -10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f)));
+			}
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
 		}
 		if (parent.keyCode == DOWN) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON )
+			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
 				if ( avatarIsInteractiveDrivableFrame )
 					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
 					new PVector(0.0f,  10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f)));
+			}
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
 		}
 		if (parent.keyCode == LEFT) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON )
+			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
 				if ( avatarIsInteractiveDrivableFrame )
 					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
 					new PVector(-10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f,  0.0f)));
+			}
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 					new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
 		}
 		if (parent.keyCode == RIGHT) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON )				
+			if ( cameraMode() == CameraMode.THIRD_PERSON ) {				
 				if ( avatarIsInteractiveDrivableFrame )
 					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
 							new PVector(10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f,  0.0f)));
+			}
 			else
 				camera().frame().translate(camera().frame().inverseTransformOf(
 						new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));				
@@ -2166,9 +2191,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		String textToDisplay = new String();
 		textToDisplay += "KEYBOARD\n";
-		textToDisplay += "+/-: Increase/Decrease arcball rotation-sensitivity or walkthrough speed (depending on camera mode)\n";
+		textToDisplay += "+/-: Increase/Decrease arcball rotation-sensitivity or walkthrough (and third_person) speed\n";
 		textToDisplay += "a/g: Toggle axis/grid drawn\n";
-		textToDisplay += "space_bar/e: Toggle camera mode (arcball or walkthrough)/Toggle camera type (orthographic or perspective)\n";
+		textToDisplay += "space_bar/e: Toggle camera mode (arcball, walkthrough or third_person)/Toggle camera type (ortho or persp.)\n";
 		textToDisplay += "h: Toggle the display of this help\n";
 		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
 		textToDisplay += "(o)O/p: (un)set arcball center / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
@@ -2178,7 +2203,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play camera key frame interpolators\n";
 		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
 		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
-		textToDisplay += "Walkthrough mode: move forward, look around, and move backward\n";
+		textToDisplay += "Walkthrough and third_person modes: move forward, look around, and move backward\n";
 		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
 		textToDisplay += "MOUSE MODIFIERS (applied to left button)\n";
 		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
@@ -2358,7 +2383,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) ) {
+	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) && ( cameraMode() == CameraMode.ARCBALL ) ) {
 	    if ( event.isShiftDown() ) {	    	
 	    	fCorner = event.getPoint();
 	    	lCorner = event.getPoint();
@@ -2411,7 +2436,10 @@ public class Scene implements MouseWheelListener, PConstants {
 			switch (event.getButton()) {
 			case MouseEvent.NOBUTTON:
 			case MouseEvent.BUTTON1: { //left button
-				interactiveFrame().startAction(frameLeftButton, withConstraint);
+				if (event.isShiftDown())
+					interactiveFrame().startAction(frameShiftLeftButton, withConstraint);
+				else
+					interactiveFrame().startAction(frameLeftButton, withConstraint);
 				break;
 				}
 			case MouseEvent.BUTTON2: { //middle button
@@ -2419,7 +2447,10 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 				}
 			case MouseEvent.BUTTON3: { //right button
-				interactiveFrame().startAction(frameRightButton, withConstraint);
+				if (event.isShiftDown())
+					interactiveFrame().startAction(frameShiftRightButton, withConstraint);
+				else
+					interactiveFrame().startAction(frameRightButton, withConstraint);
 				break;
 				}
 			}	
@@ -2429,7 +2460,10 @@ public class Scene implements MouseWheelListener, PConstants {
 			switch (event.getButton()) {
 			case MouseEvent.NOBUTTON:
 			case MouseEvent.BUTTON1: { //left button
-				camera().frame().startAction(cameraLeftButton, withConstraint);
+				if (event.isShiftDown())
+					camera().frame().startAction(cameraShiftLeftButton, withConstraint);
+				else
+					camera().frame().startAction(cameraLeftButton, withConstraint);
 				break;
 				}
 			case MouseEvent.BUTTON2: { //middle button
@@ -2437,7 +2471,10 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 				}
 			case MouseEvent.BUTTON3: { //right button
-				camera().frame().startAction(cameraRightButton, withConstraint);
+				if (event.isShiftDown())
+					camera().frame().startAction(cameraShiftRightButton, withConstraint);
+				else
+					camera().frame().startAction(cameraRightButton, withConstraint);
 				break;
 				}
 			}	
@@ -2575,7 +2612,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * {@link #interactiveFrame()} mouseWheelEvent method.
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		if ( mouseGrabber() != null )	{
+		if ( mouseGrabber() != null ) {
 			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
 				if ( mouseGrabberIsAnICamFrame ) {
@@ -2647,20 +2684,8 @@ public class Scene implements MouseWheelListener, PConstants {
     		return false;
     	return true;
     }
-    
-    // 11. Third person
-    
-    /**
-    public PVector target() {
-    	return target;
-    }
-    
-    public void setTarget(PVector t) {
-    	target = t;
-    }
-    */
-	
-	// 12. Processing objects
+    	
+	// 11. Processing objects
     
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}.
