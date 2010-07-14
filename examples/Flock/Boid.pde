@@ -1,14 +1,3 @@
-/*Boid object class
- * Matt Wetmore
- * Changelog
- * ---------
- * 12/14/09: Started work
- * 12/16/09: Revised code to work with forces instead of heading. First steering algorithm implemented
- * 12/18/09: Arrival steering behavior
- * 12/20/09: Alignment added NEED TO FIX COHESION
- * 1/6/10: Finished algorithms. Time to clean up the code!
- */
-
 class Boid {
   Scene scene;
   PApplet parent;

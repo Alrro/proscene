@@ -18,14 +18,6 @@
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
-/*Main runner area
- * Matt Wetmore
- * Changelog
- * ---------
- * 12/14/09: Started work
- * 12/18/09: Reimplemented with BoidList class
- */
-
 import remixlab.proscene.*;
 
 Scene scene;
