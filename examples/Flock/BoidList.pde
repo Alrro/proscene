@@ -1,7 +1,5 @@
 //import java.util.ArrayList;
 //import processing.core.*;
-import remixlab.proscene.*;
-import napplet.*;
 
 /*BoidList object class
  * Matt Wetmore

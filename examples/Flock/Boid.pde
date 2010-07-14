@@ -9,8 +9,6 @@
  * 1/6/10: Finished algorithms. Time to clean up the code!
  */
 
-import remixlab.proscene.*;
-
 class Boid {
   Scene scene;
   PApplet parent;
