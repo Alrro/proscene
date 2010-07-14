@@ -1,13 +1,3 @@
-//import java.util.ArrayList;
-//import processing.core.*;
-
-/*BoidList object class
- * Matt Wetmore
- * Changelog
- * ---------
- * 12/18/09: Started work
- */
-
 class BoidList {
   Scene scene;
   PApplet parent;
