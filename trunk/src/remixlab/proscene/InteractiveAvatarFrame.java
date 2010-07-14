@@ -50,7 +50,7 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
     }
     
     /**
-     * Returns the azimuth of the tracking camera respect to the frame's {@link #position()}.
+     * Returns the azimuth of the tracking camera measured respect to the frame's {@link #zAxis()}.
      */
     public float azimuth() {
     	return azmth;
@@ -65,7 +65,7 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
     }
     
     /**
-     * Returns the inclination of the tracking camera respect to the frame's {@link #yAxis()}.
+     * Returns the inclination of the tracking camera measured respect to the frame's {@link #yAxis()}.
      */
     public float inclination() {
     	return inc;

@@ -313,11 +313,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	/**
 	 * Sets the avatar object to be tracked by the Camera when {@link #cameraMode()} is
-	 * THIRD_PERSON.
-	 * <p>
-	 * <b>Attention: </b> If {@code t} is an instance of the InteractiveAvatarFrame class,
-	 * the {@link remixlab.proscene.InteractiveAvatarFrame#trackingDistance()} is set to
-	 * {@link #radius()}/3. 
+	 * THIRD_PERSON. 
 	 */
 	public void setAvatar(Trackable t) {
 		trck = t;
@@ -326,8 +322,14 @@ public class Scene implements MouseWheelListener, PConstants {
 		if (avatar() instanceof InteractiveAvatarFrame) {
 			avatarIsInteractiveAvatarFrame = true;
 			avatarIsInteractiveDrivableFrame = true;
+			/**
+			//TODO !!! really necessary? I think no :)
+			 * <b>Attention: </b> If {@code t} is an instance of the InteractiveAvatarFrame class,
+			 * the {@link remixlab.proscene.InteractiveAvatarFrame#trackingDistance()} is set to
+			 * {@link #radius()}/3.
 			if ( ((InteractiveAvatarFrame)avatar()).trackingDistance() == 0 )
 				((InteractiveAvatarFrame)avatar()).setTrackingDistance(radius()/3);
+		    */
 			if ( interactiveFrame() != null )
 				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
 			if(!isInKeyList("c"))
