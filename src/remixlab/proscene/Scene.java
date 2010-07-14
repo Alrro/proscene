@@ -144,7 +144,7 @@ public class Scene implements MouseWheelListener, PConstants {
     protected int startCoordCalls;
 	
 	// M o u s e   G r a b b e r
-    protected final List<MouseGrabber> MouseGrabberPool;
+    protected List<MouseGrabber> MouseGrabberPool;
 	MouseGrabber mouseGrbbr;
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsAnICamFrame;
@@ -328,7 +328,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			avatarIsInteractiveDrivableFrame = true;
 			if ( ((InteractiveAvatarFrame)avatar()).trackingDistance() == 0 )
 				((InteractiveAvatarFrame)avatar()).setTrackingDistance(radius()/3);
-			((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
+			if ( interactiveFrame() != null )
+				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
 			if(!isInKeyList("c"))
 				keyList.add("c");
 			if(!isInKeyList("C"))
@@ -352,7 +353,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			if (avatar() instanceof InteractiveDrivableFrame) {
 				avatarIsInteractiveAvatarFrame = false;
 				avatarIsInteractiveDrivableFrame = true;
-				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
+				if ( interactiveFrame() != null )
+					((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
 		}
 	}
 	
@@ -857,7 +859,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		if( backgroundIsHandled() ) {
 			setBackground();
-			displayVisualHints();		
+			displayVisualHints();
 		}
 	}
 	
@@ -1206,8 +1208,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance according to {@code draw}
 	 */
     public void setDrawInteractiveFrame(boolean draw) {
-    	if ((draw && (glIFrame == null)) || ((!draw) && ( cameraMode() == CameraMode.THIRD_PERSON ) ) )
+    	if ( draw && (glIFrame == null) )
     		return;
+    	if  ( !draw && ( cameraMode() == CameraMode.THIRD_PERSON ) && interactiveFrame().equals(avatar()) )//more natural than to bypass it
+    		nextCameraMode();
     	iFrameIsDrwn = draw;
 	}
     
