@@ -1,12 +1,12 @@
 /**
- * <b>Mouse Grabber</b> by Jean Pierre Charalambos.
- * <p>
- * This example illustrates the picking mechanism built-in proscene,<br>
- * which represents one of the three interactive mechanisms found in<br>
- * proscene (camera and interactive frame, being the other two).<br>
- * Once you select a box it will be highlighted and you can manipulate<br>
- * it with the mouse. Try the different mouse buttons to see what happens.<br>
- * <p>
+ * Mouse Grabber by Jean Pierre Charalambos.
+ * 
+ * This example illustrates the picking mechanism built-in proscene,
+ * which represents one of the three interactive mechanisms found in
+ * proscene (camera and interactive frame, being the other two).
+ * Once you select a box it will be highlighted and you can manipulate
+ * it with the mouse. Try the different mouse buttons to see what happens.
+ * 
  * Press 'h' to toggle the mouse and keyboard navigation help. 
  */
 

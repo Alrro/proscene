@@ -1,17 +1,17 @@
 /**
- * <b>View Frustum Culling</b> by Jean Pierre Charalambos.
- * <p>
- * This example illustrates a basic view frustum culling implementation which is performed<br>
+ * View Frustum Culling by Jean Pierre Charalambos.
+ * 
+ * This example illustrates a basic view frustum culling implementation which is performed
  * by analytically solving the frustum plane equations.
- * <p>
- * A hierarchical octree structure is clipped against a camera's frustum clipping planes.<br>
- * A second viewer displays an external view of the scene that exhibits the clipping<br>
+ * 
+ * A hierarchical octree structure is clipped against a camera's frustum clipping planes.
+ * A second viewer displays an external view of the scene that exhibits the clipping
  * (using DrawingUtils.drawCamera() to display the frustum). 
- * <p>
- * This example requires the <a href="http://github.com/acsmith/napplet">napplet</a> library
- * (download it <a href="http://github.com/acsmith/napplet/downloads">here</a>).
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * This example requires the napplet library (http://github.com/acsmith/napplet)
+ * (download it here: http://github.com/acsmith/napplet/downloads).
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

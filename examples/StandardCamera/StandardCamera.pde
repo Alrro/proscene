@@ -1,22 +1,25 @@
 /**
- * <b>Standard Camera</b> by Jean Pierre Charalambos.
- * <p>
+ * Standard Camera by Jean Pierre Charalambos.
+ * 
  * A 'standard' Camera with fixed near and far planes.
- * <p>
- * Proscene supports a STANDARD camera kind which may be need by some applications.<br>
- * Its near and far planes distances are set to fixed values, instead of being fit<br>
+ * 
+ * Proscene supports a STANDARD camera kind which may be need by some applications.
+ * Its near and far planes distances are set to fixed values, instead of being fit
  * to scene dimensions as is done in the PROSCENE camera kind (default).
- * <p>
- * Note, however, that the precision of the z-Buffer highly depends on how the<br>
- * zNear() and zFar() values, which are automatically fitted to your scene when the<br>
+ * 
+ * Note, however, that the precision of the z-Buffer highly depends on how the
+ * zNear() and zFar() values, which are automatically fitted to your scene when the
  * PROSCENE camera kind is enabled.
- * <p>
- * Press <b>'v'</b> in the main viewer (the upper one) to toggle the camera kind. 
- * <p>
- * Press <b>'u'/'U'</b> in the main viewer to change the frustum size (when the<br>
+ * 
+ * Press 'v' in the main viewer (the upper one) to toggle the camera kind. 
+ * 
+ * Press 'u'/'U' in the main viewer to change the frustum size (when the
  * camera kind is "STANDARD").
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ *
+ * This example requires the napplet library (http://github.com/acsmith/napplet)
+ * (download it here: http://github.com/acsmith/napplet/downloads).
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

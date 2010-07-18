@@ -1,21 +1,21 @@
 /**
- * <b>Flock</b> by Matt Wetmore. Adapted to proscene by Jean Pierre Charalambos. 
- * <p>
- * A more complex example which interactively enables the selection of a frame<br>
+ * Flock by Matt Wetmore. Adapted to proscene by Jean Pierre Charalambos. 
+ * 
+ * A more complex example which interactively enables the selection of a frame
  * "avatar" for the camera to follow.
- * <p>
- * This example displays the famous artificial life program "Boids", developed by<br>
+ * 
+ * This example displays the famous artificial life program "Boids", developed by
  * Craig Reynolds in 1986.
- * <p>
- * Boids under the mouse will be colored blue. If you click on a boid it will be<br>
+ * 
+ * Boids under the mouse will be colored blue. If you click on a boid it will be
  * selected as the avatar, useful for the THIRD_PERSON proscene camera mode.
- * <p>
- * Click the <b>space bar</b> to change between the camera modes: ARCBALL, WALKTHROUGH,<br>
+ * 
+ * Click the space bar to change between the camera modes: ARCBALL, WALKTHROUGH,
  * and THIRD_PERSON.
- * <p>
- * Press <b>'f'</b> to toggle the drawing of the frames' visual hints.
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * Press 'f' to toggle the drawing of the frames' visual hints.
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

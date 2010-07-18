@@ -1,19 +1,19 @@
 /**
- * <b>Moire</b> by Jean Pierre Charalambos.
- *
- * This example illustrates the camera and world coordinate systems relationship.<br>
- * Three sets of lines (red, green, blue) are drawn. They have common end points,<br>
- * located on a circle in the XY plane. However, they have different starting points<br>
- * defined as follows: 1. The red lines start at the camera position and will hence<br>
- * always be aligned with the viewing direction, making them invisible, unless you<br>
- * change the camera projection to ORTHOGRAPHIC (press 'e' to do it); 2. The green<br>
- * lines starting points are determined from the camera coordinate system and will<br>
- * hence always be fixed on the screen; and, 3. The blue lines starting points are<br>
+ * Moire by Jean Pierre Charalambos.
+ * 
+ * This example illustrates the camera and world coordinate systems relationship.
+ * Three sets of lines (red, green, blue) are drawn. They have common end points,
+ * located on a circle in the XY plane. However, they have different starting points
+ * defined as follows: 1. The red lines start at the camera position and will hence
+ * always be aligned with the viewing direction, making them invisible, unless you
+ * change the camera projection to ORTHOGRAPHIC (press 'e' to do it); 2. The green
+ * lines starting points are determined from the camera coordinate system and will
+ * hence always be fixed on the screen; and, 3. The blue lines starting points are
  * defined in the world coordinate system, and will hence move in camera motion.
- * <p>
+ * 
  * A nice Moire pattern can be obtained when rotating the camera.
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

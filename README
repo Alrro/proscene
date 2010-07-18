@@ -41,6 +41,7 @@ CHANGELOG
     + New registration of the keyboard and mouse handlers which provides tighter integration
       with processing. It also means that proscene enabled sketches comprises even less code.
     + Code polishing.
+    + Developed and fully tested in Processing-1.2.1 under x86_64 GNU/Linux (Kubuntu-10.04). 
 
   * Version 0.8.0
     + Adding keyFrames' functionality through the KeyFrameInterpolator class.

@@ -1,15 +1,15 @@
 /**
- * <b>Constrained Frame</b> by Jean Pierre Charalambos.
- * <p>
- * This example illustrates how to add constrains (see Constraint related classes)<br>
- * to your frames to limit their motion. All possible constraints are tested here<br>
- * and they can be defined respect to the local, world or camera frames. Try all the<br>
+ * Constrained Frame by Jean Pierre Charalambos.
+ * 
+ * This example illustrates how to add constrains (see Constraint related classes)
+ * to your frames to limit their motion. All possible constraints are tested here
+ * and they can be defined respect to the local, world or camera frames. Try all the
  * possibilities following the on screen helping text.
- * <p>
- * Press <b>'i'</b> to switch the interaction between the camera frame and
+ * 
+ * Press 'i' to switch the interaction between the camera frame and
  * the interactive frame.
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

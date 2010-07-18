@@ -1,22 +1,22 @@
 /**
- * <b>Third Person Camera</b> by Jean Pierre Charalambos.
- * <p>
+ * Third Person Camera by Jean Pierre Charalambos.
+ * 
  * This example illustrates the THIRD_PERSON proscene camera mode.
- * <p>
- * The THIRD_PERSON camera mode is enabled once a scene.avatar() is set by calling<br>
- * scene.setAvatar(). Any object implementing the Trackable interface may be defined<br>
+ * 
+ * The THIRD_PERSON camera mode is enabled once a scene.avatar() is set by calling
+ * scene.setAvatar(). Any object implementing the Trackable interface may be defined
  * as the avatar.
- * <p>
- * Since the InteractiveAvatarFrame class is an InteractiveFrame that implements the<br>
- * Trackable interface we may set an instance of it as the avatar by calling<br>
- * scene.setInteractiveFrame() (which automatically calls scene.setAvatar()).<br>
- * When the camera mode is set to THIRD_PERSON you can then manipulate your<br>
+ * 
+ * Since the InteractiveAvatarFrame class is an InteractiveFrame that implements the
+ * Trackable interface we may set an instance of it as the avatar by calling
+ * scene.setInteractiveFrame() (which automatically calls scene.setAvatar()).
+ * When the camera mode is set to THIRD_PERSON you can then manipulate your
  * interactive frame with the mouse and the camera will follow it.
- * <p>
- * Click the <b>space bar</b> to change between the camera modes: ARCBALL, WALKTHROUGH,<br>
+ * 
+ * Click the space bar to change between the camera modes: ARCBALL, WALKTHROUGH,
  * and THIRD_PERSON.
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;
