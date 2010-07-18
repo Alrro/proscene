@@ -25,14 +25,12 @@ import processing.core.*;
 import remixlab.proscene.*;
 
 public class Lamp {
-  PApplet parent;
   InteractiveFrame [] frameArray;
   
-  Lamp(Scene scn) {
-    parent = scn.parent;
+  Lamp() {
     frameArray = new InteractiveFrame[4];
     for (int i=0; i<4; ++i) {
-      frameArray[i] = new InteractiveFrame(scn);
+      frameArray[i] = new InteractiveFrame(scene);
       // Creates a hierarchy of frames
       if (i>0) frame(i).setReferenceFrame(frame(i-1));
     }
@@ -64,39 +62,39 @@ public class Lamp {
   
   public void draw() {
     // Luxo's local frame
-    parent.pushMatrix();
-    frame(0).applyTransformation(parent);
+    pushMatrix();
+    frame(0).applyTransformation(scene.parent);
     setColor( frame(0).grabsMouse() );
     drawBase();
     
-    parent.pushMatrix();//not really necessary here
-    frame(1).applyTransformation(parent);
+    pushMatrix();//not really necessary here
+    frame(1).applyTransformation(scene.parent);
     setColor( frame(1).grabsMouse() );
     drawCylinder();
     drawArm();
     
-    parent.pushMatrix();//not really necessary here
-    frame(2).applyTransformation(parent);
+    pushMatrix();//not really necessary here
+    frame(2).applyTransformation(scene.parent);
     setColor( frame(2).grabsMouse() );
     drawCylinder();
     drawArm();
     
-    parent.pushMatrix();//not really necessary here
-    frame(3).applyTransformation(parent);
+    pushMatrix();//not really necessary here
+    frame(3).applyTransformation(scene.parent);
     setColor( frame(3).grabsMouse() );
     drawHead();
     
     // Add light
-    parent.spotLight(155, 255, 255, 0, 0, 0, 0, 0, 1, PApplet.THIRD_PI, 1);
+    spotLight(155, 255, 255, 0, 0, 0, 0, 0, 1, THIRD_PI, 1);
     
-    parent.popMatrix();//frame(3)
+    popMatrix();//frame(3)
     
-    parent.popMatrix();//frame(2)
+    popMatrix();//frame(2)
     
-    parent.popMatrix();//frame(1)
+    popMatrix();//frame(1)
     
     //totally necessary
-    parent.popMatrix();//frame(0)
+    popMatrix();//frame(0)
   }
   
   public void drawBase() {
@@ -107,11 +105,11 @@ public class Lamp {
   }
   
   public void drawArm() {
-    parent.translate(2, 0, 0);
+    translate(2, 0, 0);
     drawCone(0, 50, 1, 1, 10);
-    parent.translate(-4, 0, 0);
+    translate(-4, 0, 0);
     drawCone(0, 50, 1, 1, 10);
-    parent.translate(2, 0, 0);
+    translate(2, 0, 0);
   }
   
   public void drawHead() {
@@ -121,23 +119,23 @@ public class Lamp {
   }
   
   public void drawCylinder() {
-    parent.pushMatrix();
-    parent.rotate(PApplet.HALF_PI, 0, 1, 0);
+    pushMatrix();
+    rotate(HALF_PI, 0, 1, 0);
     drawCone(-5, 5, 2, 2, 20);
-    parent.popMatrix();
+    popMatrix();
   }
   
   public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
-    parent.translate(0.0f, 0.0f, zMin);
-    DrawingUtils.cone(parent, nbSub, 0, 0, r1, r2, zMax-zMin);
-    parent.translate(0.0f, 0.0f, -zMin);
+    translate(0.0f, 0.0f, zMin);
+    DrawingUtils.cone(scene.parent, nbSub, 0, 0, r1, r2, zMax-zMin);
+    translate(0.0f, 0.0f, -zMin);
   }
 
   public void setColor(boolean selected) {
     if (selected)
-      parent.fill(200, 200, 0);
+      fill(200, 200, 0);
     else
-      parent.fill(200, 200, 200);
+      fill(200, 200, 200);
   }
   
   public InteractiveFrame frame(int i) {

@@ -1,21 +1,16 @@
 class BoidList {
-  Scene scene;
-  PApplet parent;
-
   ArrayList boids; // will hold the boids in this BoidList
   float h; // for color
 
-  BoidList(Scene s, int n, float ih) {
-    scene = s;
-    parent = scene.parent;
+  BoidList(int n, float ih) {
     boids = new ArrayList();
     h = ih;
     for (int i = 0; i < n; i++)
-      boids.add(new Boid(scene, new PVector(((Flock)parent).flockWidth / 2, ((Flock)parent).flockHeight / 2, ((Flock)parent).flockDepth / 2 )));
+      boids.add(new Boid(new PVector(flockWidth/2, flockHeight/2, flockDepth/2 )));
   }
 
   void add() {
-    boids.add(new Boid(scene, new PVector(((Flock)parent).flockWidth / 2,((Flock)parent).flockHeight / 2)));
+    boids.add(new Boid(new PVector(flockWidth/2, flockHeight/2)));
   }
 
   void addBoid(Boid b) {

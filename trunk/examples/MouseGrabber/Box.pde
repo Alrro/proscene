@@ -26,14 +26,12 @@
  */
 
 public class Box {
-  PApplet parent;
   InteractiveFrame iFrame;
   float w, h, d;
   int c;
 
-  Box(Scene scn) {
-    parent = scn.parent;
-    iFrame = new InteractiveFrame(scn);
+  Box() {
+    iFrame = new InteractiveFrame(scene);
     setSize();
     setColor();
     setPosition();
@@ -47,9 +45,9 @@ public class Box {
   public void draw(boolean drawAxis) {
     pushMatrix();
     // Multiply matrix to get in the frame coordinate system.
-    // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
-    iFrame.applyTransformation(parent); //optimum
-    if(drawAxis) scene.drawAxis(PApplet.max(w,h,d)*1.3f);
+    // scene.parent.applyMatrix(iFrame.matrix()) is handy but inefficient
+    iFrame.applyTransformation(scene.parent); //optimum
+    if(drawAxis) scene.drawAxis(max(w,h,d)*1.3f);
     noStroke();
     if (iFrame.grabsMouse())
       fill(255, 0, 0);
@@ -93,7 +91,7 @@ public class Box {
   public void setPosition() {
     float low = -100;
     float high = 100;
-    iFrame.setPosition(new PVector(parent.random(low, high), parent.random(low, high), parent.random(low, high)));
+    iFrame.setPosition(new PVector(random(low, high), random(low, high), random(low, high)));
   }
   
   public void setPosition(PVector pos) {

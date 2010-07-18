@@ -27,7 +27,7 @@ void setup() {
   scene.setGridIsDrawn(false);
   scene.setHelpIsDrawn(false);
   scene.setFrameSelectionHintIsDrawn(true);
-  lamp = new Lamp(scene);
+  lamp = new Lamp();
 }
 
 void draw() {

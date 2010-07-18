@@ -32,7 +32,7 @@ void setup() {
   
   boxes = new Box[50];
   for (int i = 0; i < boxes.length; i++)
-    boxes[i] = new Box(scene);
+    boxes[i] = new Box();
   
   points = new ArrayList();  // Create an empty ArrayList
 }

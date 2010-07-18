@@ -22,14 +22,12 @@
  */
 
 public class Sphere {
-  PApplet parent;
   InteractiveFrame iFrame;
   float r;
   int c;
 
-  Sphere(Scene scn) {
-    parent = scn.parent;
-    iFrame = new InteractiveFrame(scn);
+  Sphere() {
+    iFrame = new InteractiveFrame(scene);
     setRadius(10);
   }
 
@@ -40,8 +38,8 @@ public class Sphere {
   public void draw(boolean drawAxis) {
     pushMatrix();
     // Multiply matrix to get in the frame coordinate system.
-    // parent.applyMatrix(iFrame.matrix()) is handy but inefficient
-    iFrame.applyTransformation(parent); //optimum
+    // scene.parent.applyMatrix(iFrame.matrix()) is handy but inefficient
+    iFrame.applyTransformation(scene.parent); //optimum
     if(drawAxis) scene.drawAxis(radius()*1.3f);
     if (iFrame.grabsMouse()) {
       fill(255, 0, 0);

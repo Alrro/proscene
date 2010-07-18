@@ -10,15 +10,7 @@ public class AuxiliarViewer extends NApplet {
     scene.setHelpIsDrawn(false);    
     scene.setRadius(200);
     scene.showAll();
-  }
-  
-  void draw() {
-    noStroke();
-    if( ((MainViewer)mainNApplet).getScene().camera().sphereIsVisible(new PVector(0,0,0), 40) == Camera.Visibility.SEMIVISIBLE )
-      fill(255, 0, 0);
-    else
-      fill(0, 255, 0);
-    sphere(40);    
-    DrawingUtils.drawCamera(this, ((MainViewer)mainNApplet).getScene().camera());
+    // register the drawing method which was defined externally
+    scene.addDrawHandler(parentPApplet, "auxiliarDrawing");
   }
 }

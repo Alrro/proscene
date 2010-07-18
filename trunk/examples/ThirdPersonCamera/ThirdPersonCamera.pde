@@ -1,3 +1,24 @@
+/**
+ * <b>Third Person Camera</b> by Jean Pierre Charalambos.
+ * <p>
+ * This example illustrates the THIRD_PERSON proscene camera mode.
+ * <p>
+ * The THIRD_PERSON camera mode is enabled once a scene.avatar() is set by calling<br>
+ * scene.setAvatar(). Any object implementing the Trackable interface may be defined<br>
+ * as the avatar.
+ * <p>
+ * Since the InteractiveAvatarFrame class is an InteractiveFrame that implements the<br>
+ * Trackable interface we may set an instance of it as the avatar by calling<br>
+ * scene.setInteractiveFrame() (which automatically calls scene.setAvatar()).<br>
+ * When the camera mode is set to THIRD_PERSON you can then manipulate your<br>
+ * interactive frame with the mouse and the camera will follow it.
+ * <p>
+ * Click the <b>space bar</b> to change between the camera modes: ARCBALL, WALKTHROUGH,<br>
+ * and THIRD_PERSON.
+ * <p>
+ * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ */
+
 import remixlab.proscene.*;
 
 Scene scene;
@@ -20,11 +41,15 @@ void setup() {
   baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,1.0f,0.0f));
   avatar.setConstraint(baseConstraint);
   
+  // This also sets the scene.avatar() by automatically calling scene.setAvatar()
+  // (provided that the interactive frame is an instance of the InteractiveAvatarFrame class).
   scene.setInteractiveFrame(avatar);
   scene.setCameraMode( Scene.CameraMode.THIRD_PERSON );
 }
 
 void draw() {
+  //Proscene sets the background to black by default. If you need to change
+  //it, don't call background() directly but use scene.background() instead.
   // Save the current model view matrix
   pushMatrix();
   // Multiply matrix to get in the frame coordinate system.
