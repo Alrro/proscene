@@ -1,27 +1,27 @@
 /**
- * <b>Camera Interpolation</b> by Jean Pierre Charalambos.
- * <p>
- * This example (together with <b>Frame Interpolation</b>) illustrates the
+ * Camera Interpolation by Jean Pierre Charalambos.
+ * 
+ * This example (together with Frame Interpolation) illustrates the
  * KeyFrameInterpolator functionality.
- * <p>
- * KeyFrameInterpolator smoothly interpolate its attached Camera Frames over time<br>
- * on a path defined by Frames. The interpolation can be started/stopped/reset,<br>
+ * 
+ * KeyFrameInterpolator smoothly interpolate its attached Camera Frames over time
+ * on a path defined by Frames. The interpolation can be started/stopped/reset,
  * played in loop, played at a different speed, etc...
- * <p>
- * In this example, a Camera path is defined by four InteractivedCameraFrames<br>
- * which are attached to the first Camera path (the Camera holds five such paths).<br>
- * The Frames can be moved with the mouse, making the path editable. The Camera<br>
- * interpolating path is played with the shortcut <b>'1'</b>.
- * <p>
- * Press <b>'j'</b> to add (more) key frames to the Camera path.
- * <p>
- * Press <b>'J'</b> to delete the Camera path.
- * <p>
- * The Camera holds 5 KeyFrameInterpolators, binded to <b>[j..n]/[J..N]/[1..5]</b> keys:<br>
- * set/reset/play the key frame interpolators, respectively. Press <b>'r'</b> to display<br>
+ * 
+ * In this example, a Camera path is defined by four InteractivedCameraFrames
+ * which are attached to the first Camera path (the Camera holds five such paths).
+ * The Frames can be moved with the mouse, making the path editable. The Camera
+ * interpolating path is played with the shortcut '1'.
+ * 
+ * Press 'j' to add (more) key frames to the Camera path.
+ * 
+ * Press 'J' to delete the Camera path.
+ * 
+ * The Camera holds 5 KeyFrameInterpolators, binded to [j..n]/[J..N]/[1..5] keys:
+ * set/reset/play the key frame interpolators, respectively. Press 'r' to display
  * all the key frame camera paths (if any).
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;

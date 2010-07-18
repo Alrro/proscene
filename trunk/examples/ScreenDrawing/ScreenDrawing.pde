@@ -1,19 +1,19 @@
 /**
- * <b>Screen Drawing</b> by Jean Pierre Charalambos.
- * <p>
+ * Screen Drawing by Jean Pierre Charalambos.
+ * 
  * This example illustrates how to combine 2D and 3D drawing.
- * <p>
- * All screen drawing should be enclosed between Scene.beginScreenDrawing() and<br>
- * Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes<br>
- * (defined between beginShape() and endShape()). Just note that the (x,y) vertex<br>
- * screen coordinates should be specified as:<br>
+ * 
+ * All screen drawing should be enclosed between Scene.beginScreenDrawing() and
+ * Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
+ * (defined between beginShape() and endShape()). Just note that the (x,y) vertex
+ * screen coordinates should be specified as:
  * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
- * <p>
- * Press <b>'t'</b> to toggle the screen drawing.
- * <p>
- * Press <b>'x'</b> to clean your screen drawing.
- * <p>
- * Press <b>'h'</b> to toggle the mouse and keyboard navigation help.
+ * 
+ * Press 't' to toggle the screen drawing.
+ * 
+ * Press 'x' to clean your screen drawing.
+ * 
+ * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 import remixlab.proscene.*;
