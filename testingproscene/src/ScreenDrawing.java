@@ -14,30 +14,23 @@ public class ScreenDrawing extends PApplet {
 	
 	public void setup()	{
 		size(640, 360, P3D);
-		scene = new Scene(this);		
+		scene = new Scene(this);
 		scene.setRadius(150);
 		scene.showAll();
 		index = 0;
 		points = new Point [LINE_ITEMS];		
 		boxes = new Box[50];
 		for (int i = 0; i < boxes.length; i++)
-			boxes[i] = new Box(this);
+			boxes[i] = new Box(scene);
 	}
 
-	public void draw() {
-		//set camera stuff, always necessary:
-		background(0);
-				
-		scene.beginDraw();
-		// Here we are in the world coordinate system.
-		// Draw your scene here.
-		
-		//3D drawing
+	public void draw() {		
 		for (int i = 0; i < boxes.length; i++)			
 			boxes[i].draw();
 		
 		//2D drawing
 		scene.beginScreenDrawing();
+		pushStyle();
 		strokeWeight(8);
 		stroke(183,67,158,127);
 		noFill();
@@ -45,25 +38,27 @@ public class ScreenDrawing extends PApplet {
 		for (int i=0; i<index; i++)
 			vertex(scene.xCoord( points[i].x ), scene.yCoord( points[i].y ), scene.zCoord());
 		endShape();
-		strokeWeight(1);		
+		popStyle();		
 		scene.endScreenDrawing();
-	
-		scene.endDraw();
 	}
 	
-	public void keyPressed() {	
-		if(key == 'y' && mousePressed) {
-			scene.disableMouseHandling();
+	// /**
+	public void keyPressed() {
+		if((key == 't') || (key == 'T')) {
+			scene.toggleMouseHandling();			
+		}
+		if (key == 'x')
+			index = 0;
+	}
+	// */
+	
+	public void mouseDragged() {
+		if(!scene.mouseIsHandled()) {			
 			if (index < LINE_ITEMS ) {
 				points[index] = new Point (mouseX, mouseY);
 				index++;
 			} else
 				index = 0;			
-		}
-		else {
-			scene.enableMouseHandling();
-			if (key == 'x')
-				index = 0;
 		}
 	}
 	

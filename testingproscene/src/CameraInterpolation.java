@@ -40,16 +40,9 @@ public class CameraInterpolation extends PApplet {
 		scene.setCameraPathsAreDrawn(true);
 	}
 
-	public void draw() {
-		background(0);
-		scene.beginDraw();		
+	public void draw() {		
 		fill(204, 102, 0);
-		box(20, 30, 50);		
-		scene.endDraw();
-	}
-	
-	public void keyPressed() {
-		scene.defaultKeyBindings();
+		box(20, 30, 50);
 	}
 	
 	public static void main(String args[]) {

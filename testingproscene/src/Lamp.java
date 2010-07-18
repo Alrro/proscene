@@ -5,11 +5,11 @@ public class Lamp {
 	PApplet parent;
 	InteractiveFrame [] frameArray;
 	
-	Lamp(PApplet p) {
-		parent = p;
+	Lamp(Scene s) {
+		parent = s.parent;
 		frameArray = new InteractiveFrame[4];
 		for (int i=0; i<4; ++i) {
-			frameArray[i] = new InteractiveFrame();
+			frameArray[i] = new InteractiveFrame(s);
 			// Creates a hierarchy of frames.
 			if (i>0) frame(i).setReferenceFrame(frame(i-1));
 		}

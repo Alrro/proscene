@@ -5,9 +5,9 @@ public class Caja {
 	PApplet parent;
 	remixlab.proscene.InteractiveFrame iFrame;
 	
-	Caja(PApplet p) {
-		parent = p;
-		iFrame = new remixlab.proscene.InteractiveFrame();
+	Caja(Scene scn) {		
+		parent = scn.parent;
+		iFrame = new remixlab.proscene.InteractiveFrame(scn);
 	}
 	
 	public void draw(PVector v) {

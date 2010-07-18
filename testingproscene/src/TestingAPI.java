@@ -31,7 +31,7 @@ public class TestingAPI extends PApplet {
 		scene.showAll();
 		
 		float [][] coef = new float [6][4];		
-		coef = scene.camera().getFrustumPlanesCoefficients();
+		coef = scene.camera().getFrustumEquations();
 		
 		for (int i=0; i<6; i++)
 			for (int j=0; j<4; j++)				
@@ -136,15 +136,8 @@ public class TestingAPI extends PApplet {
 	}
 
 	public void draw() {
-		background(0);
-		scene.beginDraw();
 		fill(204, 102, 0);
-		box(20f, 30f, 50f);		
-		scene.endDraw();
-	}
-	
-	public void keyPressed() {
-		scene.defaultKeyBindings();
+		box(20f, 30f, 50f);
 	}
 	
 	public static void main(String args[]) {

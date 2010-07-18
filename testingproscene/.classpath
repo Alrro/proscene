@@ -19,5 +19,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/proscene.jar" sourcepath="/home/pierre/Fun/downloads/bin/processing-1.0.9/libraries/proscene/library"/>
 	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing-1.0.9/opengl.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/guicomponents.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/napplet.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

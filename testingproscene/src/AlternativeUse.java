@@ -11,14 +11,10 @@ public class AlternativeUse extends PApplet {
 		scene = new MyScene(this);			  
 	}
 
-	public void draw() {
-		background(0);
-		scene.draw();		
+	// /**
+	public void draw() {		
 	}	
-	
-	public void keyPressed() {
-		scene.defaultKeyBindings();
-	}
+	// */
 	
 	class MyScene extends Scene {
 		public MyScene(PApplet p) {
@@ -32,7 +28,7 @@ public class AlternativeUse extends PApplet {
 		
 		public void proscenium() {
 			fill(204, 102, 0);
-			box(0.2f, 0.3f, 0.5f);
+			box(20, 30, 50);
 		}
 	}
 	

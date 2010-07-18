@@ -11,40 +11,29 @@ public class CajasOrientadas extends PApplet {
 	
 	public void setup()	{
 		size(640, 360, P3D);
-		scene = new Scene(this);		
+		scene = new Scene(this);	
 		scene.setGridIsDrawn(true);		
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-		scene.setRadius(1.6f);		
+		scene.setRadius(160);		
 		scene.showAll();
 		
-		esfera = new Sphere(this);
+		esfera = new Sphere(scene);
 		esfera.setPosition(new PVector(0.0f, 1.4f, 0.0f));
 		esfera.setColor(color(0,0,255));
 		
 		cajas = new Box[30];
 		for (int i = 0; i < cajas.length; i++)
-			cajas[i] = new Box(this);	
+			cajas[i] = new Box(scene);
 	}
 
-	public void draw() {
-		//set camera stuff, always necessary:
-		background(0);
-				
-		scene.beginDraw();
-		// Here we are in the world coordinate system.
-		// Draw your scene here.				
+	public void draw() {				
 	    esfera.draw();
 		for (int i = 0; i < cajas.length; i++) {
 			cajas[i].setOrientation(esfera.getPosition());
 			cajas[i].draw(true);
-		}		    
-		scene.endDraw();
+		}
 	}
-	
-	public void keyPressed() {
-		scene.defaultKeyBindings();
-	}
-	
+		
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "CajasOrientadas" });
 	}

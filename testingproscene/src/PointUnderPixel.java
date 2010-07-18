@@ -19,7 +19,7 @@ public class PointUnderPixel extends PApplet {
 		GLCamera glCam = new GLCamera(scene);
 		scene.setCamera(glCam);
 		scene.setGridIsDrawn(false);
-		scene.setAxisIsDrawn(false);
+		scene.setAxisIsDrawn(true);
 		scene.setHelpIsDrawn(false);
 		scene.setRadius(scene.radius() * 1.5f);
 		scene.showAll();
@@ -27,18 +27,12 @@ public class PointUnderPixel extends PApplet {
 		
 		boxes = new Box[50];
 		for (int i = 0; i < boxes.length; i++)
-			boxes[i] = new Box(this);
+			boxes[i] = new Box(scene);
 	}
 
 	public void draw() {
-		background(0);
-		scene.beginDraw();
-		//Effectively disables z-buffer
-		//((GLCamera)scene.camera()).gl.glDisable(GL.GL_DEPTH_TEST);
 		for (int i = 0; i < boxes.length; i++)
-			//3D drawing
 			boxes[i].draw();
-		scene.endDraw();
 	}
 	
 	class GLCamera extends Camera {

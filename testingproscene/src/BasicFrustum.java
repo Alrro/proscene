@@ -5,31 +5,22 @@ import remixlab.proscene.*;
 public class BasicFrustum extends PApplet {
 	Scene scene;
 	
-	static boolean entirely;
-	static BoxNode Root;
+	BoxNode Root;
 	
 	public void setup()	{		
 		size(640, 360, P3D);
 		PVector p = new PVector(100, 70, 130);		
 		Root = new BoxNode(p, PVector.mult(p, -1.0f));
 		Root.buildBoxHierarchy(4);
-        scene = new Scene(this);        
-        scene.enableFrustumUpdate();
+        scene = new Scene(this);
+        scene.enableFrustumEquationsUpdate();
         scene.setHelpIsDrawn(false);
         scene.setGridIsDrawn(true);
         scene.setAxisIsDrawn(true);
 	}
 
-	public void draw() {		
-		background(0);
-		scene.beginDraw();
+	public void draw() {
 		Root.drawIfAllChildrenAreVisible(this, scene.camera());
-		scene.endDraw();
-	}
-	
-	public void keyPressed() {		
-		if (key == 'x')
-			println(scene.camera().upVector());
 	}
 	
 	public static void main(String args[]) {

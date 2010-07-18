@@ -20,7 +20,7 @@ public class ConstrainedCamera extends PApplet  {
 		textMode(SCREEN);
 		//textMode(PApplet.MODEL);
 		
-		scene = new Scene(this);		
+		scene = new Scene(this);	
 		
 		constraints[0] = new WorldConstraint();
 		// Note that a PSCameraConstraint(camera) would produce the same results:
@@ -71,13 +71,10 @@ public class ConstrainedCamera extends PApplet  {
 	}
 
 	public void draw() {
-		background(0);
-		scene.beginDraw();
 		fill(204, 102, 0);
 		box(20, 30, 50);
 		fill(0, 0, 255);
 		displayText();
-		scene.endDraw();
 	}	
 	
 	protected void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{

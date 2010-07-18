@@ -33,7 +33,7 @@ public class ConstrainedFrame extends PApplet  {
 		rotDir   = 0;
 		activeConstraint = 0;
 		
-		frame = new remixlab.proscene.InteractiveFrame();
+		frame = new remixlab.proscene.InteractiveFrame(scene);
 		frame.translate(new PVector(0.2f, 0.2f, 0));
 		scene.setInteractiveFrame(frame);			
 		frame.setConstraint(constraints[activeConstraint]);
@@ -76,10 +76,7 @@ public class ConstrainedFrame extends PApplet  {
 	  frame.setConstraint(constraints[activeConstraint]);
 	}
 
-	public void draw() {
-		background(0);
-		scene.beginDraw();
-		
+	public void draw() {		
 		pushMatrix();
 		//applyMatrix( frame.pMatrix() );
 		//Same as the previous commented line, but a lot more efficient:
@@ -91,7 +88,6 @@ public class ConstrainedFrame extends PApplet  {
 		
 		fill(0, 0, 255);
 		displayText();
-		scene.endDraw();
 	}	
 
 	protected void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{

@@ -5,10 +5,6 @@ public class BoxNode {
 	PVector p1, p2;
 	BoxNode child[];
 	int level;
-	// Lazy static member, so that it is shared by viewers
-	//static PVector p = new PVector(100, 70, 130);
-	//static BoxNode Root;
-	//static boolean entirely;
 	
 	BoxNode(PVector P1, PVector P2) {
 		p1 = P1;

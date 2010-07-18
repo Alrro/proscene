@@ -15,10 +15,7 @@ Scene scene;
 		scene.showAll();
 	}
 
-	public void draw() {
-		background(0);
-		scene.beginDraw();
-		
+	public void draw() {		
 		final float nbLines = 50.0f;
 		
 		beginShape(LINES);		
@@ -42,14 +39,8 @@ Scene scene;
 		    vertex(100*cos(angle), 100*sin(angle), 0);		    
 		}	
 		endShape();
-
-		scene.endDraw();
 	}	
-	
-	public void keyPressed() {
-		scene.defaultKeyBindings();
-	}
-	
+		
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "Moire" });
 	}
