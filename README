@@ -1,7 +1,7 @@
 
                                   proscene
 
-	      	            Version 0.9.0 June, 2010
+	      	            Version 0.9.0 July, 2010
 
 
   Copyright (C) 2010 Jean Pierre Charalambos. All rights reserved.
@@ -33,7 +33,14 @@ http://codeanticode.wordpress.com/2010/03/04/glgraphics-0-9-3-3/).
 CHANGELOG
 
   * Version 0.9.0
-    + Pend!
+    + New examples: Flock, StandardCamera, ThirdPersonCamera and ViewFrustumCulling.
+    + New scene external draw handler registration (see the Scene documentation for details).
+    + New analytical computation of the frustum planes equations which enables view frustum
+      culling against the proscene camera.
+    + New THIRD_PERSON camera mode.
+    + New registration of the keyboard and mouse handlers which provides tighter integration
+      with processing. It also means that proscene enabled sketches comprises even less code.
+    + Code polishing.
 
   * Version 0.8.0
     + Adding keyFrames' functionality through the KeyFrameInterpolator class.

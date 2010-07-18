@@ -35,9 +35,9 @@ public class OctreeNode {
     parent.vertex(p2.x, p1.y, p2.z);
     parent.vertex(p1.x, p1.y, p2.z);
     parent.endShape();
-    //parent.endShape(PApplet.CLOSE);
+    //parent.endShape(CLOSE);
     
-    parent.beginShape(PApplet.LINES);
+    parent.beginShape(LINES);
     parent.vertex(p1.x, p2.y, p1.z);
     parent.vertex(p1.x, p2.y, p2.z);
     parent.vertex(p2.x, p2.y, p1.z);

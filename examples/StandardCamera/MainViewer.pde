@@ -8,21 +8,9 @@ public class MainViewer extends NApplet {
     scene.enableFrustumEquationsUpdate();
     scene.setHelpIsDrawn(false);
     scene.setGridIsDrawn(false);
-  }
-  
-  // We need to pass the scene to the auxiliar viewer
-  Scene getScene() {
-    return scene;
-  }
-  
-  void draw() {
-    noStroke();
-    if( scene.camera().sphereIsVisible(new PVector(0,0,0), 40) == Camera.Visibility.SEMIVISIBLE )
-      fill(255, 0, 0);
-    else
-      fill(0, 255, 0);
-    sphere(40);
-  }
+    // register the drawing method which was defined externally
+    scene.addDrawHandler(parentPApplet, "mainDrawing");
+  }  
   
   void keyPressed() {
     if ( key == 'v')

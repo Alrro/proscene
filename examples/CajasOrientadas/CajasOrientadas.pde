@@ -25,14 +25,14 @@ void setup() {
   scene.setRadius(160);
   scene.showAll();
   
-  esfera = new Sphere(scene);
+  esfera = new Sphere();
   esfera.setPosition(new PVector(0, 140, 0));
   esfera.setColor(color(0,0,255));
   
   // create an array of boxes with random positions, sizes and colors 
   cajas = new Box[30];
   for (int i = 0; i < cajas.length; i++)
-    cajas[i] = new Box(scene);
+    cajas[i] = new Box();
 }
 
 void draw() {

@@ -1,6 +1,4 @@
 class Boid {
-  Scene scene;
-  PApplet parent;
   InteractiveAvatarFrame frame;
   Quaternion q;
   int grabsMouseColor;//color
@@ -19,32 +17,28 @@ class Boid {
   boolean avoidWalls = false;
 
   // constructors
-  Boid(Scene s, PVector inPos) {
-    scene = s;
-    parent = scene.parent;
+  Boid(PVector inPos) {
     grabsMouseColor = color(0,0,255);
     avatarColor = color(255,0,0);		
     pos = new PVector();
     pos.set(inPos);
     frame = new InteractiveAvatarFrame(scene);	
     frame.setPosition(pos);
-    frame.setAzimuth(-PApplet.HALF_PI);
+    frame.setAzimuth(-HALF_PI);
     frame.setTrackingDistance(scene.radius()/10);
-    vel = new PVector(parent.random(-1, 1), parent.random(-1, 1), parent.random(1, -1));
+    vel = new PVector(random(-1, 1), random(-1, 1), random(1, -1));
     acc = new PVector(0, 0, 0);
     neighborhoodRadius = 100;
   }
 
-  Boid(Scene s, PVector inPos, PVector inVel, float r) {
-    scene = s;
-    parent = scene.parent;
+  Boid(PVector inPos, PVector inVel, float r) {
     grabsMouseColor = color(0,0,255);
     avatarColor = color(255,0,0);
     pos = new PVector();
     pos.set(inPos);
     frame = new InteractiveAvatarFrame(scene);
     frame.setPosition(pos);
-    frame.setAzimuth(-PApplet.HALF_PI);
+    frame.setAzimuth(-HALF_PI);
     frame.setTrackingDistance(scene.radius()/10);
     vel = new PVector();
     vel.set(inVel);
@@ -54,16 +48,16 @@ class Boid {
 
   void run(ArrayList bl) {
     t += .1;
-    flap = 10 * PApplet.sin(t);
+    flap = 10 * sin(t);
     // acc.add(steer(new PVector(mouseX,mouseY,300),true));
     // acc.add(new PVector(0,.05,0));
     if (avoidWalls) {
-      acc.add(PVector.mult(avoid(new PVector(pos.x, ((Flock)parent).flockHeight, pos.z), true), 5));
+      acc.add(PVector.mult(avoid(new PVector(pos.x, flockHeight, pos.z), true), 5));
       acc.add(PVector.mult(avoid(new PVector(pos.x, 0, pos.z), true), 5));
-      acc.add(PVector.mult(avoid(new PVector(((Flock)parent).flockWidth, pos.y, pos.z),	true), 5));
+      acc.add(PVector.mult(avoid(new PVector(flockWidth, pos.y, pos.z),	true), 5));
       acc.add(PVector.mult(avoid(new PVector(0, pos.y, pos.z), true), 5));
       acc.add(PVector.mult(avoid(new PVector(pos.x, pos.y, 0), true), 5));
-      acc.add(PVector.mult(avoid(new PVector(pos.x, pos.y, ((Flock)parent).flockDepth), true), 5));
+      acc.add(PVector.mult(avoid(new PVector(pos.x, pos.y, flockDepth), true), 5));
     }
     flock(bl);
     move();
@@ -97,18 +91,18 @@ class Boid {
   }
 
   void checkBounds() {
-    if (pos.x > ((Flock)parent).flockWidth)
+    if (pos.x > flockWidth)
       pos.x = 0;
     if (pos.x < 0)
-      pos.x = ((Flock)parent).flockWidth;
-    if (pos.y > ((Flock)parent).flockHeight)
+      pos.x = flockWidth;
+    if (pos.y > flockHeight)
       pos.y = 0;
     if (pos.y < 0)
-      pos.y = ((Flock)parent).flockHeight;
-    if (pos.z > ((Flock)parent).flockDepth)
+      pos.y = flockHeight;
+    if (pos.z > flockDepth)
       pos.z = 0;
     if (pos.z < 0)
-      pos.z = ((Flock)parent).flockDepth;
+      pos.z = flockDepth;
   }
 
   boolean isAvatar() {
@@ -120,50 +114,50 @@ class Boid {
   }
 
   void render() {
-    parent.pushStyle();
-    parent.stroke(hue);
-    parent.noFill();
-    parent.noStroke();
-    parent.fill(hue);		
+    pushStyle();
+    stroke(hue);
+    noFill();
+    noStroke();
+    fill(hue);		
 
-    q = Quaternion.multiply(new Quaternion( new PVector(0,1,0),  PApplet.atan2(-vel.z, vel.x)), 
-                            new Quaternion( new PVector(0,0,1),  PApplet.asin(vel.y / vel.mag())) );		
+    q = Quaternion.multiply(new Quaternion( new PVector(0,1,0),  atan2(-vel.z, vel.x)), 
+                            new Quaternion( new PVector(0,0,1),  asin(vel.y / vel.mag())) );		
     frame.setRotation(q);
 
-    parent.pushMatrix();		
-    frame.applyTransformation(parent);		
+    pushMatrix();		
+    frame.applyTransformation(scene.parent);		
 
     if (frame.grabsMouse()) {
-      parent.fill( grabsMouseColor);
-      if (parent.mousePressed == true) 
+      fill( grabsMouseColor);
+      if (mousePressed == true) 
         scene.setAvatar(frame);			
     }		
     if ( isAvatar() ) {
-      parent.fill( avatarColor );
+      fill( avatarColor );
     }
 
     //draw boid
-    parent.beginShape(PApplet.TRIANGLES);
-    parent.vertex(3 * sc, 0, 0);
-    parent.vertex(-3 * sc, 2 * sc, 0);
-    parent.vertex(-3 * sc, -2 * sc, 0);
+    beginShape(TRIANGLES);
+    vertex(3 * sc, 0, 0);
+    vertex(-3 * sc, 2 * sc, 0);
+    vertex(-3 * sc, -2 * sc, 0);
 
-    parent.vertex(3 * sc, 0, 0);
-    parent.vertex(-3 * sc, 2 * sc, 0);
-    parent.vertex(-3 * sc, 0, 2 * sc);
+    vertex(3 * sc, 0, 0);
+    vertex(-3 * sc, 2 * sc, 0);
+    vertex(-3 * sc, 0, 2 * sc);
 
-    parent.vertex(3 * sc, 0, 0);
-    parent.vertex(-3 * sc, 0, 2 * sc);
-    parent.vertex(-3 * sc, -2 * sc, 0);
+    vertex(3 * sc, 0, 0);
+    vertex(-3 * sc, 0, 2 * sc);
+    vertex(-3 * sc, -2 * sc, 0);
 
-    parent.vertex(-3 * sc, 0, 2 * sc);
-    parent.vertex(-3 * sc, 2 * sc, 0);
-    parent.vertex(-3 * sc, -2 * sc, 0);
-    parent.endShape();		
+    vertex(-3 * sc, 0, 2 * sc);
+    vertex(-3 * sc, 2 * sc, 0);
+    vertex(-3 * sc, -2 * sc, 0);
+    endShape();		
 
-    parent.popMatrix();
+    popMatrix();
 
-    parent.popStyle();		
+    popStyle();		
   }
 
   // steering. If arrival==true, the boid slows to meet the target. Credit to
@@ -182,7 +176,7 @@ class Boid {
       PVector targetOffset = PVector.sub(target, pos);
       float distance = targetOffset.mag();
       float rampedSpeed = maxSpeed * (distance / 100);
-      float clippedSpeed = PApplet.min(rampedSpeed, maxSpeed);
+      float clippedSpeed = min(rampedSpeed, maxSpeed);
       PVector desiredVelocity = PVector.mult(targetOffset,
       (clippedSpeed / distance));
       steer.set(PVector.sub(desiredVelocity, vel));
@@ -197,7 +191,7 @@ class Boid {
     steer.set(PVector.sub(pos, target)); // steering vector points away from
     // target
     if (weight)
-      steer.mult(1 / PApplet.sq(PVector.dist(pos, target)));
+      steer.mult(1 / sq(PVector.dist(pos, target)));
     // steer.limit(maxSteerForce); //limits the steering force to
     // maxSteerForce
     return steer;
@@ -243,7 +237,7 @@ class Boid {
     int count = 0;
     for (int i = 0; i < boids.size(); i++) {
       Boid b = (Boid) boids.get(i);
-      float d = PApplet.dist(pos.x, pos.y, b.pos.x, b.pos.y);
+      float d = dist(pos.x, pos.y, b.pos.x, b.pos.y);
       if (d > 0 && d <= neighborhoodRadius) {
         posSum.add(b.pos);
         count++;

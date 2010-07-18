@@ -50,16 +50,15 @@ import javax.swing.Timer;
  * <li> <b>Direct instantiation</b>. In this case you should instantiate your own Scene object at the
  * {@code PApplet.setup()} function. 
  * <li> <b>Inheritance</b>. In this case, once you declare a Scene derived class, you should implement
- * {@link #proscenium()} which defines the objects in your scene (just make sure to define the
- * {@code PApplet.draw()} method, even if it's empty).
+ * {@link #proscenium()} which defines the objects in your scene. Just make sure to define the
+ * {@code PApplet.draw()} method, even if it's empty.
  * <li> <b>External draw handler registration</b>. You can even declare an external drawing method and then
  * register it at the Scene with {@link #addDrawHandler(Object, String)}. That method should return
- * {@code void} and have one single {@code PApplet} parameter. 
+ * {@code void} and have one single {@code PApplet} parameter. This strategy may be useful when you the 
+ * same drawing shared among multiple viewers.
  * </ol>
  * <p>
- * <b>Note:</b> In the last two cases make sure to define the {@code PApplet.draw()} method, even if it's empty.
- * <p>
- * See the examples <i>BasicUse</i>, <i>AlternativeUse</i> and <i>ViewFrustumCulling</i> for an illustration
+ * See the examples <i>BasicUse</i>, <i>AlternativeUse</i> and <i>StandardCamera</i> for an illustration
  * of these techniques.
  * <p>
  * <b>Attention:</b> To set the PApplet's background you should call one of the {@code Scene.background()}
@@ -2218,7 +2217,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
 		textToDisplay += "Walkthrough and third_person modes: move forward, look around, and move backward\n";
 		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
-		textToDisplay += "MOUSE MODIFIERS (applied to left button)\n";
+		textToDisplay += "MOUSE MODIFIERS (applied to left button in arcball mode)\n";
 		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
 		//parent.textAlign(CENTER, CENTER);
 		//parent.textAlign(RIGHT);		

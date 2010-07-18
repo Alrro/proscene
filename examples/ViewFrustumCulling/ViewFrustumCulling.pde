@@ -1,7 +1,8 @@
 /**
  * <b>View Frustum Culling</b> by Jean Pierre Charalambos.
  * <p>
- * This example illustrates how to solve analytically the camera frustum plane equations.
+ * This example illustrates a basic view frustum culling implementation which is performed<br>
+ * by analytically solving the frustum plane equations.
  * <p>
  * A hierarchical octree structure is clipped against a camera's frustum clipping planes.<br>
  * A second viewer displays an external view of the scene that exhibits the clipping<br>
