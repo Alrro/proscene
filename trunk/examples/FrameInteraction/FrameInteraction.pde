@@ -32,7 +32,7 @@ void draw() {
   pushMatrix();
   // Multiply matrix to get in the frame coordinate system.
   // applyMatrix(scene.interactiveFrame().matrix()) is handy but inefficient 
-  scene.interactiveFrame().applyTransformation(this); //optimum
+  scene.interactiveFrame().applyTransformation(); //optimum
   // Draw an axis using the Scene static function
   scene.drawAxis(20);
   // Draw a second box attached to the interactive frame
