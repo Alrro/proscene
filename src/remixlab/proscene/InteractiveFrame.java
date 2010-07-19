@@ -176,6 +176,15 @@ public class InteractiveFrame extends Frame
 	}
 	
 	/**
+	 * Convenience function that simply calls {@code applyTransformation( scene.parent )}
+	 * 
+	 * @see remixlab.proscene.Frame#applyTransformation(PApplet)
+	 */
+	public void applyTransformation() {
+		applyTransformation( scene.parent );
+	}
+	
+	/**
 	 * Returns {@code true} if the InteractiveFrame forms part of a Camera path and
 	 * {@code false} otherwise.
 	 * 
@@ -194,9 +203,7 @@ public class InteractiveFrame extends Frame
 	 * @see remixlab.proscene.Frame#clone()
 	 */
 	public InteractiveFrame clone() {
-		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();		
-		//clonedIFrame.prevPos = new Point(prevPos.x, prevPos.y);
-		//clonedIFrame.pressPos = new Point(pressPos.x, pressPos.y);
+		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
 		clonedIFrame.spngTimer = new Timer(10, taskPerformer);
 		return clonedIFrame;
 	}

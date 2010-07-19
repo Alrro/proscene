@@ -54,8 +54,8 @@ import javax.swing.Timer;
  * {@code PApplet.draw()} method, even if it's empty.
  * <li> <b>External draw handler registration</b>. You can even declare an external drawing method and then
  * register it at the Scene with {@link #addDrawHandler(Object, String)}. That method should return
- * {@code void} and have one single {@code PApplet} parameter. This strategy may be useful when you the 
- * same drawing shared among multiple viewers.
+ * {@code void} and have one single {@code PApplet} parameter. This strategy may be useful when there are
+ * multiple viewers sharing the same drawing code.
  * </ol>
  * <p>
  * See the examples <i>BasicUse</i>, <i>AlternativeUse</i> and <i>StandardCamera</i> for an illustration

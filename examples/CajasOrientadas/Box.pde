@@ -46,7 +46,7 @@ public class Box {
     pushMatrix();
     // Multiply matrix to get in the frame coordinate system.
     // scene.parent.applyMatrix(iFrame.matrix()) is handy but inefficient
-    iFrame.applyTransformation(scene.parent); //optimum
+    iFrame.applyTransformation(); //optimum
     if(drawAxis) scene.drawAxis(max(w,h,d)*1.3f);
     noStroke();
     if (iFrame.grabsMouse())

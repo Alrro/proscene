@@ -104,7 +104,8 @@ class Boid {
     if (pos.z < 0)
       pos.z = flockDepth;
   }
-
+  
+  // check if this boid's frame is the avatar
   boolean isAvatar() {
     if ( scene.avatar() == null )
       return false;
@@ -124,14 +125,19 @@ class Boid {
                             new Quaternion( new PVector(0,0,1),  asin(vel.y / vel.mag())) );		
     frame.setRotation(q);
 
-    pushMatrix();		
-    frame.applyTransformation(scene.parent);		
+    pushMatrix();
+    // Multiply matrix to get in the frame coordinate system.
+    frame.applyTransformation();
 
+    // highlight boids under the mouse
     if (frame.grabsMouse()) {
       fill( grabsMouseColor);
+      // additionally, set the boid's frame as the avatar if the mouse is pressed
       if (mousePressed == true) 
         scene.setAvatar(frame);			
-    }		
+    }
+    
+    // highlight the boid if its frame is the avatar
     if ( isAvatar() ) {
       fill( avatarColor );
     }

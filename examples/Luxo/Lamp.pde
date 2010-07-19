@@ -1,6 +1,5 @@
 /**
- * Lamp.
- * by Jean Pierre Charalambos.
+ * Lamp by Jean Pierre Charalambos.
  * 
  * This class is part of the Luxo example.
  *
@@ -63,24 +62,24 @@ public class Lamp {
   public void draw() {
     // Luxo's local frame
     pushMatrix();
-    frame(0).applyTransformation(scene.parent);
+    frame(0).applyTransformation();
     setColor( frame(0).grabsMouse() );
     drawBase();
     
     pushMatrix();//not really necessary here
-    frame(1).applyTransformation(scene.parent);
+    frame(1).applyTransformation();
     setColor( frame(1).grabsMouse() );
     drawCylinder();
     drawArm();
     
     pushMatrix();//not really necessary here
-    frame(2).applyTransformation(scene.parent);
+    frame(2).applyTransformation();
     setColor( frame(2).grabsMouse() );
     drawCylinder();
     drawArm();
     
     pushMatrix();//not really necessary here
-    frame(3).applyTransformation(scene.parent);
+    frame(3).applyTransformation();
     setColor( frame(3).grabsMouse() );
     drawHead();
     

@@ -90,7 +90,7 @@ void draw() {
   pushMatrix();
   //applyMatrix( frame.matrix() );
   //Same as the previous commented line, but a lot more efficient:
-  frame.applyTransformation(this);
+  frame.applyTransformation();
   scene.drawAxis(40);
   fill(204, 102, 0);
   box(20, 20, 20);
