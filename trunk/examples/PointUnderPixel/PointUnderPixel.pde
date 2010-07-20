@@ -1,5 +1,6 @@
 /**
- * Point Under Pixel by Jean Pierre Charalambos.
+ * Point Under Pixel.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates 3D world point picking.
  * 

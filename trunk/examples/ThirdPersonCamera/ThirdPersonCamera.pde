@@ -1,5 +1,6 @@
 /**
- * Third Person Camera by Jean Pierre Charalambos.
+ * Third Person Camera.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates the THIRD_PERSON proscene camera mode.
  * 

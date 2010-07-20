@@ -1,5 +1,6 @@
 /**
- * Screen Drawing by Jean Pierre Charalambos.
+ * Screen Drawing.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates how to combine 2D and 3D drawing.
  * 

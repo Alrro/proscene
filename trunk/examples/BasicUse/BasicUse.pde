@@ -1,5 +1,6 @@
 /**
- * Basic Use by Jean Pierre Charalambos.
+ * Basic Use.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates a direct approach to using proscene by Scene proper
  * instantiation.

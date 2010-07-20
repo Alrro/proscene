@@ -18,16 +18,13 @@ class BoidList {
   }
 
   void run(boolean aW) {
-    for (int i = 0; i < boids.size(); i++) // iterate through the list of
-      // boids
-    {
-      Boid tempBoid = (Boid) boids.get(i); // create a temporary boid to
-      // process and make it the
-      // current boid in the list
+    // iterate through the list of boids
+    for (int i = 0; i < boids.size(); i++) {
+      // create a temporary boid to process and make it the current boid in the list
+      Boid tempBoid = (Boid) boids.get(i); 
       tempBoid.hue = h;
       tempBoid.avoidWalls = aW;
-      tempBoid.run(boids); // tell the temporary boid to execute its run
-      // method
+      tempBoid.run(boids); // tell the temporary boid to execute its run method
     }
   }
 }

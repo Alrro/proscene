@@ -1,5 +1,6 @@
 /**
- * Cajas Orientadas by Jean Pierre Charalambos.
+ * Cajas Orientadas.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates some basic Frame properties, particularly how to orient them.
  * Select and move the sphere (holding the right mouse button pressed) to see how the

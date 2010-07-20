@@ -1,5 +1,6 @@
 /**
- * Constrained Camera by Jean Pierre Charalambos.
+ * Constrained Camera.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates how to add constrains (see Constraint related classes)
  * to your frames to limit their motion. All possible constraints are tested here.

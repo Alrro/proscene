@@ -1,5 +1,6 @@
 /**
- * Luxo by Jean Pierre Charalambos. 
+ * Luxo.
+ * by Jean Pierre Charalambos. 
  * 
  * A more complex example that combines InteractiveFrames, selection and constraints.
  * 

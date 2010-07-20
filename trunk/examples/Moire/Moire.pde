@@ -1,5 +1,6 @@
 /**
- * Moire by Jean Pierre Charalambos.
+ * Moire.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates the camera and world coordinate systems relationship.
  * Three sets of lines (red, green, blue) are drawn. They have common end points,
