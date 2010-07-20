@@ -1,5 +1,6 @@
 /**
- * Frame Interaction by Jean Pierre Charalambos.
+ * Frame Interaction.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates the three interactive frame mechanisms built-in proscene:
  * Camera, InteractiveFrame and MouseGrabber.

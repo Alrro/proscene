@@ -2,9 +2,8 @@
  * Auxiliar Viewer. 
  * by Jean Pierre Charalambos.
  * 
- * This class is part of the View Frustum Culling example.
- * This class displays an external view of the main viewer scene
- * that exhibits the clipping.
+ * This class is part of the View Frustum Culling example. It displays an
+ * external view of the main viewer scene that exhibits the clipping.
  *
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */

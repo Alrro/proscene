@@ -1,5 +1,6 @@
 /**
- * Alternative Use by Jean Pierre Charalambos.
+ * Alternative Use.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates an alternative approach to using proscene through inheritance.
  * 

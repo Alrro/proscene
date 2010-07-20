@@ -1,5 +1,6 @@
 /**
- * Standard Camera by Jean Pierre Charalambos.
+ * Standard Camera.
+ * by Jean Pierre Charalambos.
  * 
  * A 'standard' Camera with fixed near and far planes.
  * 
@@ -7,9 +8,9 @@
  * Its near and far planes distances are set to fixed values, instead of being fit
  * to scene dimensions as is done in the PROSCENE camera kind (default).
  * 
- * Note, however, that the precision of the z-Buffer highly depends on how the
- * zNear() and zFar() values, which are automatically fitted to your scene when the
- * PROSCENE camera kind is enabled.
+ * Note, however, that the precision of the z-Buffer highly depends on how the zNear()
+ * and zFar() values are fitted to your scene (as it is done with the PROSCENE camera
+ * kind). Loose boundaries will result in imprecision along the viewing direction.
  * 
  * Press 'v' in the main viewer (the upper one) to toggle the camera kind. 
  * 

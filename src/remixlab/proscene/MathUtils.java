@@ -75,14 +75,14 @@ public class MathUtils implements PConstants {
 	 * to a PVector is not continuous.
 	 */
 	public static PVector orthogonalVector(PVector v) {
-	  // Find smallest component. Keep equal case for null values.
-	  if ((PApplet.abs(v.y) >= 0.9f*PApplet.abs(v.x)) && (PApplet.abs(v.z) >= 0.9f*PApplet.abs(v.x)))
-	    return new PVector(0.0f, -v.z, v.y);
-	  else
-	    if ((PApplet.abs(v.x) >= 0.9f*PApplet.abs(v.y)) && (PApplet.abs(v.z) >= 0.9f*PApplet.abs(v.y)))
-	      return new PVector(-v.z, 0.0f, v.x);
-	    else
-	      return new PVector(-v.y, v.x, 0.0f);
+		// Find smallest component. Keep equal case for null values.
+		if ((PApplet.abs(v.y) >= 0.9f*PApplet.abs(v.x)) && (PApplet.abs(v.z) >= 0.9f*PApplet.abs(v.x)))
+			return new PVector(0.0f, -v.z, v.y);
+		else
+			if ((PApplet.abs(v.x) >= 0.9f*PApplet.abs(v.y)) && (PApplet.abs(v.z) >= 0.9f*PApplet.abs(v.y)))
+				return new PVector(-v.z, 0.0f, v.x);
+			else
+				return new PVector(-v.y, v.x, 0.0f);
 	}
 	
 	/**
@@ -108,11 +108,11 @@ public class MathUtils implements PConstants {
 	 * Utility function that returns the PMatrix3D representation of the 16
 	 * {@code array} given in European format.
 	 */
-	public static final PMatrix3D fromArray(float[] a) {	      
-	      return new PMatrix3D(a[0], a[1], a[2], a[3],
-	    		               a[4], a[5], a[6], a[7],
-	    		               a[8], a[9], a[10],a[11],
-	    		               a[12],a[13],a[14],a[15]);
+	public static final PMatrix3D fromArray(float[] a) {
+		return new PMatrix3D(a[0], a[1], a[2], a[3],
+	    		             a[4], a[5], a[6], a[7],
+	    		             a[8], a[9], a[10],a[11],
+	    		             a[12],a[13],a[14],a[15]);
 	}
 	
 	/**

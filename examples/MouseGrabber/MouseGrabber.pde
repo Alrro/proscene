@@ -1,5 +1,6 @@
 /**
- * Mouse Grabber by Jean Pierre Charalambos.
+ * Mouse Grabber.
+ * by Jean Pierre Charalambos.
  * 
  * This example illustrates the picking mechanism built-in proscene,
  * which represents one of the three interactive mechanisms found in
