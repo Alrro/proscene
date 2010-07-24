@@ -54,8 +54,8 @@ import javax.swing.Timer;
  * {@code PApplet.draw()} method, even if it's empty.
  * <li> <b>External draw handler registration</b>. You can even declare an external drawing method and then
  * register it at the Scene with {@link #addDrawHandler(Object, String)}. That method should return
- * {@code void} and have one single {@code PApplet} parameter. This strategy may be useful when there are
- * multiple viewers sharing the same drawing code.
+ * {@code void} and have one single {@code Scene} or {@code PApplet} parameter. This strategy may be useful
+ * when there are multiple viewers sharing the same drawing code.
  * </ol>
  * <p>
  * See the examples <i>BasicUse</i>, <i>AlternativeUse</i> and <i>StandardCamera</i> for an illustration
@@ -173,6 +173,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	//private PVector target;
 	
 	// R E G I S T E R   D R A W   M E T H O D
+	/** Draw handler is called on this or on the papplet*/
+	protected Boolean drawHandlerParamIsThis;
 	/** The object to handle the draw event */
 	protected Object drawHandlerObject;
 	/** The method in drawHandlerObject to execute */
@@ -254,6 +256,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		parseMouseXxxxMethods();
 		
 		//register draw method
+		drawHandlerParamIsThis = null;
 		drawHandlerObject = null;
 		drawHandlerMethod = null; 
 		drawHandlerMethodName = null;
@@ -885,7 +888,10 @@ public class Scene implements MouseWheelListener, PConstants {
 		// 2. Draw external registered method		
 		if(drawHandlerObject != null) {
 			try {
-				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { parent } );
+				if (drawHandlerParamIsThis)
+					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this } );
+				else
+					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { parent } );
 			} catch (Exception e) {
 				PApplet.println("Something went wrong when invoking your " + drawHandlerMethodName + " method");
 				e.printStackTrace();
@@ -2660,19 +2666,28 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Attempt to add a 'draw' handler method to the Scene. 
 	 * The default event handler is a method that returns void and has one single
-	 * PApplet parameter.
+	 * Scene or PApplet parameter.
 	 * 
 	 * @param obj the object to handle the event
 	 * @param methodName the method to execute in the object handler class
 	 */
 	public void addDrawHandler(Object obj, String methodName) {
+		drawHandlerParamIsThis = true;
 		try {
-			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { PApplet.class } );			
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { Scene.class } );
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
-		} catch (Exception e) {
-			PApplet.println("Something went wrong when registering your " + methodName + " method");
-			e.printStackTrace();
+		} catch (NoSuchMethodException mE) {
+			drawHandlerParamIsThis = false;
+			try {
+				drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { PApplet.class } );
+				drawHandlerObject = obj;
+				drawHandlerMethodName = methodName;
+			} catch (Exception e) {
+				drawHandlerParamIsThis = null;
+				PApplet.println("Something went wrong when registering your " + methodName + " method");
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -2682,6 +2697,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #addDrawHandler(Object, String)
 	 */
 	public void removeDrawHandler() {
+		drawHandlerParamIsThis = null;
 		drawHandlerMethod = null;			
 		drawHandlerObject = null;
 		drawHandlerMethodName = null;
