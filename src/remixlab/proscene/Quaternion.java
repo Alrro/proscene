@@ -156,15 +156,42 @@ public class Quaternion implements PConstants {
 	/**
 	 * Copy constructor.
 	 * 
-	 * @param q1
-	 *            the Quaternion containing the initialization x y z w data
+	 * @param q1 the Quaternion containing the initialization x y z w data
 	 */
 	public Quaternion(Quaternion q1) {
+		set(q1);
+	}
+	
+	/**
+	 * Copy constructor. If {@code normalize} is {@code true}
+	 * this Quaternion is {@link #normalize()}.
+	 * 
+	 * @param q1 the Quaternion containing the initialization x y z w data
+	 */
+	public Quaternion(Quaternion q1, boolean normalize) {
+		set(q1, normalize);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code set(q1, true);}
+	 * 
+	 * @see #set(Quaternion, boolean)
+	 */
+	public void set(Quaternion q1) {
+		set(q1, true);
+	}
+	
+	/**
+	 * Set this Quaternion from quaternion {@code q1}. If {@code normalize} is {@code true}
+	 * this Quaternion is {@link #normalize()}.
+	 */
+	public void set(Quaternion q1, boolean normalize) {
 		this.x = q1.x;
 		this.y = q1.y;
 		this.z = q1.z;
 		this.w = q1.w;
-		this.normalize();
+		if (normalize)
+			this.normalize();
 	}
 
 	/**
@@ -483,6 +510,74 @@ public class Quaternion implements PConstants {
 			this.z = sin_half_angle * axis.z / norm;
 			this.w = PApplet.cos(angle / 2.0f);
 		}
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code fromEulerAngles(angles.x, angles.y, angles.z)}.
+	 * 
+	 * @see #fromEulerAngles(float, float, float)
+	 * @see #eulerAngles()
+	 */
+	public void fromEulerAngles( PVector angles ) {
+		fromEulerAngles(angles.x, angles.y, angles.z);
+	}
+	
+	/**
+	 * Converts Euler rotation angles {@code roll} (which is defined respect to the x axis), {@code pitch}
+	 * (defined respect to the y axis) and {@code yaw} (defined respect to the z axis) to this Quaternion.
+	 * {@link #eulerAngles()} performs the inverse operation.
+	 * <p>
+	 * Each rotation angle is converted to an axis-angle pair, with the axis corresponding to one of the
+	 * Euclidean axii. The axis-angle pairs are converted to quaternions and multiplied together. The order
+	 * of the rotations is: y->z->x which follows the convention found here:
+	 * http://www.euclideanspace.com/maths/geometry/rotations/euler/index.htm.
+	 * 
+	 * @see #eulerAngles()
+	 */
+	public void fromEulerAngles( float roll, float pitch, float yaw ) {
+		Quaternion qx = new Quaternion(new PVector(1,0,0), roll);
+		Quaternion qy = new Quaternion(new PVector(0,1,0), pitch);
+		Quaternion qz = new Quaternion(new PVector(0,0,1), yaw);
+		set(qy);
+		multiply(qz);
+		multiply(qx);
+	}
+	
+	/**
+	 * Converts this Quaternion to Euler rotation angles {@code roll}, {@code pitch} and {@code yaw} in radians.
+	 * {@link #fromEulerAngles(float, float, float)} performs the inverse operation.
+	 * The code was adapted from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm. 
+	 * <p>
+	 * <b>Attention:</b> This method assumes that this Quaternion is normalized.
+	 * 
+	 * @return the PVector holding the roll (x coordinate of the vector), pitch (y coordinate of the vector)
+	 * and yaw angles (z coordinate of the vector). <b>Note:</b> The order of the rotations that would produce
+	 * this Quaternion (i.e., as with {@code fromEulerAngles(roll, pitch, yaw)}) is: y->z->x.
+	 * 
+	 * @see #fromEulerAngles(float, float, float)
+	 */
+	public PVector eulerAngles() {
+		float roll, pitch, yaw; 
+		float test = x*y + z*w;
+		if (test > 0.499) { // singularity at north pole
+			pitch = 2 * PApplet.atan2(x,w);
+			yaw = PApplet.PI/2;
+			roll = 0;
+			return new PVector(roll, pitch, yaw);
+		}
+		if (test < -0.499) { // singularity at south pole
+			pitch = -2 * PApplet.atan2(x,w);
+			yaw = - PApplet.PI/2;
+			roll = 0;
+			return new PVector(roll, pitch, yaw);
+		}
+	    float sqx = x*x;
+	    float sqy = y*y;
+	    float sqz = z*z;
+	    pitch = PApplet.atan2(2*y*w-2*x*z , 1 - 2*sqy - 2*sqz);
+		yaw = PApplet.asin(2*test);
+		roll = PApplet.atan2(2*x*w-2*y*z , 1 - 2*sqx - 2*sqz);
+		return new PVector(roll, pitch, yaw);
 	}
 	
 	/**
