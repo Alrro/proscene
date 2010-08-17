@@ -513,6 +513,20 @@ public class Quaternion implements PConstants {
 	}
 	
 	/**
+	 * Same as {@link #fromEulerAngles(PVector)}.
+	 */
+	public void fromTaitBryan( PVector angles ) {
+		fromEulerAngles( angles );
+	}
+	
+	/**
+	 * Same as {@link #fromEulerAngles(float, float, float)}.
+	 */
+	public void fromTaitBryan(  float roll, float pitch, float yaw ) {
+		fromEulerAngles( roll, pitch, yaw );
+	}
+	
+	/**
 	 * Convenience function that simply calls {@code fromEulerAngles(angles.x, angles.y, angles.z)}.
 	 * 
 	 * @see #fromEulerAngles(float, float, float)
@@ -523,12 +537,15 @@ public class Quaternion implements PConstants {
 	}
 	
 	/**
-	 * Converts Euler rotation angles {@code roll} (which is defined respect to the x axis), {@code pitch}
-	 * (defined respect to the y axis) and {@code yaw} (defined respect to the z axis) to this Quaternion.
+	 * Converts Euler rotation angles {@code roll}, {@code pitch} and {@code yaw}, respectively
+	 * defined to the x, y and z axes, to this Quaternion. In the convention used here these
+	 * angles represent a composition of extrinsic rotations (rotations about the reference
+	 * frame axes), which is also known as {@link #taitBryanAngles()} (See
+	 * http://en.wikipedia.org/wiki/Euler_angles and http://en.wikipedia.org/wiki/Tait-Bryan_angles).
 	 * {@link #eulerAngles()} performs the inverse operation.
 	 * <p>
 	 * Each rotation angle is converted to an axis-angle pair, with the axis corresponding to one of the
-	 * Euclidean axii. The axis-angle pairs are converted to quaternions and multiplied together. The order
+	 * Euclidean axes. The axis-angle pairs are converted to quaternions and multiplied together. The order
 	 * of the rotations is: y->z->x which follows the convention found here:
 	 * http://www.euclideanspace.com/maths/geometry/rotations/euler/index.htm.
 	 * 
@@ -541,6 +558,13 @@ public class Quaternion implements PConstants {
 		set(qy);
 		multiply(qz);
 		multiply(qx);
+	}
+	
+	/**
+	 * Same as {@link #eulerAngles()}.
+	 */
+	public PVector taitBryanAngles() {
+		return eulerAngles();
 	}
 	
 	/**
@@ -579,6 +603,36 @@ public class Quaternion implements PConstants {
 		roll = PApplet.atan2(2*x*w-2*y*z , 1 - 2*sqx - 2*sqz);
 		return new PVector(roll, pitch, yaw);
 	}
+	
+	/**
+	public PVector eulerAngles() {
+		//This quaternion does not need to be normalized. See:
+		//http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/index.htm
+		float roll, pitch, yaw;		
+	    float sqw = w*w;
+	    float sqx = x*x;
+	    float sqy = y*y;
+	    float sqz = z*z;
+		float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+		float test = x*y + z*w;
+		if (test > 0.499*unit) { // singularity at north pole
+			pitch = 2 * PApplet.atan2(x,w);			
+			yaw = PApplet.PI/2;
+			roll = 0;
+			return new PVector(roll, pitch, yaw);
+		}
+		if (test < -0.499*unit) { // singularity at south pole
+			pitch = -2 * PApplet.atan2(x,w);
+			yaw = - PApplet.PI/2;
+			roll = 0;
+			return new PVector(roll, pitch, yaw);
+		}
+	    pitch = PApplet.atan2(2*y*w-2*x*z , sqx - sqy - sqz + sqw);
+		yaw = PApplet.asin(2*test/unit);
+		roll = PApplet.atan2(2*x*w-2*y*z , -sqx + sqy - sqz + sqw);		
+		return new PVector(roll, pitch, yaw);
+	}
+	// */
 	
 	/**
 	 * Sets the Quaternion as a rotation from the {@code from} direction to
