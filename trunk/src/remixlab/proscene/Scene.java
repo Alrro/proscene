@@ -839,8 +839,10 @@ public class Scene implements MouseWheelListener, PConstants {
         			camera().lookAt( avatar().target() );
         		}
         		//We set the processing camera matrices from our remixlab.proscene.Camera
-        		setPProjectionMatrix();
+        		setPProjectionMatrix();        	
         		setPModelViewMatrix();
+    			//camera().computeProjectionMatrix();
+        		//camera().computeModelViewMatrix();
     		}
     	}
     	else {    		
@@ -850,11 +852,11 @@ public class Scene implements MouseWheelListener, PConstants {
     			camera().lookAt( avatar().target() );
     		} 			
     		//We set the processing camera matrices from our remixlab.proscene.Camera
-    		setPProjectionMatrix();
+    		setPProjectionMatrix();    		
     		setPModelViewMatrix();
     		//same as the two previous lines:
-    		// TODO: needs more testing (it produces visual artifacts when using OPENGL and
-    		// GLGRAPHICS renderers)    	
+    		//WARNING: this can produce visual artifacts when using OPENGL and GLGRAPHICS renderers because
+    		//processing will anyway set the matrices at the end of the rendering loop.
     		//camera().computeProjectionMatrix();
     		//camera().computeModelViewMatrix();
 		}
