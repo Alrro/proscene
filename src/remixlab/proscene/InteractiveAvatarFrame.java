@@ -38,25 +38,24 @@ import processing.core.*;
  * of the InteractiveAvatarFrame.   
  */
 public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements Trackable {
+	private Quaternion q;
 	private float trackingDist;
-	private float azmth;
-	private float inc;
 	private PVector camRelPos;
 	
 	/**
 	 * Constructs an InteractiveAvatarFrame and sets its {@link #trackingDistance()} to 
-	 * {@link remixlab.proscene.Scene#radius()}/3, {@link #azimuth()} to 0, and
-	 * {@link #inclination()} to PI/2.
+	 * {@link remixlab.proscene.Scene#radius()}/5, {@link #azimuth()} to 0, and
+	 * {@link #inclination()} to 0.
 	 * 
 	 * @see remixlab.proscene.Scene#setAvatar(Trackable)
 	 * @see remixlab.proscene.Scene#setInteractiveFrame(InteractiveFrame)
 	 */
 	public InteractiveAvatarFrame(Scene scn) {
 		super(scn);
+		q = new Quaternion();
+		q.fromTaitBryan( PApplet.QUARTER_PI, 0, 0);
 		camRelPos = new PVector();
-		setTrackingDistance(0);
-		setAzimuth( scene.radius()/3 );
-		setInclination(PApplet.PI/2);
+		setTrackingDistance(scene.radius()/5);
 	}	
 	
 	/**
@@ -78,14 +77,16 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
      * Returns the azimuth of the tracking camera measured respect to the frame's {@link #zAxis()}.
      */
     public float azimuth() {
-    	return azmth;
+    	//azimuth <-> pitch
+    	return q.taitBryanAngles().y;
     }
     
     /**
      * Sets the {@link #azimuth()} of the tracking camera.
      */
     public void setAzimuth(float a) {
-    	azmth = a;
+    	float roll = q.taitBryanAngles().x;
+    	q.fromTaitBryan(roll, a, 0);
     	computeCameraPosition();
     }
     
@@ -93,14 +94,16 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
      * Returns the inclination of the tracking camera measured respect to the frame's {@link #yAxis()}.
      */
     public float inclination() {
-    	return inc;
+    	//inclination <-> roll
+    	return q.taitBryanAngles().x;
     }
     
     /**
      * Sets the {@link #inclination()} of the tracking camera.
      */
     public void setInclination(float i) {
-    	inc = i;
+    	float pitch = q.taitBryanAngles().y;
+    	q.fromTaitBryan(i, pitch, 0);
     	computeCameraPosition();
     }
     
@@ -137,9 +140,8 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements 
      * the Trackable interface) is defined in spherical coordinates by means of the {@link #azimuth()}, the
      * {@link #inclination()} and {@link #trackingDistance()}) respect to the {@link #position()}.
      */
-    public void computeCameraPosition() {
-    	camRelPos.x = trackingDistance() * PApplet.sin(inclination()) * PApplet.sin(azimuth());
-    	camRelPos.y = trackingDistance() * PApplet.cos(inclination());
-    	camRelPos.z = trackingDistance() * PApplet.sin(inclination()) * PApplet.cos(azimuth());    	
+    public void computeCameraPosition() {    	
+    	camRelPos = q.rotate(new PVector(0,0,1));
+    	camRelPos.mult( trackingDistance() );   	
     }
 }

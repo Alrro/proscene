@@ -404,7 +404,9 @@ public class Camera implements Cloneable {
 	 * unchanged, which is an intuitive behavior when the Camera is in a
 	 * walkthrough fly mode.
 	 * 
-	 * See also setViewDirection(), lookAt() and setOrientation().
+	 * @see #setViewDirection(PVector)
+	 * @see #lookAt(PVector)
+	 * @see #setOrientation(Quaternion)
 	 */
 	public void setUpVector(PVector up, boolean noMove) {
 		Quaternion q = new Quaternion(new PVector(0.0f, 1.0f, 0.0f),
@@ -1894,6 +1896,7 @@ public class Camera implements Cloneable {
 			projectionMat.m32 = -1.0f;
 			projectionMat.m23 = 2.0f * ZNear * ZFar / (ZNear - ZFar);
 			projectionMat.m33 = 0.0f;
+			// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(), zNear(), zFar() );
 			break;
 		}
 		case ORTHOGRAPHIC: {
@@ -1904,6 +1907,7 @@ public class Camera implements Cloneable {
 			projectionMat.m32 = 0.0f;
 			projectionMat.m23 = -(ZFar + ZNear) / (ZFar - ZNear);
 			projectionMat.m33 = 1.0f;
+			// same as glOrtho( -w, w, -h, h, zNear(), zFar() );
 			break;
 		}
 		}
@@ -1987,7 +1991,7 @@ public class Camera implements Cloneable {
 
 		modelViewMat.m02 =         q02 - q13;
 		modelViewMat.m12 =         q12 + q03;
-		modelViewMat.m22 = 1.0f - q11 - q00;
+		modelViewMat.m22 = 1.0f  - q11 - q00;
 		modelViewMat.m32 = 0.0f;
 
 		PVector t = q.inverseRotate(frame().position());

@@ -929,10 +929,60 @@ public class Frame implements Cloneable {
 		return res;
 	}
 	
+	//TODO test the following three function when applying in sequence.
+	/**
+	 * Rotates the frame so that its {@link #xAxis()} becomes {@code axis} defined
+	 * in the world coordinate system.
+	 * <p>
+	 * <b>Attention:</b> this rotation is not uniquely defined. See
+	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
+	 * 
+	 * 
+	 * @see #xAxis()
+	 * @see #setYAxis(PVector)
+	 * @see #setZAxis(PVector)
+	 */
+	public void setXAxis(PVector axis) {
+		rotate(new Quaternion(new PVector(1.0f, 0.0f, 0.0f), transformOf(axis)));
+	}
+	
+	/**
+	 * Rotates the frame so that its {@link #yAxis()} becomes {@code axis} defined
+	 * in the world coordinate system.
+	 * <p>
+	 * <b>Attention:</b> this rotation is not uniquely defined. See
+	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
+	 * 
+	 * 
+	 * @see #yAxis()
+	 * @see #setYAxis(PVector)
+	 * @see #setZAxis(PVector)
+	 */
+	public void setYAxis(PVector axis) {
+		rotate(new Quaternion(new PVector(0.0f, 1.0f, 0.0f), transformOf(axis)));
+	}
+	
+	/**
+	 * Rotates the frame so that its {@link #zAxis()} becomes {@code axis} defined
+	 * in the world coordinate system.
+	 * <p>
+	 * <b>Attention:</b> this rotation is not uniquely defined. See
+	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
+	 * 
+	 * 
+	 * @see #zAxis()
+	 * @see #setYAxis(PVector)
+	 * @see #setZAxis(PVector)
+	 */
+	public void setZAxis(PVector axis) {
+		rotate(new Quaternion(new PVector(0.0f, 0.0f, 1.0f), transformOf(axis)));
+	}
+	
 	/**
 	 * Returns the x-axis of the frame, represented as a normalized vector defined in the world
 	 * coordinate system.
 	 * 
+	 * @see #setXAxis(PVector)
 	 * @see #yAxis()
 	 * @see #zAxis()
 	 */
@@ -944,6 +994,7 @@ public class Frame implements Cloneable {
 	 * Returns the y-axis of the frame, represented as a normalized vector defined in the world
 	 * coordinate system.
 	 * 
+	 * @see #setYAxis(PVector)
 	 * @see #xAxis()
 	 * @see #zAxis() 
 	 */
@@ -955,6 +1006,7 @@ public class Frame implements Cloneable {
 	 * Returns the z-axis of the frame, represented as a normalized vector defined in the world
 	 * coordinate system.
 	 * 
+	 * @see #setZAxis(PVector)
 	 * @see #xAxis()
 	 * @see #yAxis() 
 	 */
