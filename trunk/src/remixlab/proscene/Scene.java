@@ -65,7 +65,7 @@ import javax.swing.Timer;
  * <b>Attention:</b> To set the PApplet's background you should call one of the {@code Scene.background()}
  * versions instead of any of the {@code PApplet.background()} ones. The background is set to black by default.
  */
-public class Scene implements MouseWheelListener, PConstants {
+public class Scene implements MouseWheelListener, PConstants {	
 	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
 	 */
@@ -78,7 +78,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public enum CameraMode {
 		ARCBALL, WALKTHROUGH, THIRD_PERSON
-	};
+	}
 	
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
@@ -87,7 +87,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			ROTATE, ZOOM, TRANSLATE,
 			MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD,
 			SCREEN_ROTATE, ROLL, DRIVE,
-			SCREEN_TRANSLATE, ZOOM_ON_REGION };
+			SCREEN_TRANSLATE, ZOOM_ON_REGION }
 	
 	//mouse actions
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -191,7 +191,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent = p;
 		pg3d = (PGraphics3D) parent.g;
 		width = parent.width;
-		height = parent.height;
+		height = parent.height;		
 		
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		
@@ -1986,7 +1986,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		case KeyEvent.KEY_TYPED:
 			break;
 		}
-	}
+	}	
 	
 	/**
 	 * Associates the different interactions to the keys.
