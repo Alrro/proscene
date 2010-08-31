@@ -8,5 +8,10 @@ public class ThirdPersonCameraProfile extends CameraProfile {
 		super(scn);
 		// TODO Auto-generated constructor stub
 	}
-
+	
+    //
+	
+	public void setDefaultShortcuts() {
+		
+	}
 }

@@ -65,7 +65,32 @@ import javax.swing.Timer;
  * <b>Attention:</b> To set the PApplet's background you should call one of the {@code Scene.background()}
  * versions instead of any of the {@code PApplet.background()} ones. The background is set to black by default.
  */
-public class Scene implements MouseWheelListener, PConstants {	
+public class Scene implements MouseWheelListener, PConstants {
+	/**
+	 * Defines the different actions that can be associated with a specific keyboard key.
+	 */
+	enum KeyboardAction {
+		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND, /**
+		 * STEREO,
+		 * ANIMATION,
+		 */
+		HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVEFRAME, CONSTRAIN_FRAME, SHOW_ENTIRE_SCENE
+	}
+	
+	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, RAP_FROM_PIXEL, RAP_IS_CENTER,
+		CENTER_FRAME, CENTER_SCENE, SHOW_ENTIRE_SCENE, ALIGN_FRAME, ALIGN_CAMERA }
+	
+	/**
+	 * This enum defines mouse actions to be binded to the mouse.
+	 */
+	public enum MouseAction { NO_MOUSE_ACTION,
+		ROTATE, ZOOM, TRANSLATE,
+		MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD,
+		SCREEN_ROTATE, ROLL, DRIVE,
+		SCREEN_TRANSLATE, ZOOM_ON_REGION }
+	//TODO: add descriptions to all atomic actions
+	//keyboard actions: MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN
+	
 	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
 	 */
@@ -80,14 +105,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		ARCBALL, WALKTHROUGH, THIRD_PERSON
 	}
 	
-	/**
-	 * This enum defines mouse actions to be binded to the mouse.
-	 */
-	public enum MouseAction { NO_MOUSE_ACTION,
-			ROTATE, ZOOM, TRANSLATE,
-			MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD,
-			SCREEN_ROTATE, ROLL, DRIVE,
-			SCREEN_TRANSLATE, ZOOM_ON_REGION }
+	GlobalProfile gProfile;
 	
 	//mouse actions
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -191,7 +209,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent = p;
 		pg3d = (PGraphics3D) parent.g;
 		width = parent.width;
-		height = parent.height;		
+		height = parent.height;
+		
+		gProfile = new GlobalProfile(this);
 		
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		
@@ -1986,12 +2006,21 @@ public class Scene implements MouseWheelListener, PConstants {
 		case KeyEvent.KEY_TYPED:
 			break;
 		}
-	}	
+	}
 	
 	/**
 	 * Associates the different interactions to the keys.
 	 */
 	protected void keyReleased() {
+		gProfile.handleKeyboardAction(parent.key);
+		//TODO remove debug
+		//debug:
+		PApplet.println( gProfile.shortcut( KeyboardAction.EDIT_CAMERA_PATH ) );
+		if( gProfile.isBinded( KeyboardAction.SHOW_ENTIRE_SCENE ) )
+			PApplet.println("SHOW_ENTIRE_SCENE is binded");
+		else
+			PApplet.println("SHOW_ENTIRE_SCENE is NOT binded!");
+		//end debug
 		if (parent.key == '+') {
 			switch (cameraMode()) {
 			case ARCBALL:
@@ -2022,7 +2051,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				break;
 			}			
 		}
-		if (parent.keyCode == UP) {			
+		if (parent.keyCode == UP) {	
 			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
 				if ( avatarIsInteractiveDrivableFrame )
 					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
@@ -2103,31 +2132,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		if ( parent.key == 'v') {
 			this.toggleCameraKind();
 		}
-		// */
-		if (parent.key == 'a' || parent.key == 'A') {
-			toggleAxisIsDrawn();			
-		}
-		if (parent.key == ' ') {
-			nextCameraMode();	
-		}		
-		if (parent.key == 'e' || parent.key == 'E') {
-			toggleCameraType();
-		}
-		if (parent.key == 'f' || parent.key == 'F') {
-			toggleFrameSelectionHintIsDrawn();
-		}
-		if (parent.key == 'g' || parent.key == 'G') {
-			toggleGridIsDrawn();
-		}
-		if (parent.key == 'h' || parent.key == 'H') {
-			toggleHelpIsDrawn();
-		}
-		if (parent.key == 'i' || parent.key == 'I') {
-			toggleDrawInteractiveFrame();
-		}
-		if (parent.key == 'r' || parent.key == 'R') {
-			toggleCameraPathsAreDrawn();
-		}
+		// */		
 		if ( (parent.key == 's') && (cameraMode() != CameraMode.THIRD_PERSON) ) {
 			if( (cameraKind() == Camera.Kind.STANDARD) && ( cameraType() == Camera.Type.ORTHOGRAPHIC ) )
 				showAll();
@@ -2136,9 +2141,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		}		
 		if ( (parent.key) == 'S' && (cameraMode() != CameraMode.THIRD_PERSON) ) {
 			showAll();
-		}		
-		if (parent.key == 'w' || parent.key == 'W') {
-			toggleDrawWithConstraint();
 		}
 		if (parent.key == 'o') {			
 			if ( Camera.class == camera().getClass() )
