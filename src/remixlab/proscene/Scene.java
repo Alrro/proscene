@@ -68,17 +68,20 @@ import javax.swing.Timer;
 public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Defines the different actions that can be associated with a specific keyboard key.
-	 */
+	 */	
 	enum KeyboardAction {
-		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND, /**
-		 * STEREO,
-		 * ANIMATION,
-		 */
-		HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVEFRAME, CONSTRAIN_FRAME, SHOW_ENTIRE_SCENE
+		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND,
+		/**	STEREO, ANIMATION, */
+		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
+		/** INTERPOLATE_TO_ZOOM_ON_REGION,*/
+		ARP_FROM_PIXEL, RESET_ARP,
+		INTERPOLATE_TO_ZOOM_ON_PIXEL, INTERPOLATE_TO_FIT_SCENE, SHOW_ALL,
+		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN,
+		HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVE_FRAME, CONSTRAIN_FRAME
 	}
 	
-	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, RAP_FROM_PIXEL, RAP_IS_CENTER,
-		CENTER_FRAME, CENTER_SCENE, SHOW_ENTIRE_SCENE, ALIGN_FRAME, ALIGN_CAMERA }
+	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, ARP_FROM_PIXEL, RESET_ARP,
+		CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA }
 	
 	/**
 	 * This enum defines mouse actions to be binded to the mouse.
@@ -89,7 +92,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		SCREEN_ROTATE, ROLL, DRIVE,
 		SCREEN_TRANSLATE, ZOOM_ON_REGION }
 	//TODO: add descriptions to all atomic actions
-	//keyboard actions: MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN
 	
 	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
@@ -123,7 +125,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	//background
 	private BackgroundMode backgroundMode;
 	private boolean enableBackground;
-	int rgb;	
+	int rgb;
 	float gray, alpha, x, y, z;	
 	PImage image;
 	
@@ -2001,25 +2003,126 @@ public class Scene implements MouseWheelListener, PConstants {
 		case KeyEvent.KEY_PRESSED:
 			break;
 		case KeyEvent.KEY_RELEASED:
-			keyReleased();
+			keyReleased(e);
 			break;
 		case KeyEvent.KEY_TYPED:
 			break;
 		}
 	}
 	
+	public boolean handleKeyboardAction(KeyEvent e, Character key) {
+		Scene.KeyboardAction kba;
+		if ( e.isControlDown() ) {
+			PApplet.println("key is " + key + " and Control is down!");
+			kba = gProfile.shortcut(key, InteractionProfile.Modifier.CONTROL );						
+		}
+		else {
+			PApplet.println("key is " + key );
+			kba = gProfile.shortcut(key);
+		}
+		if (kba == null)
+			return false;
+		else {
+			handleKeyboardAction(kba);
+			return true;
+		}
+	}
+	
+	protected void handleKeyboardAction(KeyboardAction id) {
+		switch (id) {
+		case DRAW_AXIS:
+			toggleAxisIsDrawn();
+			PApplet.println("toggle axis is drawn!");
+			break;
+		case DRAW_GRID:
+			toggleGridIsDrawn();
+			break;
+		case CAMERA_MODE:
+			nextCameraMode();
+			break;
+		case CAMERA_TYPE:
+			toggleCameraType();
+			break;
+		case CAMERA_KIND:
+			toggleCameraKind();
+			break;
+        case ARP_FROM_PIXEL:
+        	if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (!helpIsDrawn())
+				if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+					arpFlag = true;
+					utilityTimer.start();
+				}
+			break;
+		case RESET_ARP:
+			camera().setArcballReferencePoint(new PVector(0,0,0));
+			arpFlag = true;
+			utilityTimer.start();
+			break;
+		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
+			if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (!helpIsDrawn()) {
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
+				if (wP.found) {
+					pupVec = wP.point; 
+					pupFlag = true;
+					utilityTimer.start();
+				}
+			}
+			break;
+		case INTERPOLATE_TO_FIT_SCENE:
+			camera().interpolateToFitScene();
+			break;
+		case SHOW_ALL:
+			showAll();
+			break;
+		case MOVE_CAMERA_LEFT:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
+			break;
+		case MOVE_CAMERA_RIGHT:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));
+			break;
+		case MOVE_CAMERA_UP:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
+			break;
+		case MOVE_CAMERA_DOWN:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
+			break;
+		case HELP:
+			toggleHelpIsDrawn();
+			break;
+		case EDIT_CAMERA_PATH:
+			toggleCameraPathsAreDrawn();
+			break;
+		case FOCUS_INTERACTIVE_FRAME:
+			toggleDrawInteractiveFrame();
+			break;
+		case CONSTRAIN_FRAME:
+			toggleDrawInteractiveFrame();
+			break;
+		}
+	}	
+	
 	/**
 	 * Associates the different interactions to the keys.
 	 */
-	protected void keyReleased() {
-		gProfile.handleKeyboardAction(parent.key);
+	protected void keyReleased(KeyEvent e) {
+		//TODO look first in the current camera mode, i.e., camera mode bindings override those of global		
+		handleKeyboardAction(e, parent.key);		
 		//TODO remove debug
 		//debug:
-		PApplet.println( gProfile.shortcut( KeyboardAction.EDIT_CAMERA_PATH ) );
-		if( gProfile.isBinded( KeyboardAction.SHOW_ENTIRE_SCENE ) )
-			PApplet.println("SHOW_ENTIRE_SCENE is binded");
+		/**
+		PApplet.println( gProfile.shortcutCharacter( KeyboardAction.EDIT_CAMERA_PATH ) );
+		PApplet.println( gProfile.shortcutCharacter( KeyboardAction.MOVE_CAMERA_DOWN ) );
+		if( gProfile.isBinded( KeyboardAction.SHOW_ALL ) )
+			PApplet.println("SHOW_ALL is binded");
 		else
-			PApplet.println("SHOW_ENTIRE_SCENE is NOT binded!");
+			PApplet.println("SHOW_ALL is NOT binded!");
+		*/
 		//end debug
 		if (parent.key == '+') {
 			switch (cameraMode()) {
@@ -2170,7 +2273,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				}
 			}
 		}
-		if( (parent.key == '1' || parent.key == 'j' || parent.key == 'J') && (cameraMode() != CameraMode.THIRD_PERSON)) {
+		if( (parent.key == '1' || parent.key == 'j' || parent.key == 'J') && (cameraMode() != CameraMode.THIRD_PERSON)) {		
 			if( parent.key == '1') camera().playPath(1);			
 			if( parent.key == 'j') {
 				camera().addKeyFrameToPath(1);

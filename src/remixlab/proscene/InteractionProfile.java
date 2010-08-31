@@ -1,49 +1,113 @@
 package remixlab.proscene;
 
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
+import java.util.Map; 
 
 public abstract class InteractionProfile {
+	public enum Arrow {LEFT, RIGHT, UP, DOWN}
+	public enum Modifier {ALT, SHIFT, CONTROL, ALT_GRAPH}
 	/**
-	taken from: http://wiki.processing.org/w/Multiple_key_presses
-	multiplekeys taken from http://wiki.processing.org/index.php?title=Keep_track_of_multiple_key_presses
-	@author Yonas Sandbæk http://seltar.wliia.org
-	*/
+	 * Internal class.
+	 */
+	public final class CharacterCombination {
+		@Override
+		public int hashCode() {
+			final int prime = 31;
+			int result = 1;
+			result = prime * result + getOuterType().hashCode();
+			result = prime * result + ((arrow == null) ? 0 : arrow.hashCode());
+			result = prime * result + ((key == null) ? 0 : key.hashCode());
+			result = prime * result
+					+ ((modifier == null) ? 0 : modifier.hashCode());
+			return result;
+		}
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (obj == null)
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			CharacterCombination other = (CharacterCombination) obj;
+			if (!getOuterType().equals(other.getOuterType()))
+				return false;
+			if (arrow == null) {
+				if (other.arrow != null)
+					return false;
+			} else if (!arrow.equals(other.arrow))
+				return false;
+			if (key == null) {
+				if (other.key != null)
+					return false;
+			} else if (!key.equals(other.key))
+				return false;
+			if (modifier == null) {
+				if (other.modifier != null)
+					return false;
+			} else if (!modifier.equals(other.modifier))
+				return false;
+			return true;
+		}
+		public CharacterCombination( Arrow myArrow ) {
+			key = null;
+			modifier = null;
+			arrow = myArrow;
+		}
+		public CharacterCombination( Character myKey ) {
+			key = myKey;
+			modifier = null;
+			arrow = null;
+		}
+		public CharacterCombination( Character myKey, Modifier myModifier ) {
+			key = myKey;
+			modifier = myModifier;
+			arrow = null;
+		}
+		public final Arrow arrow;
+		public final Character key;
+		public final Modifier modifier;
+		private InteractionProfile getOuterType() {
+			return InteractionProfile.this;
+		}
+	}
 	
-	protected HashMap<Character, Scene.KeyboardAction> keyboardBinding;
-	Scene scene;
-	 
-	// usage: 
-	// if(checkKey("ctrl") && checkKey("s")) println("CTRL+S");  
-	 
-	boolean[] keys = new boolean[526];
-	
-	boolean checkKey(String k) {
-	  for(int i = 0; i < keys.length; i++)
-	    if(KeyEvent.getKeyText(i).toLowerCase().equals(k.toLowerCase())) return keys[i];  
-	  return false;
-	}
-	/**
-	void keyPressed() { 
-	  keys[keyCode] = true;
-	  println(KeyEvent.getKeyText(keyCode));
-	}
-	 
-	void keyReleased() { 
-	  keys[keyCode] = false; 
-	}
-	*/
+	protected HashMap<CharacterCombination, Scene.KeyboardAction> keyboardBinding;
+	Scene scene;	 
 	
 	public InteractionProfile(Scene scn) {
 		scene = scn;
-		keyboardBinding = new HashMap<Character, Scene.KeyboardAction>();
+		keyboardBinding = new HashMap<CharacterCombination, Scene.KeyboardAction>();
+	}
+	
+	public void setShortcut(Character key, Modifier modifier, Scene.KeyboardAction action) {
+		setShortcut(new CharacterCombination(key, modifier), action);
+	}
+	
+	public void setShortcut(Arrow arrow, Scene.KeyboardAction action) {
+		setShortcut(new CharacterCombination(arrow), action);
+	}
+	
+	public void setShortcut(Character key, Scene.KeyboardAction action) {
+		setShortcut(new CharacterCombination(key), action);
+	}
+	
+	public void removeShortcut(Character key, Modifier modifier) {
+		removeShortcut(new CharacterCombination(key, modifier));
+	}
+	
+	public void removeShortcut(Arrow arrow) {
+		removeShortcut(new CharacterCombination(arrow));
+	}
+	
+	public void removeShortcut(Character key) {
+		removeShortcut(new CharacterCombination(key));
 	}
 	
 	// removes handling
-	public void removeShortcut(Character key) {
-		setShortcut(key, null);
+	public void removeShortcut(CharacterCombination keyCombo) {
+		setShortcut(keyCombo, null);
 	}
 
 	/**
@@ -61,11 +125,23 @@ public abstract class InteractionProfile {
 	 * (new bindings replace previous ones). If several KeyboardAction are
 	 * binded to the same shortcut, only one of them is active.
 	 */
-	public void setShortcut(Character key, Scene.KeyboardAction action) {
+	private void setShortcut(CharacterCombination keyCombo, Scene.KeyboardAction action) {
 		if (action != null)
-			keyboardBinding.put(key, action);
+			keyboardBinding.put(keyCombo, action);
 		else
-			keyboardBinding.remove(key);
+			keyboardBinding.remove(keyCombo);
+	}
+	
+	public Scene.KeyboardAction shortcut(Character key) {
+		return shortcut(new CharacterCombination(key));
+	}
+	
+	public Scene.KeyboardAction shortcut(Character key, Modifier modifier) {
+		return shortcut(new CharacterCombination(key, modifier));
+	}
+	
+	public Scene.KeyboardAction shortcut(Arrow arrow) {
+		return shortcut(new CharacterCombination(arrow));
 	}
 
 	/**
@@ -75,16 +151,37 @@ public abstract class InteractionProfile {
 	 * The returned keyboard shortcut may be null (if no Character is defined
 	 * for keyboard {@code action}).
 	 */
-	public Scene.KeyboardAction shortcut(Character key) {
-		return keyboardBinding.get(key);
+	private Scene.KeyboardAction shortcut(CharacterCombination keyCombo) {
+		return keyboardBinding.get(keyCombo);
 	}
 	
-	public Character shortcut(Scene.KeyboardAction action) {
-		Iterator<Map.Entry<Character, Scene.KeyboardAction>> it = keyboardBinding.entrySet().iterator();
+	public Character shortcutCharacter(Scene.KeyboardAction action) {
+		CharacterCombination cc = shortcut(action);
+		if (cc != null)
+			return shortcut(action).key;
+		return null;
+	}
+	
+	public Modifier shortcutModifier(Scene.KeyboardAction action) {
+		CharacterCombination cc = shortcut(action);
+		if (cc != null)
+			return shortcut(action).modifier;
+		return null;
+	}
+	
+	public Arrow shortcutArrow(Scene.KeyboardAction action) {
+		CharacterCombination cc = shortcut(action);
+		if (cc != null)
+			return shortcut(action).arrow;
+		return null;
+	}
+	
+	public CharacterCombination shortcut(Scene.KeyboardAction action) {
+		Iterator<Map.Entry<CharacterCombination, Scene.KeyboardAction>> it = keyboardBinding.entrySet().iterator();
 		while (it.hasNext()) {
-			Map.Entry<Character, Scene.KeyboardAction> pair = it.next();
+			Map.Entry<CharacterCombination, Scene.KeyboardAction> pair = it.next();
 			if( pair.getValue() == action )
-				return pair.getKey();	      
+				return pair.getKey();    
 	    }
 		return null;
 	}
@@ -93,56 +190,7 @@ public abstract class InteractionProfile {
 		if(shortcut(action) != null)
 			return true;
 		return false;
-	}
-	
-	public boolean handleKeyboardAction(Character key) {
-		Scene.KeyboardAction kba = shortcut(key);
-		if (kba == null)
-			return false;
-		else {
-			handleKeyboardAction(kba);
-			return true;
-		}
-	}
-	
-	//TODO: should probably go at the Scene!
-	protected void handleKeyboardAction(Scene.KeyboardAction id) {
-		/**
-		 * enum KeyboardAction { DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE,
-		 * CAMERA_KIND, STEREO, ANIMATION, HELP, EDIT_CAMERA_PATH,
-		 * FOCUS_INTERACTIVEFRAME, CONSTRAIN_FRAME }
-		 */
-
-		switch (id) {
-		case DRAW_AXIS:
-			scene.toggleAxisIsDrawn();
-			break;
-		case DRAW_GRID:
-			scene.toggleGridIsDrawn();
-			break;
-		case CAMERA_MODE:
-			scene.nextCameraMode();
-			break;
-		case CAMERA_TYPE:
-			scene.toggleCameraType();
-			break;
-		case CAMERA_KIND:
-			scene.toggleCameraKind();
-			break;
-		case HELP:
-			scene.toggleHelpIsDrawn();
-			break;
-		case EDIT_CAMERA_PATH:
-			scene.toggleCameraPathsAreDrawn();
-			break;
-		case FOCUS_INTERACTIVEFRAME:
-			scene.toggleDrawInteractiveFrame();
-			break;
-		case CONSTRAIN_FRAME:
-			scene.toggleDrawInteractiveFrame();
-			break;
-		}
-	}
+	}	
 	
 	abstract public void setDefaultShortcuts();
 }
