@@ -8,5 +8,10 @@ public class FirstPersonProfile extends CameraProfile {
 		super(scn);
 		// TODO Auto-generated constructor stub
 	}
-
+	
+	//
+	
+	public void setDefaultShortcuts() {
+		
+	}
 }
