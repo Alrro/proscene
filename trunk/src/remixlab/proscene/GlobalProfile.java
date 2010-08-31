@@ -17,7 +17,7 @@ public class GlobalProfile extends InteractionProfile {
 	// Key bindings. 0 means not defined
 	public void setDefaultShortcuts() {
 		// D e f a u l t s h o r t c u t s
-		setShortcut('a', Scene.KeyboardAction.DRAW_AXIS);
+		setShortcut('a', InteractionProfile.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
 		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_AXIS,
 				"Toggles the display of the world axis");
 		setShortcut('g', Scene.KeyboardAction.DRAW_GRID);
@@ -40,9 +40,9 @@ public class GlobalProfile extends InteractionProfile {
 		setShortcut('r', Scene.KeyboardAction.EDIT_CAMERA_PATH);
 		keyboardActionDescription.put(Scene.KeyboardAction.EDIT_CAMERA_PATH,
 				"Toggles the key frame camera paths (if any) for edition");
-		setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVEFRAME);
+		setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		keyboardActionDescription
-				.put(Scene.KeyboardAction.FOCUS_INTERACTIVEFRAME,
+				.put(Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME,
 						"Toggle interactivity between camera and interactive frame (if any)");
 		setShortcut('w', Scene.KeyboardAction.CONSTRAIN_FRAME);
 		keyboardActionDescription.put(Scene.KeyboardAction.CONSTRAIN_FRAME,
