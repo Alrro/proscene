@@ -1,8 +1,11 @@
 package remixlab.proscene;
 
+import java.awt.event.KeyEvent;
 import java.util.HashMap;
 
-public class GlobalProfile extends InteractionProfile {
+import processing.core.PApplet;
+
+public class GlobalProfile extends KeyboardProfile {
 	// S h o r t c u t k e y s
 	protected HashMap<Scene.KeyboardAction, String> keyboardActionDescription;
 	
@@ -17,10 +20,11 @@ public class GlobalProfile extends InteractionProfile {
 	// Key bindings. 0 means not defined
 	public void setDefaultShortcuts() {
 		// D e f a u l t s h o r t c u t s
-		setShortcut('a', InteractionProfile.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
-		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_AXIS,
-				"Toggles the display of the world axis");
-		setShortcut('g', Scene.KeyboardAction.DRAW_GRID);
+		//setShortcut(KeyEvent.VK_A, InteractionProfile.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
+		setShortcut('a', PApplet.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
+		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_AXIS, "Toggles the display of the world axis");
+		//setShortcut('g', Scene.KeyboardAction.DRAW_GRID);
+		setShortcut('G', PApplet.ALT, Scene.KeyboardAction.DRAW_GRID);
 		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_GRID,
 				"Toggles the display of the XY grid");
 		setShortcut(' ', Scene.KeyboardAction.CAMERA_MODE);
@@ -64,7 +68,5 @@ public class GlobalProfile extends InteractionProfile {
 
 		// setAddKeyFrameKeyboardModifiers(Qt::AltModifier);
 		// setPlayPathKeyboardModifiers(Qt::NoModifier);
-	}	
-
-	
+	}		
 }

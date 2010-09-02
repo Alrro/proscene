@@ -2010,16 +2010,36 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 	}
 	
-	public boolean handleKeyboardAction(KeyEvent e, Character key) {
-		Scene.KeyboardAction kba;
-		if ( e.isControlDown() ) {
-			PApplet.println("key is " + key + " and Control is down!");
-			kba = gProfile.shortcut(key, InteractionProfile.Modifier.CONTROL );						
+	public boolean handleKeyboardAction(KeyEvent e) {
+		Scene.KeyboardAction kba = null;
+		
+		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+			if (e.isAltDown())
+				kba = gProfile.shortcut( e.getKeyCode(), KeyboardProfile.Modifier.ALT );
+			/**
+			if (e.isAltGraphDown())
+				kba = gProfile.shortcut( e.getKeyCode(), InteractionProfile.Modifier.ALT_GRAPH );
+			*/
+			if (e.isControlDown())
+				kba = gProfile.shortcut( e.getKeyCode(), KeyboardProfile.Modifier.CONTROL );
+			if (e.isShiftDown())
+				kba = gProfile.shortcut( e.getKeyCode(), KeyboardProfile.Modifier.SHIFT );			
 		}
-		else {
-			PApplet.println("key is " + key );
-			kba = gProfile.shortcut(key);
+		else if (parent.key == CODED) {
+			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
+				if (parent.keyCode == UP)
+					kba = gProfile.shortcut( KeyboardProfile.Arrow.UP );
+				if (parent.keyCode == DOWN)
+					kba = gProfile.shortcut( KeyboardProfile.Arrow.DOWN );
+				if (parent.keyCode == RIGHT)
+					kba = gProfile.shortcut( KeyboardProfile.Arrow.RIGHT );
+				if (parent.keyCode == LEFT)
+					kba = gProfile.shortcut( KeyboardProfile.Arrow.LEFT );
+		    }			
 		}
+		else
+			kba = gProfile.shortcut( parent.key );
+		
 		if (kba == null)
 			return false;
 		else {
@@ -2112,7 +2132,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	protected void keyReleased(KeyEvent e) {
 		//TODO look first in the current camera mode, i.e., camera mode bindings override those of global		
-		handleKeyboardAction(e, parent.key);		
+		handleKeyboardAction(e);		
 		//TODO remove debug
 		//debug:
 		/**

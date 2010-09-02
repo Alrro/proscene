@@ -1,6 +1,6 @@
 package remixlab.proscene;
 
-public abstract class CameraProfile extends InteractionProfile {	
+public abstract class CameraProfile extends KeyboardProfile {	
 	public CameraProfile(Scene scn) {
 		super(scn);
 	}
