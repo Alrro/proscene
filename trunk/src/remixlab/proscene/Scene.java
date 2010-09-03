@@ -70,15 +70,23 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Defines the different actions that can be associated with a specific keyboard key.
 	 */	
-	enum KeyboardAction {
+	enum GlobalKeyboardAction {
 		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND,
-		/**	STEREO, ANIMATION, */
+		/**	STEREO, */
 		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
 		/** INTERPOLATE_TO_ZOOM_ON_REGION,*/
-		ARP_FROM_PIXEL, RESET_ARP,
-		INTERPOLATE_TO_ZOOM_ON_PIXEL, INTERPOLATE_TO_FIT_SCENE, SHOW_ALL,
-		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN,
+		ARP_FROM_PIXEL, RESET_ARP,		
 		HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVE_FRAME, CONSTRAIN_FRAME
+	}
+	/**
+	 * Defines the different actions that can be associated with a specific keyboard key.
+	 */	
+	enum KeyboardAction {	
+		INTERPOLATE_TO_ZOOM_ON_PIXEL, INTERPOLATE_TO_FIT_SCENE, SHOW_ALL,
+		/**	ANIMATION, */
+		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
+		/** INTERPOLATE_TO_ZOOM_ON_REGION,*/
+		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN
 	}
 	
 	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, ARP_FROM_PIXEL, RESET_ARP,
@@ -108,9 +116,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		ARCBALL, WALKTHROUGH, THIRD_PERSON
 	}
 	
-	protected KeyBindings gProfile;
+	protected KeyBindings<GlobalKeyboardAction> gProfile;
 	// S h o r t c u t k e y s
-	protected HashMap<Scene.KeyboardAction, String> keyboardActionDescription;
+	protected HashMap<GlobalKeyboardAction, String> keyboardActionDescription;
 	
 	//mouse actions
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -216,7 +224,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		width = parent.width;
 		height = parent.height;
 		
-		gProfile = new KeyBindings(this);
+		gProfile = new KeyBindings<GlobalKeyboardAction>(this);
 		setActionDescriptions();
 		setDefaultShortcuts();
 		
@@ -306,7 +314,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		return cam;
 	}
 	
-	public KeyBindings keyBindings() {
+	public KeyBindings<GlobalKeyboardAction> keyBindings() {
 		return gProfile;
 	}
 	
@@ -2021,16 +2029,16 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	private void setActionDescriptions() {
 		//1. keyboard
-		keyboardActionDescription = new HashMap<Scene.KeyboardAction, String>();
-		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_AXIS, "Toggles the display of the world axis");
-		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_GRID, "Toggles the display of the XY grid");
-		keyboardActionDescription.put(Scene.KeyboardAction.CAMERA_MODE, "Cycles to the registered camera mode profiles");
-		keyboardActionDescription.put(Scene.KeyboardAction.CAMERA_TYPE, "Toggles camera type: orthographic or perspective");
-		keyboardActionDescription.put(Scene.KeyboardAction.CAMERA_KIND, "Toggles camera kind: proscene or standard");
-		keyboardActionDescription.put(Scene.KeyboardAction.HELP, "Toggles the display of the help");
-		keyboardActionDescription.put(Scene.KeyboardAction.EDIT_CAMERA_PATH, "Toggles the key frame camera paths (if any) for edition");
-		keyboardActionDescription.put(Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME, "Toggle interactivity between camera and interactive frame (if any)");
-		keyboardActionDescription.put(Scene.KeyboardAction.CONSTRAIN_FRAME, "Toggles on and off frame constraints (if any)");
+		keyboardActionDescription = new HashMap<GlobalKeyboardAction, String>();
+		keyboardActionDescription.put(GlobalKeyboardAction.DRAW_AXIS, "Toggles the display of the world axis");
+		keyboardActionDescription.put(GlobalKeyboardAction.DRAW_GRID, "Toggles the display of the XY grid");
+		keyboardActionDescription.put(GlobalKeyboardAction.CAMERA_MODE, "Cycles to the registered camera mode profiles");
+		keyboardActionDescription.put(GlobalKeyboardAction.CAMERA_TYPE, "Toggles camera type: orthographic or perspective");
+		keyboardActionDescription.put(GlobalKeyboardAction.CAMERA_KIND, "Toggles camera kind: proscene or standard");
+		keyboardActionDescription.put(GlobalKeyboardAction.HELP, "Toggles the display of the help");
+		keyboardActionDescription.put(GlobalKeyboardAction.EDIT_CAMERA_PATH, "Toggles the key frame camera paths (if any) for edition");
+		keyboardActionDescription.put(GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME, "Toggle interactivity between camera and interactive frame (if any)");
+		keyboardActionDescription.put(GlobalKeyboardAction.CONSTRAIN_FRAME, "Toggles on and off frame constraints (if any)");
 		//2. mouse click
 		
 		//3. mouse actions
@@ -2041,19 +2049,19 @@ public class Scene implements MouseWheelListener, PConstants {
 		// D e f a u l t s h o r t c u t s
 		//gProfile.setShortcut(KeyEvent.VK_A, KeyBindings.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
 		//gProfile.setShortcut('a', PApplet.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
-		gProfile.setShortcut('a', Scene.KeyboardAction.DRAW_AXIS);
-		gProfile.setShortcut('g', Scene.KeyboardAction.DRAW_GRID);
+		gProfile.setShortcut('a', GlobalKeyboardAction.DRAW_AXIS);
+		gProfile.setShortcut('g', GlobalKeyboardAction.DRAW_GRID);
 		//setShortcut(KeyEvent.VK_G, KeyBindings.Modifier.ALT_GRAPH, Scene.KeyboardAction.DRAW_GRID);
 		//setShortcut('G', PApplet.ALT, Scene.KeyboardAction.DRAW_GRID);
-		gProfile.setShortcut(' ', Scene.KeyboardAction.CAMERA_MODE);
-		gProfile.setShortcut('e', Scene.KeyboardAction.CAMERA_TYPE);
-		gProfile.setShortcut('k', Scene.KeyboardAction.CAMERA_KIND);
+		gProfile.setShortcut(' ', GlobalKeyboardAction.CAMERA_MODE);
+		gProfile.setShortcut('e', GlobalKeyboardAction.CAMERA_TYPE);
+		gProfile.setShortcut('k', GlobalKeyboardAction.CAMERA_KIND);
 		//setShortcut(KeyboardAction.STEREO, ?);
 		//setShortcut(KeyboardAction.ANIMATION, ?);
-		gProfile.setShortcut('h', Scene.KeyboardAction.HELP);
-		gProfile.setShortcut('r', Scene.KeyboardAction.EDIT_CAMERA_PATH);
-		gProfile.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
-		gProfile.setShortcut('w', Scene.KeyboardAction.CONSTRAIN_FRAME);
+		gProfile.setShortcut('h', GlobalKeyboardAction.HELP);
+		gProfile.setShortcut('r', GlobalKeyboardAction.EDIT_CAMERA_PATH);
+		gProfile.setShortcut('i', GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		gProfile.setShortcut('w', GlobalKeyboardAction.CONSTRAIN_FRAME);
 
 		// K e y f r a m e s s h o r t c u t k e y s
 		// setPathKey(Qt::Key_F1, 1);
@@ -2074,13 +2082,13 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	
-	public void setShortcut(Integer vKey, KeyBindings.Modifier modifier, KeyboardAction action) {
+	public void setShortcut(Integer vKey, KeyBindings.Modifier modifier, GlobalKeyboardAction action) {
 		gProfile.setShortcut(vKey, modifier, action);
 	}
 	
 	//should be simply keyreleased
 	public boolean handleKeyboardAction(KeyEvent e) {
-		Scene.KeyboardAction kba = null;
+		GlobalKeyboardAction kba = null;
 		
 		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
 			if (e.isAltDown())
@@ -2117,7 +2125,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 	}
 	
-	protected void handleKeyboardAction(KeyboardAction id) {
+	protected void handleKeyboardAction(GlobalKeyboardAction id) {
 		switch (id) {
 		case DRAW_AXIS:
 			toggleAxisIsDrawn();
@@ -2150,6 +2158,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			arpFlag = true;
 			utilityTimer.start();
 			break;
+		/**
 		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
 			if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
@@ -2181,6 +2190,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		case MOVE_CAMERA_DOWN:
 			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
 			break;
+		*/
 		case HELP:
 			toggleHelpIsDrawn();
 			break;
