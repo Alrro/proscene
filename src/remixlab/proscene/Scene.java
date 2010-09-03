@@ -33,6 +33,7 @@ import java.awt.event.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.Timer;
@@ -107,7 +108,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		ARCBALL, WALKTHROUGH, THIRD_PERSON
 	}
 	
-	GlobalProfile gProfile;
+	protected KeyBindings gProfile;
+	// S h o r t c u t k e y s
+	protected HashMap<Scene.KeyboardAction, String> keyboardActionDescription;
 	
 	//mouse actions
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -213,7 +216,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		width = parent.width;
 		height = parent.height;
 		
-		gProfile = new GlobalProfile(this);
+		gProfile = new KeyBindings(this);
+		setActionDescriptions();
+		setDefaultShortcuts();
 		
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		
@@ -299,6 +304,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	public Camera camera() {
 		return cam;
+	}
+	
+	public KeyBindings keyBindings() {
+		return gProfile;
 	}
 	
 	/**
@@ -2010,31 +2019,91 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 	}
 	
+	private void setActionDescriptions() {
+		//1. keyboard
+		keyboardActionDescription = new HashMap<Scene.KeyboardAction, String>();
+		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_AXIS, "Toggles the display of the world axis");
+		keyboardActionDescription.put(Scene.KeyboardAction.DRAW_GRID, "Toggles the display of the XY grid");
+		keyboardActionDescription.put(Scene.KeyboardAction.CAMERA_MODE, "Cycles to the registered camera mode profiles");
+		keyboardActionDescription.put(Scene.KeyboardAction.CAMERA_TYPE, "Toggles camera type: orthographic or perspective");
+		keyboardActionDescription.put(Scene.KeyboardAction.CAMERA_KIND, "Toggles camera kind: proscene or standard");
+		keyboardActionDescription.put(Scene.KeyboardAction.HELP, "Toggles the display of the help");
+		keyboardActionDescription.put(Scene.KeyboardAction.EDIT_CAMERA_PATH, "Toggles the key frame camera paths (if any) for edition");
+		keyboardActionDescription.put(Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME, "Toggle interactivity between camera and interactive frame (if any)");
+		keyboardActionDescription.put(Scene.KeyboardAction.CONSTRAIN_FRAME, "Toggles on and off frame constraints (if any)");
+		//2. mouse click
+		
+		//3. mouse actions
+	}
+	
+	// Key bindings. 0 means not defined
+	public void setDefaultShortcuts() {
+		// D e f a u l t s h o r t c u t s
+		//gProfile.setShortcut(KeyEvent.VK_A, KeyBindings.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
+		//gProfile.setShortcut('a', PApplet.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
+		gProfile.setShortcut('a', Scene.KeyboardAction.DRAW_AXIS);
+		gProfile.setShortcut('g', Scene.KeyboardAction.DRAW_GRID);
+		//setShortcut(KeyEvent.VK_G, KeyBindings.Modifier.ALT_GRAPH, Scene.KeyboardAction.DRAW_GRID);
+		//setShortcut('G', PApplet.ALT, Scene.KeyboardAction.DRAW_GRID);
+		gProfile.setShortcut(' ', Scene.KeyboardAction.CAMERA_MODE);
+		gProfile.setShortcut('e', Scene.KeyboardAction.CAMERA_TYPE);
+		gProfile.setShortcut('k', Scene.KeyboardAction.CAMERA_KIND);
+		//setShortcut(KeyboardAction.STEREO, ?);
+		//setShortcut(KeyboardAction.ANIMATION, ?);
+		gProfile.setShortcut('h', Scene.KeyboardAction.HELP);
+		gProfile.setShortcut('r', Scene.KeyboardAction.EDIT_CAMERA_PATH);
+		gProfile.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		gProfile.setShortcut('w', Scene.KeyboardAction.CONSTRAIN_FRAME);
+
+		// K e y f r a m e s s h o r t c u t k e y s
+		// setPathKey(Qt::Key_F1, 1);
+		// setPathKey(Qt::Key_F2, 2);
+		// setPathKey(Qt::Key_F3, 3);
+		// setPathKey(Qt::Key_F4, 4);
+		// setPathKey(Qt::Key_F5, 5);
+		// setPathKey(Qt::Key_F6, 6);
+		// setPathKey(Qt::Key_F7, 7);
+		// setPathKey(Qt::Key_F8, 8);
+		// setPathKey(Qt::Key_F9, 9);
+		// setPathKey(Qt::Key_F10, 10);
+		// setPathKey(Qt::Key_F11, 11);
+		// setPathKey(Qt::Key_F12, 12);
+
+		// setAddKeyFrameKeyboardModifiers(Qt::AltModifier);
+		// setPlayPathKeyboardModifiers(Qt::NoModifier);
+	}
+	
+	
+	public void setShortcut(Integer vKey, KeyBindings.Modifier modifier, KeyboardAction action) {
+		gProfile.setShortcut(vKey, modifier, action);
+	}
+	
+	//should be simply keyreleased
 	public boolean handleKeyboardAction(KeyEvent e) {
 		Scene.KeyboardAction kba = null;
 		
 		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
 			if (e.isAltDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyboardProfile.Modifier.ALT );
-			/**
+				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.ALT );
+			// /**
 			if (e.isAltGraphDown())
-				kba = gProfile.shortcut( e.getKeyCode(), InteractionProfile.Modifier.ALT_GRAPH );
-			*/
+				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.ALT_GRAPH );
+			// */
 			if (e.isControlDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyboardProfile.Modifier.CONTROL );
+				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.CONTROL );
 			if (e.isShiftDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyboardProfile.Modifier.SHIFT );			
+				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.SHIFT );			
 		}
 		else if (parent.key == CODED) {
 			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
 				if (parent.keyCode == UP)
-					kba = gProfile.shortcut( KeyboardProfile.Arrow.UP );
+					kba = gProfile.shortcut( KeyBindings.Arrow.UP );
 				if (parent.keyCode == DOWN)
-					kba = gProfile.shortcut( KeyboardProfile.Arrow.DOWN );
+					kba = gProfile.shortcut( KeyBindings.Arrow.DOWN );
 				if (parent.keyCode == RIGHT)
-					kba = gProfile.shortcut( KeyboardProfile.Arrow.RIGHT );
+					kba = gProfile.shortcut( KeyBindings.Arrow.RIGHT );
 				if (parent.keyCode == LEFT)
-					kba = gProfile.shortcut( KeyboardProfile.Arrow.LEFT );
+					kba = gProfile.shortcut( KeyBindings.Arrow.LEFT );
 		    }			
 		}
 		else
