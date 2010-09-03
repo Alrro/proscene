@@ -1,10 +1,10 @@
 package remixlab.proscene;
 
-public class FirstPersonProfile extends CameraProfile {
+public class FirstPersonCameraProfile extends CameraProfile {
 	
 	//enum KeyboardAction { INCREASE_FLYSPEED, DECREASE_FLYSPEED }
 
-	public FirstPersonProfile(Scene scn) {
+	public FirstPersonCameraProfile(Scene scn) {
 		super(scn);
 		// TODO Auto-generated constructor stub
 	}

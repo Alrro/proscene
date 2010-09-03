@@ -1,9 +1,11 @@
 package remixlab.proscene;
 
-public abstract class CameraProfile extends KeyboardProfile {	
+public abstract class CameraProfile {
+	Scene scene;
+	
+	
 	public CameraProfile(Scene scn) {
-		super(scn);
+		scene = scn;
 	}
 	
-	abstract public void setDefaultShortcuts();
 }

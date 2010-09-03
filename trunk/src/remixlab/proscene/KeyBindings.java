@@ -1,15 +1,12 @@
 package remixlab.proscene;
 
-import java.awt.event.KeyEvent;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+//import java.util.Iterator;
+//import java.util.Map;
 
-import processing.core.PApplet;
-
-public abstract class KeyboardProfile {
-	public enum Arrow { UP, DOWN, LEFT, RIGHT }	
-	public enum Modifier { ALT, SHIFT, CONTROL }
+public class KeyBindings {
+	public enum Arrow { UP, DOWN, LEFT, RIGHT }
+	public enum Modifier { ALT, SHIFT, CONTROL, ALT_GRAPH }
 	
 	public final class KeyCombination {
 		@Override
@@ -52,8 +49,8 @@ public abstract class KeyboardProfile {
 		}
 		public final Integer virtualKey;
 		public final Modifier modifier;
-		private KeyboardProfile getOuterType() {
-			return KeyboardProfile.this;
+		private KeyBindings getOuterType() {
+			return KeyBindings.this;
 		}
 	}
 	
@@ -119,20 +116,24 @@ public abstract class KeyboardProfile {
 		public final Character key;
 		public final Arrow arrow;
 		public final KeyCombination keyCombination;
-		private KeyboardProfile getOuterType() {
-			return KeyboardProfile.this;
+		private KeyBindings getOuterType() {
+			return KeyBindings.this;
 		}
 	}
 	
 	Scene scene;
 	protected HashMap<KeyboardShortcut, Scene.KeyboardAction> keyboardBinding;
+	
+	/**
 	private final HashMap<Integer, Modifier> modifierBindings;
 	private final HashMap<Integer, Arrow> arrowBindings;
 	private final HashMap<Character, Integer> characterBindings;
+	*/
 	
-	public KeyboardProfile(Scene scn) {
+	public KeyBindings(Scene scn) {
 		scene = scn;
 		keyboardBinding = new HashMap<KeyboardShortcut, Scene.KeyboardAction>();
+		/**
 		modifierBindings = new HashMap<Integer, Modifier>();
 		modifierBindings.put(PApplet.ALT, Modifier.ALT);
 		modifierBindings.put(PApplet.CONTROL, Modifier.CONTROL);
@@ -180,21 +181,27 @@ public abstract class KeyboardProfile {
 		characterBindings.put('x', KeyEvent.VK_X);
 		characterBindings.put('y', KeyEvent.VK_Y);
 		characterBindings.put('z', KeyEvent.VK_Z);		
+		*/
 	}
 	
 	//1.
+	
+	/**
 	public void setShortcut(Character vKey, Integer modifier, Scene.KeyboardAction action) {		
 		setShortcut(new KeyboardShortcut(characterBindings.get(Character.toLowerCase(vKey)), modifierBindings.get(modifier)), action);
 	}
+	*/
 	
 	public void setShortcut(Integer vKey, Modifier modifier, Scene.KeyboardAction action) {
 		setShortcut(new KeyboardShortcut(vKey, modifier), action);
 	}
 	
 	//2.
+	/**
 	public void setShortcut(Integer arrow, Scene.KeyboardAction action) {
 		setShortcut(new KeyboardShortcut(arrowBindings.get(arrow)), action);
 	}
+	*/
 	
 	public void setShortcut(Arrow arrow, Scene.KeyboardAction action) {
 		setShortcut(new KeyboardShortcut(arrow), action);
@@ -206,18 +213,26 @@ public abstract class KeyboardProfile {
 	}
 	
 	//1.
+	/**
 	public void removeShortcut(Character vKey, Integer modifier) {		
 		removeShortcut(new KeyboardShortcut(characterBindings.get(Character.toLowerCase(vKey)), modifierBindings.get(modifier)) );
 	}	
+	*/
+	
+	public void removeAllShortcuts() {
+		keyboardBinding.clear();
+	}
 	
 	public void removeShortcut(Integer vKey, Modifier modifier) {
 		removeShortcut(new KeyboardShortcut(vKey, modifier) );
 	}
 	
-	//2.	
+	//2.
+	/**
 	public void removeShortcut(Integer arrow) {
 		removeShortcut(new KeyboardShortcut(arrowBindings.get(arrow)));
 	}
+	*/
 	
 	public void removeShortcut(Arrow arrow) {
 		removeShortcut(new KeyboardShortcut(arrow));
@@ -278,19 +293,44 @@ public abstract class KeyboardProfile {
 		return keyboardBinding.get(keyCombo);
 	}
 	
+	public boolean isKeyInUse(KeyboardShortcut key) {
+		return keyboardBinding.containsKey(key);
+	}
+	
+	public boolean isActionBinded(Scene.KeyboardAction action) {
+		return keyboardBinding.containsValue(action);
+	}
+	
+	//reverse methods:	
+	/**
+	public KeyboardShortcut shortcut(Scene.KeyboardAction action) {
+		Iterator<Map.Entry<KeyboardShortcut, Scene.KeyboardAction>> it = keyboardBinding.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<KeyboardShortcut, Scene.KeyboardAction> pair = it.next();
+			if( pair.getValue() == action )
+				return pair.getKey();    
+	    }
+		return null;
+	}
+	// */
+	
+	/**
 	public Character shortcutCharacter(Scene.KeyboardAction action) {
 		KeyboardShortcut cc = shortcut(action);
 		if (cc != null)
 			return shortcut(action).key;
 		return null;
 	}
+	*/
 	
+	/**
 	public KeyCombination shortcutModifier(Scene.KeyboardAction action) {
 		KeyboardShortcut cc = shortcut(action);
 		if (cc != null)
 			return shortcut(action).keyCombination;
 		return null;
 	}
+	*/
 	
 	/**
 	public Integer shortcutArrow(Scene.KeyboardAction action) {
@@ -301,29 +341,22 @@ public abstract class KeyboardProfile {
 	}
 	*/
 	
+	/**
 	public Arrow shortcutArrow(Scene.KeyboardAction action) {
 		KeyboardShortcut cc = shortcut(action);
 		if (cc != null)
 			return shortcut(action).arrow;
 		return null;
 	}
-	
-	//reverse methods:
-	public KeyboardShortcut shortcut(Scene.KeyboardAction action) {
-		Iterator<Map.Entry<KeyboardShortcut, Scene.KeyboardAction>> it = keyboardBinding.entrySet().iterator();
-		while (it.hasNext()) {
-			Map.Entry<KeyboardShortcut, Scene.KeyboardAction> pair = it.next();
-			if( pair.getValue() == action )
-				return pair.getKey();    
-	    }
-		return null;
-	}
+	*/
 	
 	/**
 	 private final HashMap<Integer, Modifier> modifierBindings;
 	private final HashMap<Integer, Arrow> arrowBindings;
 	private final HashMap<Character, Integer> characterBindings;
 	 */
+	
+	/**
 	public Integer modifierKey(Modifier modifier) {
 		Iterator<Map.Entry<Integer, Modifier>> it = modifierBindings.entrySet().iterator();
 		while (it.hasNext()) {
@@ -353,12 +386,5 @@ public abstract class KeyboardProfile {
 	    }
 		return null;
 	}
-	
-	public boolean isBinded(Scene.KeyboardAction action) {
-		if(shortcut(action) != null)
-			return true;
-		return false;
-	}
-	
-	abstract public void setDefaultShortcuts();
+	*/
 }
