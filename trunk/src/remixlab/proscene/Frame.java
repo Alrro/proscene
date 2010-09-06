@@ -358,6 +358,11 @@ public class Frame implements Cloneable {
 		}
 	}
 	
+	/**
+	 * Sets the {@link #constraint()} attached to the Frame.
+	 * <p>
+	 * A {@code null} value means no constraint.
+	 */ 
 	public void setConstraint(Constraint c) {
 		this.constr = c;
 	}

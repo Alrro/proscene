@@ -2,62 +2,7 @@ package remixlab.proscene;
 
 import java.util.HashMap;
 
-public class KeyBindings<T> {
-	public enum Arrow { UP, DOWN, LEFT, RIGHT }
-	public enum Modifier { ALT, SHIFT, CONTROL, ALT_GRAPH }
-	
-	/**
-	 * Internal class.
-	 */
-	public final class KeyCombination {
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result
-					+ ((modifier == null) ? 0 : modifier.hashCode());
-			result = prime * result
-					+ ((virtualKey == null) ? 0 : virtualKey.hashCode());
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyCombination other = (KeyCombination) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (modifier == null) {
-				if (other.modifier != null)
-					return false;
-			} else if (!modifier.equals(other.modifier))
-				return false;
-			if (virtualKey == null) {
-				if (other.virtualKey != null)
-					return false;
-			} else if (!virtualKey.equals(other.virtualKey))
-				return false;
-			return true;
-		}
-		public KeyCombination( Integer vKey, Modifier myModifier ) {
-			modifier = myModifier;			
-			virtualKey = vKey;
-		}
-		public final Integer virtualKey;
-		public final Modifier modifier;
-		private KeyBindings<T> getOuterType() {
-			return KeyBindings.this;
-		}
-	}
-	
-	/**
-	 * Internal class.
-	 */
+public class KeyBindings<T> extends Bindings<T> {
 	public final class KeyboardShortcut {
 		@Override
 		public int hashCode() {
@@ -104,122 +49,118 @@ public class KeyBindings<T> {
 			arrow = null;
 			keyCombination = null;
 		}
-		public KeyboardShortcut( Arrow myArrow ) {
+		public KeyboardShortcut( Scene.Arrow myArrow ) {
 			key = null;
 			arrow = myArrow;
 			keyCombination = null;
 		}
-		public KeyboardShortcut( Integer vKey, Modifier myModifier ) {
+		public KeyboardShortcut( Integer vKey, Scene.Modifier myModifier ) {
 			key = null;
 			arrow = null;
-			keyCombination = new KeyCombination(vKey, myModifier); 
+			keyCombination = new KeyCombination<Integer>(vKey, myModifier); 
 		}		
 		public final Character key;
-		public final Arrow arrow;
-		public final KeyCombination keyCombination;
+		public final Scene.Arrow arrow;
+		public final KeyCombination<Integer> keyCombination;
 		private KeyBindings<T> getOuterType() {
 			return KeyBindings.this;
 		}
-	}
+	}	
 	
-	Scene scene;
 	protected HashMap<KeyboardShortcut, T> keyboardBinding;
 		
 	public KeyBindings(Scene scn) {
-		scene = scn;
+		super(scn);
 		keyboardBinding = new HashMap<KeyboardShortcut, T>();
 	}
 	
-	//1.
-	public void setShortcut(Integer vKey, Modifier modifier, T action) {
-		setShortcut(new KeyboardShortcut(vKey, modifier), action);
+	// /**
+	@Override
+	protected T binding(Object keyCombo) {
+		return keyboardBinding.get((KeyboardShortcut)keyCombo);
 	}
 	
-	//2.
-	public void setShortcut(Arrow arrow, T action) {
-		setShortcut(new KeyboardShortcut(arrow), action);
+	@Override
+	protected void setBinding(Object keyCombo, T action) {
+		if (action != null)
+			keyboardBinding.put((KeyboardShortcut)keyCombo, action);
+		else
+			keyboardBinding.remove((KeyboardShortcut)keyCombo);
 	}
 	
-	//3.
-	public void setShortcut(Character key, T action) {
-		setShortcut(new KeyboardShortcut(key), action);
+	@Override
+	protected void removeBinding(Object keyCombo) {
+		setBinding((KeyboardShortcut)keyCombo, null);
 	}
+	// */
 	
-	//1.	
-	public void removeAllShortcuts() {
+	@Override
+	protected void removeAllBindings() {
 		keyboardBinding.clear();
 	}
 	
-	public void removeShortcut(Integer vKey, Modifier modifier) {
-		removeShortcut(new KeyboardShortcut(vKey, modifier) );
+	@Override
+	protected boolean isKeyInUse(Object key) {
+		return keyboardBinding.containsKey((KeyboardShortcut)key);
 	}
 	
-	//2.
-	
-	public void removeShortcut(Arrow arrow) {
-		removeShortcut(new KeyboardShortcut(arrow));
+	@Override
+	protected boolean isActionBinded(T action) {
+		return keyboardBinding.containsValue(action);
 	}
 	
-	//3.
-	public void removeShortcut(Character key) {
-		removeShortcut(new KeyboardShortcut(key));
-	}
-	
-	// removes handling
-	public void removeShortcut(KeyboardShortcut keyCombo) {
-		setShortcut(keyCombo, null);
-	}
-
 	/**
-	 * Defines the shortcut() that triggers a given KeyboardAction.
-	 * 
-	 * Here are some examples: \code // Press 'Q' to exit application
-	 * setShortcut(EXIT_VIEWER, Qt::Key_Q);
-	 * 
-	 * // Alt+M toggles camera mode setShortcut(CAMERA_MODE, Qt::ALT+Qt::Key_M);
-	 * 
-	 * // The DISPLAY_FPS action is disabled setShortcut(DISPLAY_FPS, 0);
-	 * \endcode
-	 * 
-	 * Only one shortcut can be assigned to a given QGLViewer::KeyboardAction
-	 * (new bindings replace previous ones). If several KeyboardAction are
-	 * binded to the same shortcut, only one of them is active.
-	 */	
-	private void setShortcut(KeyboardShortcut keyCombo, T action) {
+	protected T shortcut(KeyboardShortcut keyCombo) {
+		return keyboardBinding.get(keyCombo);
+	} 
+	
+	protected void setShortcut(KeyboardShortcut keyCombo, T action) {
 		if (action != null)
 			keyboardBinding.put(keyCombo, action);
 		else
 			keyboardBinding.remove(keyCombo);
 	}
 	
+	protected void removeShortcut(KeyboardShortcut keyCombo) {
+		setShortcut(keyCombo, null);
+	}
+	// */
+	
+	//---
+	
+	public void setShortcut(Integer vKey, Scene.Modifier modifier, T action) {
+		setBinding(new KeyboardShortcut(vKey, modifier), action);
+	}
+	
+	public void setShortcut(Scene.Arrow arrow, T action) {
+		setBinding(new KeyboardShortcut(arrow), action);
+	}
+	
+	public void setShortcut(Character key, T action) {
+		setBinding(new KeyboardShortcut(key), action);
+	}
+		
+	public void removeShortcut(Integer vKey, Scene.Modifier modifier) {
+		removeBinding(new KeyboardShortcut(vKey, modifier) );
+	}
+	
+	public void removeShortcut(Scene.Arrow arrow) {
+		removeBinding(new KeyboardShortcut(arrow));
+	}
+	
+	public void removeShortcut(Character key) {
+		removeBinding(new KeyboardShortcut(key));
+	}
+	
 	public T shortcut(Character key) {
-		return shortcut(new KeyboardShortcut(key));
+		return binding(new KeyboardShortcut(key));
 	}
 	
-	public T shortcut(Integer vKey, Modifier modifier) {
-		return shortcut(new KeyboardShortcut(vKey, modifier));
+	public T shortcut(Integer vKey, Scene.Modifier modifier) {
+		return binding(new KeyboardShortcut(vKey, modifier));
 	}
 	
-	public T shortcut(Arrow arrow) {
-		return shortcut(new KeyboardShortcut(arrow));
-	}
-
-	/**
-	 * Returns the keyboard shortcut associated to a given Keyboard {@code
-	 * action}.
-	 * <p>
-	 * The returned keyboard shortcut may be null (if no Character is defined
-	 * for keyboard {@code action}).
-	 */
-	private T shortcut(KeyboardShortcut keyCombo) {
-		return keyboardBinding.get(keyCombo);
-	}
-	
-	public boolean isKeyInUse(KeyboardShortcut key) {
-		return keyboardBinding.containsKey(key);
-	}
-	
-	public boolean isActionBinded(Scene.KeyboardAction action) {
-		return keyboardBinding.containsValue(action);
-	}
+	public T shortcut(Scene.Arrow arrow) {
+		return binding(new KeyboardShortcut(arrow));
+	}	
 }

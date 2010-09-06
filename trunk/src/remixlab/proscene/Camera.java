@@ -130,7 +130,7 @@ public class Camera implements Cloneable {
 	
 	// P o i n t s   o f   V i e w s   a n d   K e y F r a m e s
 	protected HashMap<Integer, KeyFrameInterpolator> kfi;
-	Iterator<Integer> it;
+	Iterator<Integer> itrtr;
 	protected KeyFrameInterpolator interpolationKfi;
 	protected InteractiveCameraFrame tempFrame;
 	
@@ -319,9 +319,9 @@ public class Camera implements Cloneable {
 			Camera clonedCam = (Camera) super.clone();
 			clonedCam.interpolationKfi = interpolationKfi.clone(); 
 			clonedCam.kfi = new HashMap<Integer, KeyFrameInterpolator>();
-			it = kfi.keySet().iterator();
-		    while (it.hasNext()) {
-		      Integer key = it.next();
+			itrtr = kfi.keySet().iterator();
+		    while (itrtr.hasNext()) {
+		      Integer key = itrtr.next();
 		      clonedCam.kfi.put(key, kfi.get(key).clone());
 		    }
 			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);
@@ -1804,9 +1804,9 @@ public class Camera implements Cloneable {
 	 * @see #hideAllPaths()
 	 */
 	public void drawAllPaths() {
-		it = kfi.keySet().iterator();
-	    while (it.hasNext()) {
-	      Integer key = it.next();
+		itrtr = kfi.keySet().iterator();
+	    while (itrtr.hasNext()) {
+	      Integer key = itrtr.next();
 	      kfi.get(key).addFramesToMouseGrabberPool();
 	      kfi.get(key).drawPath(3, 5, sceneRadius());
 	    }
@@ -1821,9 +1821,9 @@ public class Camera implements Cloneable {
 	 * @see #drawAllPaths()
 	 */
 	public void hideAllPaths() {
-		it = kfi.keySet().iterator();
-	    while (it.hasNext()) {
-	      Integer key = it.next();
+		itrtr = kfi.keySet().iterator();
+	    while (itrtr.hasNext()) {
+	      Integer key = itrtr.next();
 	      kfi.get(key).removeFramesFromMouseGrabberPool();
 	    }
 	}
@@ -2534,9 +2534,9 @@ public class Camera implements Cloneable {
 	
 	//TODO stop all interpolations
 	public boolean anyInterpolationIsStarted() {
-		it = kfi.keySet().iterator();
-		while (it.hasNext()) {
-			Integer key = it.next();
+		itrtr = kfi.keySet().iterator();
+		while (itrtr.hasNext()) {
+			Integer key = itrtr.next();
 			if (kfi.get(key).interpolationIsStarted())
 				return true;
 		}
@@ -2544,9 +2544,9 @@ public class Camera implements Cloneable {
 	}
 	
 	public void stopAllInterpolations() {
-		it = kfi.keySet().iterator();
-		while (it.hasNext()) {
-			Integer key = it.next();
+		itrtr = kfi.keySet().iterator();
+		while (itrtr.hasNext()) {
+			Integer key = itrtr.next();
 			if (kfi.get(key).interpolationIsStarted())
 				kfi.get(key).stopInterpolation();
 		}

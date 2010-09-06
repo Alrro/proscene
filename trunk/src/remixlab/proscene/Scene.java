@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 0.9.1)                         
+ *                     ProScene (version 1.0.0)                         
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -70,7 +70,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Defines the different actions that can be associated with a specific keyboard key.
 	 */	
-	enum GlobalKeyboardAction {
+	public enum GlobalKeyboardAction {
 		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND,
 		/**	STEREO, */
 		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
@@ -81,7 +81,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Defines the different actions that can be associated with a specific keyboard key.
 	 */	
-	enum KeyboardAction {	
+	public enum CameraKeyboardAction {	
 		INTERPOLATE_TO_ZOOM_ON_PIXEL, INTERPOLATE_TO_FIT_SCENE, SHOW_ALL,
 		/**	ANIMATION, */
 		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
@@ -102,6 +102,14 @@ public class Scene implements MouseWheelListener, PConstants {
 		SCREEN_TRANSLATE, ZOOM_ON_REGION }
 	//TODO: add descriptions to all atomic actions
 	
+	public enum Modifier { ALT, SHIFT, CONTROL, ALT_GRAPH }
+	
+	public enum ClickActionButton { RIGHT, MIDDLE, LEFT }
+	
+	public enum MouseActionButton { NO_BUTTON, RIGHT, MIDDLE, LEFT }
+	
+	public enum Arrow { UP, DOWN, LEFT, RIGHT }
+	
 	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
 	 */
@@ -119,6 +127,12 @@ public class Scene implements MouseWheelListener, PConstants {
 	protected KeyBindings<GlobalKeyboardAction> gProfile;
 	// S h o r t c u t k e y s
 	protected HashMap<GlobalKeyboardAction, String> keyboardActionDescription;
+	
+	// c a m e r a   m o d e
+	private HashMap<String, CameraProfile> cameraProfileMap;
+	private ArrayList<String> cameraProfileNames;
+	private int currentCameraProfileIndex;
+	private CameraProfile currentCameraProfile;
 	
 	//mouse actions
 	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
@@ -227,6 +241,8 @@ public class Scene implements MouseWheelListener, PConstants {
 		gProfile = new KeyBindings<GlobalKeyboardAction>(this);
 		setActionDescriptions();
 		setDefaultShortcuts();
+		
+		initDefaultCameraProfiles();
 		
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		
@@ -1260,7 +1276,7 @@ public class Scene implements MouseWheelListener, PConstants {
     	if ( draw && (glIFrame == null) )
     		return;
     	if  ( !draw && ( cameraMode() == CameraMode.THIRD_PERSON ) && interactiveFrame().equals(avatar()) )//more natural than to bypass it
-    		nextCameraMode();
+    		nextCameraProfile();
     	iFrameIsDrwn = draw;
 	}
     
@@ -1807,6 +1823,27 @@ public class Scene implements MouseWheelListener, PConstants {
 		return camMode;
 	}
 	
+	public CameraProfile currentCameraProfile() {
+		return currentCameraProfile;
+	}
+	
+	public void setCurrentCameraProfile( CameraProfile cp ) {
+		if(cp == null) {
+			currentCameraProfile = null;
+			currentCameraProfileIndex = -1;
+		}
+		else
+			setCurrentCameraProfile(cp.name());
+	}
+	
+	public void setCurrentCameraProfile( String cp ) {
+		currentCameraProfile = cameraProfileMap.get(cp);
+		if( currentCameraProfile != null )
+			currentCameraProfileIndex = cameraProfileNames.indexOf(cp);
+		else
+			currentCameraProfileIndex = -1;
+	}
+	
 	/**
 	 * Sets the next camera mode.
 	 * <p>
@@ -1816,7 +1853,14 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
-	public void nextCameraMode() {
+	public void nextCameraProfile() {
+		if (!cameraProfileNames.isEmpty()) {
+			currentCameraProfileIndex++;
+			if( currentCameraProfileIndex == cameraProfileNames.size() )
+				currentCameraProfileIndex = 0;
+			currentCameraProfile = cameraProfileMap.get(cameraProfileNames.get(currentCameraProfileIndex));			 
+		}
+		/**
 		switch (camMode) {
 		case ARCBALL :
 			setCameraMode(CameraMode.WALKTHROUGH);
@@ -1830,7 +1874,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    case THIRD_PERSON :
 	    	setCameraMode(CameraMode.ARCBALL);
 	    	break;
-	    }
+	    }*/
 	}
 	
 	/**
@@ -1843,7 +1887,15 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #setCameraMode(CameraMode)
 	 */
-	public void previousCameraMode() {
+	public void previousCameraProfile() {
+		if (!cameraProfileNames.isEmpty()) {
+			currentCameraProfileIndex--;
+			if( currentCameraProfileIndex == -1 )
+				currentCameraProfileIndex = cameraProfileNames.size() - 1 ;
+			currentCameraProfile = cameraProfileMap.get(cameraProfileNames.get(currentCameraProfileIndex));			 
+		}
+		
+		/**
 		switch (camMode) {
 		case ARCBALL :
 			if( avatar() != null )
@@ -1858,6 +1910,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    	setCameraMode(CameraMode.WALKTHROUGH);
 	    	break;
 	    }
+	    */
 	}
 	
 	// 8. Keyboard customization
@@ -2049,19 +2102,19 @@ public class Scene implements MouseWheelListener, PConstants {
 		// D e f a u l t s h o r t c u t s
 		//gProfile.setShortcut(KeyEvent.VK_A, KeyBindings.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
 		//gProfile.setShortcut('a', PApplet.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
-		gProfile.setShortcut('a', GlobalKeyboardAction.DRAW_AXIS);
-		gProfile.setShortcut('g', GlobalKeyboardAction.DRAW_GRID);
+		setShortcut('a', GlobalKeyboardAction.DRAW_AXIS);
+		setShortcut('g', GlobalKeyboardAction.DRAW_GRID);
 		//setShortcut(KeyEvent.VK_G, KeyBindings.Modifier.ALT_GRAPH, Scene.KeyboardAction.DRAW_GRID);
 		//setShortcut('G', PApplet.ALT, Scene.KeyboardAction.DRAW_GRID);
-		gProfile.setShortcut(' ', GlobalKeyboardAction.CAMERA_MODE);
-		gProfile.setShortcut('e', GlobalKeyboardAction.CAMERA_TYPE);
-		gProfile.setShortcut('k', GlobalKeyboardAction.CAMERA_KIND);
+		setShortcut(' ', GlobalKeyboardAction.CAMERA_MODE);
+		setShortcut('e', GlobalKeyboardAction.CAMERA_TYPE);
+		setShortcut('k', GlobalKeyboardAction.CAMERA_KIND);
 		//setShortcut(KeyboardAction.STEREO, ?);
 		//setShortcut(KeyboardAction.ANIMATION, ?);
-		gProfile.setShortcut('h', GlobalKeyboardAction.HELP);
-		gProfile.setShortcut('r', GlobalKeyboardAction.EDIT_CAMERA_PATH);
-		gProfile.setShortcut('i', GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME);
-		gProfile.setShortcut('w', GlobalKeyboardAction.CONSTRAIN_FRAME);
+		setShortcut('h', GlobalKeyboardAction.HELP);
+		setShortcut('r', GlobalKeyboardAction.EDIT_CAMERA_PATH);
+		setShortcut('i', GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		setShortcut('w', GlobalKeyboardAction.CONSTRAIN_FRAME);
 
 		// K e y f r a m e s s h o r t c u t k e y s
 		// setPathKey(Qt::Key_F1, 1);
@@ -2081,9 +2134,55 @@ public class Scene implements MouseWheelListener, PConstants {
 		// setPlayPathKeyboardModifiers(Qt::NoModifier);
 	}
 	
-	
-	public void setShortcut(Integer vKey, KeyBindings.Modifier modifier, GlobalKeyboardAction action) {
+	//wrappers:
+	public void setShortcut(Integer vKey, Modifier modifier, GlobalKeyboardAction action) {
 		gProfile.setShortcut(vKey, modifier, action);
+	}
+	
+	public void setShortcut(Arrow arrow, GlobalKeyboardAction action) {
+		gProfile.setShortcut(arrow, action);
+	}
+	
+	public void setShortcut(Character key, GlobalKeyboardAction action) {
+		gProfile.setShortcut(key, action);
+	}
+	
+	public void removeAllShortcuts() {
+		gProfile.removeAllBindings();
+	}
+	
+	public void removeShortcut(Integer vKey, Modifier modifier) {
+		gProfile.removeShortcut(vKey, modifier);
+	}	
+	//2.
+	
+	public void removeShortcut(Arrow arrow) {
+		gProfile.removeShortcut(arrow);
+	}
+	
+	//3.
+	public void removeShortcut(Character key) {
+		gProfile.removeShortcut(key);
+	}
+	
+	public GlobalKeyboardAction shortcut(Character key) {
+		return gProfile.shortcut(key);
+	}
+	
+	public GlobalKeyboardAction shortcut(Integer vKey, Modifier modifier) {
+		return gProfile.shortcut(vKey, modifier);
+	}
+	
+	public GlobalKeyboardAction shortcut(Arrow arrow) {
+		return gProfile.shortcut(arrow);
+	}
+	
+	public boolean isKeyInUse(KeyBindings<GlobalKeyboardAction>.KeyboardShortcut key) {
+		return gProfile.isKeyInUse(key);
+	}
+	
+	public boolean isActionBinded(GlobalKeyboardAction action) {
+		return gProfile.isActionBinded(action);
 	}
 	
 	//should be simply keyreleased
@@ -2092,30 +2191,28 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
 			if (e.isAltDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.ALT );
-			// /**
+				kba = shortcut( e.getKeyCode(), Modifier.ALT );
 			if (e.isAltGraphDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.ALT_GRAPH );
-			// */
+				kba = shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
 			if (e.isControlDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.CONTROL );
+				kba = shortcut( e.getKeyCode(), Modifier.CONTROL );
 			if (e.isShiftDown())
-				kba = gProfile.shortcut( e.getKeyCode(), KeyBindings.Modifier.SHIFT );			
+				kba = shortcut( e.getKeyCode(), Modifier.SHIFT );			
 		}
 		else if (parent.key == CODED) {
 			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
 				if (parent.keyCode == UP)
-					kba = gProfile.shortcut( KeyBindings.Arrow.UP );
+					kba = shortcut( Arrow.UP );
 				if (parent.keyCode == DOWN)
-					kba = gProfile.shortcut( KeyBindings.Arrow.DOWN );
+					kba = shortcut( Arrow.DOWN );
 				if (parent.keyCode == RIGHT)
-					kba = gProfile.shortcut( KeyBindings.Arrow.RIGHT );
+					kba = shortcut( Arrow.RIGHT );
 				if (parent.keyCode == LEFT)
-					kba = gProfile.shortcut( KeyBindings.Arrow.LEFT );
+					kba = shortcut( Arrow.LEFT );
 		    }			
 		}
 		else
-			kba = gProfile.shortcut( parent.key );
+			kba = shortcut( parent.key );
 		
 		if (kba == null)
 			return false;
@@ -2135,7 +2232,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			toggleGridIsDrawn();
 			break;
 		case CAMERA_MODE:
-			nextCameraMode();
+			nextCameraProfile();
 			break;
 		case CAMERA_TYPE:
 			toggleCameraType();
@@ -2204,14 +2301,89 @@ public class Scene implements MouseWheelListener, PConstants {
 			toggleDrawInteractiveFrame();
 			break;
 		}
-	}	
+	}
+	
+	public boolean handleCameraKeyboardAction(KeyEvent e) {
+		CameraKeyboardAction kba = null;		
+		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+			if (e.isAltDown())
+				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT );			
+			if (e.isAltGraphDown())
+				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
+			if (e.isControlDown())
+				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.CONTROL );
+			if (e.isShiftDown())
+				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.SHIFT );			
+		}
+		else if (parent.key == CODED) {
+			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
+				if (parent.keyCode == UP)
+					kba = currentCameraProfile().shortcut( Arrow.UP );
+				if (parent.keyCode == DOWN)
+					kba = currentCameraProfile().shortcut( Arrow.DOWN );
+				if (parent.keyCode == RIGHT)
+					kba = currentCameraProfile().shortcut( Arrow.RIGHT );
+				if (parent.keyCode == LEFT)
+					kba = currentCameraProfile().shortcut( Arrow.LEFT );
+		    }			
+		}
+		else
+			kba = currentCameraProfile().shortcut( parent.key );
+		
+		if (kba == null)
+			return false;
+		else {
+			handleCameraKeyboardAction(kba);
+			return true;
+		}
+	}
+	
+	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
+		switch (id) {
+		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
+			if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (!helpIsDrawn()) {
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
+				if (wP.found) {
+					pupVec = wP.point; 
+					pupFlag = true;
+					utilityTimer.start();
+				}
+			}
+			break;
+		case INTERPOLATE_TO_FIT_SCENE:
+			camera().interpolateToFitScene();
+			break;
+		case SHOW_ALL:
+			showAll();
+			break;
+		case MOVE_CAMERA_LEFT:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector( 10.0f*camera().flySpeed(), 0.0f, 0.0f)));
+		break;
+		case MOVE_CAMERA_RIGHT:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));
+			break;
+		case MOVE_CAMERA_UP:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,   10.0f*camera().flySpeed(), 0.0f)));
+			break;
+		case MOVE_CAMERA_DOWN:
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
+			break;
+		}
+	}
 	
 	/**
 	 * Associates the different interactions to the keys.
 	 */
 	protected void keyReleased(KeyEvent e) {
-		//TODO look first in the current camera mode, i.e., camera mode bindings override those of global		
-		handleKeyboardAction(e);		
+		//TODO look first in the current camera mode, i.e., camera mode bindings override those of global
+		boolean handled = false;
+		if(currentCameraProfile!=null)
+			handled = handleCameraKeyboardAction(e);
+		if(!handled)
+			handleKeyboardAction(e);
 		//TODO remove debug
 		//debug:
 		/**
@@ -2440,6 +2612,63 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	// 9. Mouse customization
+	
+	private void initDefaultCameraProfiles() {
+		cameraProfileMap = new HashMap<String, CameraProfile>();
+		cameraProfileNames = new ArrayList<String>();
+		currentCameraProfile = null;
+		currentCameraProfileIndex = -1;//should be changed when registering default profiles
+		// register here the default profiles
+		registerCameraProfile( new ArcballCameraProfile(this, "ARCBALL") );
+		registerCameraProfile( new FirstPersonCameraProfile(this, "FIRST_PERSON") );
+	}
+	
+	/**
+	public HashMap<String, CameraProfile> cameraProfileHandler() {
+		return cameraProfileHandler;
+	}
+	*/
+	
+	public boolean registerCameraProfile( CameraProfile cp ) {
+		return registerCameraProfile(cp, false);
+	}
+	
+	public boolean registerCameraProfile( CameraProfile cp, boolean setCurrent ) {
+		//if(!isCameraProfileRegistered(cp)) {
+		if ( !cameraProfileNames.contains(cp.name()) ) {	
+			cameraProfileNames.add( cp.name() );
+			cameraProfileMap.put(cp.name(), cp);
+			if ( (cameraProfileNames.size() == 1 ) || setCurrent )				
+				setCurrentCameraProfile(cp);
+			return true;						
+		}
+		return false;
+	}
+	
+	public void unregisterCameraProfile( CameraProfile cp ) {
+		unregisterCameraProfile( cp.name() );
+	}
+	
+	public void unregisterCameraProfile( String cp ) {
+		cameraProfileNames.remove( cp );
+		cameraProfileMap.remove( cp );
+		if ( cameraProfileNames.size() == 0 ) {
+			currentCameraProfile = null;
+			currentCameraProfileIndex = -1;			
+		}
+	}
+	
+	public CameraProfile cameraProfile(String name) {
+		return cameraProfileMap.get(name);
+	}
+	
+	public boolean isCameraProfileRegistered(CameraProfile cp) {
+		return isCameraProfileRegistered(cp.name());
+	}
+	
+	public boolean isCameraProfileRegistered(String name) {
+		return cameraProfileMap.containsKey(name);
+	}
 	
 	/**
 	 * Parses the sketch to find if any mouseXxxx method has been implemented. If this is the case,
