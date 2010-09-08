@@ -1,13 +1,13 @@
 package remixlab.proscene;
 import java.util.HashMap;
 
-public class Bindings<K, A> {	
+public class ShortcutMappings<K, A> {	
 	protected Scene scene;
-	protected HashMap<K, A> bindings;
+	protected HashMap<K, A> map;
 	
-	public Bindings(Scene scn) {
+	public ShortcutMappings(Scene scn) {
 		scene = scn;
-		bindings = new HashMap<K, A>();
+		map = new HashMap<K, A>();
 	}
 	
 	/**
@@ -18,7 +18,7 @@ public class Bindings<K, A> {
 	 * for keyboard {@code action}).
 	 */
 	protected A binding(K key) {
-		return bindings.get(key);
+		return map.get(key);
 	}
 	
 	/**
@@ -31,23 +31,23 @@ public class Bindings<K, A> {
 	 * If a shortcut is assigned to more than one action, only the last one
 	 * would be active.
 	 */
-	protected void setBinding(K key, A action) {
-		bindings.put(key, action);
+	protected void setMapping(K key, A action) {
+		map.put(key, action);
 	}
 	
-	protected void removeBinding(K key) {
-		bindings.remove(key);
+	protected void removeMapping(K key) {
+		map.remove(key);
 	}
 	
-	protected void removeAllBindings() {
-		bindings.clear();
+	protected void removeAllMappings() {
+		map.clear();
 	}
 	
-	protected boolean isKeyInUse(K key) {
-		return bindings.containsKey(key);
+	protected boolean isShortcutInUse(K key) {
+		return map.containsKey(key);
 	}
 	
-	protected boolean isActionBinded(A action) {
-		return bindings.containsValue(action);
+	protected boolean isActionMapped(A action) {
+		return map.containsValue(action);
 	}
 }
