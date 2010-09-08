@@ -102,13 +102,11 @@ public class Scene implements MouseWheelListener, PConstants {
 		SCREEN_TRANSLATE, ZOOM_ON_REGION }
 	//TODO: add descriptions to all atomic actions
 	
-	public enum Modifier { ALT, SHIFT, CONTROL, ALT_GRAPH }
-	
-	public enum ClickActionButton { RIGHT, MIDDLE, LEFT }
-	
-	public enum MouseActionButton { NO_BUTTON, RIGHT, MIDDLE, LEFT }
+	public enum Button { LEFT, MIDDLE, RIGHT }
 	
 	public enum Arrow { UP, DOWN, LEFT, RIGHT }
+	
+	public enum Modifier { ALT, SHIFT, CONTROL, ALT_GRAPH }	
 	
 	/**
 	 * This enum defines the papplet background mode which should be set by proscene.
@@ -124,7 +122,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		ARCBALL, WALKTHROUGH, THIRD_PERSON
 	}
 	
-	protected KeyBindings<GlobalKeyboardAction> gProfile;
+	protected Bindings<KeyboardShortcut, GlobalKeyboardAction> gProfile;
 	// S h o r t c u t k e y s
 	protected HashMap<GlobalKeyboardAction, String> keyboardActionDescription;
 	
@@ -238,7 +236,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		width = parent.width;
 		height = parent.height;
 		
-		gProfile = new KeyBindings<GlobalKeyboardAction>(this);
+		gProfile = new Bindings<KeyboardShortcut, GlobalKeyboardAction>(this);
 		setActionDescriptions();
 		setDefaultShortcuts();
 		
@@ -330,7 +328,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		return cam;
 	}
 	
-	public KeyBindings<GlobalKeyboardAction> keyBindings() {
+	public Bindings<KeyboardShortcut, GlobalKeyboardAction> keyBindings() {
 		return gProfile;
 	}
 	
@@ -2135,16 +2133,17 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	//wrappers:
+	//KeyBindings<KeyboardShortcut, GlobalKeyboardAction>
 	public void setShortcut(Integer vKey, Modifier modifier, GlobalKeyboardAction action) {
-		gProfile.setShortcut(vKey, modifier, action);
+		gProfile.setBinding(new KeyboardShortcut(vKey, modifier), action);
 	}
 	
 	public void setShortcut(Arrow arrow, GlobalKeyboardAction action) {
-		gProfile.setShortcut(arrow, action);
+		gProfile.setBinding(new KeyboardShortcut(arrow), action);
 	}
 	
 	public void setShortcut(Character key, GlobalKeyboardAction action) {
-		gProfile.setShortcut(key, action);
+		gProfile.setBinding(new KeyboardShortcut(key), action);
 	}
 	
 	public void removeAllShortcuts() {
@@ -2152,32 +2151,32 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	public void removeShortcut(Integer vKey, Modifier modifier) {
-		gProfile.removeShortcut(vKey, modifier);
+		gProfile.removeBinding(new KeyboardShortcut(vKey, modifier));
 	}	
 	//2.
 	
 	public void removeShortcut(Arrow arrow) {
-		gProfile.removeShortcut(arrow);
+		gProfile.removeBinding(new KeyboardShortcut(arrow));
 	}
 	
 	//3.
 	public void removeShortcut(Character key) {
-		gProfile.removeShortcut(key);
-	}
-	
-	public GlobalKeyboardAction shortcut(Character key) {
-		return gProfile.shortcut(key);
+		gProfile.removeBinding(new KeyboardShortcut(key));
 	}
 	
 	public GlobalKeyboardAction shortcut(Integer vKey, Modifier modifier) {
-		return gProfile.shortcut(vKey, modifier);
+		return gProfile.binding(new KeyboardShortcut(vKey, modifier));
 	}
 	
 	public GlobalKeyboardAction shortcut(Arrow arrow) {
-		return gProfile.shortcut(arrow);
+		return gProfile.binding(new KeyboardShortcut(arrow));
 	}
 	
-	public boolean isKeyInUse(KeyBindings<GlobalKeyboardAction>.KeyboardShortcut key) {
+	public GlobalKeyboardAction shortcut(Character key) {
+		return gProfile.binding(new KeyboardShortcut(key));
+	}
+	
+	public boolean isKeyInUse(KeyboardShortcut key) {
 		return gProfile.isKeyInUse(key);
 	}
 	
@@ -2186,7 +2185,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	//should be simply keyreleased
-	public boolean handleKeyboardAction(KeyEvent e) {
+	protected boolean handleKeyboardAction(KeyEvent e) {
 		GlobalKeyboardAction kba = null;
 		
 		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
@@ -2303,7 +2302,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 	}
 	
-	public boolean handleCameraKeyboardAction(KeyEvent e) {
+	protected boolean handleCameraKeyboardAction(KeyEvent e) {
 		CameraKeyboardAction kba = null;		
 		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
 			if (e.isAltDown())
@@ -2377,8 +2376,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	/**
 	 * Associates the different interactions to the keys.
 	 */
-	protected void keyReleased(KeyEvent e) {
-		//TODO look first in the current camera mode, i.e., camera mode bindings override those of global
+	protected void keyReleased(KeyEvent e) {		
 		boolean handled = false;
 		if(currentCameraProfile!=null)
 			handled = handleCameraKeyboardAction(e);
@@ -2788,6 +2786,14 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
+	 boolean handled = false;
+		if(currentCameraProfile!=null)
+			handled = handleCameraKeyboardAction(e);
+		if(!handled)
+			handleKeyboardAction(e);
+	 */
+	
+	/**
 	 * Method interface between proscene and processing to handle the mouse.
 	 * 
 	 * @see #mouseIsHandled()
@@ -2828,6 +2834,43 @@ public class Scene implements MouseWheelListener, PConstants {
 		}
 	}
 	
+	protected MouseAction iFrameMouseAction(MouseEvent e) {
+		return MouseAction.NO_MOUSE_ACTION;
+	}
+	
+	protected MouseAction cameraMouseAction(MouseEvent e) {
+		MouseAction ma = null;
+		/**
+		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+			if (e.isAltDown())
+				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT );			
+			if (e.isAltGraphDown())
+				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
+			if (e.isControlDown())
+				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.CONTROL );
+			if (e.isShiftDown())
+				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.SHIFT );			
+		}
+		else if (parent.key == CODED) {
+			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
+				if (parent.keyCode == UP)
+					ma = currentCameraProfile().shortcut( Arrow.UP );
+				if (parent.keyCode == DOWN)
+					ma = currentCameraProfile().shortcut( Arrow.DOWN );
+				if (parent.keyCode == RIGHT)
+					ma = currentCameraProfile().shortcut( Arrow.RIGHT );
+				if (parent.keyCode == LEFT)
+					ma = currentCameraProfile().shortcut( Arrow.LEFT );
+		    }			
+		}
+		else
+			ma = currentCameraProfile().shortcut( parent.key );
+		*/
+		
+		return ma;
+	}
+	
+	
 	/**
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
 	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)} is called.
@@ -2836,6 +2879,41 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #mouseDragged(MouseEvent)
 	 */
+	 /**
+	public void mousePressed(MouseEvent event) {
+		if ( mouseGrabber() != null ) {
+			if ( mouseGrabberIsAnIFrame ) {
+				MouseAction action = iFrameMouseAction(event);
+				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
+				//TODO: need to call the iFrame version of the method, but don't know how to do it!
+				//need to hardcopy the methods!
+				//if ( mouseGrabberIsAnICamFrame ) {					
+				//	iFrame.startAction(action);					
+				//	iFrame.mousePressed(event.getPoint(), camera());
+				//}
+				//else
+				{
+					iFrame.startAction(action, withConstraint);
+					iFrame.mousePressed(event.getPoint(), camera());					
+				}
+			}
+			else
+				mouseGrabber().mousePressed(event.getPoint(), camera());
+		}
+		else if (interactiveFrameIsDrawn()) {
+			MouseAction action = iFrameMouseAction(event);
+			action = iFrameMouseAction(event);
+			interactiveFrame().startAction(action, withConstraint);
+		}
+		else {
+			MouseAction action = cameraMouseAction(event);
+			camera().frame().startAction(action, withConstraint);
+			camera().frame().mousePressed(event.getPoint(), camera());
+		}	
+	}
+	// */
+	
+    // /**
 	public void mousePressed(MouseEvent event) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) && ( cameraMode() == CameraMode.ARCBALL ) ) {
 	    if ( event.isShiftDown() ) {	    	
@@ -2857,7 +2935,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	    }
 		else
 		if ( mouseGrabber() != null ) {
-			if ( mouseGrabberIsAnIFrame ) {				
+			if ( mouseGrabberIsAnIFrame ) {
 				InteractiveFrame iFrame = (InteractiveFrame)(mouseGrabber());
 				if ( mouseGrabberIsAnICamFrame ) {
 					//TODO: implement me
@@ -2935,6 +3013,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().frame().mousePressed(event.getPoint(), camera());
 		}
 	}
+	// */
 	
 	/**
 	 * Mouse drag event is sent to the {@link #mouseGrabber()} (if any) or to the
@@ -2942,6 +3021,22 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #mouseMoved(MouseEvent)
 	 */
+	
+	/**
+	public void mouseDragged(MouseEvent event) {
+		if ( mouseGrabber() != null ) {
+			
+		}
+		else if (interactiveFrameIsDrawn()) {
+			
+		}
+		else {
+			
+		}
+	}
+	// */
+	
+	// /**
 	public void mouseDragged(MouseEvent event) {
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
@@ -2977,11 +3072,28 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().frame().mouseDragged(event.getPoint(), camera());
 		}
 	}
+	// */
 	
 	/**
 	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
+	
+	/**
+	public void mouseReleased(MouseEvent event) {
+		if ( mouseGrabber() != null ) {
+			
+		}
+		else if (interactiveFrameIsDrawn()) {
+			
+		}
+		else {
+			
+		}
+	}
+	// */
+	
+	// /**
 	public void mouseReleased(MouseEvent event) {
 		if( zoomOnRegion || rotateScreen || translateScreen ) {
 	    	lCorner = event.getPoint();
@@ -3008,6 +3120,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().frame().mouseReleased(event.getPoint(), camera());
 		}
     }
+    // */
 	
 	/**
 	 * Implements mouse double click events: left button aligns scene,

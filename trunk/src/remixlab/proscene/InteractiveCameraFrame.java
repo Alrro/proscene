@@ -109,7 +109,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseDragged(Point, Camera)}. 
+	 * {@link remixlab.proscene.InteractiveDrivable#mouseDragged(Point, Camera)}. 
 	 * <p> 
 	 * Motion depends on mouse binding. The resulting displacements are basically inverted
 	 * from those of an InteractiveFrame.
@@ -218,21 +218,22 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * {@link remixlab.proscene.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */	
 	public void mouseReleased(Point eventPoint, Camera camera) {
-		  if (action == Scene.MouseAction.ZOOM_ON_REGION) {
-			  //the rectangle needs to be normalized!
-			  int w = PApplet.abs(eventPoint.x - pressPos.x);			  
-			  int tlX = pressPos.x < eventPoint.x ? pressPos.x : eventPoint.x;
-			  int h = PApplet.abs(eventPoint.y - pressPos.y);
-			  int tlY  = pressPos.y < eventPoint.y ? pressPos.y : eventPoint.y;
-			  
-			  //overkill:
-			  //if (event.getButton() == MouseEvent.BUTTON3)//right button
-				  //camera.fitScreenRegion( new Rectangle (tlX, tlY, w, h) );
-			  //else
-				  camera.interpolateToZoomOnRegion(new Rectangle (tlX, tlY, w, h));
-		  }
-		  
-		  super.mouseReleased(eventPoint, camera);
+		// Added by pierre: #CONNECTION# seems that startAction should always be called before :)
+		if (action == Scene.MouseAction.ZOOM_ON_REGION) {
+			//the rectangle needs to be normalized!
+			int w = PApplet.abs(eventPoint.x - pressPos.x);
+			int tlX = pressPos.x < eventPoint.x ? pressPos.x : eventPoint.x;
+			int h = PApplet.abs(eventPoint.y - pressPos.y);
+			int tlY  = pressPos.y < eventPoint.y ? pressPos.y : eventPoint.y;
+			
+			//overkill:
+			//if (event.getButton() == MouseEvent.BUTTON3)//right button
+			  //camera.fitScreenRegion( new Rectangle (tlX, tlY, w, h) );
+			//else
+			camera.interpolateToZoomOnRegion(new Rectangle (tlX, tlY, w, h));
+		}
+		
+		super.mouseReleased(eventPoint, camera);
 	}
 	
 	/**

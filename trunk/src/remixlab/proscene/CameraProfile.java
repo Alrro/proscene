@@ -5,16 +5,16 @@ import remixlab.proscene.Scene.CameraKeyboardAction;
 public abstract class CameraProfile {
 	protected String name;
 	protected Scene scene;
-	protected KeyBindings<Scene.CameraKeyboardAction> keyboard;
-	protected MouseBindings<Scene.ClickActionButton, Scene.ClickAction> clickActions;
-	protected MouseBindings<Scene.MouseActionButton, Scene.MouseAction> mouseActions;
+	protected Bindings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
+	protected Bindings<Shortcut<Scene.Button>, Scene.ClickAction> clickActions;
+	protected Bindings<Shortcut<Scene.Button>, Scene.MouseAction> mouseActions;
 	
 	public CameraProfile(Scene scn, String n) {
 		scene = scn;
 		name = n;
-		keyboard = new KeyBindings<Scene.CameraKeyboardAction>(scene);
-		clickActions = new MouseBindings<Scene.ClickActionButton, Scene.ClickAction>(scene);
-		mouseActions = new MouseBindings<Scene.MouseActionButton, Scene.MouseAction>(scene);
+		keyboard = new Bindings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
+		clickActions = new Bindings<Shortcut<Scene.Button>, Scene.ClickAction>(scene);
+		mouseActions = new Bindings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
 	}
 	
 	public String name() {
@@ -33,21 +33,21 @@ public abstract class CameraProfile {
 		scene.unregisterCameraProfile(this);
 	}
 	
-	public KeyBindings<Scene.CameraKeyboardAction> keyBindings() {
+	public Bindings<KeyboardShortcut, Scene.CameraKeyboardAction> keyBindings() {
 		return keyboard;
 	}
 	
 	//keyboard wrappers:
-	public void setShortcut(Integer vKey, Scene.Modifier modifier, CameraKeyboardAction action) {
-		keyboard.setShortcut(vKey, modifier, action);
+	public void setShortcut(Integer vKey, Scene.Modifier modifier, CameraKeyboardAction action) {		
+		keyboard.setBinding(new KeyboardShortcut(vKey, modifier), action);
 	}
 	
 	public void setShortcut(Scene.Arrow arrow, CameraKeyboardAction action) {
-		keyboard.setShortcut(arrow, action);
+		keyboard.setBinding(new KeyboardShortcut(arrow), action);
 	}
 	
 	public void setShortcut(Character key, CameraKeyboardAction action) {
-		keyboard.setShortcut(key, action);
+		keyboard.setBinding(new KeyboardShortcut(key), action);
 	}
 	
 	public void removeAllKeyboardShortcuts() {
@@ -55,30 +55,30 @@ public abstract class CameraProfile {
 	}
 	
 	public void removeShortcut(Integer vKey, Scene.Modifier modifier) {
-		keyboard.removeShortcut(vKey, modifier);
+		keyboard.removeBinding(new KeyboardShortcut(vKey, modifier));
 	}	
 	
 	public void removeShortcut(Scene.Arrow arrow) {
-		keyboard.removeShortcut(arrow);
+		keyboard.removeBinding(new KeyboardShortcut(arrow));
 	}
 	
 	public void removeShortcut(Character key) {
-		keyboard.removeShortcut(key);
+		keyboard.removeBinding(new KeyboardShortcut(key));
 	}
 	
 	public CameraKeyboardAction shortcut(Character key) {
-		return keyboard.shortcut(key);
+		return keyboard.binding(new KeyboardShortcut(key));
 	}
 	
 	public CameraKeyboardAction shortcut(Integer vKey, Scene.Modifier modifier) {
-		return keyboard.shortcut(vKey, modifier);
+		return keyboard.binding(new KeyboardShortcut(vKey, modifier));
 	}
 	
 	public CameraKeyboardAction shortcut(Scene.Arrow arrow) {
-		return keyboard.shortcut(arrow);
+		return keyboard.binding(new KeyboardShortcut(arrow));
 	}
 	
-	public boolean isKeyInUse(KeyBindings<CameraKeyboardAction>.KeyboardShortcut key) {
+	public boolean isKeyInUse(KeyboardShortcut key) {
 		return keyboard.isKeyInUse(key);
 	}
 	
@@ -91,7 +91,7 @@ public abstract class CameraProfile {
 		clickActions.removeAllBindings();
 	}
 	
-	public boolean isClickKeyInUse(MouseBindings<Scene.ClickActionButton, Scene.ClickAction>.ButtonKeyCombination key) {
+	public boolean isClickKeyInUse(Shortcut<Scene.Button> key) {
 		return clickActions.isKeyInUse(key);
 	}
 	
@@ -99,28 +99,28 @@ public abstract class CameraProfile {
 		return clickActions.isActionBinded(action);
 	}
 	
-	public void setShortcut(Scene.ClickActionButton button, Scene.Modifier modifier, Scene.ClickAction action) {
-		clickActions.setShortcut(button, modifier, action);
+	public void setShortcut(Scene.Button button, Scene.Modifier modifier, Scene.ClickAction action) {
+		clickActions.setBinding(new Shortcut<Scene.Button>(button, modifier), action);
 	}
 	
-	public void setShortcut(Scene.ClickActionButton button, Scene.ClickAction action) {
-		clickActions.setShortcut(button, action);
+	public void setShortcut(Scene.Button button, Scene.ClickAction action) {
+		clickActions.setBinding(new Shortcut<Scene.Button>(button), action);
 	}
 	
-	public void removeShortcut(Scene.ClickActionButton button, Scene.Modifier modifier) {
-		clickActions.removeShortcut(button, modifier);
+	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier) {
+		clickActions.removeBinding(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public void removeShortcut(Scene.ClickActionButton button) {
-		clickActions.removeShortcut(button);
+	public void removeClickShortcut(Scene.Button button) {
+		clickActions.removeBinding(new Shortcut<Scene.Button>(button));
 	}
 	
-	public Scene.ClickAction shortcut(Scene.ClickActionButton button, Scene.Modifier modifier) {
-		return clickActions.shortcut(button, modifier);
+	public Scene.ClickAction clickShortcut(Scene.Button button, Scene.Modifier modifier) {
+		return clickActions.binding(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public Scene.ClickAction shortcut(Scene.ClickActionButton button) {
-		return clickActions.shortcut(button);
+	public Scene.ClickAction clickShortcut(Scene.Button button) {
+		return clickActions.binding(new Shortcut<Scene.Button>(button));
 	}
 	
 	//mouse wrappers:
@@ -129,7 +129,7 @@ public abstract class CameraProfile {
 		mouseActions.removeAllBindings();
 	}
 	
-	public boolean isMouseKeyInUse(MouseBindings<Scene.MouseActionButton, Scene.MouseAction>.ButtonKeyCombination key) {
+	public boolean isMouseKeyInUse(Shortcut<Scene.Button> key) {
 		return mouseActions.isKeyInUse(key);
 	}
 	
@@ -137,27 +137,27 @@ public abstract class CameraProfile {
 		return mouseActions.isActionBinded(action);
 	}
 	
-	public void setShortcut(Scene.MouseActionButton button, Scene.Modifier modifier, Scene.MouseAction action) {
-		mouseActions.setShortcut(button, modifier, action);
+	public void setShortcut(Scene.Button button, Scene.Modifier modifier, Scene.MouseAction action) {
+		mouseActions.setBinding(new Shortcut<Scene.Button>(button, modifier), action);
 	}
 	
-	public void setShortcut(Scene.MouseActionButton button, Scene.MouseAction action) {
-		mouseActions.setShortcut(button, action);
+	public void setShortcut(Scene.Button button, Scene.MouseAction action) {
+		mouseActions.setBinding(new Shortcut<Scene.Button>(button), action);
 	}
 	
-	public void removeShortcut(Scene.MouseActionButton button, Scene.Modifier modifier) {
-		mouseActions.removeShortcut(button, modifier);
+	public void removeMouseShortcut(Scene.Button button, Scene.Modifier modifier) {
+		mouseActions.removeBinding(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public void removeShortcut(Scene.MouseActionButton button) {
-		mouseActions.removeShortcut(button);
+	public void removeMouseShortcut(Scene.Button button) {
+		mouseActions.removeBinding(new Shortcut<Scene.Button>(button));
 	}
 	
-	public Scene.MouseAction shortcut(Scene.MouseActionButton button, Scene.Modifier modifier) {
-		return mouseActions.shortcut(button, modifier);
+	public Scene.MouseAction mouseShortcut(Scene.Button button, Scene.Modifier modifier) {
+		return mouseActions.binding(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public Scene.MouseAction shortcut(Scene.MouseActionButton button) {
-		return mouseActions.shortcut(button);
+	public Scene.MouseAction mouseShortcut(Scene.Button button) {
+		return mouseActions.binding(new Shortcut<Scene.Button>(button));
 	}
 }

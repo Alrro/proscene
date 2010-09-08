@@ -1,56 +1,13 @@
 package remixlab.proscene;
+import java.util.HashMap;
 
-public abstract class Bindings<T> {
-	public final class KeyCombination<K> {
-		@Override
-		public int hashCode() {
-			final int prime = 31;
-			int result = 1;
-			result = prime * result + getOuterType().hashCode();
-			result = prime * result
-					+ ((modifier == null) ? 0 : modifier.hashCode());
-			result = prime * result
-					+ ((virtualKey == null) ? 0 : virtualKey.hashCode());
-			return result;
-		}
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj)
-				return true;
-			if (obj == null)
-				return false;
-			if (getClass() != obj.getClass())
-				return false;
-			KeyCombination<?> other = (KeyCombination<?>) obj;
-			if (!getOuterType().equals(other.getOuterType()))
-				return false;
-			if (modifier == null) {
-				if (other.modifier != null)
-					return false;
-			} else if (!modifier.equals(other.modifier))
-				return false;
-			if (virtualKey == null) {
-				if (other.virtualKey != null)
-					return false;
-			} else if (!virtualKey.equals(other.virtualKey))
-				return false;
-			return true;
-		}
-		public KeyCombination( K vKey, Scene.Modifier myModifier ) {
-			modifier = myModifier;			
-			virtualKey = vKey;
-		}
-		public final K virtualKey; //could be: 1. Integer(for virtual keys), 2. Scene.ClickActionButton, or 3. Scene.MouseActionButton
-		public final Scene.Modifier modifier;
-		private Bindings<T> getOuterType() {
-			return Bindings.this;
-		}
-	}
-	
+public class Bindings<K, A> {	
 	protected Scene scene;
+	protected HashMap<K, A> bindings;
 	
 	public Bindings(Scene scn) {
 		scene = scn;
+		bindings = new HashMap<K, A>();
 	}
 	
 	/**
@@ -60,7 +17,9 @@ public abstract class Bindings<T> {
 	 * The returned keyboard shortcut may be null (if no keycombo is defined
 	 * for keyboard {@code action}).
 	 */
-	abstract protected Object binding(Object keyCombo);
+	protected A binding(K key) {
+		return bindings.get(key);
+	}
 	
 	/**
 	 * Defines the {@link #binding(Object)} that triggers a given action.
@@ -72,13 +31,23 @@ public abstract class Bindings<T> {
 	 * If a shortcut is assigned to more than one action, only the last one
 	 * would be active.
 	 */
-	abstract protected void setBinding(Object keyCombo, T action);
+	protected void setBinding(K key, A action) {
+		bindings.put(key, action);
+	}
 	
-	abstract protected void removeBinding(Object keyCombo);
+	protected void removeBinding(K key) {
+		bindings.remove(key);
+	}
 	
-	abstract protected void removeAllBindings();
+	protected void removeAllBindings() {
+		bindings.clear();
+	}
 	
-	abstract protected boolean isKeyInUse(Object key);
+	protected boolean isKeyInUse(K key) {
+		return bindings.containsKey(key);
+	}
 	
-	abstract protected boolean isActionBinded(T action);
+	protected boolean isActionBinded(A action) {
+		return bindings.containsValue(action);
+	}
 }
