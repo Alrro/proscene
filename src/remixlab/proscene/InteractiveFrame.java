@@ -720,18 +720,14 @@ public class InteractiveFrame extends Frame
 	 * 
 	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
-	protected void startAction(
-			Scene.MouseAction action) {
+	protected void startAction(Scene.MouseAction action) {
 		startAction(action, true);
 	}
 
 	/**
 	 * Protected internal method used to handle mouse events.
 	 */
-	protected void startAction(
-			Scene.MouseAction act,
-			boolean withConstraint) {
-		
+	protected void startAction(Scene.MouseAction act, boolean withConstraint) {		
 		action = act;
 		
 		if (withConstraint)

@@ -175,8 +175,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * 
 	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
-	protected void startAction(
-			Scene.MouseAction action) {
+	protected void startAction(Scene.MouseAction action) {
 		startAction(action, true);
 	}
 	
