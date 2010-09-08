@@ -2879,7 +2879,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #mouseDragged(MouseEvent)
 	 */
-	 /**
+	// /**
 	public void mousePressed(MouseEvent event) {
 		if ( mouseGrabber() != null ) {
 			if ( mouseGrabberIsAnIFrame ) {
@@ -2913,7 +2913,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	// */
 	
-    // /**
+     /**
 	public void mousePressed(MouseEvent event) {
 	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) && ( cameraMode() == CameraMode.ARCBALL ) ) {
 	    if ( event.isShiftDown() ) {	    	
@@ -3022,7 +3022,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #mouseMoved(MouseEvent)
 	 */
 	
-	/**
+	// /**
 	public void mouseDragged(MouseEvent event) {
 		if ( mouseGrabber() != null ) {
 			
@@ -3036,7 +3036,7 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	// */
 	
-	// /**
+	 /**
 	public void mouseDragged(MouseEvent event) {
 		//ZOOM_ON_REGION:		
 		if ( zoomOnRegion || rotateScreen || translateScreen) {
