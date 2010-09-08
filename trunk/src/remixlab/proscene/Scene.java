@@ -122,7 +122,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		ARCBALL, WALKTHROUGH, THIRD_PERSON
 	}
 	
-	protected Bindings<KeyboardShortcut, GlobalKeyboardAction> gProfile;
+	protected ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction> gProfile;
 	// S h o r t c u t k e y s
 	protected HashMap<GlobalKeyboardAction, String> keyboardActionDescription;
 	
@@ -236,7 +236,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		width = parent.width;
 		height = parent.height;
 		
-		gProfile = new Bindings<KeyboardShortcut, GlobalKeyboardAction>(this);
+		gProfile = new ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction>(this);
 		setActionDescriptions();
 		setDefaultShortcuts();
 		
@@ -328,7 +328,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		return cam;
 	}
 	
-	public Bindings<KeyboardShortcut, GlobalKeyboardAction> keyBindings() {
+	public ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction> keyBindings() {
 		return gProfile;
 	}
 	
@@ -2135,33 +2135,33 @@ public class Scene implements MouseWheelListener, PConstants {
 	//wrappers:
 	//KeyBindings<KeyboardShortcut, GlobalKeyboardAction>
 	public void setShortcut(Integer vKey, Modifier modifier, GlobalKeyboardAction action) {
-		gProfile.setBinding(new KeyboardShortcut(vKey, modifier), action);
+		gProfile.setMapping(new KeyboardShortcut(vKey, modifier), action);
 	}
 	
 	public void setShortcut(Arrow arrow, GlobalKeyboardAction action) {
-		gProfile.setBinding(new KeyboardShortcut(arrow), action);
+		gProfile.setMapping(new KeyboardShortcut(arrow), action);
 	}
 	
 	public void setShortcut(Character key, GlobalKeyboardAction action) {
-		gProfile.setBinding(new KeyboardShortcut(key), action);
+		gProfile.setMapping(new KeyboardShortcut(key), action);
 	}
 	
 	public void removeAllShortcuts() {
-		gProfile.removeAllBindings();
+		gProfile.removeAllMappings();
 	}
 	
 	public void removeShortcut(Integer vKey, Modifier modifier) {
-		gProfile.removeBinding(new KeyboardShortcut(vKey, modifier));
+		gProfile.removeMapping(new KeyboardShortcut(vKey, modifier));
 	}	
 	//2.
 	
 	public void removeShortcut(Arrow arrow) {
-		gProfile.removeBinding(new KeyboardShortcut(arrow));
+		gProfile.removeMapping(new KeyboardShortcut(arrow));
 	}
 	
 	//3.
 	public void removeShortcut(Character key) {
-		gProfile.removeBinding(new KeyboardShortcut(key));
+		gProfile.removeMapping(new KeyboardShortcut(key));
 	}
 	
 	public GlobalKeyboardAction shortcut(Integer vKey, Modifier modifier) {
@@ -2177,11 +2177,11 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	public boolean isKeyInUse(KeyboardShortcut key) {
-		return gProfile.isKeyInUse(key);
+		return gProfile.isShortcutInUse(key);
 	}
 	
 	public boolean isActionBinded(GlobalKeyboardAction action) {
-		return gProfile.isActionBinded(action);
+		return gProfile.isActionMapped(action);
 	}
 	
 	//should be simply keyreleased
