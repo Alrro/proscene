@@ -28,11 +28,7 @@ package remixlab.proscene;
 
 public class ArcballCameraProfile extends CameraProfile {
 	public ArcballCameraProfile(Scene scn, String n) {
-		super(scn, n);
-	}
-	
-	@Override
-	protected void setDefaultShortcuts() {		
+		super(scn, n);		
 		setShortcut(Scene.Arrow.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
 		setShortcut(Scene.Arrow.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
 		setShortcut(Scene.Arrow.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);

@@ -13,9 +13,10 @@
  * with the mouse. The interpolating path is updated accordingly. The path and the
  * interpolating axis are drawn using KeyFrameInterpolator.drawPath().
  * 
- * The Camera holds 5 KeyFrameInterpolators, binded to [j..n]/[J..N]/[1..5] keys:
- * set/reset/play the key frame interpolators, respectively. Press 'r' to display all
- * the key frame camera paths (if any).
+ * The Camera holds 5 KeyFrameInterpolators, binded to [1..5] keys. Pressing
+ * CONTROL + [1..5] adds key frames to the specific path. Pressing ALT + [1..5]
+ * deletes the specific path. Press 'r' to display all the key frame camera paths
+ * (if any). The displayed paths are editable.
  * 
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */

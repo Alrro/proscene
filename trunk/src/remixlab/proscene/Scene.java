@@ -223,45 +223,47 @@ public class Scene implements PConstants {
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
 	 * The PApplet background is set to black. See the associated documentation. 
 	 */
-	public Scene(PApplet p) {
+	public Scene(PApplet p) {	
 		parent = p;
 		pg3d = (PGraphics3D) parent.g;
 		width = parent.width;
 		height = parent.height;
 		
+		camMouseAction = MouseAction.NO_MOUSE_ACTION;
+		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+		
 		gProfile = new ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction>(this);
 		pathKeys = new ShortcutMappings<KeyboardShortcut, Integer>(this);
-		clickActions = new ShortcutMappings<ClickShortcut, ClickAction>(this);
-		
+		clickActions = new ShortcutMappings<ClickShortcut, ClickAction>(this);		
 		setActionDescriptions();
 		setDefaultShortcuts();
 		setDefaultClickActions();
 		
-		camMouseAction = MouseAction.NO_MOUSE_ACTION;
-		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-		initDefaultCameraProfiles();
-		
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
+		avatarIsInteractiveDrivableFrame = false;//also init in setAvatar, but we need it here to properly init the camera 
+		avatarIsInteractiveAvatarFrame = false;//also init in setAvatar, but we need it here to properly init the camera		
+		cam = new Camera(this);
+		setCamera(camera());//showAll();It is set in setCamera()
+		setInteractiveFrame(null);
+		setAvatar(null);		
+		setMouseGrabber(null);
+		mouseGrabberIsAnIFrame = false;
+		mouseGrabberIsAnICamFrame = false;	
+		
+		initDefaultCameraProfiles();	
 		
 		arpFlag = false;
 		pupFlag = false;
 		
+		/**
 		avatarIsInteractiveDrivableFrame = false;//also init in setAvatar, but we need it here to properly init the camera 
 		avatarIsInteractiveAvatarFrame = false;//also init in setAvatar, but we need it here to properly init the camera
 		
 		cam = new Camera(this);
 		setCamera(camera());
-		
-		setInteractiveFrame(null);
-		setAvatar(null);	
-		
-		setMouseGrabber(null);
-		mouseGrabberIsAnIFrame = false;
-		mouseGrabberIsAnICamFrame = false;
+		*/	
 		
 		withConstraint = true;
-		
-		//showAll();It is set in setCamera()
 		
 		setAxisIsDrawn(true);
 		setGridIsDrawn(true);	    
@@ -279,7 +281,7 @@ public class Scene implements PConstants {
         disableFrustumEquationsUpdate();
         
         // E X C E P T I O N   H A N D L I N G
-        startCoordCalls = 0;       
+        startCoordCalls = 0;
         
         enableBackgroundHanddling();
         image = null;
@@ -322,7 +324,7 @@ public class Scene implements PConstants {
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
 	 */
-	public void setCamera (Camera camera) {
+	public void setCamera(Camera camera) {
 		if (camera == null)
 			return;
 		
@@ -347,16 +349,16 @@ public class Scene implements PConstants {
 	}
 	
 	/**
-	 * Returns the avatar object to be tracked by the Camera when {@link #cameraMode()} is
-	 * THIRD_PERSON. Simply returns {@code null} if no avatar has been set.
+	 * Returns the avatar object to be tracked by the Camera when {@link #currentCameraProfile()} is
+	 * an instance of ThirdPersonCameraProfile. Simply returns {@code null} if no avatar has been set.
 	 */
 	public Trackable avatar() {
 		return trck;
 	}
 	
 	/**
-	 * Sets the avatar object to be tracked by the Camera when {@link #cameraMode()} is
-	 * THIRD_PERSON. 
+	 * Sets the avatar object to be tracked by the Camera when {@link #currentCameraProfile()} is
+	 * an instance of ThirdPersonCameraProfile.
 	 */
 	public void setAvatar(Trackable t) {
 		trck = t;
@@ -792,8 +794,7 @@ public class Scene implements PConstants {
 	 * not initialized in {@code PApplet.setup()}. The default implementation is empty.
 	 * <p>
 	 * Typical usage include {@link #camera()} initialization ({@link #showAll()}) and
-	 * Scene state setup ({@link #setAxisIsDrawn(boolean)}, {@link #setGridIsDrawn(boolean)}
-	 * {@link #setHelpIsDrawn(boolean)}).
+	 * Scene state setup ({@link #setAxisIsDrawn(boolean)} and {@link #setGridIsDrawn(boolean)}.
 	 */
 	public void init() {}
 	
@@ -1676,20 +1677,13 @@ public class Scene implements PConstants {
 			return false;		
 		
 		CameraProfile cProfile = cameraProfile(cp);
-		int abInstances = 0;
-		int fpInstances = 0;
+		int instancesDifferentThanThirdPerson = 0;
 		
-		for (CameraProfile camProfile : cameraProfileMap.values() ) {
-			if( camProfile instanceof ArcballCameraProfile )
-				abInstances++;
-			if( camProfile instanceof FirstPersonCameraProfile )
-				fpInstances++;
-		}		
+		for (CameraProfile camProfile : cameraProfileMap.values() )
+			if (!(camProfile instanceof ThirdPersonCameraProfile))
+				instancesDifferentThanThirdPerson++;		
 		
-		if ( (cProfile instanceof ArcballCameraProfile) && ( abInstances == 1 ) && ( fpInstances == 0 ) )
-			return false;
-		
-		if ( (cProfile instanceof FirstPersonCameraProfile) && ( fpInstances == 1 ) && ( abInstances == 0 ) )
+		if ( !(cProfile instanceof ThirdPersonCameraProfile) && ( instancesDifferentThanThirdPerson == 1 ) )
 			return false;
 		
 		if( isCurrentCameraProfile(cp) )
@@ -1716,7 +1710,7 @@ public class Scene implements PConstants {
 	}
 	
 	/**
-	 * could be null
+	 * should not be null ever
 	 */
 	public CameraProfile currentCameraProfile() {
 		return currentCameraProfile;
@@ -1776,10 +1770,10 @@ public class Scene implements PConstants {
 				camera().interpolateTo(cm.frame());
 				currentCameraProfile = camProfile;
 			} else {			
-				if( camProfile instanceof FirstPersonCameraProfile) {
+				//if( camProfile instanceof FirstPersonCameraProfile) {
 					camera().frame().updateFlyUpVector();
 					camera().frame().stopSpinning();
-				}
+				//}
 				if( currentCameraProfile instanceof ThirdPersonCameraProfile )
                     camera().interpolateToFitScene();
 				
@@ -2057,7 +2051,8 @@ public class Scene implements PConstants {
 	protected boolean handleKeyboardAction(KeyEvent e) {
 		//keyframes:
 		Integer path = path(parent.key);
-		PApplet.println(parent.key + " pressed");
+		//TODO debug
+		//PApplet.println(parent.key + " pressed");
 		if(	path != null ) {
 			if( !e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown() && !e.isShiftDown() ) {
 				PApplet.println("playing");
@@ -2167,7 +2162,8 @@ public class Scene implements PConstants {
 	}
 	
 	protected boolean handleCameraKeyboardAction(KeyEvent e) {
-		PApplet.println(parent.key + " pressed");
+		//TODO debug
+		//PApplet.println(parent.key + " pressed");
 		CameraKeyboardAction kba = null;
 		kba = currentCameraProfile().shortcut( parent.key );
 		if(kba == null) {
@@ -2657,25 +2653,7 @@ public class Scene implements PConstants {
 		return button;
 	}
 	
-	protected MouseAction cameraMouseAction(MouseEvent e) {
-		/**
-		Button button = null;
-		switch (e.getButton()) {
-		case MouseEvent.NOBUTTON:
-			button = null;
-			break;
-		case MouseEvent.BUTTON1: //left button
-			button = Button.LEFT;
-			break;
-		case MouseEvent.BUTTON2: //middle button
-			button = Button.MIDDLE;			
-			break;
-		case MouseEvent.BUTTON3: //right button
-			button = Button.RIGHT;
-			break;			
-		}
-		*/
-		
+	protected MouseAction cameraMouseAction(MouseEvent e) {		
 		Button button = getButton(e);
 		
 		if (button == null) {
@@ -2818,7 +2796,8 @@ public class Scene implements PConstants {
 	public void mouseClicked(MouseEvent e) {
 		Button button = getButton(e);
 		Integer numberOfClicks = e.getClickCount();
-		PApplet.println("number of clicks: " + numberOfClicks);
+		// debug:
+		//PApplet.println("number of clicks: " + numberOfClicks);
 		ClickAction ca = null;
 		ca = clickShortcut(button, numberOfClicks);
 		if(ca == null) {
