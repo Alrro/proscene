@@ -34,10 +34,10 @@ boolean avoidWalls = true;
 void setup() {
   size(640, 360, P3D);  
   scene = new Scene(this);
+  scene.registerCameraProfile( new ThirdPersonCameraProfile(scene, "THIRD_PERSON") );
   scene.background(180,250,250);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
-  scene.setHelpIsDrawn(false);
   scene.setBoundingBox(new PVector(0,0,0), new PVector(flockWidth,flockHeight,flockDepth));
   scene.showAll();
   // create and fill the list of boids

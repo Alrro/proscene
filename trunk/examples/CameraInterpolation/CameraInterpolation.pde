@@ -14,13 +14,14 @@
  * The Frames can be moved with the mouse, making the path editable. The Camera
  * interpolating path is played with the shortcut '1'.
  * 
- * Press 'j' to add (more) key frames to the Camera path.
+ * Press CONTROL + '1' to add (more) key frames to the Camera path.
  * 
- * Press 'J' to delete the Camera path.
+ * Press ALT + '1' to delete the Camera path.
  * 
- * The Camera holds 5 KeyFrameInterpolators, binded to [j..n]/[J..N]/[1..5] keys:
- * set/reset/play the key frame interpolators, respectively. Press 'r' to display
- * all the key frame camera paths (if any).
+ * The Camera holds 5 KeyFrameInterpolators, binded to [1..5] keys. Pressing
+ * CONTROL + [1..5] adds key frames to the specific path. Pressing ALT + [1..5]
+ * deletes the specific path. Press 'r' to display all the key frame camera paths
+ * (if any). The displayed paths are editable.
  * 
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */

@@ -399,7 +399,7 @@ public class Scene implements PConstants {
 	 * @see #interactiveFrame()
 	 * @see #setAvatar(Trackable)
 	 */
-	public void setInteractiveFrame(InteractiveFrame frame) {		
+	public void setInteractiveFrame(InteractiveFrame frame) {
 		glIFrame = frame;               
         interactiveFrameIsACam = ((interactiveFrame() != camera().frame()) && (interactiveFrame() instanceof InteractiveCameraFrame));
         if (glIFrame == null)
@@ -1703,10 +1703,7 @@ public class Scene implements PConstants {
 		return false;
 	}
 	
-	public CameraProfile cameraProfile(String name) {
-		//debug:
-		if (cameraProfileMap.get(name) == null)
-			PApplet.println("null!!");
+	public CameraProfile cameraProfile(String name) {		
 		return cameraProfileMap.get(name);
 	}
 	
@@ -2123,8 +2120,7 @@ public class Scene implements PConstants {
 	protected void handleKeyboardAction(GlobalKeyboardAction id) {
 		switch (id) {
 		case DRAW_AXIS:
-			toggleAxisIsDrawn();
-			PApplet.println("toggle axis is drawn!");
+			toggleAxisIsDrawn();			
 			break;
 		case DRAW_GRID:
 			toggleGridIsDrawn();
@@ -2171,6 +2167,7 @@ public class Scene implements PConstants {
 	}
 	
 	protected boolean handleCameraKeyboardAction(KeyEvent e) {
+		PApplet.println(parent.key + " pressed");
 		CameraKeyboardAction kba = null;
 		kba = currentCameraProfile().shortcut( parent.key );
 		if(kba == null) {
@@ -2204,7 +2201,7 @@ public class Scene implements PConstants {
 			handleCameraKeyboardAction(kba);
 			return true;
 		}
-	}	
+	}
 	
 	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
 		switch (id) {
@@ -2262,33 +2259,33 @@ public class Scene implements PConstants {
 					((InteractiveDrivableFrame)avatar()).setFlySpeed(((InteractiveDrivableFrame)avatar()).flySpeed() / 1.2f);
 			break;
 		case INCREASE_AZYMUTH:
-			if( (avatar()!=null) && (interactiveFrame() != null) )
-				if ( avatarIsInteractiveDrivableFrame )
+			if(avatar()!=null) 
+				if(avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame)avatar()).setAzimuth(((InteractiveAvatarFrame)avatar()).azimuth() + PApplet.PI/64 );
 			break;
 		case DECREASE_AZYMUTH:
-			if( (avatar()!=null) && (interactiveFrame() != null) )
-				if( avatarIsInteractiveAvatarFrame )
+			if(avatar()!=null)
+				if(avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame)avatar()).setAzimuth(((InteractiveAvatarFrame)avatar()).azimuth() - PApplet.PI/64 );
 			break;
 		case INCREASE_INCLINATION:
-			if( (avatar()!=null) && (interactiveFrame() != null) )
-				if ( avatarIsInteractiveDrivableFrame )
+			if(avatar()!=null)
+				if(avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame)avatar()).setInclination(((InteractiveAvatarFrame)avatar()).inclination() + PApplet.PI/64 );
 			break;
 		case DECREASE_INCLINATION:
-			if( (avatar()!=null) && (interactiveFrame() != null) )
-				if( avatarIsInteractiveAvatarFrame )
+			if(avatar()!=null)
+				if(avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame)avatar()).setInclination(((InteractiveAvatarFrame)avatar()).inclination() - PApplet.PI/64 );
 			break;
 		case INCREASE_TRACKING_DISTANCE:
-			if( (avatar()!=null) && (interactiveFrame() != null) )
-				if ( avatarIsInteractiveDrivableFrame )
+			if(avatar()!=null)
+				if(avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame)avatar()).setTrackingDistance(((InteractiveAvatarFrame)avatar()).trackingDistance() + radius()/50 );
 			break;
 		case DECREASE_TRACKING_DISTANCE:
-			if( (avatar()!=null) && (interactiveFrame() != null) )
-				if( avatarIsInteractiveAvatarFrame )
+			if(avatar()!=null)
+				if(avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame)avatar()).setTrackingDistance(((InteractiveAvatarFrame)avatar()).trackingDistance() - radius()/50 );
 			break;			
 		}
@@ -2489,8 +2486,9 @@ public class Scene implements PConstants {
 	
     //TODO implement me!
 	protected void setDefaultClickActions() {
-		setClickShortcut( Button.LEFT, ClickAction.ALIGN_CAMERA );
-		setClickShortcut( Button.RIGHT, Modifier.CONTROL, 2, ClickAction.SHOW_ALL );
+		setClickShortcut( Button.LEFT, 2, ClickAction.ALIGN_CAMERA );
+		setClickShortcut( Button.MIDDLE, 2, ClickAction.ZOOM_TO_FIT );
+		setClickShortcut( Button.RIGHT, 2, ClickAction.SHOW_ALL );
 	}
 	
 	//click wrappers:
@@ -2820,6 +2818,7 @@ public class Scene implements PConstants {
 	public void mouseClicked(MouseEvent e) {
 		Button button = getButton(e);
 		Integer numberOfClicks = e.getClickCount();
+		PApplet.println("number of clicks: " + numberOfClicks);
 		ClickAction ca = null;
 		ca = clickShortcut(button, numberOfClicks);
 		if(ca == null) {

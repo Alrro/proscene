@@ -35,11 +35,13 @@ Box [] boxes;
 void setup() {
   size(640, 360, OPENGL);
   scene = new Scene(this);
+  scene.setClickShortcut( Scene.Button.LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
+  scene.setClickShortcut( Scene.Button.RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
+  scene.setClickShortcut( Scene.Button.MIDDLE, Scene.Modifier.SHIFT, 2, Scene.ClickAction.RESET_ARP );
   GLCamera glCam = new GLCamera(scene);
   scene.setCamera(glCam);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
-  scene.setHelpIsDrawn(false);
   scene.setRadius(150);
   scene.showAll();
   boxes = new Box[50];

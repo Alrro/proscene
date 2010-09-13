@@ -7,7 +7,6 @@ public class AuxiliarViewer extends NApplet {
     scene.camera().setType(Camera.Type.ORTHOGRAPHIC);
     scene.setAxisIsDrawn(false);
     scene.setGridIsDrawn(false);
-    scene.setHelpIsDrawn(false);    
     scene.setRadius(200);
     scene.showAll();
     // register the drawing method which was defined externally
