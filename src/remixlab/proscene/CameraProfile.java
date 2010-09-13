@@ -1,3 +1,29 @@
+/**
+ *                     ProScene (version 1.0.0-alpha1)      
+ *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
+ *            http://www.disi.unal.edu.co/grupos/remixlab/
+ *                           
+ * This java package provides classes to ease the creation of interactive 3D
+ * scenes in Processing.
+ * 
+ * @author Jean Pierre Charalambos
+ * 
+ * This source file is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * A copy of the GNU General Public License is available on the World Wide Web
+ * at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by
+ * writing to the Free Software Foundation, 51 Franklin Street, Suite 500
+ * Boston, MA 02110-1335, USA.
+ */
+
 package remixlab.proscene;
 
 import remixlab.proscene.Scene.CameraKeyboardAction;
@@ -5,17 +31,20 @@ import remixlab.proscene.Scene.CameraKeyboardAction;
 public abstract class CameraProfile {
 	protected String name;
 	protected Scene scene;
-	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
-	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.ClickAction> clickActions;
-	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> mouseActions;
+	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;	
+	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> cameraActions;
+	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> iFrameActions;
 	
 	public CameraProfile(Scene scn, String n) {
 		scene = scn;
 		name = n;
 		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
-		clickActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.ClickAction>(scene);
-		mouseActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
+		cameraActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
+		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
+		setDefaultShortcuts();
 	}
+	
+	abstract protected void setDefaultShortcuts();
 	
 	public String name() {
 		return name;
@@ -26,7 +55,7 @@ public abstract class CameraProfile {
 	}
 	
 	public boolean register() {
-		return scene.registerCameraProfile(this, true);
+		return scene.registerCameraProfile(this);
 	}
 	
 	public void unregister() {
@@ -67,15 +96,15 @@ public abstract class CameraProfile {
 	}
 	
 	public CameraKeyboardAction shortcut(Character key) {
-		return keyboard.binding(new KeyboardShortcut(key));
+		return keyboard.mapping(new KeyboardShortcut(key));
 	}
 	
 	public CameraKeyboardAction shortcut(Integer vKey, Scene.Modifier modifier) {
-		return keyboard.binding(new KeyboardShortcut(vKey, modifier));
+		return keyboard.mapping(new KeyboardShortcut(vKey, modifier));
 	}
 	
 	public CameraKeyboardAction shortcut(Scene.Arrow arrow) {
-		return keyboard.binding(new KeyboardShortcut(arrow));
+		return keyboard.mapping(new KeyboardShortcut(arrow));
 	}
 	
 	public boolean isKeyInUse(KeyboardShortcut key) {
@@ -86,78 +115,77 @@ public abstract class CameraProfile {
 		return keyboard.isActionMapped(action);
 	}
 	
-	//click wrappers:
-	public void removeAllClickActionShortcuts() {
-		clickActions.removeAllMappings();
+	//camera wrappers:
+	public void removeAllCameraShortcuts() {
+		cameraActions.removeAllMappings();
 	}
 	
-	public boolean isClickKeyInUse(Shortcut<Scene.Button> key) {
-		return clickActions.isShortcutInUse(key);
+	public boolean isCameraKeyInUse(Shortcut<Scene.Button> key) {
+		return cameraActions.isShortcutInUse(key);
 	}
 	
-	public boolean isActionBinded(Scene.ClickAction action) {
-		return clickActions.isActionMapped(action);
+	public boolean isActionBindedToCamera(Scene.MouseAction action) {
+		return cameraActions.isActionMapped(action);
 	}
 	
-	public void setShortcut(Scene.Button button, Scene.Modifier modifier, Scene.ClickAction action) {
-		clickActions.setMapping(new Shortcut<Scene.Button>(button, modifier), action);
+	public void setCameraShortcut(Scene.Button button, Scene.Modifier modifier, Scene.MouseAction action) {
+		cameraActions.setMapping(new Shortcut<Scene.Button>(button, modifier), action);
 	}
 	
-	public void setShortcut(Scene.Button button, Scene.ClickAction action) {
-		clickActions.setMapping(new Shortcut<Scene.Button>(button), action);
+	public void setCameraShortcut(Scene.Button button, Scene.MouseAction action) {
+		cameraActions.setMapping(new Shortcut<Scene.Button>(button), action);
 	}
 	
-	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier) {
-		clickActions.removeMapping(new Shortcut<Scene.Button>(button, modifier));
+	public void removeCameraShortcut(Scene.Button button, Scene.Modifier modifier) {
+		cameraActions.removeMapping(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public void removeClickShortcut(Scene.Button button) {
-		clickActions.removeMapping(new Shortcut<Scene.Button>(button));
+	public void removeCameraShortcut(Scene.Button button) {
+		cameraActions.removeMapping(new Shortcut<Scene.Button>(button));
 	}
 	
-	public Scene.ClickAction clickShortcut(Scene.Button button, Scene.Modifier modifier) {
-		return clickActions.binding(new Shortcut<Scene.Button>(button, modifier));
+	public Scene.MouseAction cameraShortcut(Scene.Button button, Scene.Modifier modifier) {
+		return cameraActions.mapping(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public Scene.ClickAction clickShortcut(Scene.Button button) {
-		return clickActions.binding(new Shortcut<Scene.Button>(button));
+	public Scene.MouseAction cameraShortcut(Scene.Button button) {
+		return cameraActions.mapping(new Shortcut<Scene.Button>(button));
 	}
 	
-	//mouse wrappers:
-	// /**
-	public void removeAllMouseActionShortcuts() {
-		mouseActions.removeAllMappings();
+	//iFrame wrappers:
+	public void removeAllIFrameShortcuts() {
+		iFrameActions.removeAllMappings();
 	}
 	
-	public boolean isMouseKeyInUse(Shortcut<Scene.Button> key) {
-		return mouseActions.isShortcutInUse(key);
+	public boolean isIFrameKeyInUse(Shortcut<Scene.Button> key) {
+		return iFrameActions.isShortcutInUse(key);
 	}
 	
-	public boolean isActionBinded(Scene.MouseAction action) {
-		return mouseActions.isActionMapped(action);
+	public boolean isActionBindedToIFrame(Scene.MouseAction action) {
+		return iFrameActions.isActionMapped(action);
 	}
 	
-	public void setShortcut(Scene.Button button, Scene.Modifier modifier, Scene.MouseAction action) {
-		mouseActions.setMapping(new Shortcut<Scene.Button>(button, modifier), action);
+	public void setIFrameShortcut(Scene.Button button, Scene.Modifier modifier, Scene.MouseAction action) {
+		iFrameActions.setMapping(new Shortcut<Scene.Button>(button, modifier), action);
 	}
 	
-	public void setShortcut(Scene.Button button, Scene.MouseAction action) {
-		mouseActions.setMapping(new Shortcut<Scene.Button>(button), action);
+	public void setIFrameShortcut(Scene.Button button, Scene.MouseAction action) {
+		iFrameActions.setMapping(new Shortcut<Scene.Button>(button), action);
 	}
 	
-	public void removeMouseShortcut(Scene.Button button, Scene.Modifier modifier) {
-		mouseActions.removeMapping(new Shortcut<Scene.Button>(button, modifier));
+	public void removeIFrameShortcut(Scene.Button button, Scene.Modifier modifier) {
+		iFrameActions.removeMapping(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public void removeMouseShortcut(Scene.Button button) {
-		mouseActions.removeMapping(new Shortcut<Scene.Button>(button));
+	public void removeIFrameShortcut(Scene.Button button) {
+		iFrameActions.removeMapping(new Shortcut<Scene.Button>(button));
 	}
 	
-	public Scene.MouseAction mouseShortcut(Scene.Button button, Scene.Modifier modifier) {
-		return mouseActions.binding(new Shortcut<Scene.Button>(button, modifier));
+	public Scene.MouseAction iFrameShortcut(Scene.Button button, Scene.Modifier modifier) {
+		return iFrameActions.mapping(new Shortcut<Scene.Button>(button, modifier));
 	}
 	
-	public Scene.MouseAction mouseShortcut(Scene.Button button) {
-		return mouseActions.binding(new Shortcut<Scene.Button>(button));
+	public Scene.MouseAction iFrameShortcut(Scene.Button button) {
+		return iFrameActions.mapping(new Shortcut<Scene.Button>(button));
 	}
 }

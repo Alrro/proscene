@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 0.9.1)                         
+ *                     ProScene (version 1.0.0-alpha1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -1717,7 +1717,6 @@ public class Camera implements Cloneable {
 	 * a new one is created.
 	 */
 	public void addKeyFrameToPath(int key, boolean editablePath) {
-		//TODO: info should go on the applet ;)
 	    boolean info = true;
 		if (!kfi.containsKey(key)) {
 			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), parent));
