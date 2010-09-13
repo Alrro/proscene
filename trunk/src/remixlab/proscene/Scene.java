@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0)                         
+ *                     ProScene (version 1.0.0-alpha1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -32,7 +32,6 @@ import java.awt.Point;
 import java.awt.event.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
@@ -42,7 +41,7 @@ import javax.swing.Timer;
  * A processing 3D interactive scene. A Scene provides a default interactivity for your scene through
  * the mouse and keyboard in the hope that it should fit most user needs. For those users whose needs
  * are not completely fulfill by default, proscene main interactivity mechanisms can easily be extended
- * to fit them. 
+ * to fit them.
  * <p>
  * A Scene has a full reach Camera, an two means to manipulate objects: an {@link #interactiveFrame()}
  * single instance (which by default is null) and a {@link #mouseGrabber()} pool.
@@ -66,17 +65,15 @@ import javax.swing.Timer;
  * <b>Attention:</b> To set the PApplet's background you should call one of the {@code Scene.background()}
  * versions instead of any of the {@code PApplet.background()} ones. The background is set to black by default.
  */
-public class Scene implements MouseWheelListener, PConstants {
+public class Scene implements PConstants {
 	/**
 	 * Defines the different actions that can be associated with a specific keyboard key.
 	 */	
 	public enum GlobalKeyboardAction {
 		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND,
-		/**	STEREO, */
-		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
-		/** INTERPOLATE_TO_ZOOM_ON_REGION,*/
+		/**	STEREO, */		
 		ARP_FROM_PIXEL, RESET_ARP,		
-		HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVE_FRAME, CONSTRAIN_FRAME
+		HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVE_FRAME, DRAW_FRAME_SELECTION_HINT, CONSTRAIN_FRAME
 	}
 	/**
 	 * Defines the different actions that can be associated with a specific keyboard key.
@@ -84,12 +81,17 @@ public class Scene implements MouseWheelListener, PConstants {
 	public enum CameraKeyboardAction {	
 		INTERPOLATE_TO_ZOOM_ON_PIXEL, INTERPOLATE_TO_FIT_SCENE, SHOW_ALL,
 		/**	ANIMATION, */
-		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
-		/** INTERPOLATE_TO_ZOOM_ON_REGION,*/
-		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN
+		/**	AZIMUTH, INCLINATION, TRACKING_DISTANCE, */		
+		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN,
+		INCREASE_ROTATION_SENSITIVITY, DECREASE_ROTATION_SENSITIVITY,
+		INCREASE_CAMERA_FLY_SPEED, DECREASE_CAMERA_FLY_SPEED,
+		INCREASE_AVATAR_FLY_SPEED, DECREASE_AVATAR_FLY_SPEED,
+		INCREASE_AZYMUTH, DECREASE_AZYMUTH,
+		INCREASE_INCLINATION, DECREASE_INCLINATION,
+		INCREASE_TRACKING_DISTANCE, DECREASE_TRACKING_DISTANCE
 	}
 	
-	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, ARP_FROM_PIXEL, RESET_ARP,
+	public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, /**SELECT,*/ ARP_FROM_PIXEL, RESET_ARP,
 		CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA }
 	
 	/**
@@ -101,6 +103,10 @@ public class Scene implements MouseWheelListener, PConstants {
 		SCREEN_ROTATE, ROLL, DRIVE,
 		SCREEN_TRANSLATE, ZOOM_ON_REGION }
 	//TODO: add descriptions to all atomic actions
+	
+	protected MouseAction camMouseAction;
+	
+	//protected MouseAction iFrameMouseAction;
 	
 	public enum Button { LEFT, MIDDLE, RIGHT }
 	
@@ -115,32 +121,24 @@ public class Scene implements MouseWheelListener, PConstants {
 		RGB, RGB_ALPHA, GRAY, GRAY_ALPHA, XYZ, XYZ_ALPHA, PIMAGE
 	}
 	
-	/**
-	 * This enum defines the camera modes.
-	 */
-	public enum CameraMode {
-		ARCBALL, WALKTHROUGH, THIRD_PERSON
-	}
+	// K E Y F R A M E S
+	protected ShortcutMappings<KeyboardShortcut, Integer> pathKeys;
+	protected Modifier addKeyFrameKeyboardModifier;
+	protected Modifier deleteKeyFrameKeyboardModifier;
 	
-	protected ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction> gProfile;
 	// S h o r t c u t k e y s
+	protected ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction> gProfile;	
 	protected HashMap<GlobalKeyboardAction, String> keyboardActionDescription;
 	
-	// c a m e r a   m o d e
+	// C L I C K   A C T I O N S
+	protected ShortcutMappings<ClickShortcut, ClickAction> clickActions;
+	
+	// c a m e r a   p r o f i l e s
 	private HashMap<String, CameraProfile> cameraProfileMap;
 	private ArrayList<String> cameraProfileNames;
-	private int currentCameraProfileIndex;
 	private CameraProfile currentCameraProfile;
 	
 	//mouse actions
-	protected MouseAction cameraLeftButton, cameraMidButton, cameraRightButton;
-	protected MouseAction frameLeftButton, frameMidButton, frameRightButton;
-	//mouse actions special cases (drive and roll) (walkthrough and third_person)
-	protected MouseAction cameraShiftLeftButton, cameraShiftRightButton;
-	protected MouseAction frameShiftLeftButton, frameShiftRightButton;
-	boolean zoomOnRegion;
-	boolean rotateScreen;
-	boolean translateScreen;
 	boolean arpFlag;
 	boolean pupFlag;
 	PVector pupVec;
@@ -151,9 +149,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	int rgb;
 	float gray, alpha, x, y, z;	
 	PImage image;
-	
-	//camera mode
-	private CameraMode camMode;
 	
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
@@ -206,12 +201,10 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	// K E Y B O A R D   A N D   M O U S E
 	protected boolean mouseHandling;
-	protected boolean keyboardHandling;
-	final List<String> keyList;
+	protected boolean keyboardHandling;	
 	
 	// O N L I N E   H E L P
-	boolean helpIsDrwn;
-	PFont font;
+	
 	
 	// T H I R D   P E R S O N	
 	//private PVector target;
@@ -237,20 +230,19 @@ public class Scene implements MouseWheelListener, PConstants {
 		height = parent.height;
 		
 		gProfile = new ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction>(this);
+		pathKeys = new ShortcutMappings<KeyboardShortcut, Integer>(this);
+		clickActions = new ShortcutMappings<ClickShortcut, ClickAction>(this);
+		
 		setActionDescriptions();
 		setDefaultShortcuts();
+		setDefaultClickActions();
 		
+		camMouseAction = MouseAction.NO_MOUSE_ACTION;
+		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 		initDefaultCameraProfiles();
 		
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		
-		parent.addMouseWheelListener(this);
-		
-		setCameraMode(CameraMode.ARCBALL);
-		
-		zoomOnRegion = false;
-		rotateScreen = false;
-		translateScreen = false;
 		arpFlag = false;
 		pupFlag = false;
 		
@@ -272,12 +264,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		//showAll();It is set in setCamera()
 		
 		setAxisIsDrawn(true);
-		setGridIsDrawn(true);
-		setHelpIsDrawn(true);	    
+		setGridIsDrawn(true);	    
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
-		
-		font = parent.createFont("Arial", 12);
 		
 		taskTimerPerformer = new ActionListener() {
         	public void actionPerformed(ActionEvent evt) {
@@ -300,8 +289,6 @@ public class Scene implements MouseWheelListener, PConstants {
         //parent.registerPost(this);
         enableKeyboardHandling();
         enableMouseHandling();
-        keyList = new ArrayList<String>();
-        addKeys();       
 		parseKeyXxxxMethods();
 		parseMouseXxxxMethods();
 		
@@ -387,25 +374,7 @@ public class Scene implements MouseWheelListener, PConstants {
 				((InteractiveAvatarFrame)avatar()).setTrackingDistance(radius()/3);
 		    */
 			if ( interactiveFrame() != null )
-				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());
-			if(!isInKeyList("c"))
-				keyList.add("c");
-			if(!isInKeyList("C"))
-				keyList.add("C");
-			if(!isInKeyList("d"))
-				keyList.add("d");
-			if(!isInKeyList("D"))
-				keyList.add("D");
-			if(!isInKeyList("t"))
-				keyList.add("t");
-			if(!isInKeyList("T"))
-				keyList.add("T");			
-			//keyList.addAll(Arrays.asList(new String[]{"c","C","d","D","t","T"}));
-			PApplet.println("You have set an InteractiveAvatarFrame. The key bindings for the avatar (available when you set you camera mode to " +
-					"THIRD_PERSON) are: " +
-					"c/C: azimuth; " +
-					"d/D: tracking distance, and; " +
-					"t/T: inclination.");
+				((InteractiveDrivableFrame)interactiveFrame()).setFlySpeed(0.01f * radius());				
 		}
 		else
 			if (avatar() instanceof InteractiveDrivableFrame) {
@@ -420,7 +389,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		trck = null;
 		avatarIsInteractiveAvatarFrame = false;
 		avatarIsInteractiveDrivableFrame = false;
-		keyList.removeAll(Arrays.asList(new String[]{"c","C","d","D","t","T"}));
 	}
 	
 	/**
@@ -778,15 +746,6 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	/**
-	 * Toggles the state of the {@link #helpIsDrawn()}
-	 * 
-	 * @see #setHelpIsDrawn()
-	 */
-	public void toggleHelpIsDrawn() {
-		setHelpIsDrawn(!helpIsDrawn());
-	}
-	
-	/**
 	 * Toggles the {@link #camera()} type between PERSPECTIVE and ORTHOGRAPHIC.
 	 */
 	public void toggleCameraType() {
@@ -853,8 +812,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			camera().hideAllPaths();
 		}		
 		
-		if( zoomOnRegion ) drawZoomWindowHint();
-		if( rotateScreen ) drawScreenRotateLineHint();
+		if( camMouseAction == MouseAction.ZOOM_ON_REGION ) drawZoomWindowHint();
+		if( camMouseAction == MouseAction.SCREEN_ROTATE ) drawScreenRotateLineHint();
 		if( arpFlag ) drawArcballReferencePointHint();
 		if( pupFlag ) {
 			PVector v = camera().projectedCoordinatesOf( pupVec );
@@ -885,8 +844,8 @@ public class Scene implements MouseWheelListener, PConstants {
     			camera().setScreenWidthAndHeight(width, height);
     			camera().attachToPCamera();
     		}
-    		else {
-    			if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted() ) {		    			
+    		else {    			
+    			if( ( currentCameraProfile() instanceof ThirdPersonCameraProfile ) && ( !camera().anyInterpolationIsStarted() ) ) {
         			camera().setPosition( avatar().cameraPosition() );
         			camera().setUpVector( avatar().upVector() );
         			camera().lookAt( avatar().target() );
@@ -899,7 +858,7 @@ public class Scene implements MouseWheelListener, PConstants {
     		}
     	}
     	else {    		
-    		if( cameraMode() == CameraMode.THIRD_PERSON && !camera().anyInterpolationIsStarted()  ) {
+    		if( ( currentCameraProfile() instanceof ThirdPersonCameraProfile ) && ( !camera().anyInterpolationIsStarted() ) ) {
     			camera().setPosition( avatar().cameraPosition() );
     			camera().setUpVector( avatar().upVector() );
     			camera().lookAt( avatar().target() );
@@ -956,10 +915,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		// 3. Try to draw what should have been draw in the pre()
 		if( !backgroundIsHandled() ) 
-			displayVisualHints();
-		
-		// 4. Display the help
-		if( helpIsDrawn() ) help();				
+			displayVisualHints();				
 	}
 	
 	/** The method that actually defines the scene.
@@ -1119,10 +1075,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * Sets the {@link #camera()} type.
 	 */
 	public void setCameraType(Camera.Type type) {
-		if ( type != camera().type() ) { 
-			if( ( cameraMode() != CameraMode.THIRD_PERSON) || ( cameraType() == Camera.Type.ORTHOGRAPHIC ) ) //TODO can use camera.kind.standard and ortho?
-				camera().setType(type);		
-		}
+		if ( type != camera().type() )
+			camera().setType(type);
 	}
 	
 	/**
@@ -1186,12 +1140,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		return cameraPathsAreDrwn;
 	}
 	
-	/**
-	 * Returns {@code true} if the {@link #help()} is currently being drawn and {@code false} otherwise. 
-	 */
-	public boolean helpIsDrawn() {
-		return helpIsDrwn;
-	}
+	
 	
 	/**
 	 * Returns {@code true} if axis is currently being drawn and {@code false} otherwise. 
@@ -1249,20 +1198,6 @@ public class Scene implements MouseWheelListener, PConstants {
 		cameraPathsAreDrwn = draw;
 	}
 	
-	/**
-	 * Convenience function that simply calls {@code setHelpIsDrawn(true)}
-	 */
-	public void setHelpIsDrawn() {
-		setHelpIsDrawn(true);
-	}
-	
-	/**
-	 * Sets the display of the {@link #help()} according to {@code draw}
-	 */
-	public void setHelpIsDrawn(boolean draw) {
-		helpIsDrwn = draw;
-	}
-	
 	public void setDrawInteractiveFrame() {
 		setDrawInteractiveFrame(true);
 	}
@@ -1273,8 +1208,8 @@ public class Scene implements MouseWheelListener, PConstants {
     public void setDrawInteractiveFrame(boolean draw) {
     	if ( draw && (glIFrame == null) )
     		return;
-    	if  ( !draw && ( cameraMode() == CameraMode.THIRD_PERSON ) && interactiveFrame().equals(avatar()) )//more natural than to bypass it
-    		nextCameraProfile();
+    	if  ( !draw && ( currentCameraProfile() instanceof ThirdPersonCameraProfile ) && interactiveFrame().equals(avatar()) )//more natural than to bypass it
+    		return;
     	iFrameIsDrwn = draw;
 	}
     
@@ -1344,6 +1279,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * operation is taking place. 
 	 */
 	protected void drawZoomWindowHint() {
+		if( (fCorner == null) || (lCorner == null) )
+			return;
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();			
 		float p2x = (float) lCorner.getX();
@@ -1368,6 +1305,8 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * rotation is taking place. 
 	 */
 	protected void drawScreenRotateLineHint() {
+		if(fCorner == null)
+			return;
 		float p1x = (float) fCorner.getX();
 		float p1y = (float) fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
@@ -1692,223 +1631,190 @@ public class Scene implements MouseWheelListener, PConstants {
 		pupFlag = false;			
 	}
 	
-	// 7. Camera modes
+	// 7. Camera profiles
+	
+	private void initDefaultCameraProfiles() {
+		cameraProfileMap = new HashMap<String, CameraProfile>();
+		cameraProfileNames = new ArrayList<String>();
+		currentCameraProfile = null;
+		// register here the default profiles
+		registerCameraProfile( new ArcballCameraProfile(this, "ARCBALL") );
+		//registerCameraProfile( new WheeledArcballCameraProfile(this, "ARCBALL") );//TODO test
+		registerCameraProfile( new FirstPersonCameraProfile(this, "FIRST_PERSON") );
+		setCurrentCameraProfile("ARCBALL");
+	}
 	
 	/**
-	 * Sets the camera mode according to {@code camMode}. The possibilities are:
-	 * <h3>1. {@link remixlab.proscene.Scene.CameraMode#ARCBALL}</h3>
-	 * The mouse actions are then set as follows:
-	 * <h4>a. {@link #camera()}</h4>
-	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#ROTATE}.<br>
-	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#ZOOM}.<br>
-	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#TRANSLATE}.<br>
-	 * <h4>b. {@link #interactiveFrame()}</h4>
-	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#ROTATE}.<br>
-	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#ZOOM}.<br>
-	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#TRANSLATE}.<br>
-	 * <h3>2. {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH}</h3>
-	 * The mouse actions are then set as follows:
-	 * <h4>a. {@link #camera()}</h4>
-	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD}.<br>
-	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}.<br>
-	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD}.<br>
-	 * <h4>b. {@link #interactiveFrame()}</h4>
-	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#ROTATE}.<br>
-	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#ZOOM}.<br>
-	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#TRANSLATE}.<br>
-	 * <h3>3. {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}</h3>
-	 * The mouse actions are then set as follows:
-	 * <h4>a. {@link #camera()}</h4>
-	 * The {@link #camera()} will simply track the {@link #avatar()}.
-	 * <h4>b. {@link #interactiveFrame()}</h4>
-	 * <i>Left button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_FORWARD}.<br>
-	 * <i>Mid button:</i> {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}.<br>
-	 * <i>Right button:</i> {@link remixlab.proscene.Scene.MouseAction#MOVE_BACKWARD}.<br>
-	 * 
-	 * @see #cameraMode()
+	public HashMap<String, CameraProfile> cameraProfileHandler() {
+		return cameraProfileHandler;
+	}
+	*/
+	
+	/**
+	 * Make it current if size==1 or makeCurrent
+	 * Doesn't allow to register nulls.
+	 * Doesn't allow to register duplicates.
 	 */
-	public void setCameraMode(CameraMode cMode) {
-		CameraMode prevCamMode = cameraMode();		
-		switch (cMode) {
-		case ARCBALL :
-			camMode = cMode;
-			if( avatarIsInteractiveDrivableFrame )
-	    		((InteractiveDrivableFrame)avatar()).addInMouseGrabberPool();
-			setDrawInteractiveFrame(false);
-			//camera
-			cameraLeftButton = MouseAction.ROTATE;		
-			cameraMidButton = MouseAction.ZOOM;
-			cameraRightButton = MouseAction.TRANSLATE;
-			//interactive frame
-			frameLeftButton = MouseAction.ROTATE;		
-			frameMidButton = MouseAction.ZOOM;
-			frameRightButton = MouseAction.TRANSLATE;
-			//special cases:
-			cameraShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
-			cameraShiftRightButton = MouseAction.NO_MOUSE_ACTION;
-			frameShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
-			frameShiftRightButton = MouseAction.NO_MOUSE_ACTION;			
-			
-			if( prevCamMode == CameraMode.THIRD_PERSON )
-				camera().interpolateToFitScene();
-			
-			break;
-	    case WALKTHROUGH :
-	    	camMode = cMode;
-	    	if( avatarIsInteractiveDrivableFrame )
-	    		((InteractiveDrivableFrame)avatar()).addInMouseGrabberPool();
-	    	setDrawInteractiveFrame(false);
-	    	camera().frame().updateFlyUpVector();
-			camera().frame().stopSpinning();
-			cameraLeftButton = MouseAction.MOVE_FORWARD;
-			cameraMidButton = MouseAction.LOOK_AROUND;
-			cameraRightButton = MouseAction.MOVE_BACKWARD;			
-			frameLeftButton = MouseAction.ROTATE;		
-			frameMidButton = MouseAction.ZOOM;
-			frameRightButton = MouseAction.TRANSLATE;			
-			//special cases:
-			cameraShiftLeftButton = MouseAction.ROLL;
-			cameraShiftRightButton = MouseAction.DRIVE;
-			frameShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
-			frameShiftRightButton = MouseAction.NO_MOUSE_ACTION;
-			
-			if( prevCamMode == CameraMode.THIRD_PERSON )
-				camera().interpolateToFitScene();
-	    	break;
-	    case THIRD_PERSON :
-	    	if( avatar() != null ) {
-	    		camMode = cMode;
-	    		setCameraType(Camera.Type.PERSPECTIVE);//TODO can use camera.kind.standard and ortho?
-	    		if( avatarIsInteractiveDrivableFrame )
-		    		((InteractiveDrivableFrame)avatar()).removeFromMouseGrabberPool();
-	    		setDrawInteractiveFrame();
-	    		camera().frame().updateFlyUpVector();//?
+	public boolean registerCameraProfile( CameraProfile cp ) {
+		//if(!isCameraProfileRegistered(cp)) {
+		if(cp == null)
+			return false;
+		if ( !isCameraProfileRegistered(cp) ) {
+			cameraProfileNames.add( cp.name() );
+			cameraProfileMap.put(cp.name(), cp);
+			return true;	
+		}
+		return false;
+	}
+	
+	public boolean unregisterCameraProfile( CameraProfile cp ) {
+		return unregisterCameraProfile( cp.name() );
+	}
+	
+	public boolean unregisterCameraProfile( String cp ) {
+		if( !isCameraProfileRegistered(cp) )
+			return false;		
+		
+		CameraProfile cProfile = cameraProfile(cp);
+		int abInstances = 0;
+		int fpInstances = 0;
+		
+		for (CameraProfile camProfile : cameraProfileMap.values() ) {
+			if( camProfile instanceof ArcballCameraProfile )
+				abInstances++;
+			if( camProfile instanceof FirstPersonCameraProfile )
+				fpInstances++;
+		}		
+		
+		if ( (cProfile instanceof ArcballCameraProfile) && ( abInstances == 1 ) && ( fpInstances == 0 ) )
+			return false;
+		
+		if ( (cProfile instanceof FirstPersonCameraProfile) && ( fpInstances == 1 ) && ( abInstances == 0 ) )
+			return false;
+		
+		if( isCurrentCameraProfile(cp) )
+			nextCameraProfile();
+		
+		if ( cameraProfileNames.remove( cp ) ) {
+			cameraProfileMap.remove( cp );
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public CameraProfile cameraProfile(String name) {
+		//debug:
+		if (cameraProfileMap.get(name) == null)
+			PApplet.println("null!!");
+		return cameraProfileMap.get(name);
+	}
+	
+	public boolean isCameraProfileRegistered(CameraProfile cp) {
+		return cameraProfileMap.containsValue(cp);
+	}
+	
+	public boolean isCameraProfileRegistered(String name) {
+		return cameraProfileMap.containsKey(name);
+	}
+	
+	/**
+	 * could be null
+	 */
+	public CameraProfile currentCameraProfile() {
+		return currentCameraProfile;
+	}
+	
+	boolean isCurrentCameraProfile(String cp) {
+		return isCurrentCameraProfile( cameraProfileMap.get(cp) );
+	}
+	
+	boolean isCurrentCameraProfile(CameraProfile cp) {
+		return currentCameraProfile() == cp;
+	}
+ 
+	/**
+	 * only true if cp is non-null and succeeded making it current.
+	 * cp is first register if necessary.
+	 */
+	public boolean setCurrentCameraProfile( CameraProfile cp ) {
+		if(cp == null) {
+			return false;
+		}	
+		if (!isCameraProfileRegistered(cp))
+			if (!registerCameraProfile(cp))
+				return false;
+		
+		return setCurrentCameraProfile(cp.name());
+	}
+	
+	/**
+	 * only true if succeeded making cp current.
+	 */
+	public boolean setCurrentCameraProfile( String cp ) {		
+		CameraProfile camProfile = cameraProfileMap.get(cp);
+		if(camProfile == null)
+			return false;		
+		if( ( camProfile instanceof ThirdPersonCameraProfile) && (avatar() == null) )
+			return false;
+		else {			
+			if( camProfile instanceof ThirdPersonCameraProfile) {
+				setDrawInteractiveFrame();
+				setCameraType(Camera.Type.PERSPECTIVE);//TODO can use camera.kind.standard and ortho?
+				if( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)avatar()).removeFromMouseGrabberPool();				
+				camera().frame().updateFlyUpVector();//?
 				camera().frame().stopSpinning();
 				if ( avatarIsInteractiveDrivableFrame ) {
 					((InteractiveDrivableFrame)(avatar())).updateFlyUpVector();
 					((InteractiveDrivableFrame)(avatar())).stopSpinning();
 				}
-				cameraLeftButton = MouseAction.NO_MOUSE_ACTION;
-				cameraMidButton = MouseAction.NO_MOUSE_ACTION;
-				cameraRightButton = MouseAction.NO_MOUSE_ACTION;
-		    	frameLeftButton = MouseAction.MOVE_FORWARD;
-				frameMidButton = MouseAction.LOOK_AROUND;		    	
-				frameRightButton = MouseAction.MOVE_BACKWARD;
-				//special cases:
-				cameraShiftLeftButton = MouseAction.NO_MOUSE_ACTION;
-				cameraShiftRightButton = MouseAction.NO_MOUSE_ACTION;
-				frameShiftLeftButton = MouseAction.ROLL;
-				frameShiftRightButton = MouseAction.DRIVE;
-				//small animation ;)
+                //perform small animation ;)	
 				if ( camera().anyInterpolationIsStarted() ) 
 					camera().stopAllInterpolations();
 				Camera cm = camera().clone();
 				cm.setPosition( avatar().cameraPosition() );
     			cm.setUpVector( avatar().upVector() );
-    			cm.lookAt( avatar().target() );    			
-				camera().interpolateTo(cm.frame());				
-	    	}
-	    	break;
-	    }		
-	}
-	
-	/**
-	 * Returns the current camera mode.
-	 * 
-	 * @see #setCameraMode(CameraMode)
-	 */
-	public CameraMode cameraMode() {
-		return camMode;
-	}
-	
-	public CameraProfile currentCameraProfile() {
-		return currentCameraProfile;
-	}
-	
-	public void setCurrentCameraProfile( CameraProfile cp ) {
-		if(cp == null) {
-			currentCameraProfile = null;
-			currentCameraProfileIndex = -1;
+    			cm.lookAt( avatar().target() );
+				camera().interpolateTo(cm.frame());
+				currentCameraProfile = camProfile;
+			} else {			
+				if( camProfile instanceof FirstPersonCameraProfile) {
+					camera().frame().updateFlyUpVector();
+					camera().frame().stopSpinning();
+				}
+				if( currentCameraProfile instanceof ThirdPersonCameraProfile )
+                    camera().interpolateToFitScene();
+				
+				currentCameraProfile = camProfile;
+				
+				setDrawInteractiveFrame(false);
+				if( avatarIsInteractiveDrivableFrame )
+                    ((InteractiveDrivableFrame)avatar()).addInMouseGrabberPool();
+			}			
+			return true;
 		}
-		else
-			setCurrentCameraProfile(cp.name());
-	}
-	
-	public void setCurrentCameraProfile( String cp ) {
-		currentCameraProfile = cameraProfileMap.get(cp);
-		if( currentCameraProfile != null )
-			currentCameraProfileIndex = cameraProfileNames.indexOf(cp);
-		else
-			currentCameraProfileIndex = -1;
 	}
 	
 	/**
-	 * Sets the next camera mode.
-	 * <p>
-	 * The order is: {@link remixlab.proscene.Scene.CameraMode#ARCBALL}
-	 * -> {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH} ->
-	 * {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}.
-	 * 
-	 * @see #setCameraMode(CameraMode)
+	 * Sets the next camera profile.
 	 */
 	public void nextCameraProfile() {
-		if (!cameraProfileNames.isEmpty()) {
-			currentCameraProfileIndex++;
-			if( currentCameraProfileIndex == cameraProfileNames.size() )
-				currentCameraProfileIndex = 0;
-			currentCameraProfile = cameraProfileMap.get(cameraProfileNames.get(currentCameraProfileIndex));			 
-		}
-		/**
-		switch (camMode) {
-		case ARCBALL :
-			setCameraMode(CameraMode.WALKTHROUGH);
-			break;
-	    case WALKTHROUGH :
-	    	if( avatar() != null )
-	    		setCameraMode(CameraMode.THIRD_PERSON);
-	    	else
-	    		setCameraMode(CameraMode.ARCBALL);
-	    	break;
-	    case THIRD_PERSON :
-	    	setCameraMode(CameraMode.ARCBALL);
-	    	break;
-	    }*/
+		int currentCameraProfileIndex = cameraProfileNames.indexOf( currentCameraProfile().name() );	    	    
+		nextCameraProfile(++currentCameraProfileIndex);		
 	}
 	
-	/**
-	 * Sets the previous camera mode.
-	 * 
-	 * <p>
-	 * The order is: {@link remixlab.proscene.Scene.CameraMode#THIRD_PERSON}
-	 * <- {@link remixlab.proscene.Scene.CameraMode#WALKTHROUGH} <-
-	 * {@link remixlab.proscene.Scene.CameraMode#ARCBALL}.
-	 * 
-	 * @see #setCameraMode(CameraMode)
-	 */
-	public void previousCameraProfile() {
+	private void nextCameraProfile(int index) {		
 		if (!cameraProfileNames.isEmpty()) {
-			currentCameraProfileIndex--;
-			if( currentCameraProfileIndex == -1 )
-				currentCameraProfileIndex = cameraProfileNames.size() - 1 ;
-			currentCameraProfile = cameraProfileMap.get(cameraProfileNames.get(currentCameraProfileIndex));			 
-		}
-		
-		/**
-		switch (camMode) {
-		case ARCBALL :
-			if( avatar() != null )
-				setCameraMode(CameraMode.THIRD_PERSON);
+			if( index == cameraProfileNames.size() )
+				index = 0;
+			
+			if ( !setCurrentCameraProfile( cameraProfileNames.get(index) ) )
+				nextCameraProfile(++index);			
+			//debug:
 			else
-				setCameraMode(CameraMode.WALKTHROUGH);
-			break;
-	    case WALKTHROUGH :
-	    	setCameraMode(CameraMode.ARCBALL);
-	    	break;
-	    case THIRD_PERSON :	    	
-	    	setCameraMode(CameraMode.WALKTHROUGH);
-	    	break;
-	    }
-	    */
+				PApplet.println("Camera profile changed to: " + cameraProfileNames.get(index));				
+		}
 	}
 	
 	// 8. Keyboard customization
@@ -1953,64 +1859,12 @@ public class Scene implements MouseWheelListener, PConstants {
 		
 		if(foundKP || foundKR || foundKT) {
 		//if( (foundKP || foundKR || foundKT) && (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
-			PApplet.println("It seems that you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use:");
-			for (String s: keyList) {
-				if(s == " ")
-					PApplet.print("space_bar");
-				else
-					PApplet.print(s);
-				PApplet.print(" ");
-			}
-			PApplet.println("and also the key-codes: left, right, up and down");
-			PApplet.println("To avoid possible conflicts with proscene, you have two choices:");
-			PApplet.println("1. Use some of the keys not listed above.");
-			PApplet.println("2. Disable proscene keyboard handling while doing your keyboard manipulation by calling Scene.disableKeyboardHandling() " +
-					"(you can re-enable it later by calling Scene.enableKeyboardHandling()).");	
-			PApplet.println();
+			PApplet.println("It seems that you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use." +
+					" To avoid possible conflicts with proscene you may disable proscene keyboard handling while doing your keyboard manipulation by calling" +
+					" Scene.disableKeyboardHandling() (you can re-enable it later by calling Scene.enableKeyboardHandling()).");
 		}
 	}
-	
-	/**
-	 * Returns the list of keys that are handled by proscene.
-	 * 
-	 * @see #isInKeyList(String)
-	 */
-	public List<String> keys() {
-		return keyList;
-	}
-	
-	/**
-	private void removeKeys() {
-		keyList.clear();
-	}
-	*/
-	
-	/**
-	 * Internal method used to add all the keys to the list of keys handled by proscene.
-	 * 
-	 * @see #isInKeyList(String)
-	 * @see #keys()
-	 */
-	private void addKeys() {
-		/**
-		 Pending:
-		 1. c,C,d,D,t,T: interactiveAvatarFrame
-		 2. u,U,v: camera.kind
-		 */
-		keyList.addAll(Arrays.asList(new String[]{"1","2","3","4","5","+","-"," ",
-				                                  "a","b","e","f","g","h","i","j","k","l","m","n","o","p","r","s","w",
-				                                  "A","B","E","F","G","H","I","J","K","L","M","N","O","P","R","S","W"}));	
-	}
-	
-	/**
-	 * Returns {@code true} if {@code key} is in the list of keys that are handled by proscene.
-	 * 
-	 * @see #keys()
-	 */
-	public boolean isInKeyList(String key) {
-		return keyList.contains(key);
-	}
-	
+		
 	/**
 	 * Returns {@code true} if the keyboard is currently being handled by proscene and {@code false} otherwise.
 	 * Set keyboard handling with {@link #enableMouseHandling(boolean)}.
@@ -2089,6 +1943,7 @@ public class Scene implements MouseWheelListener, PConstants {
 		keyboardActionDescription.put(GlobalKeyboardAction.HELP, "Toggles the display of the help");
 		keyboardActionDescription.put(GlobalKeyboardAction.EDIT_CAMERA_PATH, "Toggles the key frame camera paths (if any) for edition");
 		keyboardActionDescription.put(GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME, "Toggle interactivity between camera and interactive frame (if any)");
+		keyboardActionDescription.put(GlobalKeyboardAction.DRAW_FRAME_SELECTION_HINT, "Toggle interactive frame selection region drawing");
 		keyboardActionDescription.put(GlobalKeyboardAction.CONSTRAIN_FRAME, "Toggles on and off frame constraints (if any)");
 		//2. mouse click
 		
@@ -2097,39 +1952,57 @@ public class Scene implements MouseWheelListener, PConstants {
 	
 	// Key bindings. 0 means not defined
 	public void setDefaultShortcuts() {
+		/**		 		
+		ARP_FROM_PIXEL, RESET_ARP,		
+		 */		
 		// D e f a u l t s h o r t c u t s
 		//gProfile.setShortcut(KeyEvent.VK_A, KeyBindings.Modifier.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
 		//gProfile.setShortcut('a', PApplet.CONTROL, Scene.KeyboardAction.DRAW_AXIS);
 		setShortcut('a', GlobalKeyboardAction.DRAW_AXIS);
+		//test CASE
+		//setShortcut('A', GlobalKeyboardAction.DRAW_AXIS);
+		//setShortcut('G', GlobalKeyboardAction.DRAW_GRID);	
 		setShortcut('g', GlobalKeyboardAction.DRAW_GRID);
-		//setShortcut(KeyEvent.VK_G, KeyBindings.Modifier.ALT_GRAPH, Scene.KeyboardAction.DRAW_GRID);
-		//setShortcut('G', PApplet.ALT, Scene.KeyboardAction.DRAW_GRID);
+		setShortcut(KeyEvent.VK_G, Modifier.ALT_GRAPH, GlobalKeyboardAction.DRAW_GRID);
+		setShortcut('B', GlobalKeyboardAction.DRAW_GRID);
 		setShortcut(' ', GlobalKeyboardAction.CAMERA_MODE);
 		setShortcut('e', GlobalKeyboardAction.CAMERA_TYPE);
 		setShortcut('k', GlobalKeyboardAction.CAMERA_KIND);
-		//setShortcut(KeyboardAction.STEREO, ?);
-		//setShortcut(KeyboardAction.ANIMATION, ?);
 		setShortcut('h', GlobalKeyboardAction.HELP);
 		setShortcut('r', GlobalKeyboardAction.EDIT_CAMERA_PATH);
 		setShortcut('i', GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		setShortcut('f', GlobalKeyboardAction.DRAW_FRAME_SELECTION_HINT);		
 		setShortcut('w', GlobalKeyboardAction.CONSTRAIN_FRAME);
 
 		// K e y f r a m e s s h o r t c u t k e y s
-		// setPathKey(Qt::Key_F1, 1);
-		// setPathKey(Qt::Key_F2, 2);
-		// setPathKey(Qt::Key_F3, 3);
-		// setPathKey(Qt::Key_F4, 4);
-		// setPathKey(Qt::Key_F5, 5);
-		// setPathKey(Qt::Key_F6, 6);
-		// setPathKey(Qt::Key_F7, 7);
-		// setPathKey(Qt::Key_F8, 8);
-		// setPathKey(Qt::Key_F9, 9);
-		// setPathKey(Qt::Key_F10, 10);
-		// setPathKey(Qt::Key_F11, 11);
-		// setPathKey(Qt::Key_F12, 12);
-
-		// setAddKeyFrameKeyboardModifiers(Qt::AltModifier);
-		// setPlayPathKeyboardModifiers(Qt::NoModifier);
+		setAddKeyFrameKeyboardModifier(Modifier.CONTROL);		
+		setDeleteKeyFrameKeyboardModifier(Modifier.ALT);
+		setPathKey('1', 1);
+		setPathKey('2', 2);
+		setPathKey('3', 3);
+		setPathKey('4', 4);
+		setPathKey('5', 5);
+		//setPathKey('q', 6);//TODO need it to be more general and handle any kind of key?
+	}
+	
+	public void setPathKey(Character key, Integer path) {
+		pathKeys.setMapping(new KeyboardShortcut(key), path);	
+	}
+	
+	public Integer path(Character key) {
+		return pathKeys.mapping(new KeyboardShortcut(key));
+	}
+	
+	public void removePathKey(Character key) {
+		pathKeys.removeMapping(new KeyboardShortcut(key));
+	}
+	
+	public void setAddKeyFrameKeyboardModifier(Modifier modifier) {
+		addKeyFrameKeyboardModifier = modifier;
+	}
+	
+	public void setDeleteKeyFrameKeyboardModifier(Modifier modifier) {
+		deleteKeyFrameKeyboardModifier = modifier;
 	}
 	
 	//wrappers:
@@ -2165,15 +2038,15 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	public GlobalKeyboardAction shortcut(Integer vKey, Modifier modifier) {
-		return gProfile.binding(new KeyboardShortcut(vKey, modifier));
+		return gProfile.mapping(new KeyboardShortcut(vKey, modifier));
 	}
 	
 	public GlobalKeyboardAction shortcut(Arrow arrow) {
-		return gProfile.binding(new KeyboardShortcut(arrow));
+		return gProfile.mapping(new KeyboardShortcut(arrow));
 	}
 	
 	public GlobalKeyboardAction shortcut(Character key) {
-		return gProfile.binding(new KeyboardShortcut(key));
+		return gProfile.mapping(new KeyboardShortcut(key));
 	}
 	
 	public boolean isKeyInUse(KeyboardShortcut key) {
@@ -2184,34 +2057,60 @@ public class Scene implements MouseWheelListener, PConstants {
 		return gProfile.isActionMapped(action);
 	}
 	
-	//should be simply keyreleased
 	protected boolean handleKeyboardAction(KeyEvent e) {
-		GlobalKeyboardAction kba = null;
+		//keyframes:
+		Integer path = path(parent.key);
+		PApplet.println(parent.key + " pressed");
+		if(	path != null ) {
+			if( !e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown() && !e.isShiftDown() ) {
+				PApplet.println("playing");
+				camera().playPath(path);
+				return true;
+			}			
+			if ( ((addKeyFrameKeyboardModifier == Modifier.ALT) && (e.isAltDown())) ||
+				 ((addKeyFrameKeyboardModifier == Modifier.ALT_GRAPH) && (e.isAltGraphDown())) ||
+				 ((addKeyFrameKeyboardModifier == Modifier.CONTROL) && (e.isControlDown())) ||
+				 ((addKeyFrameKeyboardModifier == Modifier.SHIFT) && (e.isShiftDown()))	) {
+				PApplet.println("adding");
+				camera().addKeyFrameToPath(path);
+				return true;
+			}
+			if ( ((deleteKeyFrameKeyboardModifier == Modifier.ALT) && (e.isAltDown())) ||
+				 ((deleteKeyFrameKeyboardModifier == Modifier.ALT_GRAPH) && (e.isAltGraphDown())) ||
+				 ((deleteKeyFrameKeyboardModifier == Modifier.CONTROL) && (e.isControlDown())) ||
+				 ((deleteKeyFrameKeyboardModifier == Modifier.SHIFT) && (e.isShiftDown()))	) {
+				camera().deletePath(path);
+				PApplet.println("removing");
+				return true;
+			}
+		}	
 		
-		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
-			if (e.isAltDown())
-				kba = shortcut( e.getKeyCode(), Modifier.ALT );
-			if (e.isAltGraphDown())
-				kba = shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
-			if (e.isControlDown())
-				kba = shortcut( e.getKeyCode(), Modifier.CONTROL );
-			if (e.isShiftDown())
-				kba = shortcut( e.getKeyCode(), Modifier.SHIFT );			
+		GlobalKeyboardAction kba = null;	
+		kba = shortcut( parent.key );
+		if(kba == null) {
+			if( e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+				if (e.isAltDown())
+					kba = shortcut( e.getKeyCode(), Modifier.ALT );
+				if (e.isAltGraphDown())
+					kba = shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
+				if (e.isControlDown())
+					kba = shortcut( e.getKeyCode(), Modifier.CONTROL );
+				if (e.isShiftDown())
+					kba = shortcut( e.getKeyCode(), Modifier.SHIFT );
+			}
+			else if (parent.key == CODED) {
+				if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
+					if (parent.keyCode == UP)
+						kba = shortcut( Arrow.UP );
+					if (parent.keyCode == DOWN)
+						kba = shortcut( Arrow.DOWN );
+					if (parent.keyCode == RIGHT)
+						kba = shortcut( Arrow.RIGHT );
+					if (parent.keyCode == LEFT)
+						kba = shortcut( Arrow.LEFT );
+					}
+			}
 		}
-		else if (parent.key == CODED) {
-			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
-				if (parent.keyCode == UP)
-					kba = shortcut( Arrow.UP );
-				if (parent.keyCode == DOWN)
-					kba = shortcut( Arrow.DOWN );
-				if (parent.keyCode == RIGHT)
-					kba = shortcut( Arrow.RIGHT );
-				if (parent.keyCode == LEFT)
-					kba = shortcut( Arrow.LEFT );
-		    }			
-		}
-		else
-			kba = shortcut( parent.key );
 		
 		if (kba == null)
 			return false;
@@ -2219,7 +2118,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			handleKeyboardAction(kba);
 			return true;
 		}
-	}
+	}	
 	
 	protected void handleKeyboardAction(GlobalKeyboardAction id) {
 		switch (id) {
@@ -2243,8 +2142,7 @@ public class Scene implements MouseWheelListener, PConstants {
         	if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
 						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn())
-				if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 					arpFlag = true;
 					utilityTimer.start();
 				}
@@ -2254,41 +2152,8 @@ public class Scene implements MouseWheelListener, PConstants {
 			arpFlag = true;
 			utilityTimer.start();
 			break;
-		/**
-		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
-			if ( Camera.class == camera().getClass() )
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
-						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn()) {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point; 
-					pupFlag = true;
-					utilityTimer.start();
-				}
-			}
-			break;
-		case INTERPOLATE_TO_FIT_SCENE:
-			camera().interpolateToFitScene();
-			break;
-		case SHOW_ALL:
-			showAll();
-			break;
-		case MOVE_CAMERA_LEFT:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
-			break;
-		case MOVE_CAMERA_RIGHT:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));
-			break;
-		case MOVE_CAMERA_UP:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
-			break;
-		case MOVE_CAMERA_DOWN:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
-			break;
-		*/
 		case HELP:
-			toggleHelpIsDrawn();
+			help();
 			break;
 		case EDIT_CAMERA_PATH:
 			toggleCameraPathsAreDrawn();
@@ -2296,6 +2161,9 @@ public class Scene implements MouseWheelListener, PConstants {
 		case FOCUS_INTERACTIVE_FRAME:
 			toggleDrawInteractiveFrame();
 			break;
+		case DRAW_FRAME_SELECTION_HINT:
+			toggleFrameSelectionHintIsDrawn();
+			break;			
 		case CONSTRAIN_FRAME:
 			toggleDrawInteractiveFrame();
 			break;
@@ -2303,31 +2171,32 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	protected boolean handleCameraKeyboardAction(KeyEvent e) {
-		CameraKeyboardAction kba = null;		
-		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
-			if (e.isAltDown())
-				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT );			
-			if (e.isAltGraphDown())
-				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
-			if (e.isControlDown())
-				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.CONTROL );
-			if (e.isShiftDown())
-				kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.SHIFT );			
+		CameraKeyboardAction kba = null;
+		kba = currentCameraProfile().shortcut( parent.key );
+		if(kba == null) {
+			if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+				if (e.isAltDown())
+					kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT );
+				if (e.isAltGraphDown())
+					kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
+				if (e.isControlDown())
+					kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.CONTROL );
+				if (e.isShiftDown())
+					kba = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.SHIFT );
+			}
+			else if (parent.key == CODED) {
+				if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
+					if (parent.keyCode == UP)
+						kba = currentCameraProfile().shortcut( Arrow.UP );
+					if (parent.keyCode == DOWN)
+						kba = currentCameraProfile().shortcut( Arrow.DOWN );
+					if (parent.keyCode == RIGHT)
+						kba = currentCameraProfile().shortcut( Arrow.RIGHT );
+					if (parent.keyCode == LEFT)
+						kba = currentCameraProfile().shortcut( Arrow.LEFT );
+				}
+			}
 		}
-		else if (parent.key == CODED) {
-			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
-				if (parent.keyCode == UP)
-					kba = currentCameraProfile().shortcut( Arrow.UP );
-				if (parent.keyCode == DOWN)
-					kba = currentCameraProfile().shortcut( Arrow.DOWN );
-				if (parent.keyCode == RIGHT)
-					kba = currentCameraProfile().shortcut( Arrow.RIGHT );
-				if (parent.keyCode == LEFT)
-					kba = currentCameraProfile().shortcut( Arrow.LEFT );
-		    }			
-		}
-		else
-			kba = currentCameraProfile().shortcut( parent.key );
 		
 		if (kba == null)
 			return false;
@@ -2335,7 +2204,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			handleCameraKeyboardAction(kba);
 			return true;
 		}
-	}
+	}	
 	
 	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
 		switch (id) {
@@ -2343,7 +2212,7 @@ public class Scene implements MouseWheelListener, PConstants {
 			if ( Camera.class == camera().getClass() )
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
 						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn()) {
+			else {
 				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
 				if (wP.found) {
 					pupVec = wP.point; 
@@ -2359,17 +2228,69 @@ public class Scene implements MouseWheelListener, PConstants {
 			showAll();
 			break;
 		case MOVE_CAMERA_LEFT:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector( 10.0f*camera().flySpeed(), 0.0f, 0.0f)));
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));			
 		break;
 		case MOVE_CAMERA_RIGHT:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector( 10.0f*camera().flySpeed(), 0.0f, 0.0f)));
 			break;
 		case MOVE_CAMERA_UP:
-			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,   10.0f*camera().flySpeed(), 0.0f)));
-			break;
-		case MOVE_CAMERA_DOWN:
 			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
 			break;
+		case MOVE_CAMERA_DOWN:			
+			camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f,   10.0f*camera().flySpeed(), 0.0f)));
+			break;
+		case INCREASE_ROTATION_SENSITIVITY:
+			camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);
+			break;
+		case DECREASE_ROTATION_SENSITIVITY:
+			camera().setRotationSensitivity(camera().rotationSensitivity() / 1.2f);
+			break;
+		case INCREASE_CAMERA_FLY_SPEED:
+			camera().setFlySpeed(camera().flySpeed() * 1.2f);
+			break;
+		case DECREASE_CAMERA_FLY_SPEED:
+			camera().setFlySpeed(camera().flySpeed() / 1.2f);
+			break;
+		case INCREASE_AVATAR_FLY_SPEED:
+			if(avatar()!=null)
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)avatar()).setFlySpeed(((InteractiveDrivableFrame)avatar()).flySpeed() * 1.2f);
+			break;
+		case DECREASE_AVATAR_FLY_SPEED:
+			if(avatar()!=null)
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveDrivableFrame)avatar()).setFlySpeed(((InteractiveDrivableFrame)avatar()).flySpeed() / 1.2f);
+			break;
+		case INCREASE_AZYMUTH:
+			if( (avatar()!=null) && (interactiveFrame() != null) )
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveAvatarFrame)avatar()).setAzimuth(((InteractiveAvatarFrame)avatar()).azimuth() + PApplet.PI/64 );
+			break;
+		case DECREASE_AZYMUTH:
+			if( (avatar()!=null) && (interactiveFrame() != null) )
+				if( avatarIsInteractiveAvatarFrame )
+					((InteractiveAvatarFrame)avatar()).setAzimuth(((InteractiveAvatarFrame)avatar()).azimuth() - PApplet.PI/64 );
+			break;
+		case INCREASE_INCLINATION:
+			if( (avatar()!=null) && (interactiveFrame() != null) )
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveAvatarFrame)avatar()).setInclination(((InteractiveAvatarFrame)avatar()).inclination() + PApplet.PI/64 );
+			break;
+		case DECREASE_INCLINATION:
+			if( (avatar()!=null) && (interactiveFrame() != null) )
+				if( avatarIsInteractiveAvatarFrame )
+					((InteractiveAvatarFrame)avatar()).setInclination(((InteractiveAvatarFrame)avatar()).inclination() - PApplet.PI/64 );
+			break;
+		case INCREASE_TRACKING_DISTANCE:
+			if( (avatar()!=null) && (interactiveFrame() != null) )
+				if ( avatarIsInteractiveDrivableFrame )
+					((InteractiveAvatarFrame)avatar()).setTrackingDistance(((InteractiveAvatarFrame)avatar()).trackingDistance() + radius()/50 );
+			break;
+		case DECREASE_TRACKING_DISTANCE:
+			if( (avatar()!=null) && (interactiveFrame() != null) )
+				if( avatarIsInteractiveAvatarFrame )
+					((InteractiveAvatarFrame)avatar()).setTrackingDistance(((InteractiveAvatarFrame)avatar()).trackingDistance() - radius()/50 );
+			break;			
 		}
 	}
 	
@@ -2378,295 +2299,20 @@ public class Scene implements MouseWheelListener, PConstants {
 	 */
 	protected void keyReleased(KeyEvent e) {		
 		boolean handled = false;
-		if(currentCameraProfile!=null)
+		if(currentCameraProfile()!=null)
 			handled = handleCameraKeyboardAction(e);
 		if(!handled)
 			handleKeyboardAction(e);
-		//TODO remove debug
-		//debug:
-		/**
-		PApplet.println( gProfile.shortcutCharacter( KeyboardAction.EDIT_CAMERA_PATH ) );
-		PApplet.println( gProfile.shortcutCharacter( KeyboardAction.MOVE_CAMERA_DOWN ) );
-		if( gProfile.isBinded( KeyboardAction.SHOW_ALL ) )
-			PApplet.println("SHOW_ALL is binded");
-		else
-			PApplet.println("SHOW_ALL is NOT binded!");
-		*/
-		//end debug
-		if (parent.key == '+') {
-			switch (cameraMode()) {
-			case ARCBALL:
-				camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);
-				break;
-			case WALKTHROUGH:
-				camera().setFlySpeed(camera().flySpeed() * 1.2f);
-				break;
-			case THIRD_PERSON:
-				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)avatar()).setFlySpeed(
-							((InteractiveDrivableFrame)avatar()).flySpeed() * 1.2f);
-				break;
-			}			
-		}
-		if (parent.key == '-') {
-			switch (cameraMode()) {
-			case ARCBALL:
-				camera().setRotationSensitivity(camera().rotationSensitivity() / 1.2f);
-				break;
-			case WALKTHROUGH:
-				camera().setFlySpeed(camera().flySpeed() / 1.2f);
-				break;
-			case THIRD_PERSON:
-				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)avatar()).setFlySpeed(
-							((InteractiveDrivableFrame)avatar()).flySpeed() / 1.2f);
-				break;
-			}			
-		}
-		if (parent.keyCode == UP) {	
-			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
-				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
-					new PVector(0.0f,  -10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f)));
-			}
-			else
-				camera().frame().translate(camera().frame().inverseTransformOf(
-					new PVector(0.0f,  10.0f*camera().flySpeed(), 0.0f)));
-		}
-		if (parent.keyCode == DOWN) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
-				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
-					new PVector(0.0f,  10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f)));
-			}
-			else
-				camera().frame().translate(camera().frame().inverseTransformOf(
-					new PVector(0.0f,  -10.0f*camera().flySpeed(), 0.0f)));
-		}
-		if (parent.keyCode == LEFT) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON ) {
-				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
-					new PVector(-10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f,  0.0f)));
-			}
-			else
-				camera().frame().translate(camera().frame().inverseTransformOf(
-					new PVector(10.0f*camera().flySpeed(), 0.0f,  0.0f)));
-		}
-		if (parent.keyCode == RIGHT) {
-			if ( cameraMode() == CameraMode.THIRD_PERSON ) {				
-				if ( avatarIsInteractiveDrivableFrame )
-					((InteractiveDrivableFrame)avatar()).translate(((InteractiveDrivableFrame)avatar()).inverseTransformOf(
-							new PVector(10.0f*((InteractiveDrivableFrame)avatar()).flySpeed(), 0.0f,  0.0f)));
-			}
-			else
-				camera().frame().translate(camera().frame().inverseTransformOf(
-						new PVector(-10.0f*camera().flySpeed(), 0.0f, 0.0f)));				
-		}
-		if ( (parent.key == 'c') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)avatar()).setAzimuth(
-						((InteractiveAvatarFrame)avatar()).azimuth() + PApplet.PI/64 );
-		}
-		if ( (parent.key == 'C') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)avatar()).setAzimuth(
-					((InteractiveAvatarFrame)avatar()).azimuth() - PApplet.PI/64 );
-		}
-		if ( (parent.key == 'd') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)avatar()).setTrackingDistance(
-					((InteractiveAvatarFrame)avatar()).trackingDistance() + radius()/50 );
-		}
-		if ( (parent.key == 'D') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)avatar()).setTrackingDistance(
-					((InteractiveAvatarFrame)avatar()).trackingDistance() - radius()/50 );
-		}
-		if ( (parent.key == 't') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)avatar()).setInclination(
-					((InteractiveAvatarFrame)avatar()).inclination() + PApplet.PI/64 );
-		}
-		if ( (parent.key == 'T') && (cameraMode() == CameraMode.THIRD_PERSON) ) {
-			if( avatarIsInteractiveAvatarFrame )
-				((InteractiveAvatarFrame)avatar()).setInclination(
-					((InteractiveAvatarFrame)avatar()).inclination() - PApplet.PI/64 );
-		}
-		/**
-		//experimental for Camera.Kind.STANDARD
-		if ( (parent.key == 'u') && (camera().kind() == Camera.Kind.STANDARD) ) {
-			camera().changeStandardOrthoFrustumSize(true);		
-		}
-		if ( (parent.key == 'U') && (camera().kind() == Camera.Kind.STANDARD) ) {
-			camera().changeStandardOrthoFrustumSize(false);
-		}
-		if ( parent.key == 'v') {
-			this.toggleCameraKind();
-		}
-		// */		
-		if ( (parent.key == 's') && (cameraMode() != CameraMode.THIRD_PERSON) ) {
-			if( (cameraKind() == Camera.Kind.STANDARD) && ( cameraType() == Camera.Type.ORTHOGRAPHIC ) )
-				showAll();
-			else
-				camera().interpolateToFitScene();
-		}		
-		if ( (parent.key) == 'S' && (cameraMode() != CameraMode.THIRD_PERSON) ) {
-			showAll();
-		}
-		if (parent.key == 'o') {			
-			if ( Camera.class == camera().getClass() )
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
-						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn())
-				if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-					arpFlag = true;
-					utilityTimer.start();
-				}
-		}
-		if (parent.key == 'O') {
-			camera().setArcballReferencePoint(new PVector(0,0,0));
-			arpFlag = true;
-			utilityTimer.start();
-		}
-		if ((parent.key == 'p') || (parent.key == 'P') && (cameraMode() != CameraMode.THIRD_PERSON) ) {
-			if ( Camera.class == camera().getClass() )
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
-						        "See the Point Under Pixel example!");
-			else if (!helpIsDrawn()) {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point; 
-					pupFlag = true;
-					utilityTimer.start();
-				}
-			}
-		}
-		if( (parent.key == '1' || parent.key == 'j' || parent.key == 'J') && (cameraMode() != CameraMode.THIRD_PERSON)) {		
-			if( parent.key == '1') camera().playPath(1);			
-			if( parent.key == 'j') {
-				camera().addKeyFrameToPath(1);
-				//debug
-				/**
-				PApplet.println("Frame " + camera().keyFrameInterpolator(1).numberOfKeyFrames() + " Position: "
-						+ camera().position().x + ", " +  camera().position().y + ", "+ camera().position().z + " Orientation: " 
-						+ camera().orientation().x + ", " + camera().orientation().y + ", " + camera().orientation().z + ", " + camera().orientation().w);
-			    // */
-			}
-			if( parent.key == 'J') camera().deletePath(1);
-		}
-		if( (parent.key == '2' || parent.key == 'k' || parent.key == 'K') && (cameraMode() != CameraMode.THIRD_PERSON)) {
-			if( parent.key == '2') camera().playPath(2);			
-			if( parent.key == 'k') camera().addKeyFrameToPath(2);
-			if( parent.key == 'K') camera().deletePath(2);
-		}
-		if( (parent.key == '3' || parent.key == 'l' || parent.key == 'L') && (cameraMode() != CameraMode.THIRD_PERSON)) {
-			if( parent.key == '3') camera().playPath(3);			
-			if( parent.key == 'l') camera().addKeyFrameToPath(3);
-			if( parent.key == 'L') camera().deletePath(3);
-		}
-		if( (parent.key == '4' || parent.key == 'm' || parent.key == 'M') && (cameraMode() != CameraMode.THIRD_PERSON)) {
-			if( parent.key == '4') camera().playPath(4);			
-			if( parent.key == 'm') camera().addKeyFrameToPath(4);
-			if( parent.key == 'M') camera().deletePath(4);
-		}
-		if( (parent.key == '5' || parent.key == 'n' || parent.key == 'N') && (cameraMode() != CameraMode.THIRD_PERSON)) {
-			if( parent.key == '5') camera().playPath(5);			
-			if( parent.key == 'n') camera().addKeyFrameToPath(5);
-			if( parent.key == 'N') camera().deletePath(5);
-		}
 	}
 	
 	/**
 	 * Displays the help text describing how interactivity actions are binded to the keyboard and mouse.
 	 */
 	public void help() {
-		parent.textFont(font);
-		parent.textMode(SCREEN);
-		
-		String textToDisplay = new String();
-		textToDisplay += "KEYBOARD\n";
-		textToDisplay += "+/-: Increase/Decrease arcball rotation-sensitivity or walkthrough (and third_person) speed\n";
-		textToDisplay += "a/g: Toggle axis/grid drawn\n";
-		textToDisplay += "space_bar/e: Toggle camera mode (arcball, walkthrough or third_person)/Toggle camera type (ortho or persp.)\n";
-		textToDisplay += "h: Toggle the display of this help\n";
-		textToDisplay += "i: Toggle interactivity between camera and interactive frame (if any)\n";
-		textToDisplay += "(o)O/p: (un)set arcball center / zoom on pixel (implement pointUnderPixel in your OpenGL Camera)\n";		
-		textToDisplay += "f/r: Toggle visual hints: interactive frame selection region/key frame camera paths (if any)\n";
-		textToDisplay += "(s)/S: (interpolate to) / show entire scene\n";
-		textToDisplay += "w: Toggle draw with constraint (if any)\n";		
-		textToDisplay += "[j..n]/[J..N]/[1..5]: set/reset/play camera key frame interpolators\n";
-		textToDisplay += "MOUSE (left, middle and right buttons resp.)\n";
-		textToDisplay += "Arcball mode: rotate, zoom and translate\n";
-		textToDisplay += "Walkthrough and third_person modes: move forward, look around, and move backward\n";
-		textToDisplay += "Double click: align scene, show entire scene, and center scene\n";
-		textToDisplay += "MOUSE MODIFIERS (applied to left button in arcball mode)\n";
-		textToDisplay += "shift/ctrl/altgraph: zoom on region/rotate screen/translate screen\n";
-		//parent.textAlign(CENTER, CENTER);
-		//parent.textAlign(RIGHT);		
-		parent.fill(0, 255, 0);		
-		parent.textLeading(20);
-		parent.text(textToDisplay, 10, 10, (parent.width-20), (parent.height-20));		 
+		//TODO implement me!
 	}
 	
 	// 9. Mouse customization
-	
-	private void initDefaultCameraProfiles() {
-		cameraProfileMap = new HashMap<String, CameraProfile>();
-		cameraProfileNames = new ArrayList<String>();
-		currentCameraProfile = null;
-		currentCameraProfileIndex = -1;//should be changed when registering default profiles
-		// register here the default profiles
-		registerCameraProfile( new ArcballCameraProfile(this, "ARCBALL") );
-		registerCameraProfile( new FirstPersonCameraProfile(this, "FIRST_PERSON") );
-	}
-	
-	/**
-	public HashMap<String, CameraProfile> cameraProfileHandler() {
-		return cameraProfileHandler;
-	}
-	*/
-	
-	public boolean registerCameraProfile( CameraProfile cp ) {
-		return registerCameraProfile(cp, false);
-	}
-	
-	public boolean registerCameraProfile( CameraProfile cp, boolean setCurrent ) {
-		//if(!isCameraProfileRegistered(cp)) {
-		if ( !cameraProfileNames.contains(cp.name()) ) {	
-			cameraProfileNames.add( cp.name() );
-			cameraProfileMap.put(cp.name(), cp);
-			if ( (cameraProfileNames.size() == 1 ) || setCurrent )				
-				setCurrentCameraProfile(cp);
-			return true;						
-		}
-		return false;
-	}
-	
-	public void unregisterCameraProfile( CameraProfile cp ) {
-		unregisterCameraProfile( cp.name() );
-	}
-	
-	public void unregisterCameraProfile( String cp ) {
-		cameraProfileNames.remove( cp );
-		cameraProfileMap.remove( cp );
-		if ( cameraProfileNames.size() == 0 ) {
-			currentCameraProfile = null;
-			currentCameraProfileIndex = -1;			
-		}
-	}
-	
-	public CameraProfile cameraProfile(String name) {
-		return cameraProfileMap.get(name);
-	}
-	
-	public boolean isCameraProfileRegistered(CameraProfile cp) {
-		return isCameraProfileRegistered(cp.name());
-	}
-	
-	public boolean isCameraProfileRegistered(String name) {
-		return cameraProfileMap.containsKey(name);
-	}
 	
 	/**
 	 * Parses the sketch to find if any mouseXxxx method has been implemented. If this is the case,
@@ -2731,7 +2377,6 @@ public class Scene implements MouseWheelListener, PConstants {
 			PApplet.println("It seems that you have implemented some mouseXxxxMethod in your sketch! Please bear in mind that proscene overrides processing" +
 					" mouse event methods to handle the camera for you. To avoid posibble conflicts you can disable proscene mouse handling while doing your" +
 					" mouse manipulation by calling Scene.disableMouseHandling() (you can re-enable it later by calling Scene.enableMouseHandling()).");
-			PApplet.println();
 		}		
 	}
 	
@@ -2785,13 +2430,129 @@ public class Scene implements MouseWheelListener, PConstants {
 		parent.unregisterMouseEvent(this);
 	}
 	
-	/**
-	 boolean handled = false;
-		if(currentCameraProfile!=null)
-			handled = handleCameraKeyboardAction(e);
-		if(!handled)
-			handleKeyboardAction(e);
-	 */
+    protected void handleClickAction(ClickAction action) {
+    	//public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, SELECT, ARP_FROM_PIXEL, RESET_ARP,
+			//CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA }    	
+    	
+    	switch (action) {
+    	case NO_CLICK_ACTION :
+    		break;
+    	case ZOOM_ON_PIXEL :
+    		if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else {
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
+				if (wP.found) {
+					pupVec = wP.point; 
+					pupFlag = true;
+					utilityTimer.start();
+				}
+			}
+    		break;
+    	case ZOOM_TO_FIT :
+    		camera().interpolateToFitScene();
+    		break;
+    	case ARP_FROM_PIXEL :
+    		if ( Camera.class == camera().getClass() )
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. " +
+						        "See the Point Under Pixel example!");
+			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+				arpFlag = true;
+				utilityTimer.start();
+			}
+    		break;
+    	case RESET_ARP :
+    		camera().setArcballReferencePoint(new PVector(0,0,0));
+			arpFlag = true;
+			utilityTimer.start();
+    		break;
+    	case CENTER_FRAME :
+    		if (interactiveFrame() != null)
+    			interactiveFrame().projectOnLine(camera().position(), camera().viewDirection());
+    		break;
+    	case CENTER_SCENE :
+    		camera().centerScene();
+    		break;
+    	case SHOW_ALL :
+    		camera().showEntireScene();
+    		break;
+    	case ALIGN_FRAME :
+    		if (interactiveFrame() != null)
+    			interactiveFrame().alignWithFrame(camera().frame());
+    		break;
+    	case ALIGN_CAMERA :
+    		camera().frame().alignWithFrame(null, true);
+    		break;
+    	}    	
+	}
+	
+    //TODO implement me!
+	protected void setDefaultClickActions() {
+		setClickShortcut( Button.LEFT, ClickAction.ALIGN_CAMERA );
+		setClickShortcut( Button.RIGHT, Modifier.CONTROL, 2, ClickAction.SHOW_ALL );
+	}
+	
+	//click wrappers:
+	public void removeAllClickActionShortcuts() {
+		clickActions.removeAllMappings();
+	}
+	
+	public boolean isClickKeyInUse(ClickShortcut key) {
+		return clickActions.isShortcutInUse(key);
+	}
+	
+	public boolean isClickActionBinded(Scene.ClickAction action) {
+		return clickActions.isActionMapped(action);
+	}
+	
+	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button), action);		
+	}
+	
+	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, modifier), action);		
+	}
+	
+	public void setClickShortcut(Scene.Button button, Integer nc, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, nc), action);		
+	}
+	
+	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier, Integer nc, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, modifier, nc), action);
+	}	
+	
+	public void removeClickShortcut(Scene.Button button) {
+		clickActions.removeMapping(new ClickShortcut(button));
+	}
+	
+	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier) {
+		clickActions.removeMapping(new ClickShortcut(button, modifier));
+	}
+	
+	public void removeClickShortcut(Scene.Button button, Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(button, nc));
+	}
+	
+	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier, Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(button, modifier, nc));
+	}
+	
+	public Scene.ClickAction clickShortcut(Scene.Button button) {
+		return clickActions.mapping(new ClickShortcut(button));
+	}
+	
+	public Scene.ClickAction clickShortcut(Scene.Button button, Scene.Modifier modifier) {
+		return clickActions.mapping(new ClickShortcut(button, modifier));
+	}
+	
+	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(button, nc));
+	}
+	
+	public Scene.ClickAction clickShortcut(Scene.Button button, Scene.Modifier modifier, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(button, modifier, nc));
+	}
 	
 	/**
 	 * Method interface between proscene and processing to handle the mouse.
@@ -2800,9 +2561,11 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * @see #enableMouseHandling(boolean)
 	 */
 	public void mouseEvent(MouseEvent e) {
+		if ( currentCameraProfile() == null )
+			return;
 		switch (e.getID()) {
 		case MouseEvent.MOUSE_CLICKED:
-			this.mouseClicked(e);
+			mouseClicked(e);
 		break;
 		case MouseEvent.MOUSE_DRAGGED:
 			this.mouseDragged(e);
@@ -2835,41 +2598,113 @@ public class Scene implements MouseWheelListener, PConstants {
 	}
 	
 	protected MouseAction iFrameMouseAction(MouseEvent e) {
-		return MouseAction.NO_MOUSE_ACTION;
+		MouseAction iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+		Button button = null;
+		switch (e.getButton()) {
+		case MouseEvent.NOBUTTON:
+			button = null;
+			break;
+		case MouseEvent.BUTTON1: //left button
+			button = Button.LEFT;
+			break;
+		case MouseEvent.BUTTON2: //middle button
+			button = Button.MIDDLE;			
+			break;
+		case MouseEvent.BUTTON3: //right button
+			button = Button.RIGHT;
+			break;			
+		}
+		
+		if (button == null) {
+			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+			return iFrameMouseAction;
+		}	
+				
+		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+			if (e.isAltDown())
+				iFrameMouseAction = currentCameraProfile().iFrameShortcut( button, Modifier.ALT );			
+			if (e.isAltGraphDown())
+				iFrameMouseAction = currentCameraProfile().iFrameShortcut( button, Modifier.ALT_GRAPH );
+			if (e.isControlDown())
+				iFrameMouseAction = currentCameraProfile().iFrameShortcut( button, Modifier.CONTROL );
+			if (e.isShiftDown())
+				iFrameMouseAction = currentCameraProfile().iFrameShortcut( button, Modifier.SHIFT );
+			if( iFrameMouseAction != null )
+				return iFrameMouseAction;
+		}
+		
+		iFrameMouseAction = currentCameraProfile().iFrameShortcut( button );
+		
+		if ( iFrameMouseAction == null )
+			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;	
+		
+		return iFrameMouseAction;
+	}
+	
+	private Button getButton(MouseEvent e) {
+		Button button = null;
+		switch (e.getButton()) {
+		case MouseEvent.NOBUTTON:
+			break;
+		case MouseEvent.BUTTON1: //left button
+			button = Button.LEFT;
+			break;
+		case MouseEvent.BUTTON2: //middle button
+			button = Button.MIDDLE;			
+			break;
+		case MouseEvent.BUTTON3: //right button
+			button = Button.RIGHT;
+			break;
+		}
+		return button;
 	}
 	
 	protected MouseAction cameraMouseAction(MouseEvent e) {
-		MouseAction ma = null;
 		/**
-		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
-			if (e.isAltDown())
-				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT );			
-			if (e.isAltGraphDown())
-				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.ALT_GRAPH );
-			if (e.isControlDown())
-				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.CONTROL );
-			if (e.isShiftDown())
-				ma = currentCameraProfile().shortcut( e.getKeyCode(), Modifier.SHIFT );			
+		Button button = null;
+		switch (e.getButton()) {
+		case MouseEvent.NOBUTTON:
+			button = null;
+			break;
+		case MouseEvent.BUTTON1: //left button
+			button = Button.LEFT;
+			break;
+		case MouseEvent.BUTTON2: //middle button
+			button = Button.MIDDLE;			
+			break;
+		case MouseEvent.BUTTON3: //right button
+			button = Button.RIGHT;
+			break;			
 		}
-		else if (parent.key == CODED) {
-			if ( (parent.keyCode == UP) || (parent.keyCode == DOWN) || (parent.keyCode == RIGHT) || (parent.keyCode == LEFT) ) {
-				if (parent.keyCode == UP)
-					ma = currentCameraProfile().shortcut( Arrow.UP );
-				if (parent.keyCode == DOWN)
-					ma = currentCameraProfile().shortcut( Arrow.DOWN );
-				if (parent.keyCode == RIGHT)
-					ma = currentCameraProfile().shortcut( Arrow.RIGHT );
-				if (parent.keyCode == LEFT)
-					ma = currentCameraProfile().shortcut( Arrow.LEFT );
-		    }			
-		}
-		else
-			ma = currentCameraProfile().shortcut( parent.key );
 		*/
 		
-		return ma;
+		Button button = getButton(e);
+		
+		if (button == null) {
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;
+			return camMouseAction;
+		}	
+				
+		if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+			if (e.isAltDown())
+				camMouseAction = currentCameraProfile().cameraShortcut( button, Modifier.ALT );			
+			if (e.isAltGraphDown())
+				camMouseAction = currentCameraProfile().cameraShortcut( button, Modifier.ALT_GRAPH );
+			if (e.isControlDown())
+				camMouseAction = currentCameraProfile().cameraShortcut( button, Modifier.CONTROL );
+			if (e.isShiftDown())
+				camMouseAction = currentCameraProfile().cameraShortcut( button, Modifier.SHIFT );
+			if( camMouseAction != null )
+				return camMouseAction;
+		}
+		
+		camMouseAction = currentCameraProfile().cameraShortcut( button );
+		
+		if ( camMouseAction == null )
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;	
+		
+		return camMouseAction;
 	}
-	
 	
 	/**
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
@@ -2879,11 +2714,9 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #mouseDragged(MouseEvent)
 	 */
-	// /**
-	public void mousePressed(MouseEvent event) {
+	public void mousePressed(MouseEvent event) {		
 		if ( mouseGrabber() != null ) {
 			if ( mouseGrabberIsAnIFrame ) {
-				MouseAction action = iFrameMouseAction(event);
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
 				//TODO: need to call the iFrame version of the method, but don't know how to do it!
 				//need to hardcopy the methods!
@@ -2893,127 +2726,29 @@ public class Scene implements MouseWheelListener, PConstants {
 				//}
 				//else
 				{
-					iFrame.startAction(action, withConstraint);
+					iFrame.startAction(iFrameMouseAction(event), withConstraint);
 					iFrame.mousePressed(event.getPoint(), camera());					
 				}
 			}
 			else
 				mouseGrabber().mousePressed(event.getPoint(), camera());
-		}
-		else if (interactiveFrameIsDrawn()) {
-			MouseAction action = iFrameMouseAction(event);
-			action = iFrameMouseAction(event);
-			interactiveFrame().startAction(action, withConstraint);
-		}
-		else {
-			MouseAction action = cameraMouseAction(event);
-			camera().frame().startAction(action, withConstraint);
-			camera().frame().mousePressed(event.getPoint(), camera());
-		}	
-	}
-	// */
-	
-     /**
-	public void mousePressed(MouseEvent event) {
-	    if ( ( event.isShiftDown() || event.isControlDown() || event.isAltGraphDown() ) && ( cameraMode() == CameraMode.ARCBALL ) ) {
-	    if ( event.isShiftDown() ) {	    	
-	    	fCorner = event.getPoint();
-	    	lCorner = event.getPoint();
-			zoomOnRegion = true;
-			camera().frame().startAction(Scene.MouseAction.ZOOM_ON_REGION, withConstraint);			
-		}
-	    if ( event.isControlDown() ) {
-	    	fCorner = event.getPoint();
-	    	rotateScreen = true;
-	    	camera().frame().startAction(Scene.MouseAction.SCREEN_ROTATE, withConstraint);
-	    }
-	    if ( event.isAltGraphDown() ) {
-	    	translateScreen = true;
-	    	camera().frame().startAction(Scene.MouseAction.SCREEN_TRANSLATE, withConstraint);
-	    }
-	    camera().frame().mousePressed(event.getPoint(), camera()); //totally necessary
-	    }
-		else
-		if ( mouseGrabber() != null ) {
-			if ( mouseGrabberIsAnIFrame ) {
-				InteractiveFrame iFrame = (InteractiveFrame)(mouseGrabber());
-				if ( mouseGrabberIsAnICamFrame ) {
-					//TODO: implement me
-					//iFrame.startAction(action);
-					//iFrame.mousePressEvent(event, camera());
-				}
-				else {
-					switch (event.getButton()) {
-					case MouseEvent.NOBUTTON:
-					case MouseEvent.BUTTON1: { //left button
-						iFrame.startAction(frameLeftButton, withConstraint);
-						break;
-						}
-					case MouseEvent.BUTTON2: { //middle button
-						iFrame.startAction(frameMidButton, withConstraint);
-						break;
-						}
-					case MouseEvent.BUTTON3: { //right button
-						iFrame.startAction(frameRightButton, withConstraint);
-						break;
-						}
-					}
-					iFrame.mousePressed(event.getPoint(), camera());
-				}
-			}
-			else
-				mouseGrabber().mousePressed(event.getPoint(), camera());
-		}
-		else if ( interactiveFrameIsDrawn() ) {
-			switch (event.getButton()) {
-			case MouseEvent.NOBUTTON:
-			case MouseEvent.BUTTON1: { //left button
-				if (event.isShiftDown())
-					interactiveFrame().startAction(frameShiftLeftButton, withConstraint);
-				else
-					interactiveFrame().startAction(frameLeftButton, withConstraint);
-				break;
-				}
-			case MouseEvent.BUTTON2: { //middle button
-				interactiveFrame().startAction(frameMidButton, withConstraint);
-				break;
-				}
-			case MouseEvent.BUTTON3: { //right button
-				if (event.isShiftDown())
-					interactiveFrame().startAction(frameShiftRightButton, withConstraint);
-				else
-					interactiveFrame().startAction(frameRightButton, withConstraint);
-				break;
-				}
-			}	
+			return;
+		}		
+		if ( interactiveFrameIsDrawn() ) {
+			interactiveFrame().startAction(iFrameMouseAction(event), withConstraint);
 			interactiveFrame().mousePressed(event.getPoint(), camera());
-		}
-		else {
-			switch (event.getButton()) {
-			case MouseEvent.NOBUTTON:
-			case MouseEvent.BUTTON1: { //left button
-				if (event.isShiftDown())
-					camera().frame().startAction(cameraShiftLeftButton, withConstraint);
-				else
-					camera().frame().startAction(cameraLeftButton, withConstraint);
-				break;
-				}
-			case MouseEvent.BUTTON2: { //middle button
-				camera().frame().startAction(cameraMidButton, withConstraint);
-				break;
-				}
-			case MouseEvent.BUTTON3: { //right button
-				if (event.isShiftDown())
-					camera().frame().startAction(cameraShiftRightButton, withConstraint);
-				else
-					camera().frame().startAction(cameraRightButton, withConstraint);
-				break;
-				}
-			}	
-			camera().frame().mousePressed(event.getPoint(), camera());
-		}
+			return;
+		}		
+		cameraMouseAction(event);//updates camMouseAction
+		if ( camMouseAction == MouseAction.ZOOM_ON_REGION ) {
+			fCorner = event.getPoint();
+	    	lCorner = event.getPoint();
+		}			
+		if ( camMouseAction == MouseAction.SCREEN_ROTATE )
+			fCorner = event.getPoint();			
+		camera().frame().startAction(camMouseAction, withConstraint);
+		camera().frame().mousePressed(event.getPoint(), camera());		
 	}
-	// */
 	
 	/**
 	 * Mouse drag event is sent to the {@link #mouseGrabber()} (if any) or to the
@@ -3021,194 +2756,91 @@ public class Scene implements MouseWheelListener, PConstants {
 	 * 
 	 * @see #mouseMoved(MouseEvent)
 	 */
-	
-	// /**
-	public void mouseDragged(MouseEvent event) {
+	public void mouseDragged(MouseEvent event) {		
 		if ( mouseGrabber() != null ) {
-			
-		}
-		else if (interactiveFrameIsDrawn()) {
-			
-		}
-		else {
-			
-		}
-	}
-	// */
-	
-	 /**
-	public void mouseDragged(MouseEvent event) {
-		//ZOOM_ON_REGION:		
-		if ( zoomOnRegion || rotateScreen || translateScreen) {
-	    	if (zoomOnRegion) lCorner = event.getPoint();
-	    	else if (rotateScreen) {
-	    		fCorner = event.getPoint();
-	    		camera().frame().mouseDragged(event.getPoint(), camera());
-	    	}
-	    	else //translateScreen
-	    		camera().frame().mouseDragged(event.getPoint(), camera());
-		} else if ( mouseGrabber()!= null ) {
 			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if (mouseGrabber().grabsMouse())
-				if ( mouseGrabberIsAnICamFrame )
+				//if ( mouseGrabberIsAnICamFrame )
 					//TODO: implement me
 					//mouseGrabber().mouseMoveEvent(event, camera());
-					((InteractiveFrame)mouseGrabber()).mouseDragged(event.getPoint(), camera());
-				else
+					//((InteractiveFrame)mouseGrabber()).mouseDragged(event.getPoint(), camera());
+				//else
 					mouseGrabber().mouseDragged(event.getPoint(), camera());
 			else
 				setMouseGrabber(null);
-		}
-		//TODO weird null pointer exception when moving dragging the at Constrained* examples instantiation (specially in ConstrainedFrame)
-		//even the tougher condition is not enough 
-		//else if ( (interactiveFrameIsDrawn()) && (interactiveFrame()!=null) ) {
-		else if ( interactiveFrameIsDrawn() ) {
+			return;
+		}		
+		if ( interactiveFrameIsDrawn() ) {
 			interactiveFrame().mouseDragged(event.getPoint(), camera());
-		}
+			return;
+		}	
+		if ( camMouseAction == MouseAction.ZOOM_ON_REGION )
+			lCorner = event.getPoint();
 		else {
-			//TODO weird null pointer exception when moving dragging the at Constrained* examples instantiation (specially in ConstrainedFrame)
-			//even the tougher condition is not enough
-			//if (camera() != null ) if (camera().frame() != null ) camera().frame().mouseMoveEvent(event, camera());
+			if ( camMouseAction == MouseAction.SCREEN_ROTATE )
+				fCorner = event.getPoint();
 			camera().frame().mouseDragged(event.getPoint(), camera());
 		}
 	}
-	// */
 	
 	/**
 	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
-	
-	/**
-	public void mouseReleased(MouseEvent event) {
+	public void mouseReleased(MouseEvent event) {		
 		if ( mouseGrabber() != null ) {
-			
-		}
-		else if (interactiveFrameIsDrawn()) {
-			
-		}
-		else {
-			
-		}
-	}
-	// */
-	
-	// /**
-	public void mouseReleased(MouseEvent event) {
-		if( zoomOnRegion || rotateScreen || translateScreen ) {
-	    	lCorner = event.getPoint();
-	    	camera().frame().mouseReleased(event.getPoint(), camera());
-			zoomOnRegion = false;
-			rotateScreen = false;
-			translateScreen = false;
-		}
-		else 
-		if (mouseGrabber() != null ) {
-    		if ( mouseGrabberIsAnICamFrame )
+			//if ( mouseGrabberIsAnICamFrame )
     			//mouseGrabber().mouseReleaseEvent(event, camera());
-    			((InteractiveFrame)mouseGrabber()).mouseReleased(event.getPoint(), camera());
-    		else
+    			//((InteractiveFrame)mouseGrabber()).mouseReleased(event.getPoint(), camera());
+    		//else
     			mouseGrabber().mouseReleased(event.getPoint(), camera());
-    		mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() , camera());
+    		mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
     		if (!(mouseGrabber().grabsMouse()))
     			setMouseGrabber(null);
-    	}
-    	else if ( interactiveFrameIsDrawn() ) {
+    		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+    		return;
+		}		
+		if ( interactiveFrameIsDrawn() ) {
     		interactiveFrame().mouseReleased(event.getPoint(), camera());
+    		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+    		return;
 		}
-		else {
-			camera().frame().mouseReleased(event.getPoint(), camera());
-		}
-    }
-    // */
+		
+		if ( ( camMouseAction == MouseAction.ZOOM_ON_REGION ) || ( camMouseAction == MouseAction.SCREEN_ROTATE ) || ( camMouseAction == MouseAction.SCREEN_TRANSLATE ) )
+			lCorner = event.getPoint();
+		camera().frame().mouseReleased(event.getPoint(), camera());		
+		camMouseAction = MouseAction.NO_MOUSE_ACTION;
+		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+    }    
 	
 	/**
-	 * Implements mouse double click events: left button aligns scene,
+	 * Implements mouse click events: left button aligns scene,
 	 * middle button shows entire scene, and right button centers scene.
 	 */
-	public void mouseClicked(MouseEvent event) {
-		if ( event.getClickCount() == 2 ) {
-		if ( mouseGrabber() != null ) {
-			//TODO needs to test: event.getModifiers
-			//if ( !event.isAltDown() && !event.isAltGraphDown() && !event.isControlDown() && !event.isMetaDown() && !event.isShiftDown() ); 
-			//if (event.getModifiers() == 0)
-			switch (event.getButton()) {
-				case MouseEvent.BUTTON1: ((InteractiveFrame)mouseGrabber()).alignWithFrame(camera().frame()); break;
-				case MouseEvent.BUTTON3: ((InteractiveFrame)mouseGrabber()).projectOnLine(camera().position(), camera().viewDirection()); break;
-				default: break;
+	public void mouseClicked(MouseEvent e) {
+		Button button = getButton(e);
+		Integer numberOfClicks = e.getClickCount();
+		ClickAction ca = null;
+		ca = clickShortcut(button, numberOfClicks);
+		if(ca == null) {
+			if(e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown() ) {
+				if (e.isAltDown())
+					ca = clickShortcut(button, Modifier.ALT, numberOfClicks);
+				if (e.isAltGraphDown())
+					ca = clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
+				if (e.isControlDown())
+					ca = clickShortcut(button, Modifier.CONTROL, numberOfClicks);
+				if (e.isShiftDown())
+					ca = clickShortcut(button, Modifier.SHIFT, numberOfClicks);
 			}
 		}
-		else if ( interactiveFrameIsDrawn() ) {
-			switch (event.getButton()) {
-			case MouseEvent.NOBUTTON:
-			case MouseEvent.BUTTON1: { //left button
-				//align frame
-				interactiveFrame().alignWithFrame(camera().frame());
-				break;
-				}
-			case MouseEvent.BUTTON2:
-			case MouseEvent.BUTTON3: { //right button
-				//center frame:
-				interactiveFrame().projectOnLine(camera().position(), camera().viewDirection());
-				break;
-				}
-			}
-		}		
+		
+		if (ca == null)
+			return;
 		else {
-			switch (event.getButton()) {
-			case MouseEvent.NOBUTTON:
-			case MouseEvent.BUTTON1: { //left button
-				camera().frame().alignWithFrame(null, true);
-				break;
-				}
-			case MouseEvent.BUTTON2: { //middle button
-				camera().showEntireScene();
-				break;
-				}
-			case MouseEvent.BUTTON3: { //right button
-				camera().centerScene();
-				break;
-				}
-			}
-		}
+			handleClickAction(ca);
 		}
 	}	
-	
-	/**
-	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
-	 * {@link #interactiveFrame()} mouseWheelEvent method.
-	 */
-	public void mouseWheelMoved(MouseWheelEvent event) {
-		if ( mouseGrabber() != null ) {
-			if ( mouseGrabberIsAnIFrame ) {
-				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
-				if ( mouseGrabberIsAnICamFrame ) {
-					//TODO: implement me
-				}
-				else {
-					iFrame.startAction(MouseAction.ZOOM, withConstraint);
-					iFrame.mouseWheelMoved(event.getWheelRotation(), camera());
-				}
-			}
-			else
-				mouseGrabber().mouseWheelMoved(event.getWheelRotation(), camera());
-			//test
-			/**
-			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() , camera());
-    		if (!(mouseGrabber().grabsMouse()))
-    			setMouseGrabber(null);
-    		*/
-    		//end test
-		}
-		else if ( interactiveFrameIsDrawn() ) {
-			interactiveFrame().startAction(MouseAction.ZOOM, withConstraint);
-			interactiveFrame().mouseWheelMoved(event.getWheelRotation(), camera());
-		}
-		else {
-			camera().frame().startAction(MouseAction.ZOOM, withConstraint);
-			camera().frame().mouseWheelMoved(event.getWheelRotation(), camera());			
-		}
-	}
 	
 	// 10. Register draw method	
 	
@@ -3300,5 +2932,5 @@ public class Scene implements MouseWheelListener, PConstants {
 		//we cache the processing camera modelview matrix into our camera()
 		camera().setModelViewMatrix(pg3d.modelview);
 		//camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
-	}	
+	}
 }

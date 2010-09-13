@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 0.9.1)                         
+ *                     ProScene (version 1.0.0-alpha1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -43,8 +43,7 @@ import javax.swing.Timer;
  * processing applications. 
  */
 
-public class InteractiveFrame extends Frame
-                                implements MouseGrabber, Cloneable {
+public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	
 	//static boolean horiz = true;//Two simultaneous InteractiveFrame require two mice!
 	private boolean horiz;//Two simultaneous InteractiveFrame require two mice!
