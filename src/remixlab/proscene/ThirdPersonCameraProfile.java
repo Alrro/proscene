@@ -29,10 +29,7 @@ package remixlab.proscene;
 public class ThirdPersonCameraProfile extends CameraProfile {
 	public ThirdPersonCameraProfile(Scene scn, String n) {
 		super(scn, n);
-	}
-	
-	@Override
-	protected void setDefaultShortcuts() {
+		
 		setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
 		setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
 		setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);

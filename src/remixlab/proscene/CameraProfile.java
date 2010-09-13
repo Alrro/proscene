@@ -28,7 +28,7 @@ package remixlab.proscene;
 
 import remixlab.proscene.Scene.CameraKeyboardAction;
 
-public abstract class CameraProfile {
+public class CameraProfile {
 	protected String name;
 	protected Scene scene;
 	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;	
@@ -41,10 +41,7 @@ public abstract class CameraProfile {
 		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
 		cameraActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
 		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
-		setDefaultShortcuts();
 	}
-	
-	abstract protected void setDefaultShortcuts();
 	
 	public String name() {
 		return name;

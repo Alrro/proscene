@@ -29,10 +29,6 @@ package remixlab.proscene;
 public class FirstPersonCameraProfile extends CameraProfile {
 	public FirstPersonCameraProfile(Scene scn, String n) {
 		super(scn, n);
-	}
-	
-	@Override
-	protected void setDefaultShortcuts() {
 		//setShortcut('a', CameraKeyboardAction.SHOW_ALL);
 		setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD );
 		setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND );

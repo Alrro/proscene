@@ -109,7 +109,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveDrivable#mouseDragged(Point, Camera)}. 
+	 * {@link remixlab.proscene.InteractiveDrivableFrame#mouseDragged(Point, Camera)}. 
 	 * <p> 
 	 * Motion depends on mouse binding. The resulting displacements are basically inverted
 	 * from those of an InteractiveFrame.

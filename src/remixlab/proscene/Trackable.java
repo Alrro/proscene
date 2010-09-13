@@ -37,7 +37,8 @@ import processing.core.PVector;
  * (known as avatars) should implement this interface. To setup an avatar you
  * should then call {@link remixlab.proscene.Scene#setAvatar(Trackable)}.
  * The avatar will be tracked by the {@link remixlab.proscene.Scene#camera()} when
- * the {@link remixlab.proscene.Scene#cameraMode()} is set to THIRD_PERSON.
+ * {@link remixlab.proscene.Scene#currentCameraProfile()} is an instance of
+ * ThirdPersonCameraProfile.
  */
 
 public interface Trackable {
