@@ -26,7 +26,6 @@ void setup() {
   scene = new Scene(this);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
-  scene.setHelpIsDrawn(false);
   scene.setFrameSelectionHintIsDrawn(true);
   lamp = new Lamp();
 }

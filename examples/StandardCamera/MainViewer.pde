@@ -6,7 +6,6 @@ public class MainViewer extends NApplet {
     scene = new Scene(this);
     // enable computation of the frustum planes equations (disabled by default)
     scene.enableFrustumEquationsUpdate();
-    scene.setHelpIsDrawn(false);
     scene.setGridIsDrawn(false);
     // register the drawing method which was defined externally
     scene.addDrawHandler(parentPApplet, "mainDrawing");

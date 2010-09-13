@@ -25,6 +25,7 @@ class Boid {
     frame = new InteractiveAvatarFrame(scene);	
     frame.setPosition(pos);
     frame.setAzimuth(-HALF_PI);
+    frame.setInclination(PI*(4/5));
     frame.setTrackingDistance(scene.radius()/10);
     vel = new PVector(random(-1, 1), random(-1, 1), random(1, -1));
     acc = new PVector(0, 0, 0);

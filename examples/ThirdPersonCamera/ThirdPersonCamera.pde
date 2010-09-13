@@ -28,6 +28,7 @@ InteractiveAvatarFrame avatar;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
+  scene.registerCameraProfile( new ThirdPersonCameraProfile(scene, "THIRD_PERSON") );
   scene.setRadius(400);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
@@ -45,7 +46,6 @@ void setup() {
   // This also sets the scene.avatar() by automatically calling scene.setAvatar()
   // (provided that the interactive frame is an instance of the InteractiveAvatarFrame class).
   scene.setInteractiveFrame(avatar);
-  scene.setCameraMode( Scene.CameraMode.THIRD_PERSON );
 }
 
 void draw() {
