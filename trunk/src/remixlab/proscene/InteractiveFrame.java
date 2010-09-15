@@ -517,15 +517,23 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * @see #mouseDragged(Point, Camera)
 	 * @see #mouseReleased(Point, Camera)
 	 */	
-	public void mousePressed(Point eventPoint, Camera camera) {		
+	public void mousePressed(Point eventPoint, Camera camera) {
+		iFrameMousePressed(eventPoint, camera);
+	}
+	
+	/**
+	 * Non-overloaded version of {@link #mousePressed(Point, Camera)} which allows derived
+	 * InteractiveFrame classes to call it directly.
+	 */
+	public void iFrameMousePressed(Point eventPoint, Camera camera) {
 		if (grabsMouse())
 			keepsGrabbingMouse = true;
 		
 		prevPos = pressPos = eventPoint;
 	}
-
+	
 	/**
-	 * Modifies the InteractiveFrame according to the mouse motion. 
+	 * Modifies the InteractiveFrame according to the mouse motion.
 	 * <p>  
 	 * Actual behavior depends on mouse bindings. See the Scene documentation for details. 
 	 * <p> 
@@ -536,6 +544,14 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * @see remixlab.proscene.Camera#fieldOfView()
 	*/
 	public void mouseDragged(Point eventPoint, Camera camera) {
+		iFrameMouseDragged(eventPoint, camera);
+	}
+	
+	/**
+	 * Non-overloaded version of {@link #mouseDragged(Point, Camera)} which allows derived
+	 * InteractiveFrame classes to call it directly.
+	 */
+	public void iFrameMouseDragged(Point eventPoint, Camera camera) {
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 			deltaY = prevPos.y - eventPoint.y;
@@ -656,7 +672,7 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 			break;
 		}			
 	}
-
+	
 	/**
 	 * Stops the InteractiveFrame mouse manipulation. 
 	 * <p> 
@@ -670,7 +686,15 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * @see #startSpinning(int)
 	 * @see #isSpinning() 
 	 */
-	public void mouseReleased(Point event, Camera camera) {		
+	public void mouseReleased(Point event, Camera camera) {
+		iFrameMouseReleased(event, camera);
+	}
+
+	/**
+	 * Non-overloaded version of {@link #mouseReleased(Point, Camera)} which allows derived
+	 * InteractiveFrame classes to call it directly.
+	 */
+	public void iFrameMouseReleased(Point event, Camera camera) {		
 		keepsGrabbingMouse = false;
 
 		if (prevConstraint != null)
@@ -713,20 +737,36 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
-
+	
 	/**
 	 * Protected method that simply calls {@code startAction(action, true)}.
 	 * 
 	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
 	protected void startAction(Scene.MouseAction action) {
-		startAction(action, true);
+		iFrameStartAction(action, true);
 	}
 
 	/**
-	 * Protected internal method used to handle mouse events.
+	 * Non-overloaded protected version of {@link #startAction(remixlab.proscene.Scene.MouseAction)}
+	 * which allows derived InteractiveFrame classes to call it directly.
 	 */
-	protected void startAction(Scene.MouseAction act, boolean withConstraint) {		
+	protected void iFrameStartAction(Scene.MouseAction action) {
+		iFrameStartAction(action, true);
+	}
+	
+	/**
+	 * Protected internal method used to handle mouse events.
+	 */	
+	protected void startAction(Scene.MouseAction act, boolean withConstraint) {
+		iFrameStartAction(act, withConstraint);
+	}
+	
+	/**
+	 * Non-overloaded protected version of {@link #startAction(remixlab.proscene.Scene.MouseAction, boolean)}
+	 * which allows derived InteractiveFrame classes to call it directly.
+	 */
+	protected void iFrameStartAction(Scene.MouseAction act, boolean withConstraint) {		
 		action = act;
 		
 		if (withConstraint)
