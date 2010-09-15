@@ -114,7 +114,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * Motion depends on mouse binding. The resulting displacements are basically inverted
 	 * from those of an InteractiveFrame.
 	 */
-	public void mouseDragged(Point eventPoint, Camera camera) {		
+	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY;
 		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
 			deltaY = eventPoint.y - prevPos.y;

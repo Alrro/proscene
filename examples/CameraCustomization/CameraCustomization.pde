@@ -33,7 +33,7 @@ void setup() {
   // double click + button left = align frame with world
   scene.setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_FRAME);
   // single click + middle button + SHIFT = interpolate to show all the scene.
-  scene.setClickShortcut(Button.MIDDLE, Scene.Modifier.SHIFT,	ClickAction.ZOOM_TO_FIT);
+  scene.setClickShortcut(Button.MIDDLE, Scene.Modifier.SHIFT, ClickAction.ZOOM_TO_FIT);
 
   // 3. Customized camera profile:
   wProfile = new WeirdCameraProfile(scene, "MY_PROFILE");
@@ -44,10 +44,8 @@ void setup() {
 }
 
 void draw() {
-  // Proscene sets the background to black by default. If you need to
-  // change
-  // it, don't call background() directly but use scene.background()
-  // instead.
+  // Proscene sets the background to black by default. If you need to change
+  // it, don't call background() directly but use scene.background() instead.
   fill(204, 102, 0);
   box(20, 20, 40);
   // Save the current model view matrix

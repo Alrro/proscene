@@ -219,15 +219,19 @@ public class Scene implements PConstants {
 	/** the name of the method to handle the event */ 
 	protected String drawHandlerMethodName;
 	
+	public Scene(PApplet p) {
+		  this(p, (PGraphics3D) p.g);
+	}
+	
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated objects...) are set to their default values.
 	 * The PApplet background is set to black. See the associated documentation. 
 	 */
-	public Scene(PApplet p) {	
+	public Scene(PApplet p, PGraphics3D renderer) {
 		parent = p;
-		pg3d = (PGraphics3D) parent.g;
-		width = parent.width;
-		height = parent.height;
+		pg3d = renderer;
+		width = pg3d.width;
+		height = pg3d.height;
 		
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
@@ -253,15 +257,7 @@ public class Scene implements PConstants {
 		initDefaultCameraProfiles();	
 		
 		arpFlag = false;
-		pupFlag = false;
-		
-		/**
-		avatarIsInteractiveDrivableFrame = false;//also init in setAvatar, but we need it here to properly init the camera 
-		avatarIsInteractiveAvatarFrame = false;//also init in setAvatar, but we need it here to properly init the camera
-		
-		cam = new Camera(this);
-		setCamera(camera());
-		*/	
+		pupFlag = false;	
 		
 		withConstraint = true;
 		
@@ -331,7 +327,7 @@ public class Scene implements PConstants {
 		camera.setSceneRadius(radius());
 		camera.setSceneCenter(center());		
 		
-		camera.setScreenWidthAndHeight(parent.width, parent.height);
+		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);
 		
 		cam = camera;		
 		
@@ -499,25 +495,25 @@ public class Scene implements PConstants {
     protected void setBackground() {
     	switch (backgroundMode) {
 		case RGB :
-			parent.background(rgb);
+			pg3d.background(rgb);
 			break;
 	    case RGB_ALPHA :
-	    	parent.background(rgb,alpha);
+	    	pg3d.background(rgb,alpha);
 	    	break;
 	    case GRAY :
-	    	parent.background(gray);
+	    	pg3d.background(gray);
 	    	break;
 	    case GRAY_ALPHA :
-	    	parent.background(gray,alpha);
+	    	pg3d.background(gray,alpha);
 	    	break;
 	    case XYZ :
-	    	parent.background(x,y,z);
+	    	pg3d.background(x,y,z);
 	    	break;
 	    case XYZ_ALPHA :
-	    	parent.background(x,y,z,alpha);
+	    	pg3d.background(x,y,z,alpha);
 	    	break;
 	    case PIMAGE :
-	    	parent.background(image);
+	    	pg3d.background(image);
 	    	break;
 	    }
     }
@@ -625,10 +621,10 @@ public class Scene implements PConstants {
      * <b>Attention:</b> If the sizes of the {@code img} and the PApplet differ, the {@code img}
      * will be resized to accommodate the size of the PApplet. 
      */
-    public void background(PImage img) {    	
+    public void background(PImage img) {
     	image = img;
-    	if ( ( image.width != parent.width ) || ( image.height != parent.height ) )
-    		image.resize(parent.width, parent.height); 	
+    	if ( ( image.width != pg3d.width ) || ( image.height != pg3d.height ) )
+    		image.resize(pg3d.width, pg3d.height); 	
     	backgroundMode = BackgroundMode.PIMAGE;
     }
     
@@ -836,9 +832,9 @@ public class Scene implements PConstants {
     	if ( (parent.frame != null) && (parent.frame.isResizable()) ) {
     		if ( backgroundIsHandled() && (backgroundMode == BackgroundMode.PIMAGE) )
     			this.background( this.image );    		
-    		if( (width != parent.width) || (height != parent.height) ) {
-    			width = parent.width;
-    			height = parent.height;
+    		if( (width != pg3d.width) || (height != pg3d.height) ) {
+    			width = pg3d.width;
+    			height = pg3d.height;
     			//weirdly enough we need to bypass what processing does
     			//to the matrices when a resize event takes place
     			camera().detachFromPCamera();    			
@@ -1106,7 +1102,7 @@ public class Scene implements PConstants {
 	 * processing display window.
 	 */
 	public float aspectRatio() { 
-		return (float)parent.width / (float)parent.height;
+		return (float)pg3d.width / (float)pg3d.height;
 	}	
 	
 	// 6. Display of visual hints and Display methods
@@ -1287,17 +1283,17 @@ public class Scene implements PConstants {
 		float p2x = (float) lCorner.getX();
 		float p2y = (float) lCorner.getY();		
 		beginScreenDrawing();
-		parent.pushStyle();
-		parent.stroke(255, 255, 255);
-		parent.strokeWeight(2);
-		parent.noFill();		
-		parent.beginShape();		
-		parent.vertex(xCoord(p1x), yCoord(p1y), zCoord());
-		parent.vertex(xCoord(p2x), yCoord(p1y), zCoord());
-		parent.vertex(xCoord(p2x), yCoord(p2y), zCoord());
-		parent.vertex(xCoord(p1x), yCoord(p2y), zCoord());
-		parent.endShape(CLOSE);
-		parent.popStyle();
+		pg3d.pushStyle();
+		pg3d.stroke(255, 255, 255);
+		pg3d.strokeWeight(2);
+		pg3d.noFill();		
+		pg3d.beginShape();		
+		pg3d.vertex(xCoord(p1x), yCoord(p1y), zCoord());
+		pg3d.vertex(xCoord(p2x), yCoord(p1y), zCoord());
+		pg3d.vertex(xCoord(p2x), yCoord(p2y), zCoord());
+		pg3d.vertex(xCoord(p1x), yCoord(p2y), zCoord());
+		pg3d.endShape(CLOSE);
+		pg3d.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1312,15 +1308,15 @@ public class Scene implements PConstants {
 		float p1y = (float) fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
-		parent.pushStyle();
-		parent.stroke(255, 255, 255);
-		parent.strokeWeight(2);
-		parent.noFill();
-		parent.beginShape(LINE);
-		parent.vertex(xCoord(p1x), yCoord(p1y), zCoord());
-		parent.vertex(xCoord(p2.x), yCoord(p2.y), zCoord());		
-		parent.endShape();
-		parent.popStyle();
+		pg3d.pushStyle();
+		pg3d.stroke(255, 255, 255);
+		pg3d.strokeWeight(2);
+		pg3d.noFill();
+		pg3d.beginShape(LINE);
+		pg3d.vertex(xCoord(p1x), yCoord(p1y), zCoord());
+		pg3d.vertex(xCoord(p2.x), yCoord(p2.y), zCoord());		
+		pg3d.endShape();
+		pg3d.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1352,9 +1348,9 @@ public class Scene implements PConstants {
 			if ( !iF.isInCameraPath() ) {
 				PVector center = camera().projectedCoordinatesOf( iF.position() );
 				if ( mg.grabsMouse() )
-					drawShooterTarget(parent.color(0,255,0),center,12,2);
+					drawShooterTarget(pg3d.color(0,255,0),center,12,2);
 				else
-					drawShooterTarget(parent.color(240,240,240),center,10,1);
+					drawShooterTarget(pg3d.color(240,240,240),center,10,1);
 			}
 		}
 	}
@@ -1371,9 +1367,9 @@ public class Scene implements PConstants {
 			if ( iF.isInCameraPath() ) {
 				PVector center = camera().projectedCoordinatesOf( iF.position() );
 				if ( mg.grabsMouse() )
-					drawShooterTarget(parent.color(0,255,255),center,12,2);
+					drawShooterTarget(pg3d.color(0,255,255),center,12,2);
 				else
-					drawShooterTarget(parent.color(255,255,0),center,10,1);
+					drawShooterTarget(pg3d.color(255,255,0),center,10,1);
 			}
 		}
 	}
@@ -1383,7 +1379,7 @@ public class Scene implements PConstants {
 	 * {@code drawPointUnderPixelHint(parent.color(255,255,255),px,py,15,3)}.
 	 */
 	public void drawCross(float px, float py) {
-		drawCross(parent.color(255,255,255),px,py,15,3);
+		drawCross(pg3d.color(255,255,255),px,py,15,3);
 	}
 	
 	/**
@@ -1394,17 +1390,17 @@ public class Scene implements PConstants {
 	 */
 	public void drawCross(int color, float px, float py, float size, int strokeWeight) {		
 		beginScreenDrawing();
-		parent.pushStyle();
-		parent.stroke(color);
-		parent.strokeWeight(strokeWeight);
-		parent.noFill();
-		parent.beginShape(LINES);
-		parent.vertex(xCoord(px - size), yCoord(py), zCoord());
-		parent.vertex(xCoord(px + size), yCoord(py), zCoord());
-		parent.vertex(xCoord(px), yCoord(py - size), zCoord());
-		parent.vertex(xCoord(px), yCoord(py + size), zCoord());
-		parent.endShape();
-		parent.popStyle();
+		pg3d.pushStyle();
+		pg3d.stroke(color);
+		pg3d.strokeWeight(strokeWeight);
+		pg3d.noFill();
+		pg3d.beginShape(LINES);
+		pg3d.vertex(xCoord(px - size), yCoord(py), zCoord());
+		pg3d.vertex(xCoord(px + size), yCoord(py), zCoord());
+		pg3d.vertex(xCoord(px), yCoord(py - size), zCoord());
+		pg3d.vertex(xCoord(px), yCoord(py + size), zCoord());
+		pg3d.endShape();
+		pg3d.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1422,18 +1418,18 @@ public class Scene implements PConstants {
 		float y = center.y;
 		float angle, x2, y2;		
 		beginScreenDrawing();
-		parent.pushStyle();
-		parent.noStroke();
-		parent.fill(color);
-		parent.beginShape(TRIANGLE_FAN);
-		parent.vertex(xCoord(x), yCoord(y), zCoord());
+		pg3d.pushStyle();
+		pg3d.noStroke();
+		pg3d.fill(color);
+		pg3d.beginShape(TRIANGLE_FAN);
+		pg3d.vertex(xCoord(x), yCoord(y), zCoord());
 		for (angle=0.0f;angle<=TWO_PI; angle+=0.157f) {
 		    x2 = x+PApplet.sin(angle)*radius;
 		    y2 = y+PApplet.cos(angle)*radius;
-		    parent.vertex(xCoord(x2), yCoord(y2), zCoord());
+		    pg3d.vertex(xCoord(x2), yCoord(y2), zCoord());
 		}		
-		parent.endShape();
-		parent.popStyle();
+		pg3d.endShape();
+		pg3d.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1451,16 +1447,16 @@ public class Scene implements PConstants {
 		float y = center.y;
 		
 		beginScreenDrawing();
-		parent.pushStyle();
-		parent.noStroke();
-		parent.fill(color);		
-		parent.beginShape(QUADS);
-		parent.vertex(xCoord(x-edge), yCoord(y+edge), zCoord());
-		parent.vertex(xCoord(x+edge), yCoord(y+edge), zCoord());
-		parent.vertex(xCoord(x+edge), yCoord(y-edge), zCoord());
-		parent.vertex(xCoord(x-edge), yCoord(y-edge), zCoord());
-		parent.endShape();
-		parent.popStyle();
+		pg3d.pushStyle();
+		pg3d.noStroke();
+		pg3d.fill(color);		
+		pg3d.beginShape(QUADS);
+		pg3d.vertex(xCoord(x-edge), yCoord(y+edge), zCoord());
+		pg3d.vertex(xCoord(x+edge), yCoord(y+edge), zCoord());
+		pg3d.vertex(xCoord(x+edge), yCoord(y-edge), zCoord());
+		pg3d.vertex(xCoord(x-edge), yCoord(y-edge), zCoord());
+		pg3d.endShape();
+		pg3d.popStyle();
 		endScreenDrawing();
 	}
 	
@@ -1477,37 +1473,37 @@ public class Scene implements PConstants {
 		float y = center.y;
 		
 		beginScreenDrawing();
-		parent.pushStyle();
+		pg3d.pushStyle();
 		
-		parent.stroke(color);
-		parent.strokeWeight(strokeWeight);
-		parent.noFill();
+		pg3d.stroke(color);
+		pg3d.strokeWeight(strokeWeight);
+		pg3d.noFill();
 		
-		parent.beginShape();		
-		parent.vertex(xCoord((x-length)), yCoord((y-length)+(0.6f*length)), zCoord());		
-		parent.vertex(xCoord(x-length), yCoord(y-length), zCoord());
-		parent.vertex(xCoord((x-length)+(0.6f*length)), yCoord((y-length)), zCoord());
-		parent.endShape();
+		pg3d.beginShape();		
+		pg3d.vertex(xCoord((x-length)), yCoord((y-length)+(0.6f*length)), zCoord());		
+		pg3d.vertex(xCoord(x-length), yCoord(y-length), zCoord());
+		pg3d.vertex(xCoord((x-length)+(0.6f*length)), yCoord((y-length)), zCoord());
+		pg3d.endShape();
 		
-		parent.beginShape();
-		parent.vertex(xCoord((x+length)-(0.6f*length)), yCoord(y-length), zCoord());
-		parent.vertex(xCoord(x+length), yCoord(y-length), zCoord());		
-		parent.vertex(xCoord(x+length), yCoord((y-length)+(0.6f*length)), zCoord());
-		parent.endShape();
+		pg3d.beginShape();
+		pg3d.vertex(xCoord((x+length)-(0.6f*length)), yCoord(y-length), zCoord());
+		pg3d.vertex(xCoord(x+length), yCoord(y-length), zCoord());		
+		pg3d.vertex(xCoord(x+length), yCoord((y-length)+(0.6f*length)), zCoord());
+		pg3d.endShape();
 		
-		parent.beginShape();
-		parent.vertex(xCoord(x+length), yCoord((y+length)-(0.6f*length)), zCoord());
-		parent.vertex(xCoord(x+length), yCoord(y+length), zCoord());
-		parent.vertex(xCoord((x+length)-(0.6f*length)), yCoord(y+length), zCoord());
-		parent.endShape();
+		pg3d.beginShape();
+		pg3d.vertex(xCoord(x+length), yCoord((y+length)-(0.6f*length)), zCoord());
+		pg3d.vertex(xCoord(x+length), yCoord(y+length), zCoord());
+		pg3d.vertex(xCoord((x+length)-(0.6f*length)), yCoord(y+length), zCoord());
+		pg3d.endShape();
 		
-		parent.beginShape();
-		parent.vertex(xCoord((x-length)+(0.6f*length)), yCoord(y+length), zCoord());
-		parent.vertex(xCoord(x-length), yCoord(y+length), zCoord());
-		parent.vertex(xCoord(x-length), yCoord((y+length)-(0.6f*length)), zCoord());
-		parent.endShape();
+		pg3d.beginShape();
+		pg3d.vertex(xCoord((x-length)+(0.6f*length)), yCoord(y+length), zCoord());
+		pg3d.vertex(xCoord(x-length), yCoord(y+length), zCoord());
+		pg3d.vertex(xCoord(x-length), yCoord((y+length)-(0.6f*length)), zCoord());
+		pg3d.endShape();
 		
-		parent.popStyle();
+		pg3d.popStyle();
 		endScreenDrawing();
 		
 		drawCross(color, center.x, center.y, 0.6f*length, strokeWeight);
@@ -1530,14 +1526,15 @@ public class Scene implements PConstants {
 	 * @see #zCoord()
 	 */
 	public void beginScreenDrawing() {
+		if (parent.g != pg3d) pg3d.beginDraw(); // Offscreen rendering.
 		if ( startCoordCalls != 0 )
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
-					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+						"stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
 		startCoordCalls ++;
-
+		
 		float threshold = 0.03f;
-		zC = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() );		
-		if( camera().type() == Camera.Type.PERSPECTIVE ) {							
+		zC = camera().zNear() + threshold * ( camera().zFar() - camera().zNear() );
+		if( camera().type() == Camera.Type.PERSPECTIVE ) {
 			halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView()/2) * zC;
 			halfHeightSpace = PApplet.tan(camera().fieldOfView()/2) * zC;
 		}
@@ -1547,7 +1544,7 @@ public class Scene implements PConstants {
 			halfHeightSpace = wh[1];
 		}
 		
-		parent.pushMatrix();
+		pg3d.pushMatrix();
 		if (camera().frame()!=null) camera().frame().applyTransformation(parent);
 	}
 	
@@ -1565,7 +1562,8 @@ public class Scene implements PConstants {
 			throw new RuntimeException("There should be exactly one startScreenCoordinatesSystem() call followed by a " +
 					"stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
 		
-		parent.popMatrix();
+		pg3d.popMatrix();
+		if (parent.g != pg3d) pg3d.endDraw(); // Offscreen rendering.
 	}
 	
 	/**
@@ -1582,9 +1580,9 @@ public class Scene implements PConstants {
 	 */
 	public float xCoord(float px) {
 		//translate screen origin to center
-		px = px - (parent.width/2);		
+		px = px - (pg3d.width/2);		
 		//normalize
-		px = px / (parent.width/2);
+		px = px / (pg3d.width/2);
 		return halfWidthSpace * px;
 	}
 	
@@ -1602,9 +1600,9 @@ public class Scene implements PConstants {
 	 */
 	public float yCoord(float py) {
 		//translate screen origin to center
-		py = py - (parent.height/2);		
+		py = py - (pg3d.height/2);		
 		//normalize
-		py = py / (parent.height/2);		
+		py = py / (pg3d.height/2);		
 		return halfHeightSpace * py;
 	}
 	
@@ -2692,16 +2690,14 @@ public class Scene implements PConstants {
 	 */
 	public void mousePressed(MouseEvent event) {		
 		if ( mouseGrabber() != null ) {
-			if ( mouseGrabberIsAnIFrame ) {
+			if ( mouseGrabberIsAnIFrame ) {				
 				InteractiveFrame iFrame = (InteractiveFrame)mouseGrabber();
-				//TODO: need to call the iFrame version of the method, but don't know how to do it!
-				//need to hardcopy the methods!
-				//if ( mouseGrabberIsAnICamFrame ) {					
-				//	iFrame.startAction(action);					
-				//	iFrame.mousePressed(event.getPoint(), camera());
-				//}
-				//else
-				{
+				//TODO: the following case needs testing
+				if ( mouseGrabberIsAnICamFrame ) {
+					iFrame.iFrameStartAction(iFrameMouseAction(event), withConstraint);
+					iFrame.iFrameMousePressed(event.getPoint(), camera());
+				}
+				else {
 					iFrame.startAction(iFrameMouseAction(event), withConstraint);
 					iFrame.mousePressed(event.getPoint(), camera());					
 				}
@@ -2711,8 +2707,15 @@ public class Scene implements PConstants {
 			return;
 		}		
 		if ( interactiveFrameIsDrawn() ) {
-			interactiveFrame().startAction(iFrameMouseAction(event), withConstraint);
-			interactiveFrame().mousePressed(event.getPoint(), camera());
+			//TODO: the following case needs testing
+			if ( interactiveFrameIsACam ) {
+				interactiveFrame().iFrameStartAction(iFrameMouseAction(event), withConstraint);
+				interactiveFrame().iFrameMousePressed(event.getPoint(), camera());
+			}
+			else {
+				interactiveFrame().startAction(iFrameMouseAction(event), withConstraint);
+				interactiveFrame().mousePressed(event.getPoint(), camera());
+			}
 			return;
 		}		
 		cameraMouseAction(event);//updates camMouseAction
@@ -2732,22 +2735,25 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #mouseMoved(MouseEvent)
 	 */
-	public void mouseDragged(MouseEvent event) {		
+	public void mouseDragged(MouseEvent event) {	
 		if ( mouseGrabber() != null ) {
 			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
 			if (mouseGrabber().grabsMouse())
-				//if ( mouseGrabberIsAnICamFrame )
-					//TODO: implement me
-					//mouseGrabber().mouseMoveEvent(event, camera());
-					//((InteractiveFrame)mouseGrabber()).mouseDragged(event.getPoint(), camera());
-				//else
+				//TODO: the following case needs testing
+				if ( mouseGrabberIsAnICamFrame )
+					((InteractiveFrame)mouseGrabber()).iFrameMouseDragged(event.getPoint(), camera());
+				else
 					mouseGrabber().mouseDragged(event.getPoint(), camera());
 			else
 				setMouseGrabber(null);
 			return;
 		}		
 		if ( interactiveFrameIsDrawn() ) {
-			interactiveFrame().mouseDragged(event.getPoint(), camera());
+			//TODO: the following case needs testing
+			if ( interactiveFrameIsACam )
+				interactiveFrame().iFrameMouseDragged(event.getPoint(), camera());
+			else
+				interactiveFrame().mouseDragged(event.getPoint(), camera());
 			return;
 		}	
 		if ( camMouseAction == MouseAction.ZOOM_ON_REGION )
@@ -2763,21 +2769,25 @@ public class Scene implements PConstants {
 	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
 	 * {@link #interactiveFrame()} mouseReleaseEvent method.
 	 */
-	public void mouseReleased(MouseEvent event) {		
+	public void mouseReleased(MouseEvent event) {	
 		if ( mouseGrabber() != null ) {
-			//if ( mouseGrabberIsAnICamFrame )
-    			//mouseGrabber().mouseReleaseEvent(event, camera());
-    			//((InteractiveFrame)mouseGrabber()).mouseReleased(event.getPoint(), camera());
-    		//else
+			//TODO: the following case needs testing
+			if ( mouseGrabberIsAnICamFrame )
+    			((InteractiveFrame)mouseGrabber()).iFrameMouseReleased(event.getPoint(), camera());
+    		else
     			mouseGrabber().mouseReleased(event.getPoint(), camera());
     		mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
     		if (!(mouseGrabber().grabsMouse()))
     			setMouseGrabber(null);
     		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
     		return;
-		}		
+		}
 		if ( interactiveFrameIsDrawn() ) {
-    		interactiveFrame().mouseReleased(event.getPoint(), camera());
+			//TODO: the following case needs testing
+			if ( interactiveFrameIsACam )
+				interactiveFrame().iFrameMouseReleased(event.getPoint(), camera());
+			else
+				interactiveFrame().mouseReleased(event.getPoint(), camera());
     		//iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
     		return;
 		}
@@ -2883,12 +2893,12 @@ public class Scene implements PConstants {
 		//compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
-			parent.perspective(camera().fieldOfView(), camera().aspectRatio(),
+			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(),
 					           camera().zNear(), camera().zFar());
 			break;
 		case ORTHOGRAPHIC:
 			float [] wh = camera().getOrthoWidthHeight();
-			parent.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
+			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
 		//if our camera() matrices are detached from the processing Camera matrices,
@@ -2903,7 +2913,7 @@ public class Scene implements PConstants {
 	 */
 	protected void setPModelViewMatrix() {
 		//compute the processing camera modelview matrix from our camera() parameters
-		parent.camera(camera().position().x, camera().position().y, camera().position().z,
+		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
 				      camera().at().x, camera().at().y, camera().at().z,
 				      camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		//if our camera() matrices are detached from the processing Camera matrices,
