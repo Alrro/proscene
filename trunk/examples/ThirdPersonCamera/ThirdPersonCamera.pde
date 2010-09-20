@@ -28,7 +28,7 @@ InteractiveAvatarFrame avatar;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.registerCameraProfile( new ThirdPersonCameraProfile(scene, "THIRD_PERSON") );
+  scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
   scene.setRadius(400);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);

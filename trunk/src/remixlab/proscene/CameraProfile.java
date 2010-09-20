@@ -26,17 +26,28 @@
 
 package remixlab.proscene;
 
+import java.awt.event.MouseEvent;
+
+import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
+import remixlab.proscene.Scene.Modifier;
+import remixlab.proscene.Scene.MouseAction;
 
 public class CameraProfile {
+	public enum Mode {ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}	
 	protected String name;
 	protected Scene scene;
+	protected Mode mode;
 	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
 	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> cameraActions;
 	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> iFrameActions;
-
+	
 	public CameraProfile(Scene scn, String n) {
-		scene = scn;
+		this(scn, n, Mode.CUSTOM);
+	}
+
+	public CameraProfile(Scene scn, String n, Mode m) {
+		scene = scn;		
 		name = n;
 		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(
 				scene);
@@ -44,6 +55,139 @@ public class CameraProfile {
 				scene);
 		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(
 				scene);
+		mode = m;
+		
+		switch (mode) {
+		case ARCBALL:
+			setShortcut(Scene.Arrow.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
+			setShortcut(Scene.Arrow.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
+			setShortcut(Scene.Arrow.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
+			setShortcut(Scene.Arrow.DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
+
+			setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
+			setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
+			setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+			setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
+			setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
+			setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+
+			setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL,
+					Scene.MouseAction.ZOOM_ON_REGION);
+			setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+					Scene.MouseAction.SCREEN_ROTATE);
+
+			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
+			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
+
+			setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
+			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
+			break;
+		case FIRST_PERSON:
+			// setShortcut('a', CameraKeyboardAction.SHOW_ALL);
+			setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
+			setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
+			setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
+			setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+					Scene.MouseAction.ROLL);
+			setCameraShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT,
+					Scene.MouseAction.DRIVE);
+			setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
+			setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
+			setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+
+			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_CAMERA_FLY_SPEED);
+			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_CAMERA_FLY_SPEED);
+
+			setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
+			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
+			break;
+		case THIRD_PERSON:
+			setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
+			setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
+			setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
+			setIFrameShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+					Scene.MouseAction.ROLL);
+			setIFrameShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT,
+					Scene.MouseAction.DRIVE);
+
+			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_AVATAR_FLY_SPEED);
+			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);
+			setShortcut('a', Scene.CameraKeyboardAction.INCREASE_AZYMUTH);
+			setShortcut('A', Scene.CameraKeyboardAction.DECREASE_AZYMUTH);
+			setShortcut('i', Scene.CameraKeyboardAction.INCREASE_INCLINATION);
+			setShortcut('I', Scene.CameraKeyboardAction.DECREASE_INCLINATION);
+			setShortcut('t', Scene.CameraKeyboardAction.INCREASE_TRACKING_DISTANCE);
+			setShortcut('T', Scene.CameraKeyboardAction.DECREASE_TRACKING_DISTANCE);
+			break;
+		case CUSTOM:
+			break;
+		}
+	}
+	
+	protected MouseAction iFrameMouseAction(MouseEvent e) {
+		MouseAction iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+		Button button = scene.getButton(e);
+
+		if (button == null) {
+			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+			return iFrameMouseAction;
+		}
+
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
+				|| e.isShiftDown()) {
+			if (e.isAltDown())
+				iFrameMouseAction = iFrameShortcut(button, Modifier.ALT);
+			if (e.isAltGraphDown())
+				iFrameMouseAction = iFrameShortcut(button, Modifier.ALT_GRAPH);
+			if (e.isControlDown())
+				iFrameMouseAction = iFrameShortcut(button, Modifier.CONTROL);
+			if (e.isShiftDown())
+				iFrameMouseAction = iFrameShortcut(button, Modifier.SHIFT);
+			if (iFrameMouseAction != null)
+				return iFrameMouseAction;
+		}
+
+		iFrameMouseAction = iFrameShortcut(button);
+
+		if (iFrameMouseAction == null)
+			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+
+		return iFrameMouseAction;
+	}
+	
+	public Mode mode() {
+		return mode;
+	}
+	
+	protected MouseAction cameraMouseAction(MouseEvent e) {
+		MouseAction camMouseAction = MouseAction.NO_MOUSE_ACTION;
+		Button button = scene.getButton(e);
+
+		if (button == null) {
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;
+			return camMouseAction;
+		}
+
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
+				|| e.isShiftDown()) {
+			if (e.isAltDown())
+				camMouseAction = cameraShortcut(button, Modifier.ALT);
+			if (e.isAltGraphDown())
+				camMouseAction = cameraShortcut(button, Modifier.ALT_GRAPH);
+			if (e.isControlDown())
+				camMouseAction = cameraShortcut(button, Modifier.CONTROL);
+			if (e.isShiftDown())
+				camMouseAction = cameraShortcut(button, Modifier.SHIFT);
+			if (camMouseAction != null)
+				return camMouseAction;
+		}
+
+		camMouseAction = cameraShortcut(button);
+
+		if (camMouseAction == null)
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;
+
+		return camMouseAction;
 	}
 
 	public String name() {

@@ -31,15 +31,15 @@ import java.awt.event.MouseWheelListener;
 
 import remixlab.proscene.Scene.MouseAction;
 
-public class WheeledArcballCameraProfile extends ArcballCameraProfile implements
+public class WheeledCameraProfile extends CameraProfile implements
 		MouseWheelListener {
 
 	public final Integer WHEEL = 1;
 	protected ShortcutMappings<Shortcut<Integer>, Scene.MouseAction> cameraWheelActions;
 	protected ShortcutMappings<Shortcut<Integer>, Scene.MouseAction> frameWheelActions;
 	
-	public WheeledArcballCameraProfile(Scene scn, String n) {
-		super(scn, n);
+	public WheeledCameraProfile(Scene scn, String n) {
+		super(scn, n, Mode.ARCBALL);
 		scene.parent.addMouseWheelListener(this);
 		cameraWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
 		frameWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
@@ -61,14 +61,14 @@ public class WheeledArcballCameraProfile extends ArcballCameraProfile implements
 	public void mouseWheelMoved(MouseWheelEvent event) {
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
-				if (scene.mouseGrabberIsADrivableFrame) {				
+				if (scene.mouseGrabberIsADrivableFrame) {	
 					InteractiveDrivableFrame iFrame = (InteractiveDrivableFrame) scene.mouseGrabber();
-					iFrame.startAction(frameWheelMouseAction(event), true);
+					iFrame.startAction(frameWheelMouseAction(event), scene.drawIsConstrained());
 					iFrame.iDrivableMouseWheelMoved(event.getWheelRotation(), scene.camera());
 				}
 				else {
 					InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
-					iFrame.startAction(frameWheelMouseAction(event), true);
+					iFrame.startAction(frameWheelMouseAction(event), scene.drawIsConstrained());
 					iFrame.mouseWheelMoved(event.getWheelRotation(), scene.camera());
 				}
 			} else
@@ -76,11 +76,11 @@ public class WheeledArcballCameraProfile extends ArcballCameraProfile implements
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-			scene.interactiveFrame().startAction(frameWheelMouseAction(event), true);
+			scene.interactiveFrame().startAction(frameWheelMouseAction(event), scene.drawIsConstrained());
 			scene.interactiveFrame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 			return;
 		}
-		scene.camera().frame().startAction(cameraWheelMouseAction(event), true);
+		scene.camera().frame().startAction(cameraWheelMouseAction(event), scene.drawIsConstrained());
 		scene.camera().frame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 	}
 	

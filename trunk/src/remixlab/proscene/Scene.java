@@ -34,6 +34,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+//import java.util.TimerTask;
 
 import javax.swing.Timer;
 
@@ -142,6 +143,12 @@ public class Scene implements PConstants {
 
 	// C L I C K A C T I O N S
 	protected ShortcutMappings<ClickShortcut, ClickAction> clickActions;
+	private Integer numberOfClicks;
+	//private java.util.Timer clickTimer;
+	//private Timer clickTimer;	
+	//private boolean hasMouseDoubleClicked;
+	//private Button clickButton;
+	//private Modifier clickModifier;
 
 	// c a m e r a p r o f i l e s
 	private HashMap<String, CameraProfile> cameraProfileMap;
@@ -883,7 +890,7 @@ public class Scene implements PConstants {
 				camera().setScreenWidthAndHeight(width, height);
 				camera().attachToPCamera();
 			} else {
-				if ((currentCameraProfile() instanceof ThirdPersonCameraProfile)
+				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 						&& (!camera().anyInterpolationIsStarted())) {
 					camera().setPosition(avatar().cameraPosition());
 					camera().setUpVector(avatar().upVector());
@@ -897,7 +904,7 @@ public class Scene implements PConstants {
 				// camera().computeModelViewMatrix();
 			}
 		} else {
-			if ((currentCameraProfile() instanceof ThirdPersonCameraProfile)
+			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 					&& (!camera().anyInterpolationIsStarted())) {
 				camera().setPosition(avatar().cameraPosition());
 				camera().setUpVector(avatar().upVector());
@@ -1263,7 +1270,7 @@ public class Scene implements PConstants {
 	public void setDrawInteractiveFrame(boolean draw) {
 		if (draw && (glIFrame == null))
 			return;
-		if (!draw && (currentCameraProfile() instanceof ThirdPersonCameraProfile)
+		if (!draw && (currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 				&& interactiveFrame().equals(avatar()))// more natural than to bypass it
 			return;
 		iFrameIsDrwn = draw;
@@ -1734,8 +1741,8 @@ public class Scene implements PConstants {
 		currentCameraProfile = null;
 		// register here the default profiles
 		//registerCameraProfile(new ArcballCameraProfile(this, "ARCBALL"));
-		registerCameraProfile( new WheeledArcballCameraProfile(this, "ARCBALL") );//TODO test
-		registerCameraProfile(new FirstPersonCameraProfile(this, "FIRST_PERSON"));
+		registerCameraProfile( new WheeledCameraProfile(this, "ARCBALL") );//TODO test
+		registerCameraProfile(new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON));
 		setCurrentCameraProfile("ARCBALL");
 	}
 
@@ -1772,10 +1779,10 @@ public class Scene implements PConstants {
 		int instancesDifferentThanThirdPerson = 0;
 
 		for (CameraProfile camProfile : cameraProfileMap.values())
-			if (!(camProfile instanceof ThirdPersonCameraProfile))
+			if (camProfile.mode() != CameraProfile.Mode.THIRD_PERSON)
 				instancesDifferentThanThirdPerson++;
 
-		if (!(cProfile instanceof ThirdPersonCameraProfile)
+		if ((cProfile.mode() != CameraProfile.Mode.THIRD_PERSON)
 				&& (instancesDifferentThanThirdPerson == 1))
 			return false;
 
@@ -1839,10 +1846,10 @@ public class Scene implements PConstants {
 		CameraProfile camProfile = cameraProfileMap.get(cp);
 		if (camProfile == null)
 			return false;
-		if ((camProfile instanceof ThirdPersonCameraProfile) && (avatar() == null))
+		if ((camProfile.mode() == CameraProfile.Mode.THIRD_PERSON) && (avatar() == null))
 			return false;
 		else {
-			if (camProfile instanceof ThirdPersonCameraProfile) {
+			if (camProfile.mode() == CameraProfile.Mode.THIRD_PERSON) {
 				setDrawInteractiveFrame();
 				setCameraType(Camera.Type.PERSPECTIVE);// TODO can use
 				// camera.kind.standard and
@@ -1865,15 +1872,15 @@ public class Scene implements PConstants {
 				camera().interpolateTo(cm.frame());
 				currentCameraProfile = camProfile;
 			} else {
-				// if( camProfile instanceof FirstPersonCameraProfile) {
 				camera().frame().updateFlyUpVector();
 				camera().frame().stopSpinning();
-				// }
-				if (currentCameraProfile instanceof ThirdPersonCameraProfile)
-					camera().interpolateToFitScene();
-
-				currentCameraProfile = camProfile;
-
+				
+				if(currentCameraProfile != null)
+					if (currentCameraProfile.mode() == CameraProfile.Mode.THIRD_PERSON)
+						camera().interpolateToFitScene();
+        
+				currentCameraProfile = camProfile;        
+				
 				setDrawInteractiveFrame(false);
 				if (avatarIsInteractiveDrivableFrame)
 					((InteractiveDrivableFrame) avatar()).addInMouseGrabberPool();
@@ -2765,57 +2772,7 @@ public class Scene implements PConstants {
 		}
 	}
 
-	//TODO should go at the cameraProfile!
-	protected MouseAction iFrameMouseAction(MouseEvent e) {
-		MouseAction iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-		Button button = null;
-		switch (e.getButton()) {
-		case MouseEvent.NOBUTTON:
-			button = null;
-			break;
-		case MouseEvent.BUTTON1: // left button
-			button = Button.LEFT;
-			break;
-		case MouseEvent.BUTTON2: // middle button
-			button = Button.MIDDLE;
-			break;
-		case MouseEvent.BUTTON3: // right button
-			button = Button.RIGHT;
-			break;
-		}
-
-		if (button == null) {
-			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-			return iFrameMouseAction;
-		}
-
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-				|| e.isShiftDown()) {
-			if (e.isAltDown())
-				iFrameMouseAction = currentCameraProfile().iFrameShortcut(button,
-						Modifier.ALT);
-			if (e.isAltGraphDown())
-				iFrameMouseAction = currentCameraProfile().iFrameShortcut(button,
-						Modifier.ALT_GRAPH);
-			if (e.isControlDown())
-				iFrameMouseAction = currentCameraProfile().iFrameShortcut(button,
-						Modifier.CONTROL);
-			if (e.isShiftDown())
-				iFrameMouseAction = currentCameraProfile().iFrameShortcut(button,
-						Modifier.SHIFT);
-			if (iFrameMouseAction != null)
-				return iFrameMouseAction;
-		}
-
-		iFrameMouseAction = currentCameraProfile().iFrameShortcut(button);
-
-		if (iFrameMouseAction == null)
-			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-
-		return iFrameMouseAction;
-	}
-
-	private Button getButton(MouseEvent e) {
+	protected Button getButton(MouseEvent e) {
 		Button button = null;
 		switch (e.getButton()) {
 		case MouseEvent.NOBUTTON:
@@ -2832,41 +2789,7 @@ public class Scene implements PConstants {
 		}
 		return button;
 	}
-
-	protected MouseAction cameraMouseAction(MouseEvent e) {
-		Button button = getButton(e);
-
-		if (button == null) {
-			camMouseAction = MouseAction.NO_MOUSE_ACTION;
-			return camMouseAction;
-		}
-
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-				|| e.isShiftDown()) {
-			if (e.isAltDown())
-				camMouseAction = currentCameraProfile().cameraShortcut(button,
-						Modifier.ALT);
-			if (e.isAltGraphDown())
-				camMouseAction = currentCameraProfile().cameraShortcut(button,
-						Modifier.ALT_GRAPH);
-			if (e.isControlDown())
-				camMouseAction = currentCameraProfile().cameraShortcut(button,
-						Modifier.CONTROL);
-			if (e.isShiftDown())
-				camMouseAction = currentCameraProfile().cameraShortcut(button,
-						Modifier.SHIFT);
-			if (camMouseAction != null)
-				return camMouseAction;
-		}
-
-		camMouseAction = currentCameraProfile().cameraShortcut(button);
-
-		if (camMouseAction == null)
-			camMouseAction = MouseAction.NO_MOUSE_ACTION;
-
-		return camMouseAction;
-	}
-
+	
 	/**
 	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
 	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)} is
@@ -2879,18 +2802,18 @@ public class Scene implements PConstants {
 		if (mouseGrabber() != null) {
 			if (mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) mouseGrabber();
-				iFrame.startAction(iFrameMouseAction(event), withConstraint);
+				iFrame.startAction(currentCameraProfile().iFrameMouseAction(event), withConstraint);
 				iFrame.mousePressed(event.getPoint(), camera());
 			} else
 				mouseGrabber().mousePressed(event.getPoint(), camera());
 			return;
 		}
 		if (interactiveFrameIsDrawn()) {
-			interactiveFrame().startAction(iFrameMouseAction(event), withConstraint);
+			interactiveFrame().startAction(currentCameraProfile().iFrameMouseAction(event), withConstraint);
 			interactiveFrame().mousePressed(event.getPoint(), camera());
 			return;
 		}
-		cameraMouseAction(event);// updates camMouseAction
+		camMouseAction = currentCameraProfile().cameraMouseAction(event);// updates camMouseAction
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION) {
 			fCorner = event.getPoint();
 			lCorner = event.getPoint();
@@ -2974,71 +2897,164 @@ public class Scene implements PConstants {
 		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 	}
 
-	/**
-	 * Implements mouse click events: left button aligns scene, middle button
-	 * shows entire scene, and right button centers scene.
-	 */
 	public void mouseClicked(MouseEvent e) {
+		// 1. get button
 		Button button = getButton(e);
-		Integer numberOfClicks = e.getClickCount();
-		// debug:
-		PApplet.println("number of clicks: " + numberOfClicks);
-		ClickAction ca = null;
-		ca = clickShortcut(button, numberOfClicks);
-		if (ca == null) {
-			if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-					|| e.isShiftDown()) {
-				if (e.isAltDown())
-					ca = clickShortcut(button, Modifier.ALT, numberOfClicks);
-				if (e.isAltGraphDown())
-					ca = clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
-				if (e.isControlDown())
-					ca = clickShortcut(button, Modifier.CONTROL, numberOfClicks);
-				if (e.isShiftDown())
-					ca = clickShortcut(button, Modifier.SHIFT, numberOfClicks);
-			}
+		// 2. get modifier
+		/**
+		clickModifier = null;
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
+			if (e.isAltDown())
+				clickModifier = Modifier.ALT;
+			if (e.isAltGraphDown())
+				clickModifier = Modifier.ALT_GRAPH;
+			if (e.isControlDown())
+				clickModifier = Modifier.CONTROL;
+			if (e.isShiftDown())
+				clickModifier = Modifier.SHIFT;
 		}
+		*/
+
+		// 2. get number of clicks
+		numberOfClicks = e.getClickCount();
+		
+		/**
+		final int clickDelay = 200;		
+		hasMouseDoubleClicked = false;
+		if (e.getClickCount() == 2) {
+			numberOfClicks = 2;
+			PApplet.println( "  and it's a double click!");
+			hasMouseDoubleClicked = true;
+		} else {
+			clickTimer = new Timer(clickDelay, new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					if (hasMouseDoubleClicked) {
+						hasMouseDoubleClicked = false; // reset flag
+					}
+					else {
+						numberOfClicks = 1;
+						PApplet.println( "  and it's a simple click!");
+					}
+				}
+			});
+			clickTimer.setRepeats(false);
+			clickTimer.start();
+		}
+		// */
+		
+		/**
+		if (e.getClickCount() == 1 && !e.isConsumed()) {
+			e.consume();
+			numberOfClicks = 1;
+			//handle double click.
+		}
+		*/
+		/**
+		if (e.getClickCount() == 2 && !e.isConsumed()) {
+			e.consume();
+			numberOfClicks = 2;
+			//handle double click.
+		}
+		if (e.getClickCount() == 1 && !e.isConsumed() ) {
+			e.consume();
+			numberOfClicks = 1;
+			//handle double click.
+		}
+		*/
+		
+		/**		
+		numberOfClicks = 0;
+		hasMouseDoubleClicked = true;
+		if (e.getClickCount() == 1)  {
+			clickTimer = new java.util.Timer();
+			clickTimer.schedule(new TimerTask() {
+				public void run() {
+					if (!hasMouseDoubleClicked) {
+						numberOfClicks = 1;
+						// Handle single-click
+					}
+					hasMouseDoubleClicked = false;
+					clickTimer.cancel();
+					}
+				}, 175);
+    }
+    else if (e.getClickCount() == 2) {
+    	numberOfClicks = 2;
+    	hasMouseDoubleClicked = true;
+    }
+		// */	
+
+		/**
+		final int clickDelay=200; //delay in msec before processing events
+	  if (e.getClickCount() == 1) {
+	    clickTimer = new Timer(clickDelay, new ActionListener() {
+	    	public void actionPerformed(ActionEvent ae) {	    		
+	    		//do something for the single click
+	    		PApplet.println("single click");
+	    		numberOfClicks = 1;
+	    		test(numberOfClicks);
+	    		}
+	    	});
+	    clickTimer.setRepeats(false); //after expiring once, stop the timer
+	    clickTimer.start();
+	  }
+	  else if (e.getClickCount() == 2) {
+	    clickTimer.stop(); //the single click will not be processed
+	    PApplet.println("double click");
+	    //do something for the double click
+	    numberOfClicks = 2;
+	    test(numberOfClicks);
+	  }
+	  // */
+	  // you can repeat this pattern for more clicks		
+		
+		// debug:
+		//PApplet.println("number of clicks: " + numberOfClicks);
+	  // /**
+		ClickAction ca = null;
+		
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
+			if (e.isAltDown())
+				ca = clickShortcut(button, Modifier.ALT, numberOfClicks);
+			if (e.isAltGraphDown())
+				ca = clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
+			if (e.isControlDown())
+				ca = clickShortcut(button, Modifier.CONTROL, numberOfClicks);
+			if (e.isShiftDown())
+				ca = clickShortcut(button, Modifier.SHIFT, numberOfClicks);
+		}	
+		
+		if (ca == null)
+			ca = clickShortcut(button, numberOfClicks);			
 
 		if (ca == null)
 			return;
 		else {
 			handleClickAction(ca);
 		}
+		// */
 	}
-
+	
 	/**
-	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
-	 * {@link #interactiveFrame()} mouseWheelEvent method.
-	 */
-	public void mouseWheelMoved(int wheelRotation) {
-		if (mouseGrabber() != null) {
-			if (mouseGrabberIsAnIFrame) {
-				InteractiveFrame iFrame = (InteractiveFrame) mouseGrabber();
-				if (mouseGrabberIsADrivableFrame) {
-					// TODO: implement me
-				} else {
-					// iFrame.startAction(MouseAction.ZOOM, withConstraint);
-					iFrame.startAction(MouseAction.ZOOM);// TODO pend
-					iFrame.mouseWheelMoved(wheelRotation, camera());
-				}
-			} else
-				mouseGrabber().mouseWheelMoved(wheelRotation, camera());
-			// test
-			/**
-			 * mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY() ,
-			 * camera()); if (!(mouseGrabber().grabsMouse())) setMouseGrabber(null);
-			 */
-			// end test
-		} else if (interactiveFrameIsDrawn()) {
-			// scene.interactiveFrame().startAction(MouseAction.ZOOM, withConstraint);
-			interactiveFrame().startAction(MouseAction.ZOOM);// TODO pend
-			interactiveFrame().mouseWheelMoved(wheelRotation, camera());
-		} else {
-			// scene.camera().frame().startAction(MouseAction.ZOOM, withConstraint);
-			camera().frame().startAction(MouseAction.ZOOM);// TODO pend
-			camera().frame().mouseWheelMoved(wheelRotation, camera());
-		}
+	private void test(int n) {
+		ClickAction ca = null;		
+		if(clickButton == null)
+			return;
+		
+		if ( clickModifier != null ) 
+				ca = clickShortcut(clickButton, clickModifier, n);
+		
+		if (ca == null)
+			ca = clickShortcut(clickButton, n);			
+
+		if (ca == null)
+			return;
+		else {
+			handleClickAction(ca);
+		}		
 	}
+	// */
+
 
 	// 10. Register draw method
 
