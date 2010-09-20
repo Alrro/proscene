@@ -37,6 +37,7 @@ public class ClickShortcut {
 				+ ((numberOfClicks == null) ? 0 : numberOfClicks.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -58,22 +59,28 @@ public class ClickShortcut {
 			return false;
 		return true;
 	}
-	public ClickShortcut( Scene.Button button ) {
+
+	public ClickShortcut(Scene.Button button) {
 		this(button, 1);
 	}
-	public ClickShortcut( Scene.Button button, Scene.Modifier myModifier ) {
+
+	public ClickShortcut(Scene.Button button, Scene.Modifier myModifier) {
 		this(button, myModifier, 1);
 	}
-	public ClickShortcut( Scene.Button button, Integer clicks ) {
-		//TODO 0 < numberOfClicks < 3(?)
-		buttonCombo = new Shortcut<Scene.Button>(button); 
+
+	public ClickShortcut(Scene.Button button, Integer clicks) {
+		// TODO 0 < numberOfClicks < 3(?)
+		buttonCombo = new Shortcut<Scene.Button>(button);
 		numberOfClicks = clicks;
 	}
-	public ClickShortcut( Scene.Button button, Scene.Modifier myModifier, Integer clicks ) {
-		//TODO 0 < numberOfClicks < 3(?)
+
+	public ClickShortcut(Scene.Button button, Scene.Modifier myModifier,
+			Integer clicks) {
+		// TODO 0 < numberOfClicks < 3(?)
 		buttonCombo = new Shortcut<Scene.Button>(button, myModifier);
 		numberOfClicks = clicks;
 	}
+
 	public final Shortcut<Scene.Button> buttonCombo;
-	public final Integer numberOfClicks;	
+	public final Integer numberOfClicks;
 }

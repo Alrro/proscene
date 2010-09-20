@@ -33,10 +33,10 @@ public final class KeyboardShortcut {
 		int result = 1;
 		result = prime * result + ((arrow == null) ? 0 : arrow.hashCode());
 		result = prime * result + ((key == null) ? 0 : key.hashCode());
-		result = prime * result
-				+ ((keyCombo == null) ? 0 : keyCombo.hashCode());
+		result = prime * result + ((keyCombo == null) ? 0 : keyCombo.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -63,21 +63,25 @@ public final class KeyboardShortcut {
 			return false;
 		return true;
 	}
-	public KeyboardShortcut( Character myKey ) {
+
+	public KeyboardShortcut(Character myKey) {
 		key = myKey;
 		arrow = null;
-		keyCombo = null; 
+		keyCombo = null;
 	}
-	public KeyboardShortcut( Scene.Arrow myArrow ) {
+
+	public KeyboardShortcut(Scene.Arrow myArrow) {
 		key = null;
 		arrow = myArrow;
 		keyCombo = null;
 	}
-	public KeyboardShortcut( Integer vKey, Scene.Modifier myModifier ) {
+
+	public KeyboardShortcut(Integer vKey, Scene.Modifier myModifier) {
 		key = null;
 		arrow = null;
-		keyCombo = new Shortcut<Integer>(vKey, myModifier); 
-	}		
+		keyCombo = new Shortcut<Integer>(vKey, myModifier);
+	}
+
 	public final Character key;
 	public final Scene.Arrow arrow;
 	public final Shortcut<Integer> keyCombo;

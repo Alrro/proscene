@@ -34,25 +34,30 @@ import java.awt.Point;
 import javax.swing.Timer;
 
 /**
- * A InteractiveFrame is a Frame that can be rotated and translated using the mouse.
+ * A InteractiveFrame is a Frame that can be rotated and translated using the
+ * mouse.
  * <p>
- * It converts the mouse motion into a translation and an orientation updates.
- * A InteractiveFrame is used to move an object in the scene. Combined with
- * object selection, its MouseGrabber properties and a dynamic update of the
- * scene, the InteractiveFrame introduces a great reactivity in your
- * processing applications. 
+ * It converts the mouse motion into a translation and an orientation updates. A
+ * InteractiveFrame is used to move an object in the scene. Combined with object
+ * selection, its MouseGrabber properties and a dynamic update of the scene, the
+ * InteractiveFrame introduces a great reactivity in your processing
+ * applications.
  */
 
 public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
-	
-	//static boolean horiz = true;//Two simultaneous InteractiveFrame require two mice!
-	private boolean horiz;//Two simultaneous InteractiveFrame require two mice!
-	
+
+	// static boolean horiz = true;//Two simultaneous InteractiveFrame require two
+	// mice!
+	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
+
 	/**
-	 * This enum defines the coordinate system convention which is defined as {@code LEFT_HANDED}
-	 * by default (processing standard).
+	 * This enum defines the coordinate system convention which is defined as
+	 * {@code LEFT_HANDED} by default (processing standard).
 	 */
-	public enum CoordinateSystemConvention {LEFT_HANDED, RIGHT_HANDED};
+	public enum CoordinateSystemConvention {
+		LEFT_HANDED, RIGHT_HANDED
+	};
+
 	static protected CoordinateSystemConvention coordSysConvention;
 
 	private float rotSensitivity;
@@ -86,37 +91,37 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	protected Point prevPos, pressPos;
 
 	protected boolean grbsMouse;
-	
+
 	protected boolean isInCamPath;
-	
-	// P R O S C E N E   A N D   P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
+
+	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
 
 	/**
 	 * Default constructor.
-	 * <p> 
-	 * The {@link #translation()} is set to (0,0,0), with an identity {@link #rotation()}
-	 * (0,0,0,1) (see Frame constructor for details). The different sensitivities are
-	 * set to their default values (see {@link #rotationSensitivity()} ,
-	 * {@link #translationSensitivity()}, {@link #spinningSensitivity()} and
-	 * {@link #wheelSensitivity()}).
+	 * <p>
+	 * The {@link #translation()} is set to (0,0,0), with an identity
+	 * {@link #rotation()} (0,0,0,1) (see Frame constructor for details). The
+	 * different sensitivities are set to their default values (see
+	 * {@link #rotationSensitivity()} , {@link #translationSensitivity()},
+	 * {@link #spinningSensitivity()} and {@link #wheelSensitivity()}).
 	 */
 	public InteractiveFrame(Scene scn) {
 		scene = scn;
-		
+
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
-		
+
 		addInMouseGrabberPool();
 		isInCamPath = false;
 		grbsMouse = false;
-		
+
 		setRotationSensitivity(1.0f);
 		setTranslationSensitivity(1.0f);
 		setSpinningSensitivity(0.3f);
 		setWheelSensitivity(20.0f);
-		
+
 		keepsGrabbingMouse = false;
 		isSpng = false;
 		prevConstraint = null;
@@ -130,16 +135,19 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 		};
 		spngTimer = new Timer(10, taskPerformer);
 	}
-	
+
 	/**
-	 * Ad-hoc constructor needed to make editable a Camera path defined by KeyFrameInterpolator.
+	 * Ad-hoc constructor needed to make editable a Camera path defined by
+	 * KeyFrameInterpolator.
 	 * <p>
-	 * Constructs a Frame from the the {@code iFrame} {@link #translation()} and {@link #orientation()}
-	 * and immediately adds it to the {@link #mouseGrabberPool()}.
+	 * Constructs a Frame from the the {@code iFrame} {@link #translation()} and
+	 * {@link #orientation()} and immediately adds it to the
+	 * {@link #mouseGrabberPool()}.
 	 * <p>
 	 * A call on {@link #isInCameraPath()} on this Frame will return {@code true}.
 	 * 
-	 * <b>Attention:</b> Internal use. You should call this constructor in your own applications.
+	 * <b>Attention:</b> Internal use. You should call this constructor in your
+	 * own applications.
 	 * 
 	 * @see remixlab.proscene.Camera#addKeyFrameToPath(int)
 	 */
@@ -149,20 +157,20 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
-		
+
 		addInMouseGrabberPool();
 		isInCamPath = true;
 		grbsMouse = false;
-		
+
 		setRotationSensitivity(1.0f);
 		setTranslationSensitivity(1.0f);
 		setSpinningSensitivity(0.3f);
 		setWheelSensitivity(20.0f);
-		
+
 		keepsGrabbingMouse = false;
 		isSpng = false;
 		prevConstraint = null;
-		startedTime = 0;		
+		startedTime = 0;
 		taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				spin();
@@ -171,22 +179,23 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 		spngTimer = new Timer(10, taskPerformer);
 		list = new ArrayList<KeyFrameInterpolator>();
 		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
-		while(it.hasNext())
+		while (it.hasNext())
 			list.add(it.next());
 	}
-	
+
 	/**
-	 * Convenience function that simply calls {@code applyTransformation( scene.parent )}
+	 * Convenience function that simply calls {@code applyTransformation(
+	 * scene.parent )}
 	 * 
 	 * @see remixlab.proscene.Frame#applyTransformation(PApplet)
 	 */
 	public void applyTransformation() {
-		applyTransformation( scene.parent );
+		applyTransformation(scene.parent);
 	}
-	
+
 	/**
-	 * Returns {@code true} if the InteractiveFrame forms part of a Camera path and
-	 * {@code false} otherwise.
+	 * Returns {@code true} if the InteractiveFrame forms part of a Camera path
+	 * and {@code false} otherwise.
 	 * 
 	 */
 	public boolean isInCameraPath() {
@@ -194,11 +203,11 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	}
 
 	/**
-	 * Implementation of the clone method. 
-	 * <p> 
-	 * Calls {@link remixlab.proscene.Frame#clone()} and makes a deep
-	 * copy of the remaining object attributes except for
-	 * {@link #prevConstraint} (which is shallow copied).
+	 * Implementation of the clone method.
+	 * <p>
+	 * Calls {@link remixlab.proscene.Frame#clone()} and makes a deep copy of the
+	 * remaining object attributes except for {@link #prevConstraint} (which is
+	 * shallow copied).
 	 * 
 	 * @see remixlab.proscene.Frame#clone()
 	 */
@@ -207,7 +216,7 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 		clonedIFrame.spngTimer = new Timer(10, taskPerformer);
 		return clonedIFrame;
 	}
-	
+
 	/**
 	 * Returns the coordinate system convention used by this InteractiveFrame.
 	 * 
@@ -216,7 +225,7 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	static public CoordinateSystemConvention coordinateSystemConvention() {
 		return coordSysConvention;
 	}
-	
+
 	/**
 	 * Defines the coordinate system convention of this InteractiveFrame, i.e.,
 	 * how mouse displacements are mapped into the virtual world.
@@ -226,40 +235,40 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	public void setCoordinateSystemConvention(CoordinateSystemConvention c) {
 		coordSysConvention = c;
 	}
-	
+
 	/**
 	 * See {@link remixlab.proscene.MouseGrabber#getMouseGrabberPool()}.
 	 */
 	public List<MouseGrabber> getMouseGrabberPool() {
 		return scene.mouseGrabberPool();
 	}
-	
+
 	/**
-	 * Implementation of the MouseGrabber main method. 
-	 * <p> 
-	 * The InteractiveFrame {@link #grabsMouse()} when the mouse is within a
-	 * 10 pixels region around its
+	 * Implementation of the MouseGrabber main method.
+	 * <p>
+	 * The InteractiveFrame {@link #grabsMouse()} when the mouse is within a 10
+	 * pixels region around its
 	 * {@link remixlab.proscene.Camera#projectedCoordinatesOf(PVector)}
 	 * {@link #position()}.
 	 */
 	public void checkIfGrabsMouse(int x, int y, Camera camera) {
 		int threshold = 10;
 		PVector proj = camera.projectedCoordinatesOf(position());
-		
-		setGrabsMouse(keepsGrabbingMouse || ((PApplet.abs(x - proj.x) < threshold) 
-				                          && (PApplet.abs(y - proj.y) < threshold)));
+
+		setGrabsMouse(keepsGrabbingMouse
+				|| ((PApplet.abs(x - proj.x) < threshold) && (PApplet.abs(y - proj.y) < threshold)));
 	}
 
 	/**
-	 * Returns {@code true} when the MouseGrabber grabs the Scene's mouse events. 
-	 * <p> 
+	 * Returns {@code true} when the MouseGrabber grabs the Scene's mouse events.
+	 * <p>
 	 * This flag is set with {@link #setGrabsMouse(boolean)} by the
 	 * {@link #checkIfGrabsMouse(int, int, Camera)} method.
 	 */
 	public boolean grabsMouse() {
 		return grbsMouse;
 	}
-	
+
 	/**
 	 * Sets the {@link #grabsMouse()} flag. Normally used by
 	 * {@link #checkIfGrabsMouse(int, int, Camera)}.
@@ -267,59 +276,60 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	public void setGrabsMouse(boolean grabs) {
 		grbsMouse = grabs;
 	}
-	
+
 	/**
 	 * Returns {@code true} if the MouseGrabber is currently in the
-	 * {@link #getMouseGrabberPool()} list. 
-	 * <p> 
+	 * {@link #getMouseGrabberPool()} list.
+	 * <p>
 	 * Default value is {@code true}. When set to {@code false} using
 	 * {@link #removeFromMouseGrabberPool()}, the Scene no longer
-	 * {@link #checkIfGrabsMouse(int, int, Camera)} on this MouseGrabber.
-	 * Use {@link #addInMouseGrabberPool()} to insert it back.
+	 * {@link #checkIfGrabsMouse(int, int, Camera)} on this MouseGrabber. Use
+	 * {@link #addInMouseGrabberPool()} to insert it back.
 	 */
-    public boolean isInMouseGrabberPool() {
-    	return scene.mouseGrabberPool().contains(this);
-    }
-    
+	public boolean isInMouseGrabberPool() {
+		return scene.mouseGrabberPool().contains(this);
+	}
+
 	/**
-	 * Adds the MouseGrabber in the {@link #getMouseGrabberPool()}. 
-	 * <p> 
+	 * Adds the MouseGrabber in the {@link #getMouseGrabberPool()}.
+	 * <p>
 	 * All created MouseGrabber are automatically added in the
 	 * {@link #getMouseGrabberPool()} by the constructor. Trying to add a
-	 * MouseGrabber that already {@link #isInMouseGrabberPool()} has no effect. 
-	 * <p> 
-	 * Use {@link #removeFromMouseGrabberPool()} to remove the MouseGrabber
-	 * from the list, so that it is no longer tested with
-	 * {@link #checkIfGrabsMouse(int, int, Camera)} by the Scene, and hence
-	 * can no longer grab mouse focus. Use {@link #isInMouseGrabberPool()} to know
-	 * the current state of the MouseGrabber.
+	 * MouseGrabber that already {@link #isInMouseGrabberPool()} has no effect.
+	 * <p>
+	 * Use {@link #removeFromMouseGrabberPool()} to remove the MouseGrabber from
+	 * the list, so that it is no longer tested with
+	 * {@link #checkIfGrabsMouse(int, int, Camera)} by the Scene, and hence can no
+	 * longer grab mouse focus. Use {@link #isInMouseGrabberPool()} to know the
+	 * current state of the MouseGrabber.
 	 */
-    public void addInMouseGrabberPool() {
+	public void addInMouseGrabberPool() {
 		if (!isInMouseGrabberPool())
 			scene.mouseGrabberPool().add(this);
-    }
-    
+	}
+
 	/**
-	 * Removes the MouseGrabber from the {@link #getMouseGrabberPool()}. 
-	 * <p> 
+	 * Removes the MouseGrabber from the {@link #getMouseGrabberPool()}.
+	 * <p>
 	 * See {@link #addInMouseGrabberPool()} for details. Removing a MouseGrabber
 	 * that is not in {@link #getMouseGrabberPool()} has no effect.
 	 */
-    public void removeFromMouseGrabberPool() {
-    	scene.mouseGrabberPool().remove(this);
-    }
-    
+	public void removeFromMouseGrabberPool() {
+		scene.mouseGrabberPool().remove(this);
+	}
+
 	/**
-	 * Clears the {@link #getMouseGrabberPool()}. 
-	 * <p> 
-	 * Use this method only if it is faster to clear the {@link #getMouseGrabberPool()}
-	 * and then to add back a few MouseGrabbers than to remove each one independently.
-	 * Use Scene.setMouseTracking(false) instead if you want to disable mouse grabbing.
+	 * Clears the {@link #getMouseGrabberPool()}.
+	 * <p>
+	 * Use this method only if it is faster to clear the
+	 * {@link #getMouseGrabberPool()} and then to add back a few MouseGrabbers
+	 * than to remove each one independently. Use Scene.setMouseTracking(false)
+	 * instead if you want to disable mouse grabbing.
 	 */
-    public void clearMouseGrabberPool() {
-    	scene.mouseGrabberPool().clear();
-    }
-    
+	public void clearMouseGrabberPool() {
+		scene.mouseGrabberPool().clear();
+	}
+
 	/**
 	 * Defines the {@link #rotationSensitivity()}.
 	 */
@@ -350,11 +360,11 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 	/**
 	 * Returns the influence of a mouse displacement on the InteractiveFrame
-	 * rotation. 
-	 * <p> 
-	 * Default value is 1.0. With an identical mouse displacement, a higher
-	 * value will generate a larger rotation (and inversely for lower values). A
-	 * 0.0 value will forbid InteractiveFrame mouse rotation (see also 
+	 * rotation.
+	 * <p>
+	 * Default value is 1.0. With an identical mouse displacement, a higher value
+	 * will generate a larger rotation (and inversely for lower values). A 0.0
+	 * value will forbid InteractiveFrame mouse rotation (see also
 	 * {@link #constraint()}).
 	 * 
 	 * @see #setRotationSensitivity(float)
@@ -368,23 +378,23 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 	/**
 	 * Returns the influence of a mouse displacement on the InteractiveFrame
-	 * translation. 
-	 * <p> 
-	 * Default value is 1.0. You should not have to modify this value, since
-	 * with 1.0 the InteractiveFrame precisely stays under the mouse cursor. 
-	 * <p> 
-	 * With an identical mouse displacement, a higher value will generate a
-	 * larger translation (and inversely for lower values). A 0.0 value will
-	 * forbid InteractiveFrame mouse translation (see also {@link #constraint()}). 
-	 * <p> 
-	 * <b>Note:</b> When the InteractiveFrame is used to move a <i>Camera</i>
-	 * (see the InteractiveCameraFrame class documentation), after zooming on
-	 * a small region of your scene, the camera may translate too fast. For a
-	 * camera, it is the Camera.arcballReferencePoint() that exactly matches the
-	 * mouse displacement. Hence, instead of changing the
-	 * {@link #translationSensitivity()}, solve the problem by (temporarily) setting
-	 * the {@link remixlab.proscene.Camera#arcballReferencePoint()} to a point
-	 * on the zoomed region).
+	 * translation.
+	 * <p>
+	 * Default value is 1.0. You should not have to modify this value, since with
+	 * 1.0 the InteractiveFrame precisely stays under the mouse cursor.
+	 * <p>
+	 * With an identical mouse displacement, a higher value will generate a larger
+	 * translation (and inversely for lower values). A 0.0 value will forbid
+	 * InteractiveFrame mouse translation (see also {@link #constraint()}).
+	 * <p>
+	 * <b>Note:</b> When the InteractiveFrame is used to move a <i>Camera</i> (see
+	 * the InteractiveCameraFrame class documentation), after zooming on a small
+	 * region of your scene, the camera may translate too fast. For a camera, it
+	 * is the Camera.arcballReferencePoint() that exactly matches the mouse
+	 * displacement. Hence, instead of changing the
+	 * {@link #translationSensitivity()}, solve the problem by (temporarily)
+	 * setting the {@link remixlab.proscene.Camera#arcballReferencePoint()} to a
+	 * point on the zoomed region).
 	 * 
 	 * @see #setTranslationSensitivity(float)
 	 * @see #rotationSensitivity()
@@ -398,14 +408,14 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	/**
 	 * Returns the minimum mouse speed required (at button release) to make the
 	 * InteractiveFrame {@link #spin()}.
-	 * <p> 
+	 * <p>
 	 * See {@link #spin()}, {@link #spinningQuaternion()} and
-	 * {@link #startSpinning(int)} for details. 
-	 * <p> 
+	 * {@link #startSpinning(int)} for details.
+	 * <p>
 	 * Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
-	 * (300 pixels per second). Use setSpinningSensitivity() to tune this value.
-	 * A higher value will make spinning more difficult (a value of 100.0
-	 * forbids spinning in practice).
+	 * (300 pixels per second). Use setSpinningSensitivity() to tune this value. A
+	 * higher value will make spinning more difficult (a value of 100.0 forbids
+	 * spinning in practice).
 	 * 
 	 * @see #setSpinningSensitivity(float)
 	 * @see #translationSensitivity()
@@ -419,9 +429,10 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	/**
 	 * Returns the mouse wheel sensitivity.
 	 * <p>
-	 * Default value is 20.0. A higher value will make the wheel action more efficient (usually
-	 * meaning a faster zoom). Use a negative value to invert the zoom in and out directions.
-	 *  
+	 * Default value is 20.0. A higher value will make the wheel action more
+	 * efficient (usually meaning a faster zoom). Use a negative value to invert
+	 * the zoom in and out directions.
+	 * 
 	 * @see #setWheelSensitivity(float)
 	 * @see #translationSensitivity()
 	 * @see #rotationSensitivity()
@@ -432,14 +443,14 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	}
 
 	/**
-	 * Returns {@code true} when the InteractiveFrame is spinning. 
-	 * <p> 
+	 * Returns {@code true} when the InteractiveFrame is spinning.
+	 * <p>
 	 * During spinning, {@link #spin()} rotates the InteractiveFrame by its
-	 * {@link #spinningQuaternion()} at a frequency defined when the InteractiveFrame
-	 * {@link #startSpinning(int)}. 
-	 * <p> 
-	 * Use {@link #startSpinning(int)} and {@link #stopSpinning()} to change this state.
-	 * Default value is {@code false}.
+	 * {@link #spinningQuaternion()} at a frequency defined when the
+	 * InteractiveFrame {@link #startSpinning(int)}.
+	 * <p>
+	 * Use {@link #startSpinning(int)} and {@link #stopSpinning()} to change this
+	 * state. Default value is {@code false}.
 	 */
 	public final boolean isSpinning() {
 		return isSpng;
@@ -447,15 +458,15 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 	/**
 	 * Returns the incremental rotation that is applied by {@link #spin()} to the
-	 * InteractiveFrame orientation when it {@link #isSpinning()}. 
-	 * <p> 
+	 * InteractiveFrame orientation when it {@link #isSpinning()}.
+	 * <p>
 	 * Default value is a {@code null} rotation (identity Quaternion). Use
-	 * {@link #setSpinningQuaternion(Quaternion)} to change this value. 
-	 * <p> 
+	 * {@link #setSpinningQuaternion(Quaternion)} to change this value.
+	 * <p>
 	 * The {@link #spinningQuaternion()} axis is defined in the InteractiveFrame
 	 * coordinate system. You can use
-	 * {@link remixlab.proscene.Frame#transformOfFrom(PVector, Frame)} to
-	 * convert this axis from an other Frame coordinate system.
+	 * {@link remixlab.proscene.Frame#transformOfFrom(PVector, Frame)} to convert
+	 * this axis from an other Frame coordinate system.
 	 */
 	public final Quaternion spinningQuaternion() {
 		return spngQuat;
@@ -468,10 +479,11 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	public final void setSpinningQuaternion(Quaternion spinningQuaternion) {
 		spngQuat = spinningQuaternion;
 	}
-	
+
 	/**
-	 * Returns {@code true} when the InteractiveFrame is being manipulated with the mouse.
-	 * Can be used to change the display of the manipulated object during manipulation.
+	 * Returns {@code true} when the InteractiveFrame is being manipulated with
+	 * the mouse. Can be used to change the display of the manipulated object
+	 * during manipulation.
 	 */
 	public boolean isInInteraction() {
 		return action != Scene.MouseAction.NO_MOUSE_ACTION;
@@ -487,136 +499,132 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	}
 
 	/**
-	 * Starts the spinning of the InteractiveFrame. 
-	 * <p> 
+	 * Starts the spinning of the InteractiveFrame.
+	 * <p>
 	 * This method starts a timer that will call {@link #spin()} every {@code
-	 * updateInterval} milliseconds. The InteractiveFrame
-	 * {@link #isSpinning()} until you call {@link #stopSpinning()}.
+	 * updateInterval} milliseconds. The InteractiveFrame {@link #isSpinning()}
+	 * until you call {@link #stopSpinning()}.
 	 */
 	public void startSpinning(int updateInterval) {
-		isSpng = true;		
+		isSpng = true;
 		spngTimer.setDelay(updateInterval);
 		spngTimer.start();
 	}
 
 	/**
-	 * Rotates the InteractiveFrame by its {@link #spinningQuaternion()}.
-	 * Called by a timer when the InteractiveFrame {@link #isSpinning()}.
+	 * Rotates the InteractiveFrame by its {@link #spinningQuaternion()}. Called
+	 * by a timer when the InteractiveFrame {@link #isSpinning()}.
 	 */
 	public void spin() {
 		rotate(spinningQuaternion());
 	}
-	
+
 	/**
-	 * Initiates the InteractiveFrame mouse manipulation. 
-	 * Overloading of
+	 * Initiates the InteractiveFrame mouse manipulation. Overloading of
 	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)}.
 	 * 
 	 * The mouse behavior depends on which button is pressed.
 	 * 
 	 * @see #mouseDragged(Point, Camera)
 	 * @see #mouseReleased(Point, Camera)
-	 */	
-	public void mousePressed(Point eventPoint, Camera camera) {
-		iFrameMousePressed(eventPoint, camera);
-	}
-	
-	/**
-	 * Non-overloaded version of {@link #mousePressed(Point, Camera)} which allows derived
-	 * InteractiveFrame classes to call it directly.
 	 */
-	public void iFrameMousePressed(Point eventPoint, Camera camera) {
+	public void mousePressed(Point eventPoint, Camera camera) {
 		if (grabsMouse())
 			keepsGrabbingMouse = true;
-		
+
 		prevPos = pressPos = eventPoint;
-	}
-	
+	}	
+
 	/**
 	 * Modifies the InteractiveFrame according to the mouse motion.
-	 * <p>  
-	 * Actual behavior depends on mouse bindings. See the Scene documentation for details. 
-	 * <p> 
-	 * The {@code camera} is used to fit the mouse motion with the display parameters.
+	 * <p>
+	 * Actual behavior depends on mouse bindings. See the Scene documentation for
+	 * details.
+	 * <p>
+	 * The {@code camera} is used to fit the mouse motion with the display
+	 * parameters.
 	 * 
 	 * @see remixlab.proscene.Camera#screenWidth()
 	 * @see remixlab.proscene.Camera#screenHeight()
 	 * @see remixlab.proscene.Camera#fieldOfView()
-	*/
-	public void mouseDragged(Point eventPoint, Camera camera) {
-		iFrameMouseDragged(eventPoint, camera);
-	}
-	
-	/**
-	 * Non-overloaded version of {@link #mouseDragged(Point, Camera)} which allows derived
-	 * InteractiveFrame classes to call it directly.
 	 */
-	public void iFrameMouseDragged(Point eventPoint, Camera camera) {
+	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY;
-		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
+		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 			deltaY = prevPos.y - eventPoint.y;
 		else
 			deltaY = eventPoint.y - prevPos.y;
-		
+
 		switch (action) {
-		case TRANSLATE:	{
-			Point delta = new Point((eventPoint.x - prevPos.x), deltaY);				
-			PVector trans = new PVector((float)delta.getX(), (float)-delta.getY(), 0.0f);
+		case TRANSLATE: {
+			Point delta = new Point((eventPoint.x - prevPos.x), deltaY);
+			PVector trans = new PVector((float) delta.getX(), (float) -delta.getY(),
+					0.0f);
 			// Scale to fit the screen mouse displacement
 			switch (camera.type()) {
-			case PERSPECTIVE :
-				trans.mult(2.0f * PApplet.tan(camera.fieldOfView()/2.0f) * PApplet.abs((camera.frame().coordinatesOf(position())).z) / camera.screenHeight());
+			case PERSPECTIVE:
+				trans.mult(2.0f * PApplet.tan(camera.fieldOfView() / 2.0f)
+						* PApplet.abs((camera.frame().coordinatesOf(position())).z)
+						/ camera.screenHeight());
 				break;
-			case ORTHOGRAPHIC :  {				
-				float [] wh = camera.getOrthoWidthHeight();				
+			case ORTHOGRAPHIC: {
+				float[] wh = camera.getOrthoWidthHeight();
 				trans.x *= 2.0 * wh[0] / camera.screenWidth();
 				trans.y *= 2.0 * wh[1] / camera.screenHeight();
 				break;
-				}
+			}
 			}
 			// Transform to world coordinate system.
-			trans = camera.frame().orientation().rotate(PVector.mult(trans, translationSensitivity()));
+			trans = camera.frame().orientation().rotate(
+					PVector.mult(trans, translationSensitivity()));
 			// And then down to frame
-			if (referenceFrame() != null) trans = referenceFrame().transformOf(trans);
+			if (referenceFrame() != null)
+				trans = referenceFrame().transformOf(trans);
 			translate(trans);
 			prevPos = eventPoint;
 			break;
-			}
-		
+		}
+
 		case ZOOM: {
-			//#CONNECTION# wheelEvent ZOOM case
-			PVector trans = new PVector( 0.0f, 
-					                     0.0f, 
-					                     (PVector.sub(camera.position(), position()) ).mag() * deltaY / camera.screenHeight());
+			// #CONNECTION# wheelEvent ZOOM case
+			PVector trans = new PVector(0.0f, 0.0f, (PVector.sub(camera.position(),
+					position())).mag()
+					* deltaY / camera.screenHeight());
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
 			translate(trans);
 			prevPos = eventPoint;
 			break;
-			}
-		
+		}
+
 		case SCREEN_ROTATE: {
-			//TODO: needs testing to see if it works correctly when left-handed is set			
+			// TODO: needs testing to see if it works correctly when left-handed is
+			// set
 			PVector trans = camera.projectedCoordinatesOf(position());
-			float prev_angle = PApplet.atan2(prevPos.y-trans.y, prevPos.x-trans.x);
-			float angle = PApplet.atan2(eventPoint.y-trans.y, eventPoint.x-trans.x);
-			PVector axis = transformOf(camera.frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f)));
+			float prev_angle = PApplet
+					.atan2(prevPos.y - trans.y, prevPos.x - trans.x);
+			float angle = PApplet.atan2(eventPoint.y - trans.y, eventPoint.x
+					- trans.x);
+			PVector axis = transformOf(camera.frame().inverseTransformOf(
+					new PVector(0.0f, 0.0f, -1.0f)));
 			Quaternion rot;
-			if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED)
-				rot = new Quaternion(axis, prev_angle-angle);
+			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+				rot = new Quaternion(axis, prev_angle - angle);
 			else
-				rot = new Quaternion(axis, angle-prev_angle);
-			//#CONNECTION# These two methods should go together (spinning detection and activation)
+				rot = new Quaternion(axis, angle - prev_angle);
+			// #CONNECTION# These two methods should go together (spinning detection
+			// and activation)
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
 			prevPos = eventPoint;
 			break;
-			}
-		
+		}
+
 		case SCREEN_TRANSLATE: {
-			//TODO: needs testing to see if it works correctly when left-handed is set
+			// TODO: needs testing to see if it works correctly when left-handed is
+			// set
 			PVector trans = new PVector();
 			int dir = mouseOriginalDirection(eventPoint);
 			if (dir == 1)
@@ -624,77 +632,76 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 			else if (dir == -1)
 				trans.set(0.0f, -deltaY, 0.0f);
 			switch (camera.type()) {
-			case PERSPECTIVE :
-				trans.mult(PApplet.tan(camera.fieldOfView()/2.0f) * PApplet.abs((camera.frame().coordinatesOf(position())).z) / camera.screenHeight());
+			case PERSPECTIVE:
+				trans.mult(PApplet.tan(camera.fieldOfView() / 2.0f)
+						* PApplet.abs((camera.frame().coordinatesOf(position())).z)
+						/ camera.screenHeight());
 				break;
-			case ORTHOGRAPHIC : {				
-				float [] wh = camera.getOrthoWidthHeight();
+			case ORTHOGRAPHIC: {
+				float[] wh = camera.getOrthoWidthHeight();
 				trans.x *= 2.0 * wh[0] / camera.screenWidth();
 				trans.y *= 2.0 * wh[1] / camera.screenHeight();
 				break;
-				}
 			}
-			// Transform to world coordinate system.			
-			trans = camera.frame().orientation().rotate(PVector.mult(trans, translationSensitivity()));
+			}
+			// Transform to world coordinate system.
+			trans = camera.frame().orientation().rotate(
+					PVector.mult(trans, translationSensitivity()));
 			// And then down to frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
-			
+
 			translate(trans);
 			prevPos = eventPoint;
 			break;
-			}
-		
+		}
+
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(position());
-			Quaternion rot = deformedBallQuaternion(eventPoint.x, eventPoint.y, trans.x, trans.y, camera);
+			Quaternion rot = deformedBallQuaternion(eventPoint.x, eventPoint.y,
+					trans.x, trans.y, camera);
 			trans.set(-rot.x, -rot.y, -rot.z);
 			trans = camera.frame().orientation().rotate(trans);
 			trans = transformOf(trans);
 			rot.x = trans.x;
 			rot.y = trans.y;
 			rot.z = trans.z;
-			//#CONNECTION# These two methods should go together (spinning detection and activation)
+			// #CONNECTION# These two methods should go together (spinning detection
+			// and activation)
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
 			prevPos = eventPoint;
-			break;			
-			}
-		
+			break;
+		}
+
 		case NO_MOUSE_ACTION:
-			// Possible when the InteractiveFrame is a MouseGrabber. This method is then called without startAction
+			// Possible when the InteractiveFrame is a MouseGrabber. This method is
+			// then called without startAction
 			// because of mouseTracking.
 			break;
-			
+
 		default:
 			prevPos = eventPoint;
 			break;
-		}			
-	}
-	
-	/**
-	 * Stops the InteractiveFrame mouse manipulation. 
-	 * <p> 
-	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseReleased(Point, Camera)}. 
-	 * <p> 
-	 * If the action was ROTATE MouseAction, a continuous spinning is possible if the speed
-	 * of the mouse cursor is larger than {@link #spinningSensitivity()} when the button is
-	 * released. Press the rotate button again to stop spinning.
-	 * 
-	 * @see #startSpinning(int)
-	 * @see #isSpinning() 
-	 */
-	public void mouseReleased(Point event, Camera camera) {
-		iFrameMouseReleased(event, camera);
+		}
 	}
 
 	/**
-	 * Non-overloaded version of {@link #mouseReleased(Point, Camera)} which allows derived
-	 * InteractiveFrame classes to call it directly.
+	 * Stops the InteractiveFrame mouse manipulation.
+	 * <p>
+	 * Overloading of
+	 * {@link remixlab.proscene.MouseGrabber#mouseReleased(Point, Camera)}.
+	 * <p>
+	 * If the action was ROTATE MouseAction, a continuous spinning is possible if
+	 * the speed of the mouse cursor is larger than {@link #spinningSensitivity()}
+	 * when the button is released. Press the rotate button again to stop
+	 * spinning.
+	 * 
+	 * @see #startSpinning(int)
+	 * @see #isSpinning()
 	 */
-	public void iFrameMouseReleased(Point event, Camera camera) {		
+	public void mouseReleased(Point event, Camera camera) {
 		keepsGrabbingMouse = false;
 
 		if (prevConstraint != null)
@@ -709,9 +716,9 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseWheelMoved(int, Camera)}. 
-	 * <p> 
-	 * Using the wheel is equivalent to a ZOOM MouseAction.
+	 * {@link remixlab.proscene.MouseGrabber#mouseWheelMoved(int, Camera)}.
+	 * <p>
+	 * Using the wheel is equivalent to a {@link remixlab.proscene.Scene.MouseAction#ZOOM}.
 	 * 
 	 * @see #setWheelSensitivity(float)
 	 */
@@ -720,8 +727,8 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 			float wheelSensitivityCoef = 8E-4f;
 			// PVector trans(0.0, 0.0,
 			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
-			PVector trans = new PVector(0.0f, 0.0f, rotation
-					* wheelSensitivity() * wheelSensitivityCoef
+			PVector trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity()
+					* wheelSensitivityCoef
 					* (PVector.sub(camera.position(), position())).mag());
 
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
@@ -737,38 +744,22 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
-	
+
 	/**
 	 * Protected method that simply calls {@code startAction(action, true)}.
 	 * 
 	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
 	protected void startAction(Scene.MouseAction action) {
-		iFrameStartAction(action, true);
-	}
-
-	/**
-	 * Non-overloaded protected version of {@link #startAction(remixlab.proscene.Scene.MouseAction)}
-	 * which allows derived InteractiveFrame classes to call it directly.
-	 */
-	protected void iFrameStartAction(Scene.MouseAction action) {
-		iFrameStartAction(action, true);
+		startAction(action, true);
 	}
 	
 	/**
-	 * Protected internal method used to handle mouse events.
-	 */	
+	 * Protected internal method used to handle mouse actions.
+	 */
 	protected void startAction(Scene.MouseAction act, boolean withConstraint) {
-		iFrameStartAction(act, withConstraint);
-	}
-	
-	/**
-	 * Non-overloaded protected version of {@link #startAction(remixlab.proscene.Scene.MouseAction, boolean)}
-	 * which allows derived InteractiveFrame classes to call it directly.
-	 */
-	protected void iFrameStartAction(Scene.MouseAction act, boolean withConstraint) {		
 		action = act;
-		
+
 		if (withConstraint)
 			prevConstraint = null;
 		else {
@@ -797,8 +788,9 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * any method which wants to use mouse speed. Currently used to trigger
 	 * spinning in {@link #mouseReleased(Point, Camera)}.
 	 */
-	protected void computeMouseSpeed(Point eventPoint) {		
-		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos.getX(), prevPos.getY());
+	protected void computeMouseSpeed(Point eventPoint) {
+		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos
+				.getX(), prevPos.getY());
 
 		if (startedTime == 0) {
 			delay = 0;
@@ -820,13 +812,14 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * vertical. Returns 0 if this could not be determined yet (perfect diagonal
 	 * motion, rare).
 	 */
-	protected int mouseOriginalDirection(Point eventPoint) {				
+	protected int mouseOriginalDirection(Point eventPoint) {
 		if (!dirIsFixed) {
-			Point delta = new Point((eventPoint.x - pressPos.x), (eventPoint.y - pressPos.y));
+			Point delta = new Point((eventPoint.x - pressPos.x),
+					(eventPoint.y - pressPos.y));
 			dirIsFixed = PApplet.abs(delta.x) != PApplet.abs(delta.y);
 			horiz = PApplet.abs(delta.x) > PApplet.abs(delta.y);
 		}
-		
+
 		if (dirIsFixed)
 			if (horiz)
 				return 1;
@@ -835,35 +828,37 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 		else
 			return 0;
 	}
-	
+
 	/**
-	 * Returns a Quaternion computed according to the mouse motion.
-	 * Mouse positions are projected on a deformed ball, centered on
-	 * ({@code cx}, {@code cy}).
+	 * Returns a Quaternion computed according to the mouse motion. Mouse
+	 * positions are projected on a deformed ball, centered on ({@code cx},
+	 * {@code cy}).
 	 */
-	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy, Camera camera) {
+	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,
+			Camera camera) {
 		// Points on the deformed ball
 		float px = rotationSensitivity() * (prevPos.x - cx) / camera.screenWidth();
-		float py = rotationSensitivity() * (cy - prevPos.y)  / camera.screenHeight();
+		float py = rotationSensitivity() * (cy - prevPos.y) / camera.screenHeight();
 		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
-		float dy = rotationSensitivity() * (cy - y)	/ camera.screenHeight();
-		
+		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
+
 		PVector p1 = new PVector(px, py, projectOnBall(px, py));
 		PVector p2 = new PVector(dx, dy, projectOnBall(dx, dy));
 		// Approximation of rotation angle
 		// Should be divided by the projectOnBall size, but it is 1.0
 		PVector axis = p2.cross(p1);
-		 
-		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
-		
-		if ( coordinateSystemConvention() ==  CoordinateSystemConvention.LEFT_HANDED) {
+
+		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis)
+				/ MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
+
+		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
 			axis.y = -axis.y;
-			angle=-angle;
+			angle = -angle;
 		}
-		
+
 		return new Quaternion(axis, angle);
 	}
-	
+
 	/**
 	 * Returns "pseudo-distance" from (x,y) to ball of radius size. For a point
 	 * inside the ball, it is proportional to the euclidean distance to the ball.
@@ -871,12 +866,14 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * distance (tends to zero) on the ball, the function is continuous.
 	 */
 	static float projectOnBall(float x, float y) {
-	  // If you change the size value, change angle computation in deformedBallQuaternion().
-	  float size       = 1.0f;
-	  float size2      = size*size;
-	  float size_limit = size2*0.5f;
+		// If you change the size value, change angle computation in
+		// deformedBallQuaternion().
+		float size = 1.0f;
+		float size2 = size * size;
+		float size_limit = size2 * 0.5f;
 
-	  float d = x*x + y*y;
-	  return d < size_limit ? PApplet.sqrt(size2 - d) : size_limit/PApplet.sqrt(d);
-	}	
+		float d = x * x + y * y;
+		return d < size_limit ? PApplet.sqrt(size2 - d) : size_limit
+				/ PApplet.sqrt(d);
+	}
 }

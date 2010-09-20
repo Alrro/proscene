@@ -29,18 +29,18 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * An AxisPlaneConstraint defined in the Frame local coordinate system. 
- * <p> 
- * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
- * are expressed in the Frame local coordinate system (see
- * {@link remixlab.proscene.Frame#referenceFrame()}).
+ * An AxisPlaneConstraint defined in the Frame local coordinate system.
+ * <p>
+ * The {@link #translationConstraintDirection()} and
+ * {@link #rotationConstraintDirection()} are expressed in the Frame local
+ * coordinate system (see {@link remixlab.proscene.Frame#referenceFrame()}).
  */
 public class LocalConstraint extends AxisPlaneConstraint {
 
 	/**
-	 * Depending on {@link #translationConstraintType()}, {@code constrain} translation
-	 * to be along an axis or limited to a plane defined in the Frame local coordinate
-	 * system by {@link #translationConstraintDirection()}.
+	 * Depending on {@link #translationConstraintType()}, {@code constrain}
+	 * translation to be along an axis or limited to a plane defined in the Frame
+	 * local coordinate system by {@link #translationConstraintDirection()}.
 	 */
 	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
@@ -64,9 +64,9 @@ public class LocalConstraint extends AxisPlaneConstraint {
 	}
 
 	/**
-	 * When {@link #rotationConstraintType()} is of Type AXIS, constrain {@code rotation}
-	 * to be a rotation around an axis whose direction is defined in the Frame local
-	 * coordinate system by {@link #rotationConstraintDirection()}.
+	 * When {@link #rotationConstraintType()} is of Type AXIS, constrain {@code
+	 * rotation} to be a rotation around an axis whose direction is defined in the
+	 * Frame local coordinate system by {@link #rotationConstraintDirection()}.
 	 */
 	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
 		Quaternion res = new Quaternion(rotation);

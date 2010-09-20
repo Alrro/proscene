@@ -29,18 +29,19 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * An AxisPlaneConstraint defined in the camera coordinate system. 
- * <p> 
- * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
- * are expressed in the associated {@link #camera()} coordinate system.
+ * An AxisPlaneConstraint defined in the camera coordinate system.
+ * <p>
+ * The {@link #translationConstraintDirection()} and
+ * {@link #rotationConstraintDirection()} are expressed in the associated
+ * {@link #camera()} coordinate system.
  */
 public class CameraConstraint extends AxisPlaneConstraint {
 
 	private Camera camera;
 
 	/**
-	 * Creates a CameraConstraint, whose constrained directions are defined in
-	 * the {@link #camera()} coordinate system.
+	 * Creates a CameraConstraint, whose constrained directions are defined in the
+	 * {@link #camera()} coordinate system.
 	 */
 	public CameraConstraint(Camera cam) {
 		super();
@@ -55,9 +56,10 @@ public class CameraConstraint extends AxisPlaneConstraint {
 	}
 
 	/**
-	 * Depending on {@link #translationConstraintType()}, {@code constrain} translation
-	 * to be along an axis or limited to a plane defined in the {@link #camera()} coordinate
-	 * system by {@link #translationConstraintDirection()}.
+	 * Depending on {@link #translationConstraintType()}, {@code constrain}
+	 * translation to be along an axis or limited to a plane defined in the
+	 * {@link #camera()} coordinate system by
+	 * {@link #translationConstraintDirection()}.
 	 */
 	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
@@ -87,9 +89,10 @@ public class CameraConstraint extends AxisPlaneConstraint {
 	}
 
 	/**
-	 * When {@link #rotationConstraintType()} is of type AXIS, constrain {@code rotation}
-	 * to be a rotation around an axis whose direction is defined in the {@link #camera()}
-	 * coordinate system by {@link #rotationConstraintDirection()}.
+	 * When {@link #rotationConstraintType()} is of type AXIS, constrain {@code
+	 * rotation} to be a rotation around an axis whose direction is defined in the
+	 * {@link #camera()} coordinate system by
+	 * {@link #rotationConstraintDirection()}.
 	 */
 	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
 		Quaternion res = new Quaternion(rotation);
@@ -99,8 +102,8 @@ public class CameraConstraint extends AxisPlaneConstraint {
 		case PLANE:
 			break;
 		case AXIS: {
-			PVector axis = frame.transformOf(camera().frame()
-					.inverseTransformOf(rotationConstraintDirection()));
+			PVector axis = frame.transformOf(camera().frame().inverseTransformOf(
+					rotationConstraintDirection()));
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
 			quat = MathUtils.projectVectorOnAxis(quat, axis);
 			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
