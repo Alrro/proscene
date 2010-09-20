@@ -28,26 +28,28 @@ package remixlab.proscene;
 
 public class ArcballCameraProfile extends CameraProfile {
 	public ArcballCameraProfile(Scene scn, String n) {
-		super(scn, n);		
+		super(scn, n);
 		setShortcut(Scene.Arrow.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
 		setShortcut(Scene.Arrow.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
 		setShortcut(Scene.Arrow.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
 		setShortcut(Scene.Arrow.DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
-		
+
 		setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
 		setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
 		setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
 		setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
 		setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
 		setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
-		
-		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL, Scene.MouseAction.ZOOM_ON_REGION );
-		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT, Scene.MouseAction.SCREEN_ROTATE );
-		
+
+		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL,
+				Scene.MouseAction.ZOOM_ON_REGION);
+		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+				Scene.MouseAction.SCREEN_ROTATE);
+
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
 		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
-		
+
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 	}
- }
+}

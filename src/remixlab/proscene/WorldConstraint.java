@@ -29,18 +29,18 @@ package remixlab.proscene;
 import processing.core.*;
 
 /**
- * An AxisPlaneConstraint defined in the world coordinate system. 
- * <p> 
- * The {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}
- * are expressed in the Frame world coordinate system (see
- * {@link remixlab.proscene.Frame#referenceFrame()}). 
+ * An AxisPlaneConstraint defined in the world coordinate system.
+ * <p>
+ * The {@link #translationConstraintDirection()} and
+ * {@link #rotationConstraintDirection()} are expressed in the Frame world
+ * coordinate system (see {@link remixlab.proscene.Frame#referenceFrame()}).
  */
 public class WorldConstraint extends AxisPlaneConstraint {
 
 	/**
-	 * Depending on {@link #translationConstraintType()}, {@code constrain} translation
-	 * to be along an axis or limited to a plane defined in the Frame world coordinate
-	 * system by {@link #translationConstraintDirection()}.
+	 * Depending on {@link #translationConstraintType()}, {@code constrain}
+	 * translation to be along an axis or limited to a plane defined in the Frame
+	 * world coordinate system by {@link #translationConstraintDirection()}.
 	 */
 	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
@@ -53,16 +53,16 @@ public class WorldConstraint extends AxisPlaneConstraint {
 				proj = frame.referenceFrame().transformOf(
 						translationConstraintDirection());
 				res = MathUtils.projectVectorOnPlane(translation, proj);
-			} else				
+			} else
 				res = MathUtils.projectVectorOnPlane(translation,
 						translationConstraintDirection());
 			break;
 		case AXIS:
 			if (frame.referenceFrame() != null) {
 				proj = frame.referenceFrame().transformOf(
-						translationConstraintDirection());				
+						translationConstraintDirection());
 				res = MathUtils.projectVectorOnAxis(translation, proj);
-			} else				
+			} else
 				res = MathUtils.projectVectorOnAxis(translation,
 						translationConstraintDirection());
 			break;
@@ -74,9 +74,9 @@ public class WorldConstraint extends AxisPlaneConstraint {
 	}
 
 	/**
-	 * When {@link #rotationConstraintType()} is of type AXIS, constrain {@code rotation}
-	 * to be a rotation around an axis whose direction is defined in the Frame world
-	 * coordinate system by {@link #rotationConstraintDirection()}.
+	 * When {@link #rotationConstraintType()} is of type AXIS, constrain {@code
+	 * rotation} to be a rotation around an axis whose direction is defined in the
+	 * Frame world coordinate system by {@link #rotationConstraintDirection()}.
 	 */
 	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
 		Quaternion res = new Quaternion(rotation);

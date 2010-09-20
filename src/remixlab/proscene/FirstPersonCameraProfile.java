@@ -29,19 +29,21 @@ package remixlab.proscene;
 public class FirstPersonCameraProfile extends CameraProfile {
 	public FirstPersonCameraProfile(Scene scn, String n) {
 		super(scn, n);
-		//setShortcut('a', CameraKeyboardAction.SHOW_ALL);
-		setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD );
-		setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND );
-		setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD );
-		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT, Scene.MouseAction.ROLL );		
-		setCameraShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT, Scene.MouseAction.DRIVE );
+		// setShortcut('a', CameraKeyboardAction.SHOW_ALL);
+		setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
+		setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
+		setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
+		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+				Scene.MouseAction.ROLL);
+		setCameraShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT,
+				Scene.MouseAction.DRIVE);
 		setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
 		setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
 		setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
-		
+
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_CAMERA_FLY_SPEED);
 		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_CAMERA_FLY_SPEED);
-		
+
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 	}

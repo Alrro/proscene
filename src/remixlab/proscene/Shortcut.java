@@ -31,12 +31,12 @@ public final class Shortcut<V> {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result
-				+ ((modifier == null) ? 0 : modifier.hashCode());
+		result = prime * result + ((modifier == null) ? 0 : modifier.hashCode());
 		result = prime * result
 				+ ((virtualKey == null) ? 0 : virtualKey.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -58,14 +58,18 @@ public final class Shortcut<V> {
 			return false;
 		return true;
 	}
-	public Shortcut( V vKey, Scene.Modifier myModifier ) {
-		modifier = myModifier;			
+
+	public Shortcut(V vKey, Scene.Modifier myModifier) {
+		modifier = myModifier;
 		virtualKey = vKey;
 	}
-	public Shortcut( V vKey ) {
-		modifier = null;			
+
+	public Shortcut(V vKey) {
+		modifier = null;
 		virtualKey = vKey;
 	}
-	public final V virtualKey; //could be: 1. Integer(for virtual keys, seek KeyboardShortcut), 2. Scene.Button
+
+	public final V virtualKey; // could be: 1. Integer(for virtual keys, seek
+															// KeyboardShortcut), 2. Scene.Button
 	public final Scene.Modifier modifier;
 }

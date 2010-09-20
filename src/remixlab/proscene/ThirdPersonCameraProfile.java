@@ -29,15 +29,17 @@ package remixlab.proscene;
 public class ThirdPersonCameraProfile extends CameraProfile {
 	public ThirdPersonCameraProfile(Scene scn, String n) {
 		super(scn, n);
-		
+
 		setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
 		setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
 		setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
-		setIFrameShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT, Scene.MouseAction.ROLL);
-		setIFrameShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT, Scene.MouseAction.DRIVE);
-		
+		setIFrameShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+				Scene.MouseAction.ROLL);
+		setIFrameShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT,
+				Scene.MouseAction.DRIVE);
+
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_AVATAR_FLY_SPEED);
-		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);		
+		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);
 		setShortcut('a', Scene.CameraKeyboardAction.INCREASE_AZYMUTH);
 		setShortcut('A', Scene.CameraKeyboardAction.DECREASE_AZYMUTH);
 		setShortcut('i', Scene.CameraKeyboardAction.INCREASE_INCLINATION);

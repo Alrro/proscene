@@ -28,32 +28,36 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-/** 
+/**
  * An abstract class for Frame constraints defined by an axis or a plane.
- * <p> 
+ * <p>
  * AxisPlaneConstraint is an interface for (translation and/or rotation)
- * Constraint that are defined by a direction. {@link #translationConstraintType()}
- * and {@link #rotationConstraintType()} define how this direction should be
- * interpreted: as an axis or as a plane normal. 
- * <p> 
+ * Constraint that are defined by a direction.
+ * {@link #translationConstraintType()} and {@link #rotationConstraintType()}
+ * define how this direction should be interpreted: as an axis or as a plane
+ * normal.
+ * <p>
  * The three implementations of this class: LocalConstraint, WorldConstraint and
- * CameraConstraint differ by the coordinate system in which this direction is expressed.
+ * CameraConstraint differ by the coordinate system in which this direction is
+ * expressed.
  */
 
 public class AxisPlaneConstraint extends Constraint {
 
 	/**
-	 * Type lists the different types of translation and rotation constraints that are available. 
-	 * <p> 
+	 * Type lists the different types of translation and rotation constraints that
+	 * are available.
+	 * <p>
 	 * It specifies the meaning of the constraint direction (see
-	 * {@link #translationConstraintDirection()} and {@link #rotationConstraintDirection()}):
-	 * as an axis direction or a plane normal. {@link Type#FREE} means no constraint while
-	 * {@link Type#FORBIDDEN} completely forbids the translation and/or the rotation. 
-	 * <b>Attention: </b> The {@link Type#PLANE} Type is not valid for rotational
-	 * constraint. 
-	 * <p> 
-	 * New derived classes can use their own extended {@code enum} for specific constraints.
-    */
+	 * {@link #translationConstraintDirection()} and
+	 * {@link #rotationConstraintDirection()}): as an axis direction or a plane
+	 * normal. {@link Type#FREE} means no constraint while {@link Type#FORBIDDEN}
+	 * completely forbids the translation and/or the rotation. <b>Attention: </b>
+	 * The {@link Type#PLANE} Type is not valid for rotational constraint.
+	 * <p>
+	 * New derived classes can use their own extended {@code enum} for specific
+	 * constraints.
+	 */
 	public enum Type {
 		FREE, AXIS, PLANE, FORBIDDEN
 	};
@@ -65,8 +69,8 @@ public class AxisPlaneConstraint extends Constraint {
 
 	/**
 	 * 
-	 * Default constructor. 
-	 * <p> 
+	 * Default constructor.
+	 * <p>
 	 * {@link #translationConstraintType()} and {@link #rotationConstraintType()}
 	 * are set to {@link Type#FREE}. {@link #translationConstraintDirection()} and
 	 * {@link #rotationConstraintDirection()} are set to (0,0,0).
@@ -80,13 +84,13 @@ public class AxisPlaneConstraint extends Constraint {
 	}
 
 	/**
-	 * Returns the translation constraint Type. 
-	 * <p> 
-	 * Depending on this value, the Frame will freely translate ({@link Type#FREE}),
-	 * will only be able to translate along an axis direction ({@link Type#AXIS}), will be
-	 * forced to stay into a plane ({@link Type#PLANE}) or will not able to translate at
-	 * all ({@link Type#FORBIDDEN}). 
-	 * <p> 
+	 * Returns the translation constraint Type.
+	 * <p>
+	 * Depending on this value, the Frame will freely translate ({@link Type#FREE}
+	 * ), will only be able to translate along an axis direction (
+	 * {@link Type#AXIS}), will be forced to stay into a plane ({@link Type#PLANE}
+	 * ) or will not able to translate at all ({@link Type#FORBIDDEN}).
+	 * <p>
 	 * Use {@link remixlab.proscene.Frame#setPosition(PVector)} to define the
 	 * position of the constrained Frame before it gets constrained.
 	 */
@@ -96,12 +100,12 @@ public class AxisPlaneConstraint extends Constraint {
 
 	/**
 	 * 
-	 * Returns the direction used by the translation constraint. 
-	 * <p> 
-	 * It represents the axis direction ({@link Type#AXIS}) or the plane normal
-	 * ({@link Type#PLANE}) depending on the {@link #translationConstraintType()}.
-	 * It is undefined for ({@link Type#FREE}) or ({@link Type#FORBIDDEN}). 
-	 * <p> 
+	 * Returns the direction used by the translation constraint.
+	 * <p>
+	 * It represents the axis direction ({@link Type#AXIS}) or the plane normal (
+	 * {@link Type#PLANE}) depending on the {@link #translationConstraintType()}.
+	 * It is undefined for ({@link Type#FREE}) or ({@link Type#FORBIDDEN}).
+	 * <p>
 	 * The AxisPlaneConstraint derived classes express this direction in different
 	 * coordinate system (camera for CameraConstraint, local for LocalConstraint,
 	 * and world for WorldConstraint). This value can be modified with
@@ -110,7 +114,7 @@ public class AxisPlaneConstraint extends Constraint {
 	public PVector translationConstraintDirection() {
 		return transConstraintDir;
 	}
-	
+
 	/**
 	 * Returns the rotation constraint Type.
 	 */
@@ -118,24 +122,24 @@ public class AxisPlaneConstraint extends Constraint {
 		return rotConstraintType;
 	}
 
-    /**
-     * Returns the axis direction used by the rotation constraint. 
-     * <p> 
-     * This direction is defined only when {@link #rotationConstraintType()}
-     * is {@link Type#AXIS}. 
-     * <p> 
-     * The AxisPlaneConstraint derived classes express this direction in different
-     * coordinate system (camera for CameraConstraint, local for LocalConstraint,
-     * and world for WorldConstraint). This value can be modified
-     * with {@link #setRotationConstraintDirection(PVector)}.
-     */
+	/**
+	 * Returns the axis direction used by the rotation constraint.
+	 * <p>
+	 * This direction is defined only when {@link #rotationConstraintType()} is
+	 * {@link Type#AXIS}.
+	 * <p>
+	 * The AxisPlaneConstraint derived classes express this direction in different
+	 * coordinate system (camera for CameraConstraint, local for LocalConstraint,
+	 * and world for WorldConstraint). This value can be modified with
+	 * {@link #setRotationConstraintDirection(PVector)}.
+	 */
 	public PVector rotationConstraintDirection() {
 		return rotConstraintDir;
 	}
 
 	/**
-	 * Simply calls {@link #setTranslationConstraintType(Type)}
-	 * and {@link #setTranslationConstraintDirection(PVector)}.
+	 * Simply calls {@link #setTranslationConstraintType(Type)} and
+	 * {@link #setTranslationConstraintDirection(PVector)}.
 	 */
 	public void setTranslationConstraint(Type type, PVector direction) {
 		setTranslationConstraintType(type);
@@ -143,15 +147,17 @@ public class AxisPlaneConstraint extends Constraint {
 	}
 
 	/**
-	 * Defines the {@link #translationConstraintDirection()}. The coordinate system
-	 * where {@code direction} is expressed depends on your class implementation.
+	 * Defines the {@link #translationConstraintDirection()}. The coordinate
+	 * system where {@code direction} is expressed depends on your class
+	 * implementation.
 	 */
 	public void setTranslationConstraintDirection(PVector direction) {
 		if ((translationConstraintType() != AxisPlaneConstraint.Type.FREE)
 				&& (translationConstraintType() != AxisPlaneConstraint.Type.FORBIDDEN)) {
 			float norm = direction.mag();
 			if (norm < 1E-8) {
-				PApplet.println("Warning: AxisPlaneConstraint.setTranslationConstraintDir: null vector for translation constraint");
+				PApplet
+						.println("Warning: AxisPlaneConstraint.setTranslationConstraintDir: null vector for translation constraint");
 				transConstraintType = AxisPlaneConstraint.Type.FREE;
 			} else
 				transConstraintDir = PVector.mult(direction, (1.0f / norm));
@@ -159,8 +165,8 @@ public class AxisPlaneConstraint extends Constraint {
 	}
 
 	/**
-	 * Simply calls {@link #setRotationConstraintType(Type)} 
-	 * and {@link #setRotationConstraintDirection(PVector)}.
+	 * Simply calls {@link #setRotationConstraintType(Type)} and
+	 * {@link #setRotationConstraintDirection(PVector)}.
 	 */
 	public void setRotationConstraint(Type type, PVector direction) {
 		setRotationConstraintType(type);
@@ -168,15 +174,16 @@ public class AxisPlaneConstraint extends Constraint {
 	}
 
 	/**
-	 * Defines the {@link #rotationConstraintDirection()}. The coordinate system where
-	 * {@code direction} is expressed depends on your class implementation.
+	 * Defines the {@link #rotationConstraintDirection()}. The coordinate system
+	 * where {@code direction} is expressed depends on your class implementation.
 	 */
 	public void setRotationConstraintDirection(PVector direction) {
 		if ((rotationConstraintType() != AxisPlaneConstraint.Type.FREE)
 				&& (rotationConstraintType() != AxisPlaneConstraint.Type.FORBIDDEN)) {
 			float norm = direction.mag();
 			if (norm < 1E-8) {
-				PApplet.println("Warning: AxisPlaneConstraint.setRotationConstraintDir: null vector for rotation constraint");
+				PApplet
+						.println("Warning: AxisPlaneConstraint.setRotationConstraintDir: null vector for rotation constraint");
 				rotConstraintType = AxisPlaneConstraint.Type.FREE;
 			} else
 				rotConstraintDir = PVector.mult(direction, (1.0f / norm));
@@ -192,21 +199,23 @@ public class AxisPlaneConstraint extends Constraint {
 	}
 
 	/**
-	 * Set the Type of the {@link #rotationConstraintType()}. Default is {@link Type#FREE}. 
-	 * <p> 
-	 * Depending on this value, the Frame will freely rotate ({@link Type#FREE}), will
-	 * only be able to rotate around an axis ({@link Type#AXIS}), or will not able to rotate
-	 * at all {@link Type#FORBIDDEN}. 
-	 * <p> 
-	 * Use {@link remixlab.proscene.Frame#setOrientation(Quaternion)} to define the
-	 * orientation of the constrained Frame before it gets constrained. 
-	 * <p> 
-	 * <b>Attention:</b> An {@link Type#PLANE} Type is not meaningful for rotational
-	 * constraints and will be ignored.
+	 * Set the Type of the {@link #rotationConstraintType()}. Default is
+	 * {@link Type#FREE}.
+	 * <p>
+	 * Depending on this value, the Frame will freely rotate ({@link Type#FREE}),
+	 * will only be able to rotate around an axis ({@link Type#AXIS}), or will not
+	 * able to rotate at all {@link Type#FORBIDDEN}.
+	 * <p>
+	 * Use {@link remixlab.proscene.Frame#setOrientation(Quaternion)} to define
+	 * the orientation of the constrained Frame before it gets constrained.
+	 * <p>
+	 * <b>Attention:</b> An {@link Type#PLANE} Type is not meaningful for
+	 * rotational constraints and will be ignored.
 	 */
 	public void setRotationConstraintType(Type type) {
 		if (rotationConstraintType() == AxisPlaneConstraint.Type.PLANE) {
-			PApplet.println("Warning: AxisPlaneConstraint.setRotationConstraintType: the PLANE type cannot be used for a rotation constraints");
+			PApplet
+					.println("Warning: AxisPlaneConstraint.setRotationConstraintType: the PLANE type cannot be used for a rotation constraints");
 			return;
 		}
 
