@@ -34,7 +34,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-//import java.util.TimerTask;
 
 import javax.swing.Timer;
 
@@ -117,11 +116,43 @@ public class Scene implements PConstants {
 	}
 
 	public enum Arrow {
-		UP, DOWN, LEFT, RIGHT
+		UP(KeyEvent.VK_UP), DOWN(KeyEvent.VK_DOWN), LEFT(KeyEvent.VK_LEFT), RIGHT(KeyEvent.VK_RIGHT);
+		private final int code; //taken from KeyEvent
+    Arrow(int code) {
+        this.code = code;
+    }
+    public int getCode() { return code; }
+    //The following code works but is considered overkill :)
+    /**    
+    private static final Map<Integer,Arrow> lookup = new HashMap<Integer,Arrow>();
+    static {
+    	for(Arrow s : EnumSet.allOf(Arrow.class))
+         lookup.put(s.getCode(), s);
+    }
+    public static Arrow get(int code) { 
+      return lookup.get(code);
+    }
+    */
 	}
 
 	public enum Modifier {
-		ALT, SHIFT, CONTROL, ALT_GRAPH
+		ALT(KeyEvent.VK_ALT), SHIFT(KeyEvent.VK_SHIFT), CONTROL(KeyEvent.VK_CONTROL), ALT_GRAPH(KeyEvent.VK_ALT_GRAPH);
+		private final int code; //taken from KeyEvent
+		Modifier(int code) {
+      this.code = code;
+    }		    
+    public int getCode() { return code; }
+    //The following code works but is considered overkill :)
+    /**
+    private static final Map<Integer,Modifier> lookup = new HashMap<Integer,Modifier>();
+    static {
+    	for(Modifier s : EnumSet.allOf(Modifier.class))
+         lookup.put(s.getCode(), s);
+    }
+    public static Modifier get(int code) {
+      return lookup.get(code);
+    }
+    */
 	}
 
 	/**
@@ -2121,9 +2152,13 @@ public class Scene implements PConstants {
 	}
 
 	// wrappers:
-	// KeyBindings<KeyboardShortcut, GlobalKeyboardAction>
-	public void setShortcut(Integer vKey, Modifier modifier,
-			GlobalKeyboardAction action) {
+	public void setShortcut(char key, Modifier modifier, GlobalKeyboardAction action) {
+		int vKey = MathUtils.getVKey(key);
+		if (vKey >= 0 )
+			setShortcut(vKey, modifier, action);
+	}
+	
+	public void setShortcut(Integer vKey, Modifier modifier, GlobalKeyboardAction action) {
 		gProfile.setMapping(new KeyboardShortcut(vKey, modifier), action);
 	}
 
@@ -2137,6 +2172,10 @@ public class Scene implements PConstants {
 
 	public void removeAllShortcuts() {
 		gProfile.removeAllMappings();
+	}
+	
+	public void removeShortcut(char key, Scene.Modifier modifier) {
+		removeShortcut(MathUtils.getVKey(key), modifier);
 	}
 
 	public void removeShortcut(Integer vKey, Modifier modifier) {
@@ -2152,6 +2191,10 @@ public class Scene implements PConstants {
 	// 3.
 	public void removeShortcut(Character key) {
 		gProfile.removeMapping(new KeyboardShortcut(key));
+	}
+	
+	public GlobalKeyboardAction shortcut(char key, Scene.Modifier modifier) {
+		return shortcut(MathUtils.getVKey(key), modifier);
 	}
 
 	public GlobalKeyboardAction shortcut(Integer vKey, Modifier modifier) {
@@ -2962,7 +3005,7 @@ public class Scene implements PConstants {
 		}
 		*/
 		
-		/**		
+		 /**		
 		numberOfClicks = 0;
 		hasMouseDoubleClicked = true;
 		if (e.getClickCount() == 1)  {

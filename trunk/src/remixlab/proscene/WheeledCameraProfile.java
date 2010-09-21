@@ -51,9 +51,6 @@ public class WheeledCameraProfile extends CameraProfile implements
 		setFrameWheelShortcut( Scene.Modifier.ALT, MouseAction.MOVE_BACKWARD );
 	}
 
-	/**
-	 * Wrapper function that simply calls {@link remixlab.proscene.Scene#mouseWheelMoved(int)}.
-	 */
 	//public void mouseWheelMoved(MouseWheelEvent event) {
 		//scene.mouseWheelMoved(event.getWheelRotation());
 	//}
