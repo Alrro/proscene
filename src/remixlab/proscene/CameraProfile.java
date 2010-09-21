@@ -211,8 +211,13 @@ public class CameraProfile {
 	}
 
 	// keyboard wrappers:
-	public void setShortcut(Integer vKey, Scene.Modifier modifier,
-			CameraKeyboardAction action) {
+	public void setShortcut(char key, Scene.Modifier modifier, CameraKeyboardAction action) {
+		int vKey = MathUtils.getVKey(key);
+		if (vKey >= 0 )
+			setShortcut(vKey, modifier, action);
+	}
+	
+	public void setShortcut(Integer vKey, Scene.Modifier modifier, CameraKeyboardAction action) {
 		keyboard.setMapping(new KeyboardShortcut(vKey, modifier), action);
 	}
 
@@ -226,6 +231,10 @@ public class CameraProfile {
 
 	public void removeAllKeyboardShortcuts() {
 		keyboard.removeAllMappings();
+	}
+	
+	public void removeShortcut(char key, Scene.Modifier modifier) {
+		removeShortcut(MathUtils.getVKey(key), modifier);
 	}
 
 	public void removeShortcut(Integer vKey, Scene.Modifier modifier) {
@@ -242,6 +251,10 @@ public class CameraProfile {
 
 	public CameraKeyboardAction shortcut(Character key) {
 		return keyboard.mapping(new KeyboardShortcut(key));
+	}
+	
+	public CameraKeyboardAction shortcut(char key, Scene.Modifier modifier) {
+		return shortcut(MathUtils.getVKey(key), modifier);
 	}
 
 	public CameraKeyboardAction shortcut(Integer vKey, Scene.Modifier modifier) {
