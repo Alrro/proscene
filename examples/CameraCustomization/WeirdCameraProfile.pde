@@ -7,7 +7,7 @@ public class WeirdCameraProfile extends CameraProfile {
     // note the case:
     setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
     // 2. Describe how to control the camera:
-    setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.ZOOM_ON_REGION);
+    setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT, Scene.MouseAction.ZOOM_ON_REGION);
     setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL, Scene.MouseAction.ROTATE);
     setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
     setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
@@ -15,5 +15,12 @@ public class WeirdCameraProfile extends CameraProfile {
     setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
     setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
     setIFrameShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT, Scene.MouseAction.SCREEN_TRANSLATE);
+    // 4. Configure some click actions:
+    // double click + button left = align frame with world
+    setClickShortcut(Scene.Button.LEFT, 2, ClickAction.ALIGN_FRAME);
+    // single click + middle button + SHIFT = interpolate to show all the scene.
+    setClickShortcut(Scene.Button.MIDDLE, Scene.Modifier.SHIFT,	ClickAction.ZOOM_TO_FIT);
+    // double click + button right = align camera with world
+    setClickShortcut(Scene.Button.RIGHT, 2, ClickAction.ALIGN_CAMERA);
   }
 }

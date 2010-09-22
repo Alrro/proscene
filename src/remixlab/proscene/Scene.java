@@ -76,8 +76,8 @@ public class Scene implements PConstants {
 	 * Defines the different actions that can be associated with a specific
 	 * keyboard key.
 	 */
-	public enum GlobalKeyboardAction {
-		DRAW_AXIS, DRAW_GRID, CAMERA_MODE, CAMERA_TYPE, CAMERA_KIND,
+	public enum KeyboardAction {
+		DRAW_AXIS, DRAW_GRID, CAMERA_PROFILE, CAMERA_TYPE, CAMERA_KIND,
 		/** STEREO, */
 		ARP_FROM_PIXEL, RESET_ARP, HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVE_FRAME, DRAW_FRAME_SELECTION_HINT, CONSTRAIN_FRAME
 	}
@@ -107,7 +107,7 @@ public class Scene implements PConstants {
 
 	// TODO: add descriptions to all atomic actions
 
-	protected MouseAction camMouseAction;
+	protected DesktopEvents dE;
 
 	// protected MouseAction iFrameMouseAction;
 
@@ -116,7 +116,7 @@ public class Scene implements PConstants {
 	}
 
 	public enum Arrow {
-		UP(KeyEvent.VK_UP), DOWN(KeyEvent.VK_DOWN), LEFT(KeyEvent.VK_LEFT), RIGHT(KeyEvent.VK_RIGHT);
+		UP(PApplet.UP), DOWN(PApplet.DOWN), LEFT(PApplet.LEFT), RIGHT(PApplet.RIGHT);
 		private final int code; //taken from KeyEvent
     Arrow(int code) {
         this.code = code;
@@ -136,7 +136,7 @@ public class Scene implements PConstants {
 	}
 
 	public enum Modifier {
-		ALT(KeyEvent.VK_ALT), SHIFT(KeyEvent.VK_SHIFT), CONTROL(KeyEvent.VK_CONTROL), ALT_GRAPH(KeyEvent.VK_ALT_GRAPH);
+		ALT(PApplet.ALT), SHIFT(PApplet.SHIFT), CONTROL(PApplet.CONTROL), ALT_GRAPH(65406);
 		private final int code; //taken from KeyEvent
 		Modifier(int code) {
       this.code = code;
@@ -169,17 +169,8 @@ public class Scene implements PConstants {
 	protected Modifier deleteKeyFrameKeyboardModifier;
 
 	// S h o r t c u t k e y s
-	protected ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction> gProfile;
-	protected HashMap<GlobalKeyboardAction, String> keyboardActionDescription;
-
-	// C L I C K A C T I O N S
-	protected ShortcutMappings<ClickShortcut, ClickAction> clickActions;
-	private Integer numberOfClicks;
-	//private java.util.Timer clickTimer;
-	//private Timer clickTimer;	
-	//private boolean hasMouseDoubleClicked;
-	//private Button clickButton;
-	//private Modifier clickModifier;
+	protected ShortcutMappings<KeyboardShortcut, KeyboardAction> gProfile;
+	protected HashMap<KeyboardAction, String> keyboardActionDescription;
 
 	// c a m e r a p r o f i l e s
 	private HashMap<String, CameraProfile> cameraProfileMap;
@@ -219,8 +210,8 @@ public class Scene implements PConstants {
 	float zC;
 
 	// Z O O M _ O N _ R E G I O N
-	Point fCorner;// also used for SCREEN_ROTATE
-	Point lCorner;
+	//Point fCorner;// also used for SCREEN_ROTATE
+	//Point lCorner;
 
 	// R E V O L V E A R O U N D P O I N T
 	private Timer utilityTimer;
@@ -281,16 +272,13 @@ public class Scene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 
-		camMouseAction = MouseAction.NO_MOUSE_ACTION;
-		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+		dE = new DesktopEvents(this);
 
-		gProfile = new ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction>(
+		gProfile = new ShortcutMappings<KeyboardShortcut, KeyboardAction>(
 				this);
-		pathKeys = new ShortcutMappings<KeyboardShortcut, Integer>(this);
-		clickActions = new ShortcutMappings<ClickShortcut, ClickAction>(this);
+		pathKeys = new ShortcutMappings<KeyboardShortcut, Integer>(this);		
 		setActionDescriptions();
 		setDefaultShortcuts();
-		setDefaultClickActions();
 
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
 		avatarIsInteractiveDrivableFrame = false;// also init in setAvatar, but we
@@ -366,7 +354,7 @@ public class Scene implements PConstants {
 		return cam;
 	}
 
-	public ShortcutMappings<KeyboardShortcut, GlobalKeyboardAction> keyBindings() {
+	public ShortcutMappings<KeyboardShortcut, KeyboardAction> keyBindings() {
 		return gProfile;
 	}
 
@@ -883,9 +871,9 @@ public class Scene implements PConstants {
 			camera().hideAllPaths();
 		}
 
-		if (camMouseAction == MouseAction.ZOOM_ON_REGION)
+		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)
 			drawZoomWindowHint();
-		if (camMouseAction == MouseAction.SCREEN_ROTATE)
+		if (dE.camMouseAction == MouseAction.SCREEN_ROTATE)
 			drawScreenRotateLineHint();
 		if (arpFlag)
 			drawArcballReferencePointHint();
@@ -1379,12 +1367,12 @@ public class Scene implements PConstants {
 	 * is taking place.
 	 */
 	protected void drawZoomWindowHint() {
-		if ((fCorner == null) || (lCorner == null))
+		if ((dE.fCorner == null) || (dE.lCorner == null))
 			return;
-		float p1x = (float) fCorner.getX();
-		float p1y = (float) fCorner.getY();
-		float p2x = (float) lCorner.getX();
-		float p2y = (float) lCorner.getY();
+		float p1x = (float) dE.fCorner.getX();
+		float p1y = (float) dE.fCorner.getY();
+		float p2x = (float) dE.lCorner.getX();
+		float p2y = (float) dE.lCorner.getY();
 		beginScreenDrawing();
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
@@ -1405,10 +1393,10 @@ public class Scene implements PConstants {
 	 * place.
 	 */
 	protected void drawScreenRotateLineHint() {
-		if (fCorner == null)
+		if (dE.fCorner == null)
 			return;
-		float p1x = (float) fCorner.getX();
-		float p1y = (float) fCorner.getY();
+		float p1x = (float) dE.fCorner.getX();
+		float p1y = (float) dE.fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
 		pg3d.pushStyle();
@@ -1831,6 +1819,10 @@ public class Scene implements PConstants {
 	public CameraProfile cameraProfile(String name) {
 		return cameraProfileMap.get(name);
 	}
+	
+	public CameraProfile [] getCameraProfiles() {		
+		return cameraProfileMap.values().toArray(new CameraProfile[0]);
+	}
 
 	public boolean isCameraProfileRegistered(CameraProfile cp) {
 		return cameraProfileMap.containsValue(cp);
@@ -2032,7 +2024,8 @@ public class Scene implements PConstants {
 	 */
 	public void enableKeyboardHandling() {
 		keyboardHandling = true;
-		parent.registerKeyEvent(this);
+		//parent.registerKeyEvent(this);
+		parent.registerKeyEvent(dE);
 	}
 
 	/**
@@ -2042,50 +2035,33 @@ public class Scene implements PConstants {
 	 */
 	public void disableKeyboardHandling() {
 		keyboardHandling = false;
-		parent.unregisterKeyEvent(this);
-	}
-
-	/**
-	 * Method interface between proscene and processing to handle the keyboard.
-	 * 
-	 * @see #keyboardIsHandled()
-	 * @see #enableKeyboardHandling(boolean)
-	 */
-	public void keyEvent(KeyEvent e) {
-		switch (e.getID()) {
-		case KeyEvent.KEY_PRESSED:
-			break;
-		case KeyEvent.KEY_RELEASED:
-			keyReleased(e);
-			break;
-		case KeyEvent.KEY_TYPED:
-			break;
-		}
+		//parent.unregisterKeyEvent(this);
+		parent.unregisterKeyEvent(dE);
 	}
 
 	private void setActionDescriptions() {
 		// 1. keyboard
-		keyboardActionDescription = new HashMap<GlobalKeyboardAction, String>();
-		keyboardActionDescription.put(GlobalKeyboardAction.DRAW_AXIS,
+		keyboardActionDescription = new HashMap<KeyboardAction, String>();
+		keyboardActionDescription.put(KeyboardAction.DRAW_AXIS,
 				"Toggles the display of the world axis");
-		keyboardActionDescription.put(GlobalKeyboardAction.DRAW_GRID,
+		keyboardActionDescription.put(KeyboardAction.DRAW_GRID,
 				"Toggles the display of the XY grid");
-		keyboardActionDescription.put(GlobalKeyboardAction.CAMERA_MODE,
-				"Cycles to the registered camera mode profiles");
-		keyboardActionDescription.put(GlobalKeyboardAction.CAMERA_TYPE,
+		keyboardActionDescription.put(KeyboardAction.CAMERA_PROFILE,
+				"Cycles to the registered camera profiles");
+		keyboardActionDescription.put(KeyboardAction.CAMERA_TYPE,
 				"Toggles camera type: orthographic or perspective");
-		keyboardActionDescription.put(GlobalKeyboardAction.CAMERA_KIND,
+		keyboardActionDescription.put(KeyboardAction.CAMERA_KIND,
 				"Toggles camera kind: proscene or standard");
-		keyboardActionDescription.put(GlobalKeyboardAction.HELP,
+		keyboardActionDescription.put(KeyboardAction.HELP,
 				"Toggles the display of the help");
-		keyboardActionDescription.put(GlobalKeyboardAction.EDIT_CAMERA_PATH,
+		keyboardActionDescription.put(KeyboardAction.EDIT_CAMERA_PATH,
 				"Toggles the key frame camera paths (if any) for edition");
-		keyboardActionDescription.put(GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME,
+		keyboardActionDescription.put(KeyboardAction.FOCUS_INTERACTIVE_FRAME,
 				"Toggle interactivity between camera and interactive frame (if any)");
 		keyboardActionDescription.put(
-				GlobalKeyboardAction.DRAW_FRAME_SELECTION_HINT,
+				KeyboardAction.DRAW_FRAME_SELECTION_HINT,
 				"Toggle interactive frame selection region drawing");
-		keyboardActionDescription.put(GlobalKeyboardAction.CONSTRAIN_FRAME,
+		keyboardActionDescription.put(KeyboardAction.CONSTRAIN_FRAME,
 				"Toggles on and off frame constraints (if any)");
 		// 2. mouse click
 
@@ -2102,22 +2078,22 @@ public class Scene implements PConstants {
 		// Scene.KeyboardAction.DRAW_AXIS);
 		// gProfile.setShortcut('a', PApplet.CONTROL,
 		// Scene.KeyboardAction.DRAW_AXIS);
-		setShortcut('a', GlobalKeyboardAction.DRAW_AXIS);
+		setShortcut('a', KeyboardAction.DRAW_AXIS);
 		// test CASE
 		// setShortcut('A', GlobalKeyboardAction.DRAW_AXIS);
 		// setShortcut('G', GlobalKeyboardAction.DRAW_GRID);
-		setShortcut('g', GlobalKeyboardAction.DRAW_GRID);
-		setShortcut(KeyEvent.VK_G, Modifier.ALT_GRAPH,
-				GlobalKeyboardAction.DRAW_GRID);
-		setShortcut('B', GlobalKeyboardAction.DRAW_GRID);
-		setShortcut(' ', GlobalKeyboardAction.CAMERA_MODE);
-		setShortcut('e', GlobalKeyboardAction.CAMERA_TYPE);
-		setShortcut('k', GlobalKeyboardAction.CAMERA_KIND);
-		setShortcut('h', GlobalKeyboardAction.HELP);
-		setShortcut('r', GlobalKeyboardAction.EDIT_CAMERA_PATH);
-		setShortcut('i', GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME);
-		setShortcut('f', GlobalKeyboardAction.DRAW_FRAME_SELECTION_HINT);
-		setShortcut('w', GlobalKeyboardAction.CONSTRAIN_FRAME);
+		setShortcut('g', KeyboardAction.DRAW_GRID);
+		//setShortcut(KeyEvent.VK_G, Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
+		setShortcut('g', Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
+		setShortcut('B', KeyboardAction.DRAW_GRID);
+		setShortcut(' ', KeyboardAction.CAMERA_PROFILE);
+		setShortcut('e', KeyboardAction.CAMERA_TYPE);
+		setShortcut('k', KeyboardAction.CAMERA_KIND);
+		setShortcut('h', KeyboardAction.HELP);
+		setShortcut('r', KeyboardAction.EDIT_CAMERA_PATH);
+		setShortcut('i', KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		setShortcut('f', KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		setShortcut('w', KeyboardAction.CONSTRAIN_FRAME);
 
 		// K e y f r a m e s s h o r t c u t k e y s
 		setAddKeyFrameKeyboardModifier(Modifier.CONTROL);
@@ -2152,21 +2128,21 @@ public class Scene implements PConstants {
 	}
 
 	// wrappers:
-	public void setShortcut(char key, Modifier modifier, GlobalKeyboardAction action) {
+	public void setShortcut(char key, Modifier modifier, KeyboardAction action) {
 		int vKey = MathUtils.getVKey(key);
 		if (vKey >= 0 )
 			setShortcut(vKey, modifier, action);
 	}
 	
-	public void setShortcut(Integer vKey, Modifier modifier, GlobalKeyboardAction action) {
+	public void setShortcut(Integer vKey, Modifier modifier, KeyboardAction action) {
 		gProfile.setMapping(new KeyboardShortcut(vKey, modifier), action);
 	}
 
-	public void setShortcut(Arrow arrow, GlobalKeyboardAction action) {
+	public void setShortcut(Arrow arrow, KeyboardAction action) {
 		gProfile.setMapping(new KeyboardShortcut(arrow), action);
 	}
 
-	public void setShortcut(Character key, GlobalKeyboardAction action) {
+	public void setShortcut(Character key, KeyboardAction action) {
 		gProfile.setMapping(new KeyboardShortcut(key), action);
 	}
 
@@ -2193,19 +2169,19 @@ public class Scene implements PConstants {
 		gProfile.removeMapping(new KeyboardShortcut(key));
 	}
 	
-	public GlobalKeyboardAction shortcut(char key, Scene.Modifier modifier) {
+	public KeyboardAction shortcut(char key, Scene.Modifier modifier) {
 		return shortcut(MathUtils.getVKey(key), modifier);
 	}
 
-	public GlobalKeyboardAction shortcut(Integer vKey, Modifier modifier) {
+	public KeyboardAction shortcut(Integer vKey, Modifier modifier) {
 		return gProfile.mapping(new KeyboardShortcut(vKey, modifier));
 	}
 
-	public GlobalKeyboardAction shortcut(Arrow arrow) {
+	public KeyboardAction shortcut(Arrow arrow) {
 		return gProfile.mapping(new KeyboardShortcut(arrow));
 	}
 
-	public GlobalKeyboardAction shortcut(Character key) {
+	public KeyboardAction shortcut(Character key) {
 		return gProfile.mapping(new KeyboardShortcut(key));
 	}
 
@@ -2213,83 +2189,11 @@ public class Scene implements PConstants {
 		return gProfile.isShortcutInUse(key);
 	}
 
-	public boolean isActionBinded(GlobalKeyboardAction action) {
+	public boolean isActionBinded(KeyboardAction action) {
 		return gProfile.isActionMapped(action);
 	}
 
-	protected boolean handleKeyboardAction(KeyEvent e) {
-		// keyframes:
-		Integer path = path(parent.key);
-		// TODO debug
-		// PApplet.println(parent.key + " pressed");
-		if (path != null) {
-			if (!e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown()
-					&& !e.isShiftDown()) {
-				PApplet.println("playing");
-				camera().playPath(path);
-				return true;
-			}
-			if (((addKeyFrameKeyboardModifier == Modifier.ALT) && (e.isAltDown()))
-					|| ((addKeyFrameKeyboardModifier == Modifier.ALT_GRAPH) && (e
-							.isAltGraphDown()))
-					|| ((addKeyFrameKeyboardModifier == Modifier.CONTROL) && (e
-							.isControlDown()))
-					|| ((addKeyFrameKeyboardModifier == Modifier.SHIFT) && (e
-							.isShiftDown()))) {
-				PApplet.println("adding");
-				camera().addKeyFrameToPath(path);
-				return true;
-			}
-			if (((deleteKeyFrameKeyboardModifier == Modifier.ALT) && (e.isAltDown()))
-					|| ((deleteKeyFrameKeyboardModifier == Modifier.ALT_GRAPH) && (e
-							.isAltGraphDown()))
-					|| ((deleteKeyFrameKeyboardModifier == Modifier.CONTROL) && (e
-							.isControlDown()))
-					|| ((deleteKeyFrameKeyboardModifier == Modifier.SHIFT) && (e
-							.isShiftDown()))) {
-				camera().deletePath(path);
-				PApplet.println("removing");
-				return true;
-			}
-		}
-
-		GlobalKeyboardAction kba = null;
-		kba = shortcut(parent.key);
-		if (kba == null) {
-			if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-					|| e.isShiftDown()) {
-				if (e.isAltDown())
-					kba = shortcut(e.getKeyCode(), Modifier.ALT);
-				if (e.isAltGraphDown())
-					kba = shortcut(e.getKeyCode(), Modifier.ALT_GRAPH);
-				if (e.isControlDown())
-					kba = shortcut(e.getKeyCode(), Modifier.CONTROL);
-				if (e.isShiftDown())
-					kba = shortcut(e.getKeyCode(), Modifier.SHIFT);
-			} else if (parent.key == CODED) {
-				if ((parent.keyCode == UP) || (parent.keyCode == DOWN)
-						|| (parent.keyCode == RIGHT) || (parent.keyCode == LEFT)) {
-					if (parent.keyCode == UP)
-						kba = shortcut(Arrow.UP);
-					if (parent.keyCode == DOWN)
-						kba = shortcut(Arrow.DOWN);
-					if (parent.keyCode == RIGHT)
-						kba = shortcut(Arrow.RIGHT);
-					if (parent.keyCode == LEFT)
-						kba = shortcut(Arrow.LEFT);
-				}
-			}
-		}
-
-		if (kba == null)
-			return false;
-		else {
-			handleKeyboardAction(kba);
-			return true;
-		}
-	}
-
-	protected void handleKeyboardAction(GlobalKeyboardAction id) {
+	protected void handleKeyboardAction(KeyboardAction id) {
 		switch (id) {
 		case DRAW_AXIS:
 			toggleAxisIsDrawn();
@@ -2297,7 +2201,7 @@ public class Scene implements PConstants {
 		case DRAW_GRID:
 			toggleGridIsDrawn();
 			break;
-		case CAMERA_MODE:
+		case CAMERA_PROFILE:
 			nextCameraProfile();
 			break;
 		case CAMERA_TYPE:
@@ -2308,11 +2212,9 @@ public class Scene implements PConstants {
 			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
-				PApplet
-						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
-			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX,
-					parent.mouseY))) {
+			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				utilityTimer.start();
 			}
@@ -2337,47 +2239,6 @@ public class Scene implements PConstants {
 		case CONSTRAIN_FRAME:
 			toggleDrawInteractiveFrame();
 			break;
-		}
-	}
-
-	protected boolean handleCameraKeyboardAction(KeyEvent e) {
-		// TODO debug
-		// PApplet.println(parent.key + " pressed");
-		CameraKeyboardAction kba = null;
-		kba = currentCameraProfile().shortcut(parent.key);
-		if (kba == null) {
-			if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-					|| e.isShiftDown()) {
-				if (e.isAltDown())
-					kba = currentCameraProfile().shortcut(e.getKeyCode(), Modifier.ALT);
-				if (e.isAltGraphDown())
-					kba = currentCameraProfile().shortcut(e.getKeyCode(),
-							Modifier.ALT_GRAPH);
-				if (e.isControlDown())
-					kba = currentCameraProfile().shortcut(e.getKeyCode(),
-							Modifier.CONTROL);
-				if (e.isShiftDown())
-					kba = currentCameraProfile().shortcut(e.getKeyCode(), Modifier.SHIFT);
-			} else if (parent.key == CODED) {
-				if ((parent.keyCode == UP) || (parent.keyCode == DOWN)
-						|| (parent.keyCode == RIGHT) || (parent.keyCode == LEFT)) {
-					if (parent.keyCode == UP)
-						kba = currentCameraProfile().shortcut(Arrow.UP);
-					if (parent.keyCode == DOWN)
-						kba = currentCameraProfile().shortcut(Arrow.DOWN);
-					if (parent.keyCode == RIGHT)
-						kba = currentCameraProfile().shortcut(Arrow.RIGHT);
-					if (parent.keyCode == LEFT)
-						kba = currentCameraProfile().shortcut(Arrow.LEFT);
-				}
-			}
-		}
-
-		if (kba == null)
-			return false;
-		else {
-			handleCameraKeyboardAction(kba);
-			return true;
 		}
 	}
 
@@ -2496,17 +2357,6 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Associates the different interactions to the keys.
-	 */
-	protected void keyReleased(KeyEvent e) {
-		boolean handled = false;
-		if (currentCameraProfile() != null)
-			handled = handleCameraKeyboardAction(e);
-		if (!handled)
-			handleKeyboardAction(e);
-	}
-
-	/**
 	 * Displays the help text describing how interactivity actions are binded to
 	 * the keyboard and mouse.
 	 */
@@ -2621,7 +2471,8 @@ public class Scene implements PConstants {
 	 */
 	public void enableMouseHandling() {
 		mouseHandling = true;
-		parent.registerMouseEvent(this);
+		//parent.registerMouseEvent(this);
+		parent.registerMouseEvent(dE);
 	}
 
 	/**
@@ -2632,7 +2483,8 @@ public class Scene implements PConstants {
 	 */
 	public void disableMouseHandling() {
 		mouseHandling = false;
-		parent.unregisterMouseEvent(this);
+		//parent.unregisterMouseEvent(this);
+		parent.unregisterMouseEvent(dE);
 	}
 
 	protected void handleClickAction(ClickAction action) {
@@ -2663,11 +2515,9 @@ public class Scene implements PConstants {
 			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
-				PApplet
-						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
-			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX,
-					parent.mouseY))) {
+			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				utilityTimer.start();
 			}
@@ -2696,408 +2546,7 @@ public class Scene implements PConstants {
 			camera().frame().alignWithFrame(null, true);
 			break;
 		}
-	}
-
-	// TODO implement me!
-	protected void setDefaultClickActions() {
-		setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
-		setClickShortcut(Button.MIDDLE, 2, ClickAction.ZOOM_TO_FIT);
-		setClickShortcut(Button.RIGHT, 2, ClickAction.SHOW_ALL);
-	}
-
-	// click wrappers:
-	public void removeAllClickActionShortcuts() {
-		clickActions.removeAllMappings();
-	}
-
-	public boolean isClickKeyInUse(ClickShortcut key) {
-		return clickActions.isShortcutInUse(key);
-	}
-
-	public boolean isClickActionBinded(Scene.ClickAction action) {
-		return clickActions.isActionMapped(action);
-	}
-
-	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button), action);
-	}
-
-	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier,
-			Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, modifier), action);
-	}
-
-	public void setClickShortcut(Scene.Button button, Integer nc,
-			Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, nc), action);
-	}
-
-	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier,
-			Integer nc, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, modifier, nc), action);
-	}
-
-	public void removeClickShortcut(Scene.Button button) {
-		clickActions.removeMapping(new ClickShortcut(button));
-	}
-
-	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier) {
-		clickActions.removeMapping(new ClickShortcut(button, modifier));
-	}
-
-	public void removeClickShortcut(Scene.Button button, Integer nc) {
-		clickActions.removeMapping(new ClickShortcut(button, nc));
-	}
-
-	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier,
-			Integer nc) {
-		clickActions.removeMapping(new ClickShortcut(button, modifier, nc));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button) {
-		return clickActions.mapping(new ClickShortcut(button));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button,
-			Scene.Modifier modifier) {
-		return clickActions.mapping(new ClickShortcut(button, modifier));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
-		return clickActions.mapping(new ClickShortcut(button, nc));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button,
-			Scene.Modifier modifier, Integer nc) {
-		return clickActions.mapping(new ClickShortcut(button, modifier, nc));
-	}
-
-	/**
-	 * Method interface between proscene and processing to handle the mouse.
-	 * 
-	 * @see #mouseIsHandled()
-	 * @see #enableMouseHandling(boolean)
-	 */
-	public void mouseEvent(MouseEvent e) {
-		if (currentCameraProfile() == null)
-			return;
-		switch (e.getID()) {
-		case MouseEvent.MOUSE_CLICKED:
-			mouseClicked(e);
-			break;
-		case MouseEvent.MOUSE_DRAGGED:
-			this.mouseDragged(e);
-			break;
-		case MouseEvent.MOUSE_MOVED:
-			this.mouseMoved(e);
-			break;
-		case MouseEvent.MOUSE_PRESSED:
-			this.mousePressed(e);
-			break;
-		case MouseEvent.MOUSE_RELEASED:
-			this.mouseReleased(e);
-			break;
-		}
-	}
-
-	/**
-	 * Sets the Camera from processing camera parameters.
-	 * <p>
-	 * {@link #setMouseGrabber(MouseGrabber)} to the MouseGrabber that grabs the
-	 * mouse (or to {@code null} if none of them grab it).
-	 */
-	public void mouseMoved(MouseEvent event) {
-		setMouseGrabber(null);
-		for (MouseGrabber mg : MouseGrabberPool) {
-			mg.checkIfGrabsMouse(event.getX(), event.getY(), camera());
-			if (mg.grabsMouse())
-				setMouseGrabber(mg);
-		}
-	}
-
-	protected Button getButton(MouseEvent e) {
-		Button button = null;
-		switch (e.getButton()) {
-		case MouseEvent.NOBUTTON:
-			break;
-		case MouseEvent.BUTTON1: // left button
-			button = Button.LEFT;
-			break;
-		case MouseEvent.BUTTON2: // middle button
-			button = Button.MIDDLE;
-			break;
-		case MouseEvent.BUTTON3: // right button
-			button = Button.RIGHT;
-			break;
-		}
-		return button;
-	}
-	
-	/**
-	 * When the user clicks on the mouse: If a {@link #mouseGrabber()} is defined,
-	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)} is
-	 * called. Otherwise, the {@link #camera()} or the {@link #interactiveFrame()}
-	 * interprets the mouse displacements, depending on mouse bindings.
-	 * 
-	 * @see #mouseDragged(MouseEvent)
-	 */
-	public void mousePressed(MouseEvent event) {
-		if (mouseGrabber() != null) {
-			if (mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
-				InteractiveFrame iFrame = (InteractiveFrame) mouseGrabber();
-				iFrame.startAction(currentCameraProfile().iFrameMouseAction(event), withConstraint);
-				iFrame.mousePressed(event.getPoint(), camera());
-			} else
-				mouseGrabber().mousePressed(event.getPoint(), camera());
-			return;
-		}
-		if (interactiveFrameIsDrawn()) {
-			interactiveFrame().startAction(currentCameraProfile().iFrameMouseAction(event), withConstraint);
-			interactiveFrame().mousePressed(event.getPoint(), camera());
-			return;
-		}
-		camMouseAction = currentCameraProfile().cameraMouseAction(event);// updates camMouseAction
-		if (camMouseAction == MouseAction.ZOOM_ON_REGION) {
-			fCorner = event.getPoint();
-			lCorner = event.getPoint();
-		}
-		if (camMouseAction == MouseAction.SCREEN_ROTATE)
-			fCorner = event.getPoint();
-		camera().frame().startAction(camMouseAction, withConstraint);
-		camera().frame().mousePressed(event.getPoint(), camera());
-	}
-
-	/**
-	 * Mouse drag event is sent to the {@link #mouseGrabber()} (if any) or to the
-	 * {@link #camera()} or the {@link #interactiveFrame()}, depending on mouse
-	 * bindings.
-	 * 
-	 * @see #mouseMoved(MouseEvent)
-	 */
-	public void mouseDragged(MouseEvent event) {
-		if (mouseGrabber() != null) {
-			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
-			if (mouseGrabber().grabsMouse())
-				// TODO: the following case needs testing
-				if (mouseGrabberIsADrivableFrame)
-					((InteractiveDrivableFrame) mouseGrabber()).iDrivableMouseDragged(event.getPoint(), camera());
-				else
-					mouseGrabber().mouseDragged(event.getPoint(), camera());
-			else
-				setMouseGrabber(null);
-			return;
-		}
-		if (interactiveFrameIsDrawn()) {
-			// TODO: the following case needs testing
-			if (interactiveFrameIsDrivable)
-				((InteractiveDrivableFrame)interactiveFrame()).iDrivableMouseDragged(event.getPoint(), camera());
-			else
-				interactiveFrame().mouseDragged(event.getPoint(), camera());
-			return;
-		}
-		if (camMouseAction == MouseAction.ZOOM_ON_REGION)
-			lCorner = event.getPoint();
-		else {
-			if (camMouseAction == MouseAction.SCREEN_ROTATE)
-				fCorner = event.getPoint();
-			camera().frame().mouseDragged(event.getPoint(), camera());
-		}
-	}
-
-	/**
-	 * Calls the {@link #mouseGrabber()}, {@link #camera()} or
-	 * {@link #interactiveFrame()} mouseReleaseEvent method.
-	 */
-	public void mouseReleased(MouseEvent event) {
-		if (mouseGrabber() != null) {
-			// TODO: the following case needs testing
-			if (mouseGrabberIsADrivableFrame)
-				((InteractiveDrivableFrame) mouseGrabber()).iDrivableMouseReleased(event.getPoint(), camera());
-			else
-				mouseGrabber().mouseReleased(event.getPoint(), camera());
-			mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), camera());
-			if (!(mouseGrabber().grabsMouse()))
-				setMouseGrabber(null);
-			// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-			return;
-		}
-		if (interactiveFrameIsDrawn()) {
-			// TODO: the following case needs testing
-			if (interactiveFrameIsDrivable)
-				((InteractiveDrivableFrame)interactiveFrame()).iDrivableMouseReleased(event.getPoint(), camera());
-			else
-				interactiveFrame().mouseReleased(event.getPoint(), camera());
-			// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-			return;
-		}
-
-		if ((camMouseAction == MouseAction.ZOOM_ON_REGION)
-				|| (camMouseAction == MouseAction.SCREEN_ROTATE)
-				|| (camMouseAction == MouseAction.SCREEN_TRANSLATE))
-			lCorner = event.getPoint();
-		camera().frame().mouseReleased(event.getPoint(), camera());
-		camMouseAction = MouseAction.NO_MOUSE_ACTION;
-		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-	}
-
-	public void mouseClicked(MouseEvent e) {
-		// 1. get button
-		Button button = getButton(e);
-		// 2. get modifier
-		/**
-		clickModifier = null;
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
-			if (e.isAltDown())
-				clickModifier = Modifier.ALT;
-			if (e.isAltGraphDown())
-				clickModifier = Modifier.ALT_GRAPH;
-			if (e.isControlDown())
-				clickModifier = Modifier.CONTROL;
-			if (e.isShiftDown())
-				clickModifier = Modifier.SHIFT;
-		}
-		*/
-
-		// 2. get number of clicks
-		numberOfClicks = e.getClickCount();
-		
-		/**
-		final int clickDelay = 200;		
-		hasMouseDoubleClicked = false;
-		if (e.getClickCount() == 2) {
-			numberOfClicks = 2;
-			PApplet.println( "  and it's a double click!");
-			hasMouseDoubleClicked = true;
-		} else {
-			clickTimer = new Timer(clickDelay, new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					if (hasMouseDoubleClicked) {
-						hasMouseDoubleClicked = false; // reset flag
-					}
-					else {
-						numberOfClicks = 1;
-						PApplet.println( "  and it's a simple click!");
-					}
-				}
-			});
-			clickTimer.setRepeats(false);
-			clickTimer.start();
-		}
-		// */
-		
-		/**
-		if (e.getClickCount() == 1 && !e.isConsumed()) {
-			e.consume();
-			numberOfClicks = 1;
-			//handle double click.
-		}
-		*/
-		/**
-		if (e.getClickCount() == 2 && !e.isConsumed()) {
-			e.consume();
-			numberOfClicks = 2;
-			//handle double click.
-		}
-		if (e.getClickCount() == 1 && !e.isConsumed() ) {
-			e.consume();
-			numberOfClicks = 1;
-			//handle double click.
-		}
-		*/
-		
-		 /**		
-		numberOfClicks = 0;
-		hasMouseDoubleClicked = true;
-		if (e.getClickCount() == 1)  {
-			clickTimer = new java.util.Timer();
-			clickTimer.schedule(new TimerTask() {
-				public void run() {
-					if (!hasMouseDoubleClicked) {
-						numberOfClicks = 1;
-						// Handle single-click
-					}
-					hasMouseDoubleClicked = false;
-					clickTimer.cancel();
-					}
-				}, 175);
-    }
-    else if (e.getClickCount() == 2) {
-    	numberOfClicks = 2;
-    	hasMouseDoubleClicked = true;
-    }
-		// */	
-
-		/**
-		final int clickDelay=200; //delay in msec before processing events
-	  if (e.getClickCount() == 1) {
-	    clickTimer = new Timer(clickDelay, new ActionListener() {
-	    	public void actionPerformed(ActionEvent ae) {	    		
-	    		//do something for the single click
-	    		PApplet.println("single click");
-	    		numberOfClicks = 1;
-	    		test(numberOfClicks);
-	    		}
-	    	});
-	    clickTimer.setRepeats(false); //after expiring once, stop the timer
-	    clickTimer.start();
-	  }
-	  else if (e.getClickCount() == 2) {
-	    clickTimer.stop(); //the single click will not be processed
-	    PApplet.println("double click");
-	    //do something for the double click
-	    numberOfClicks = 2;
-	    test(numberOfClicks);
-	  }
-	  // */
-	  // you can repeat this pattern for more clicks		
-		
-		// debug:
-		//PApplet.println("number of clicks: " + numberOfClicks);
-	  // /**
-		ClickAction ca = null;
-		
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
-			if (e.isAltDown())
-				ca = clickShortcut(button, Modifier.ALT, numberOfClicks);
-			if (e.isAltGraphDown())
-				ca = clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
-			if (e.isControlDown())
-				ca = clickShortcut(button, Modifier.CONTROL, numberOfClicks);
-			if (e.isShiftDown())
-				ca = clickShortcut(button, Modifier.SHIFT, numberOfClicks);
-		}	
-		
-		if (ca == null)
-			ca = clickShortcut(button, numberOfClicks);			
-
-		if (ca == null)
-			return;
-		else {
-			handleClickAction(ca);
-		}
-		// */
-	}
-	
-	/**
-	private void test(int n) {
-		ClickAction ca = null;		
-		if(clickButton == null)
-			return;
-		
-		if ( clickModifier != null ) 
-				ca = clickShortcut(clickButton, clickModifier, n);
-		
-		if (ca == null)
-			ca = clickShortcut(clickButton, n);			
-
-		if (ca == null)
-			return;
-		else {
-			handleClickAction(ca);
-		}		
-	}
-	// */
-
+	}	
 
 	// 10. Register draw method
 
