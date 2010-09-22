@@ -25,21 +25,14 @@ void setup() {
   // 1. Perform some keyboard configuration:
   // Note that there are some defaults set (soon to be  documented ;)
   // change interaction between camera an interactive frame:
-  scene.setShortcut('f', Scene.GlobalKeyboardAction.FOCUS_INTERACTIVE_FRAME);
+  scene.setShortcut('f', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
   // change the camera projection
-  scene.setShortcut('z', Scene.GlobalKeyboardAction.CAMERA_TYPE);
+  scene.setShortcut('z', Scene.KeyboardAction.CAMERA_TYPE);
 
-  // 2. Configure some click actions:
-  // double click + button left = align frame with world
-  scene.setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_FRAME);
-  // single click + middle button + SHIFT = interpolate to show all the scene.
-  scene.setClickShortcut(Button.MIDDLE, Scene.Modifier.SHIFT, ClickAction.ZOOM_TO_FIT);
-
-  // 3. Customized camera profile:
+  // 2. Customized camera profile:
   wProfile = new WeirdCameraProfile(scene, "MY_PROFILE");
   scene.registerCameraProfile(wProfile);
-  // Unregister default camera profiles (i.e., leave only MY_PROFILE):
-  scene.unregisterCameraProfile("ARCBALL");
+  // Unregister the  first-person camera profile (i.e., leave ARCBALL and MY_PROFILE):
   scene.unregisterCameraProfile("FIRST_PERSON");
 }
 

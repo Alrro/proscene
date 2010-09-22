@@ -30,6 +30,7 @@ import java.awt.event.MouseEvent;
 
 import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
+import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.Modifier;
 import remixlab.proscene.Scene.MouseAction;
 
@@ -41,6 +42,14 @@ public class CameraProfile {
 	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
 	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> cameraActions;
 	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> iFrameActions;
+	// C L I C K A C T I O N S
+	protected ShortcutMappings<ClickShortcut, ClickAction> clickActions;
+	private Integer numberOfClicks;
+	//private java.util.Timer clickTimer;
+	//private Timer clickTimer;	
+	//private boolean hasMouseDoubleClicked;
+	//private Button clickButton;
+	//private Modifier clickModifier;
 	
 	public CameraProfile(Scene scn, String n) {
 		this(scn, n, Mode.CUSTOM);
@@ -49,13 +58,11 @@ public class CameraProfile {
 	public CameraProfile(Scene scn, String n, Mode m) {
 		scene = scn;		
 		name = n;
-		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(
-				scene);
-		cameraActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(
-				scene);
-		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(
-				scene);
 		mode = m;
+		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
+		cameraActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
+		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);		
+		clickActions = new ShortcutMappings<ClickShortcut, Scene.ClickAction>(scene);
 		
 		switch (mode) {
 		case ARCBALL:
@@ -81,6 +88,9 @@ public class CameraProfile {
 
 			setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
+			
+			setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
+			setClickShortcut(Button.MIDDLE, 2, ClickAction.ZOOM_TO_FIT);			
 			break;
 		case FIRST_PERSON:
 			// setShortcut('a', CameraKeyboardAction.SHOW_ALL);
@@ -124,9 +134,13 @@ public class CameraProfile {
 		}
 	}
 	
+	public Mode mode() {
+		return mode;
+	}
+	
 	protected MouseAction iFrameMouseAction(MouseEvent e) {
 		MouseAction iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-		Button button = scene.getButton(e);
+		Button button = scene.dE.getButton(e);
 
 		if (button == null) {
 			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
@@ -155,13 +169,9 @@ public class CameraProfile {
 		return iFrameMouseAction;
 	}
 	
-	public Mode mode() {
-		return mode;
-	}
-	
 	protected MouseAction cameraMouseAction(MouseEvent e) {
 		MouseAction camMouseAction = MouseAction.NO_MOUSE_ACTION;
-		Button button = scene.getButton(e);
+		Button button = scene.dE.getButton(e);
 
 		if (button == null) {
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
@@ -352,4 +362,230 @@ public class CameraProfile {
 	public Scene.MouseAction iFrameShortcut(Scene.Button button) {
 		return iFrameActions.mapping(new Shortcut<Scene.Button>(button));
 	}
+	
+	// click wrappers:
+	public void removeAllClickActionShortcuts() {
+		clickActions.removeAllMappings();
+	}
+
+	public boolean isClickKeyInUse(ClickShortcut key) {
+		return clickActions.isShortcutInUse(key);
+	}
+
+	public boolean isClickActionBinded(Scene.ClickAction action) {
+		return clickActions.isActionMapped(action);
+	}
+
+	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button), action);
+	}
+
+	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier,
+			Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, modifier), action);
+	}
+
+	public void setClickShortcut(Scene.Button button, Integer nc,
+			Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, nc), action);
+	}
+
+	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier,
+			Integer nc, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, modifier, nc), action);
+	}
+
+	public void removeClickShortcut(Scene.Button button) {
+		clickActions.removeMapping(new ClickShortcut(button));
+	}
+
+	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier) {
+		clickActions.removeMapping(new ClickShortcut(button, modifier));
+	}
+
+	public void removeClickShortcut(Scene.Button button, Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(button, nc));
+	}
+
+	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier,
+			Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(button, modifier, nc));
+	}
+
+	public Scene.ClickAction clickShortcut(Scene.Button button) {
+		return clickActions.mapping(new ClickShortcut(button));
+	}
+
+	public Scene.ClickAction clickShortcut(Scene.Button button,
+			Scene.Modifier modifier) {
+		return clickActions.mapping(new ClickShortcut(button, modifier));
+	}
+
+	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(button, nc));
+	}
+
+	public Scene.ClickAction clickShortcut(Scene.Button button,
+			Scene.Modifier modifier, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(button, modifier, nc));
+	}
+	
+	// click event
+	protected void mouseClicked(MouseEvent e) {
+		// 1. get button
+		Button button = scene.dE.getButton(e);
+		// 2. get modifier
+		/**
+		clickModifier = null;
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
+			if (e.isAltDown())
+				clickModifier = Modifier.ALT;
+			if (e.isAltGraphDown())
+				clickModifier = Modifier.ALT_GRAPH;
+			if (e.isControlDown())
+				clickModifier = Modifier.CONTROL;
+			if (e.isShiftDown())
+				clickModifier = Modifier.SHIFT;
+		}
+		*/
+
+		// 2. get number of clicks
+		numberOfClicks = e.getClickCount();
+		
+		/**
+		final int clickDelay = 200;		
+		hasMouseDoubleClicked = false;
+		if (e.getClickCount() == 2) {
+			numberOfClicks = 2;
+			PApplet.println( "  and it's a double click!");
+			hasMouseDoubleClicked = true;
+		} else {
+			clickTimer = new Timer(clickDelay, new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					if (hasMouseDoubleClicked) {
+						hasMouseDoubleClicked = false; // reset flag
+					}
+					else {
+						numberOfClicks = 1;
+						PApplet.println( "  and it's a simple click!");
+					}
+				}
+			});
+			clickTimer.setRepeats(false);
+			clickTimer.start();
+		}
+		// */
+		
+		/**
+		if (e.getClickCount() == 1 && !e.isConsumed()) {
+			e.consume();
+			numberOfClicks = 1;
+			//handle double click.
+		}
+		*/
+		/**
+		if (e.getClickCount() == 2 && !e.isConsumed()) {
+			e.consume();
+			numberOfClicks = 2;
+			//handle double click.
+		}
+		if (e.getClickCount() == 1 && !e.isConsumed() ) {
+			e.consume();
+			numberOfClicks = 1;
+			//handle double click.
+		}
+		*/
+		
+		 /**		
+		numberOfClicks = 0;
+		hasMouseDoubleClicked = true;
+		if (e.getClickCount() == 1)  {
+			clickTimer = new java.util.Timer();
+			clickTimer.schedule(new TimerTask() {
+				public void run() {
+					if (!hasMouseDoubleClicked) {
+						numberOfClicks = 1;
+						// Handle single-click
+					}
+					hasMouseDoubleClicked = false;
+					clickTimer.cancel();
+					}
+				}, 175);
+    }
+    else if (e.getClickCount() == 2) {
+    	numberOfClicks = 2;
+    	hasMouseDoubleClicked = true;
+    }
+		// */	
+
+		/**
+		final int clickDelay=200; //delay in msec before processing events
+	  if (e.getClickCount() == 1) {
+	    clickTimer = new Timer(clickDelay, new ActionListener() {
+	    	public void actionPerformed(ActionEvent ae) {	    		
+	    		//do something for the single click
+	    		PApplet.println("single click");
+	    		numberOfClicks = 1;
+	    		test(numberOfClicks);
+	    		}
+	    	});
+	    clickTimer.setRepeats(false); //after expiring once, stop the timer
+	    clickTimer.start();
+	  }
+	  else if (e.getClickCount() == 2) {
+	    clickTimer.stop(); //the single click will not be processed
+	    PApplet.println("double click");
+	    //do something for the double click
+	    numberOfClicks = 2;
+	    test(numberOfClicks);
+	  }
+	  // */
+	  // you can repeat this pattern for more clicks		
+		
+		// debug:
+		//PApplet.println("number of clicks: " + numberOfClicks);
+	  // /**
+		ClickAction ca = null;
+		
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
+			if (e.isAltDown())
+				ca = clickShortcut(button, Modifier.ALT, numberOfClicks);
+			if (e.isAltGraphDown())
+				ca = clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
+			if (e.isControlDown())
+				ca = clickShortcut(button, Modifier.CONTROL, numberOfClicks);
+			if (e.isShiftDown())
+				ca = clickShortcut(button, Modifier.SHIFT, numberOfClicks);
+		}	
+		
+		if (ca == null)
+			ca = clickShortcut(button, numberOfClicks);			
+
+		if (ca == null)
+			return;
+		else {
+			scene.handleClickAction(ca);
+		}
+		// */
+	}
+	
+	/**
+	private void test(int n) {
+		ClickAction ca = null;		
+		if(clickButton == null)
+			return;
+		
+		if ( clickModifier != null ) 
+				ca = clickShortcut(clickButton, clickModifier, n);
+		
+		if (ca == null)
+			ca = clickShortcut(clickButton, n);			
+
+		if (ca == null)
+			return;
+		else {
+			handleClickAction(ca);
+		}		
+	}
+	// */
 }

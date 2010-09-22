@@ -35,9 +35,15 @@ Box [] boxes;
 void setup() {
   size(640, 360, OPENGL);
   scene = new Scene(this);
-  scene.setClickShortcut( Scene.Button.LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
-  scene.setClickShortcut( Scene.Button.RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
-  scene.setClickShortcut( Scene.Button.MIDDLE, Scene.Modifier.SHIFT, 2, Scene.ClickAction.RESET_ARP );
+  //add the click actions to all camera profiles
+  CameraProfile [] camProfiles = scene.getCameraProfiles();
+  for (int i=0; i<camProfiles.length; i++) {
+    camProfiles[i].setClickShortcut( Scene.Button.LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
+    camProfiles[i].setClickShortcut( Scene.Button.MIDDLE, Scene.ClickAction.SHOW_ALL);
+    camProfiles[i].setClickShortcut( Scene.Button.MIDDLE, Scene.Modifier.SHIFT, 2, Scene.ClickAction.RESET_ARP );
+    camProfiles[i].setClickShortcut( Scene.Button.RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
+  }
+  
   GLCamera glCam = new GLCamera(scene);
   scene.setCamera(glCam);
   scene.setGridIsDrawn(false);
