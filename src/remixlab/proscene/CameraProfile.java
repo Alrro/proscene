@@ -26,7 +26,7 @@
 
 package remixlab.proscene;
 
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
@@ -35,7 +35,7 @@ import remixlab.proscene.Scene.Modifier;
 import remixlab.proscene.Scene.MouseAction;
 
 public class CameraProfile {
-	public enum Mode {ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}	
+	public enum Mode {ARCBALL, WHEELED_ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}
 	protected String name;
 	protected Scene scene;
 	protected Mode mode;
@@ -50,6 +50,11 @@ public class CameraProfile {
 	//private boolean hasMouseDoubleClicked;
 	//private Button clickButton;
 	//private Modifier clickModifier;
+
+	// W H E E L
+	public final Integer WHEEL = 1;
+	protected ShortcutMappings<Shortcut<Integer>, Scene.MouseAction> cameraWheelActions;
+	protected ShortcutMappings<Shortcut<Integer>, Scene.MouseAction> frameWheelActions;
 	
 	public CameraProfile(Scene scn, String n) {
 		this(scn, n, Mode.CUSTOM);
@@ -64,33 +69,30 @@ public class CameraProfile {
 		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);		
 		clickActions = new ShortcutMappings<ClickShortcut, Scene.ClickAction>(scene);
 		
+		/**
+		scene.parent.addMouseWheelListener( scene.dE );
+		cameraWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
+		frameWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
+		*/
+		
 		switch (mode) {
 		case ARCBALL:
-			setShortcut(Scene.Arrow.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
-			setShortcut(Scene.Arrow.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
-			setShortcut(Scene.Arrow.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
-			setShortcut(Scene.Arrow.DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
-
-			setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
-			setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
-			setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
-			setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
-			setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
-			setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
-
-			setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL,
-					Scene.MouseAction.ZOOM_ON_REGION);
-			setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
-					Scene.MouseAction.SCREEN_ROTATE);
-
-			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
-			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
-
-			setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
-			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
+			arcballDefaultShortcuts();
+			break;
+		case WHEELED_ARCBALL:
+			cameraWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
+			frameWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
 			
-			setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
-			setClickShortcut(Button.MIDDLE, 2, ClickAction.ZOOM_TO_FIT);			
+			arcballDefaultShortcuts();
+			
+			setCameraWheelShortcut( MouseAction.ZOOM );
+			setCameraWheelShortcut( Scene.Modifier.CONTROL, MouseAction.MOVE_FORWARD );
+			setCameraWheelShortcut( Scene.Modifier.ALT, MouseAction.MOVE_BACKWARD );
+			setFrameWheelShortcut( MouseAction.ZOOM );
+			setFrameWheelShortcut( Scene.Modifier.CONTROL, MouseAction.MOVE_FORWARD );
+			setFrameWheelShortcut( Scene.Modifier.ALT, MouseAction.MOVE_BACKWARD );
+			
+			scene.parent.addMouseWheelListener( scene.dE );
 			break;
 		case FIRST_PERSON:
 			// setShortcut('a', CameraKeyboardAction.SHOW_ALL);
@@ -132,6 +134,34 @@ public class CameraProfile {
 		case CUSTOM:
 			break;
 		}
+	}
+	
+	private void arcballDefaultShortcuts() {
+		setShortcut(Scene.Arrow.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
+		setShortcut(Scene.Arrow.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
+		setShortcut(Scene.Arrow.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
+		setShortcut(Scene.Arrow.DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
+
+		setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
+		setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
+		setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+		setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
+		setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
+		setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+
+		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL,
+				Scene.MouseAction.ZOOM_ON_REGION);
+		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
+				Scene.MouseAction.SCREEN_ROTATE);
+
+		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
+		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
+
+		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
+		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
+		
+		setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
+		setClickShortcut(Button.MIDDLE, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	
 	public Mode mode() {
@@ -588,4 +618,131 @@ public class CameraProfile {
 		}		
 	}
 	// */
+	
+	// wheel
+	//Camera Wheel
+	public void removeAllCameraWheelShortcuts() {
+		cameraWheelActions.removeAllMappings();
+	}
+
+	public boolean isCameraWheelKeyInUse(Shortcut<Integer> key) {
+		return cameraWheelActions.isShortcutInUse(key);
+	}
+
+	public boolean isWheelActionBindedToCamera(Scene.MouseAction action) {
+		return cameraWheelActions.isActionMapped(action);
+	}
+
+	public void setCameraWheelShortcut(Scene.Modifier modifier,	Scene.MouseAction action) {
+		cameraWheelActions.setMapping(new Shortcut<Integer>(WHEEL, modifier),
+				action);
+	}
+
+	public void setCameraWheelShortcut(Scene.MouseAction action) {
+		cameraWheelActions.setMapping(new Shortcut<Integer>(WHEEL), action);
+	}
+
+	public void removeCameraWheelShortcut(Scene.Modifier modifier) {
+		cameraWheelActions.removeMapping(new Shortcut<Integer>(WHEEL, modifier));
+	}
+
+	public void removeCameraWheelShortcut() {
+		cameraWheelActions.removeMapping(new Shortcut<Integer>(WHEEL));
+	}
+
+	public Scene.MouseAction cameraWheelShortcut(Scene.Modifier modifier) {
+		return cameraWheelActions.mapping(new Shortcut<Integer>(WHEEL, modifier));
+	}
+
+	public Scene.MouseAction cameraWheelShortcut() {
+		return cameraWheelActions.mapping(new Shortcut<Integer>(WHEEL));
+	}
+	
+	protected MouseAction cameraWheelMouseAction(MouseWheelEvent e) {
+		MouseAction wMouseAction = MouseAction.NO_MOUSE_ACTION;
+
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
+				|| e.isShiftDown()) {
+			if (e.isAltDown())
+				wMouseAction = cameraWheelShortcut(Scene.Modifier.ALT);
+			if (e.isAltGraphDown())
+				wMouseAction = cameraWheelShortcut(Scene.Modifier.ALT_GRAPH);
+			if (e.isControlDown())
+				wMouseAction = cameraWheelShortcut(Scene.Modifier.CONTROL);
+			if (e.isShiftDown())
+				wMouseAction = cameraWheelShortcut(Scene.Modifier.SHIFT);
+			if (wMouseAction != null)
+				return wMouseAction;
+		}
+
+		wMouseAction = cameraWheelShortcut();
+
+		if (wMouseAction == null)
+			wMouseAction = MouseAction.NO_MOUSE_ACTION;
+
+		return wMouseAction;
+	}
+	
+  //Frame Wheel
+	public void removeAllFrameWheelShortcuts() {
+		frameWheelActions.removeAllMappings();
+	}
+
+	public boolean isFrameWheelKeyInUse(Shortcut<Integer> key) {
+		return frameWheelActions.isShortcutInUse(key);
+	}
+
+	public boolean isWheelActionBindedToFrame(Scene.MouseAction action) {
+		return frameWheelActions.isActionMapped(action);
+	}
+
+	public void setFrameWheelShortcut(Scene.Modifier modifier,	Scene.MouseAction action) {
+		frameWheelActions.setMapping(new Shortcut<Integer>(WHEEL, modifier),
+				action);
+	}
+
+	public void setFrameWheelShortcut(Scene.MouseAction action) {
+		frameWheelActions.setMapping(new Shortcut<Integer>(WHEEL), action);
+	}
+
+	public void removeFrameWheelShortcut(Scene.Modifier modifier) {
+		frameWheelActions.removeMapping(new Shortcut<Integer>(WHEEL, modifier));
+	}
+
+	public void removeFrameWheelShortcut() {
+		frameWheelActions.removeMapping(new Shortcut<Integer>(WHEEL));
+	}
+
+	public Scene.MouseAction frameWheelShortcut(Scene.Modifier modifier) {
+		return frameWheelActions.mapping(new Shortcut<Integer>(WHEEL, modifier));
+	}
+
+	public Scene.MouseAction frameWheelShortcut() {
+		return frameWheelActions.mapping(new Shortcut<Integer>(WHEEL));
+	}
+	
+	protected MouseAction frameWheelMouseAction(MouseWheelEvent e) {
+		MouseAction fMouseAction = MouseAction.NO_MOUSE_ACTION;
+
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
+				|| e.isShiftDown()) {
+			if (e.isAltDown())
+				fMouseAction = frameWheelShortcut(Scene.Modifier.ALT);
+			if (e.isAltGraphDown())
+				fMouseAction = frameWheelShortcut(Scene.Modifier.ALT_GRAPH);
+			if (e.isControlDown())
+				fMouseAction = frameWheelShortcut(Scene.Modifier.CONTROL);
+			if (e.isShiftDown())
+				fMouseAction = frameWheelShortcut(Scene.Modifier.SHIFT);
+			if (fMouseAction != null)
+				return fMouseAction;
+		}
+
+		fMouseAction = frameWheelShortcut();
+
+		if (fMouseAction == null)
+			fMouseAction = MouseAction.NO_MOUSE_ACTION;
+
+		return fMouseAction;
+	}
 }

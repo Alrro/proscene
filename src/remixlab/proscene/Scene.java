@@ -1759,10 +1759,11 @@ public class Scene implements PConstants {
 		cameraProfileNames = new ArrayList<String>();
 		currentCameraProfile = null;
 		// register here the default profiles
-		//registerCameraProfile(new ArcballCameraProfile(this, "ARCBALL"));
-		registerCameraProfile( new WheeledCameraProfile(this, "ARCBALL") );//TODO test
+		//registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
+		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );//TODO test
 		registerCameraProfile(new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON));
-		setCurrentCameraProfile("ARCBALL");
+		//setCurrentCameraProfile("ARCBALL");
+		setCurrentCameraProfile("WHEELED_ARCBALL");
 	}
 
 	/**

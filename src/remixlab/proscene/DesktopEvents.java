@@ -12,7 +12,7 @@ import remixlab.proscene.Scene.KeyboardAction;
 import remixlab.proscene.Scene.Modifier;
 import remixlab.proscene.Scene.MouseAction;
 
-public class DesktopEvents {
+public class DesktopEvents implements MouseWheelListener {
 	protected Scene scene;
 	protected PApplet parent;
 	protected MouseAction camMouseAction;
@@ -340,5 +340,33 @@ public class DesktopEvents {
 		scene.camera().frame().mouseReleased(event.getPoint(), scene.camera());
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
+	}
+	
+	// 2.b Wheel
+	
+	public void mouseWheelMoved(MouseWheelEvent event) {
+		if (scene.mouseGrabber() != null) {
+			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
+				if (scene.mouseGrabberIsADrivableFrame) {	
+					InteractiveDrivableFrame iFrame = (InteractiveDrivableFrame) scene.mouseGrabber();
+					iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
+					iFrame.iDrivableMouseWheelMoved(event.getWheelRotation(), scene.camera());
+				}
+				else {
+					InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
+					iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
+					iFrame.mouseWheelMoved(event.getWheelRotation(), scene.camera());
+				}
+			} else
+				scene.mouseGrabber().mouseWheelMoved(event.getWheelRotation(), scene.camera());
+			return;
+		}
+		if (scene.interactiveFrameIsDrawn()) {
+			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
+			scene.interactiveFrame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
+			return;
+		}
+		scene.camera().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
+		scene.camera().frame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 	}
 }
