@@ -8,6 +8,7 @@ import processing.core.PApplet;
 import remixlab.proscene.Scene.Arrow;
 import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
+import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.KeyboardAction;
 import remixlab.proscene.Scene.Modifier;
 import remixlab.proscene.Scene.MouseAction;
@@ -19,6 +20,14 @@ public class DesktopEvents implements MouseWheelListener {
   //Z O O M _ O N _ R E G I O N
 	public Point fCorner;// also used for SCREEN_ROTATE
 	public Point lCorner;
+  //C L I C K A C T I O N S
+	private Integer numberOfClicks;
+	//private java.util.Timer clickTimer;
+	//private Timer clickTimer;	
+	//private boolean hasMouseDoubleClicked;
+	//private Button clickButton;
+	//private Modifier clickModifier;
+	
 	public DesktopEvents(Scene s) {
 		scene = s;
 		parent = s.parent;
@@ -202,8 +211,7 @@ public class DesktopEvents implements MouseWheelListener {
 			return;
 		switch (e.getID()) {
 		case MouseEvent.MOUSE_CLICKED:
-			//mouseClicked(e);
-			scene.currentCameraProfile().mouseClicked(e);
+			mouseClicked(e);
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
 			mouseDragged(e);
@@ -219,6 +227,165 @@ public class DesktopEvents implements MouseWheelListener {
 			break;
 		}
 	}
+	
+  //click event
+	protected void mouseClicked(MouseEvent e) {
+		// 1. get button
+		Button button = getButton(e);
+		// 2. get modifier
+		/**
+		clickModifier = null;
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
+			if (e.isAltDown())
+				clickModifier = Modifier.ALT;
+			if (e.isAltGraphDown())
+				clickModifier = Modifier.ALT_GRAPH;
+			if (e.isControlDown())
+				clickModifier = Modifier.CONTROL;
+			if (e.isShiftDown())
+				clickModifier = Modifier.SHIFT;
+		}
+		*/
+
+		// 2. get number of clicks
+		numberOfClicks = e.getClickCount();
+		
+		/**
+		final int clickDelay = 200;		
+		hasMouseDoubleClicked = false;
+		if (e.getClickCount() == 2) {
+			numberOfClicks = 2;
+			PApplet.println( "  and it's a double click!");
+			hasMouseDoubleClicked = true;
+		} else {
+			clickTimer = new Timer(clickDelay, new ActionListener() {
+				public void actionPerformed(ActionEvent evt) {
+					if (hasMouseDoubleClicked) {
+						hasMouseDoubleClicked = false; // reset flag
+					}
+					else {
+						numberOfClicks = 1;
+						PApplet.println( "  and it's a simple click!");
+					}
+				}
+			});
+			clickTimer.setRepeats(false);
+			clickTimer.start();
+		}
+		// */
+		
+		/**
+		if (e.getClickCount() == 1 && !e.isConsumed()) {
+			e.consume();
+			numberOfClicks = 1;
+			//handle double click.
+		}
+		*/
+		/**
+		if (e.getClickCount() == 2 && !e.isConsumed()) {
+			e.consume();
+			numberOfClicks = 2;
+			//handle double click.
+		}
+		if (e.getClickCount() == 1 && !e.isConsumed() ) {
+			e.consume();
+			numberOfClicks = 1;
+			//handle double click.
+		}
+		*/
+		
+		 /**		
+		numberOfClicks = 0;
+		hasMouseDoubleClicked = true;
+		if (e.getClickCount() == 1)  {
+			clickTimer = new java.util.Timer();
+			clickTimer.schedule(new TimerTask() {
+				public void run() {
+					if (!hasMouseDoubleClicked) {
+						numberOfClicks = 1;
+						// Handle single-click
+					}
+					hasMouseDoubleClicked = false;
+					clickTimer.cancel();
+					}
+				}, 175);
+    }
+    else if (e.getClickCount() == 2) {
+    	numberOfClicks = 2;
+    	hasMouseDoubleClicked = true;
+    }
+		// */	
+
+		/**
+		final int clickDelay=200; //delay in msec before processing events
+	  if (e.getClickCount() == 1) {
+	    clickTimer = new Timer(clickDelay, new ActionListener() {
+	    	public void actionPerformed(ActionEvent ae) {	    		
+	    		//do something for the single click
+	    		PApplet.println("single click");
+	    		numberOfClicks = 1;
+	    		test(numberOfClicks);
+	    		}
+	    	});
+	    clickTimer.setRepeats(false); //after expiring once, stop the timer
+	    clickTimer.start();
+	  }
+	  else if (e.getClickCount() == 2) {
+	    clickTimer.stop(); //the single click will not be processed
+	    PApplet.println("double click");
+	    //do something for the double click
+	    numberOfClicks = 2;
+	    test(numberOfClicks);
+	  }
+	  // */
+	  // you can repeat this pattern for more clicks		
+		
+		// debug:
+		//PApplet.println("number of clicks: " + numberOfClicks);
+	  // /**
+		ClickAction ca = null;
+		
+		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
+			if (e.isAltDown())
+				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.ALT, numberOfClicks);
+			if (e.isAltGraphDown())
+				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
+			if (e.isControlDown())
+				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.CONTROL, numberOfClicks);
+			if (e.isShiftDown())
+				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.SHIFT, numberOfClicks);
+		}	
+		
+		if (ca == null)
+			ca = scene.currentCameraProfile().clickShortcut(button, numberOfClicks);			
+
+		if (ca == null)
+			return;
+		else {
+			scene.handleClickAction(ca);
+		}
+		// */
+	}
+	
+	/**
+	private void test(int n) {
+		ClickAction ca = null;		
+		if(clickButton == null)
+			return;
+		
+		if ( clickModifier != null ) 
+				ca = clickShortcut(clickButton, clickModifier, n);
+		
+		if (ca == null)
+			ca = clickShortcut(clickButton, n);			
+
+		if (ca == null)
+			return;
+		else {
+			handleClickAction(ca);
+		}		
+	}
+	// */
 	
 	/**
 	 * Sets the Camera from processing camera parameters.
