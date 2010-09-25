@@ -27,27 +27,22 @@
 package remixlab.proscene;
 
 import java.awt.event.*;
-
-import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
-import remixlab.proscene.Scene.Modifier;
 import remixlab.proscene.Scene.MouseAction;
 
-public class CameraProfile {
+public class CameraProfile {	
 	public enum Mode {ARCBALL, WHEELED_ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}
 	protected String name;
 	protected Scene scene;
 	protected Mode mode;
 	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
-	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> cameraActions;
-	protected ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction> iFrameActions;
+	protected ShortcutMappings<Integer, Scene.MouseAction> cameraActions;
+	protected ShortcutMappings<Integer, Scene.MouseAction> iFrameActions;
 	// C L I C K A C T I O N S
 	protected ShortcutMappings<ClickShortcut, ClickAction> clickActions;
-	// W H E E L
-	public final Integer WHEEL = 1;
-	protected ShortcutMappings<Shortcut<Integer>, Scene.MouseAction> cameraWheelActions;
-	protected ShortcutMappings<Shortcut<Integer>, Scene.MouseAction> frameWheelActions;
+	protected ShortcutMappings<Integer, Scene.MouseAction> cameraWheelActions;
+	protected ShortcutMappings<Integer, Scene.MouseAction> frameWheelActions;
 	
 	public CameraProfile(Scene scn, String n) {
 		this(scn, n, Mode.CUSTOM);
@@ -58,8 +53,8 @@ public class CameraProfile {
 		name = n;
 		mode = m;
 		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
-		cameraActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);
-		iFrameActions = new ShortcutMappings<Shortcut<Scene.Button>, Scene.MouseAction>(scene);		
+		cameraActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);
+		iFrameActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);		
 		clickActions = new ShortcutMappings<ClickShortcut, Scene.ClickAction>(scene);
 		
 		/**
@@ -73,32 +68,31 @@ public class CameraProfile {
 			arcballDefaultShortcuts();
 			break;
 		case WHEELED_ARCBALL:
-			cameraWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
-			frameWheelActions = new ShortcutMappings<Shortcut<Integer>, Scene.MouseAction>(scene);
+			cameraWheelActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);
+			frameWheelActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);
 			
 			arcballDefaultShortcuts();
 			
-			setCameraWheelShortcut( MouseAction.ZOOM );
-			setCameraWheelShortcut( Scene.Modifier.CONTROL, MouseAction.MOVE_FORWARD );
-			setCameraWheelShortcut( Scene.Modifier.ALT, MouseAction.MOVE_BACKWARD );
+			setCameraWheelShortcut( MouseAction.ZOOM );			
+			setCameraWheelShortcut( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
+			setCameraWheelShortcut( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
+			//should work only iFrame is an instance of drivable
 			setFrameWheelShortcut( MouseAction.ZOOM );
-			setFrameWheelShortcut( Scene.Modifier.CONTROL, MouseAction.MOVE_FORWARD );
-			setFrameWheelShortcut( Scene.Modifier.ALT, MouseAction.MOVE_BACKWARD );
+			setFrameWheelShortcut( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
+			setFrameWheelShortcut( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
 			
 			scene.parent.addMouseWheelListener( scene.dE );
 			break;
 		case FIRST_PERSON:
 			// setShortcut('a', CameraKeyboardAction.SHOW_ALL);
-			setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
-			setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
-			setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
-			setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
-					Scene.MouseAction.ROLL);
-			setCameraShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT,
-					Scene.MouseAction.DRIVE);
-			setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
-			setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
-			setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+			setCameraShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
+			setCameraShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
+			setCameraShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
+			setCameraShortcut((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
+			setCameraShortcut((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ),	Scene.MouseAction.DRIVE);
+			setIFrameShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
+			setIFrameShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
+			setIFrameShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_CAMERA_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_CAMERA_FLY_SPEED);
@@ -107,13 +101,11 @@ public class CameraProfile {
 			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 			break;
 		case THIRD_PERSON:
-			setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.MOVE_FORWARD);
-			setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.LOOK_AROUND);
-			setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
-			setIFrameShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
-					Scene.MouseAction.ROLL);
-			setIFrameShortcut(Scene.Button.RIGHT, Scene.Modifier.SHIFT,
-					Scene.MouseAction.DRIVE);
+			setIFrameShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
+			setIFrameShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
+			setIFrameShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
+			setIFrameShortcut((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
+			setIFrameShortcut((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.DRIVE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_AVATAR_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);
@@ -130,22 +122,21 @@ public class CameraProfile {
 	}
 	
 	private void arcballDefaultShortcuts() {
-		setShortcut(Scene.Arrow.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
-		setShortcut(Scene.Arrow.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
-		setShortcut(Scene.Arrow.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
-		setShortcut(Scene.Arrow.DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
+		setShortcut(KeyEvent.VK_RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
+		setShortcut(KeyEvent.VK_LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
+		setShortcut(KeyEvent.VK_UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
+		setShortcut(KeyEvent.VK_DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
 
-		setCameraShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
-		setCameraShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
-		setCameraShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
-		setIFrameShortcut(Scene.Button.LEFT, Scene.MouseAction.ROTATE);
-		setIFrameShortcut(Scene.Button.MIDDLE, Scene.MouseAction.ZOOM);
-		setIFrameShortcut(Scene.Button.RIGHT, Scene.MouseAction.TRANSLATE);
+		setCameraShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
+		setCameraShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
+		setCameraShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
+		setIFrameShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
+		setIFrameShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
+		setIFrameShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
 
-		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.CONTROL,
-				Scene.MouseAction.ZOOM_ON_REGION);
-		setCameraShortcut(Scene.Button.LEFT, Scene.Modifier.SHIFT,
-				Scene.MouseAction.SCREEN_ROTATE);
+		//setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
+		setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
+		setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), Scene.MouseAction.SCREEN_ROTATE);
 
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
 		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
@@ -153,8 +144,10 @@ public class CameraProfile {
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 		
-		setClickShortcut(Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
-		setClickShortcut(Button.MIDDLE, 2, ClickAction.ZOOM_TO_FIT);
+		setClickShortcut(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
+		setClickShortcut(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
+		setClickShortcut(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
+		//setClickShortcut((InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	
 	public Mode mode() {
@@ -162,64 +155,32 @@ public class CameraProfile {
 	}
 	
 	protected MouseAction iFrameMouseAction(MouseEvent e) {
+		/**
 		MouseAction iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 		Button button = scene.dE.getButton(e);
-
 		if (button == null) {
 			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 			return iFrameMouseAction;
 		}
-
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-				|| e.isShiftDown()) {
-			if (e.isAltDown())
-				iFrameMouseAction = iFrameShortcut(button, Modifier.ALT);
-			if (e.isAltGraphDown())
-				iFrameMouseAction = iFrameShortcut(button, Modifier.ALT_GRAPH);
-			if (e.isControlDown())
-				iFrameMouseAction = iFrameShortcut(button, Modifier.CONTROL);
-			if (e.isShiftDown())
-				iFrameMouseAction = iFrameShortcut(button, Modifier.SHIFT);
-			if (iFrameMouseAction != null)
-				return iFrameMouseAction;
-		}
-
-		iFrameMouseAction = iFrameShortcut(button);
-
+		*/
+		MouseAction iFrameMouseAction = iFrameShortcut( e.getModifiersEx() );
 		if (iFrameMouseAction == null)
 			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-
 		return iFrameMouseAction;
 	}
 	
 	protected MouseAction cameraMouseAction(MouseEvent e) {
+		/**
 		MouseAction camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		Button button = scene.dE.getButton(e);
-
 		if (button == null) {
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 			return camMouseAction;
 		}
-
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-				|| e.isShiftDown()) {
-			if (e.isAltDown())
-				camMouseAction = cameraShortcut(button, Modifier.ALT);
-			if (e.isAltGraphDown())
-				camMouseAction = cameraShortcut(button, Modifier.ALT_GRAPH);
-			if (e.isControlDown())
-				camMouseAction = cameraShortcut(button, Modifier.CONTROL);
-			if (e.isShiftDown())
-				camMouseAction = cameraShortcut(button, Modifier.SHIFT);
-			if (camMouseAction != null)
-				return camMouseAction;
-		}
-
-		camMouseAction = cameraShortcut(button);
-
+		*/
+		MouseAction camMouseAction = cameraShortcut( e.getModifiersEx() );
 		if (camMouseAction == null)
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
-
 		return camMouseAction;
 	}
 
@@ -244,62 +205,56 @@ public class CameraProfile {
 	}
 
 	// keyboard wrappers:
-	public void setShortcut(char key, Scene.Modifier modifier, CameraKeyboardAction action) {
-		int vKey = MathUtils.getVKey(key);
-		if (vKey >= 0 )
-			setShortcut(vKey, modifier, action);
-	}
-	
-	public void setShortcut(Integer vKey, Scene.Modifier modifier, CameraKeyboardAction action) {
-		keyboard.setMapping(new KeyboardShortcut(vKey, modifier), action);
-	}
-
-	public void setShortcut(Scene.Arrow arrow, CameraKeyboardAction action) {
-		keyboard.setMapping(new KeyboardShortcut(arrow), action);
-	}
-
 	public void setShortcut(Character key, CameraKeyboardAction action) {
 		keyboard.setMapping(new KeyboardShortcut(key), action);
+	}
+	
+	public void setShortcut(Integer mask, Integer vKey, CameraKeyboardAction action) {
+		keyboard.setMapping(new KeyboardShortcut(mask, vKey), action);
+	}
+	
+	public void setShortcut(Integer vKey, CameraKeyboardAction action) {
+		keyboard.setMapping(new KeyboardShortcut(vKey), action);
 	}
 
 	public void removeAllKeyboardShortcuts() {
 		keyboard.removeAllMappings();
 	}
 	
-	public void removeShortcut(char key, Scene.Modifier modifier) {
-		removeShortcut(MathUtils.getVKey(key), modifier);
-	}
-
-	public void removeShortcut(Integer vKey, Scene.Modifier modifier) {
-		keyboard.removeMapping(new KeyboardShortcut(vKey, modifier));
-	}
-
-	public void removeShortcut(Scene.Arrow arrow) {
-		keyboard.removeMapping(new KeyboardShortcut(arrow));
-	}
-
 	public void removeShortcut(Character key) {
 		keyboard.removeMapping(new KeyboardShortcut(key));
+	}
+	
+	public void removeShortcut(Integer mask, Integer vKey) {
+		keyboard.removeMapping(new KeyboardShortcut(mask, vKey));
+	}
+
+	public void removeShortcut(Integer vKey) {
+		keyboard.removeMapping(new KeyboardShortcut(vKey));
 	}
 
 	public CameraKeyboardAction shortcut(Character key) {
 		return keyboard.mapping(new KeyboardShortcut(key));
 	}
+
+	public CameraKeyboardAction shortcut(Integer mask, Integer vKey) {
+		return keyboard.mapping(new KeyboardShortcut(mask, vKey));
+	}
+
+	public CameraKeyboardAction shortcut(Integer vKey) {
+		return keyboard.mapping(new KeyboardShortcut(vKey));
+	}
+
+	public boolean isKeyInUse(Character key) {
+		return keyboard.isShortcutInUse(new KeyboardShortcut(key));
+	}
 	
-	public CameraKeyboardAction shortcut(char key, Scene.Modifier modifier) {
-		return shortcut(MathUtils.getVKey(key), modifier);
+	public boolean isKeyInUse(Integer mask, Integer vKey) {
+		return keyboard.isShortcutInUse(new KeyboardShortcut(mask, vKey));
 	}
-
-	public CameraKeyboardAction shortcut(Integer vKey, Scene.Modifier modifier) {
-		return keyboard.mapping(new KeyboardShortcut(vKey, modifier));
-	}
-
-	public CameraKeyboardAction shortcut(Scene.Arrow arrow) {
-		return keyboard.mapping(new KeyboardShortcut(arrow));
-	}
-
-	public boolean isKeyInUse(KeyboardShortcut key) {
-		return keyboard.isShortcutInUse(key);
+	
+	public boolean isKeyInUse(Integer vKey) {
+		return keyboard.isShortcutInUse(new KeyboardShortcut(vKey));
 	}
 
 	public boolean isActionBinded(CameraKeyboardAction action) {
@@ -311,39 +266,24 @@ public class CameraProfile {
 		cameraActions.removeAllMappings();
 	}
 
-	public boolean isCameraKeyInUse(Shortcut<Scene.Button> key) {
-		return cameraActions.isShortcutInUse(key);
+	public boolean isCameraKeyInUse(Integer mask) {
+		return cameraActions.isShortcutInUse(mask);
 	}
 
 	public boolean isActionBindedToCamera(Scene.MouseAction action) {
 		return cameraActions.isActionMapped(action);
 	}
 
-	public void setCameraShortcut(Scene.Button button, Scene.Modifier modifier,
-			Scene.MouseAction action) {
-		cameraActions.setMapping(new Shortcut<Scene.Button>(button, modifier),
-				action);
+	public void setCameraShortcut(Integer mask,	Scene.MouseAction action) {
+		cameraActions.setMapping(mask, action);
 	}
 
-	public void setCameraShortcut(Scene.Button button, Scene.MouseAction action) {
-		cameraActions.setMapping(new Shortcut<Scene.Button>(button), action);
+	public void removeCameraShortcut(Integer mask) {
+		cameraActions.removeMapping(mask);
 	}
 
-	public void removeCameraShortcut(Scene.Button button, Scene.Modifier modifier) {
-		cameraActions.removeMapping(new Shortcut<Scene.Button>(button, modifier));
-	}
-
-	public void removeCameraShortcut(Scene.Button button) {
-		cameraActions.removeMapping(new Shortcut<Scene.Button>(button));
-	}
-
-	public Scene.MouseAction cameraShortcut(Scene.Button button,
-			Scene.Modifier modifier) {
-		return cameraActions.mapping(new Shortcut<Scene.Button>(button, modifier));
-	}
-
-	public Scene.MouseAction cameraShortcut(Scene.Button button) {
-		return cameraActions.mapping(new Shortcut<Scene.Button>(button));
+	public Scene.MouseAction cameraShortcut(Integer mask) {
+		return cameraActions.mapping(mask);
 	}
 
 	// iFrame wrappers:
@@ -351,107 +291,136 @@ public class CameraProfile {
 		iFrameActions.removeAllMappings();
 	}
 
-	public boolean isIFrameKeyInUse(Shortcut<Scene.Button> key) {
-		return iFrameActions.isShortcutInUse(key);
+	public boolean isIFrameKeyInUse(Integer mask) {
+		return iFrameActions.isShortcutInUse(mask);
 	}
 
 	public boolean isActionBindedToIFrame(Scene.MouseAction action) {
 		return iFrameActions.isActionMapped(action);
 	}
-
-	public void setIFrameShortcut(Scene.Button button, Scene.Modifier modifier,
-			Scene.MouseAction action) {
-		iFrameActions.setMapping(new Shortcut<Scene.Button>(button, modifier),
-				action);
+	
+	public void setIFrameShortcut(Integer mask, Scene.MouseAction action) {
+		iFrameActions.setMapping(mask, action);
 	}
 
-	public void setIFrameShortcut(Scene.Button button, Scene.MouseAction action) {
-		iFrameActions.setMapping(new Shortcut<Scene.Button>(button), action);
+	public void removeIFrameShortcut(Integer mask) {
+		iFrameActions.removeMapping(mask);
 	}
 
-	public void removeIFrameShortcut(Scene.Button button, Scene.Modifier modifier) {
-		iFrameActions.removeMapping(new Shortcut<Scene.Button>(button, modifier));
-	}
-
-	public void removeIFrameShortcut(Scene.Button button) {
-		iFrameActions.removeMapping(new Shortcut<Scene.Button>(button));
-	}
-
-	public Scene.MouseAction iFrameShortcut(Scene.Button button,
-			Scene.Modifier modifier) {
-		return iFrameActions.mapping(new Shortcut<Scene.Button>(button, modifier));
-	}
-
-	public Scene.MouseAction iFrameShortcut(Scene.Button button) {
-		return iFrameActions.mapping(new Shortcut<Scene.Button>(button));
+	public Scene.MouseAction iFrameShortcut(Integer mask) {
+		return iFrameActions.mapping(mask);
 	}
 	
 	// click wrappers:
 	public void removeAllClickActionShortcuts() {
 		clickActions.removeAllMappings();
 	}
+	
+	public boolean isClickKeyInUse(Scene.Button button) {
+		return clickActions.isShortcutInUse(new ClickShortcut(button));
+	}
+	
+	public boolean isClickKeyInUse(Integer mask, Scene.Button button) {
+		return clickActions.isShortcutInUse(new ClickShortcut(mask, button));
+	}
+	
+	public boolean isClickKeyInUse(Scene.Button button, Integer nc) {
+		return clickActions.isShortcutInUse(new ClickShortcut(button, nc));
+	}
 
-	public boolean isClickKeyInUse(ClickShortcut key) {
-		return clickActions.isShortcutInUse(key);
+	public boolean isClickKeyInUse(Integer mask, Scene.Button button, Integer nc) {
+		return clickActions.isShortcutInUse(new ClickShortcut(mask, button, nc)); 
+	}
+
+	public boolean isClickActionBinded(Scene.ClickAction action) {
+		return clickActions.isActionMapped(action);
+	}
+	
+	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button), action);
+	}
+
+	public void setClickShortcut(Integer mask, Scene.Button button, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(mask, button), action);
+	}
+	
+	public void setClickShortcut(Scene.Button button, Integer nc, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(button, nc), action);
+	}
+
+	public void setClickShortcut(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(mask, button, nc), action);
+	}
+	
+	public void removeClickShortcut(Scene.Button button) {
+		clickActions.removeMapping(new ClickShortcut(button));
+	}
+
+	public void removeClickShortcut(Integer mask, Scene.Button button) {
+		clickActions.removeMapping(new ClickShortcut(mask, button));
+	}
+	
+	public void removeClickShortcut(Scene.Button button, Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(button, nc));
+	}
+		
+	public void removeClickShortcut(Integer mask, Scene.Button button, Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(mask, button, nc));
+	}
+	
+	public Scene.ClickAction clickShortcut(Scene.Button button) {
+		return clickActions.mapping(new ClickShortcut(button));
+	}
+
+	public Scene.ClickAction clickShortcut(Integer mask, Scene.Button button) {
+		return clickActions.mapping(new ClickShortcut(mask, button));
+	}
+	
+	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(button, nc));
+	}
+
+	public Scene.ClickAction clickShortcut(Integer mask, Scene.Button button, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(mask, button, nc));
+	}
+	
+	/**
+	public boolean isClickKeyInUse(Integer mask) {
+		return clickActions.isShortcutInUse(new ClickShortcut(mask));
+	}
+
+	public boolean isClickKeyInUse(Integer mask, Integer nc) {
+		return clickActions.isShortcutInUse(new ClickShortcut(mask, nc));
 	}
 
 	public boolean isClickActionBinded(Scene.ClickAction action) {
 		return clickActions.isActionMapped(action);
 	}
 
-	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button), action);
+	public void setClickShortcut(Integer mask, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(mask), action);
 	}
 
-	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier,
-			Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, modifier), action);
+	public void setClickShortcut(Integer mask, Integer nc, Scene.ClickAction action) {
+		clickActions.setMapping(new ClickShortcut(mask, nc), action);
 	}
 
-	public void setClickShortcut(Scene.Button button, Integer nc,
-			Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, nc), action);
+	public void removeClickShortcut(Integer mask) {
+		clickActions.removeMapping(new ClickShortcut(mask));
+	}
+		
+	public void removeClickShortcut(Integer mask, Integer nc) {
+		clickActions.removeMapping(new ClickShortcut(mask, nc));
 	}
 
-	public void setClickShortcut(Scene.Button button, Scene.Modifier modifier,
-			Integer nc, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, modifier, nc), action);
+	public Scene.ClickAction clickShortcut(Integer mask) {
+		return clickActions.mapping(new ClickShortcut(mask));
 	}
 
-	public void removeClickShortcut(Scene.Button button) {
-		clickActions.removeMapping(new ClickShortcut(button));
+	public Scene.ClickAction clickShortcut(Integer mask, Integer nc) {
+		return clickActions.mapping(new ClickShortcut(mask, nc));
 	}
-
-	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier) {
-		clickActions.removeMapping(new ClickShortcut(button, modifier));
-	}
-
-	public void removeClickShortcut(Scene.Button button, Integer nc) {
-		clickActions.removeMapping(new ClickShortcut(button, nc));
-	}
-
-	public void removeClickShortcut(Scene.Button button, Scene.Modifier modifier,
-			Integer nc) {
-		clickActions.removeMapping(new ClickShortcut(button, modifier, nc));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button) {
-		return clickActions.mapping(new ClickShortcut(button));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button,
-			Scene.Modifier modifier) {
-		return clickActions.mapping(new ClickShortcut(button, modifier));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
-		return clickActions.mapping(new ClickShortcut(button, nc));
-	}
-
-	public Scene.ClickAction clickShortcut(Scene.Button button,
-			Scene.Modifier modifier, Integer nc) {
-		return clickActions.mapping(new ClickShortcut(button, modifier, nc));
-	}
+	*/
 	
 	// wheel
 	//Camera Wheel
@@ -459,61 +428,42 @@ public class CameraProfile {
 		cameraWheelActions.removeAllMappings();
 	}
 
-	public boolean isCameraWheelKeyInUse(Shortcut<Integer> key) {
-		return cameraWheelActions.isShortcutInUse(key);
+	public boolean isCameraWheelKeyInUse(Integer mask) {
+		return cameraWheelActions.isShortcutInUse(mask);
 	}
 
 	public boolean isWheelActionBindedToCamera(Scene.MouseAction action) {
 		return cameraWheelActions.isActionMapped(action);
 	}
-
-	public void setCameraWheelShortcut(Scene.Modifier modifier,	Scene.MouseAction action) {
-		cameraWheelActions.setMapping(new Shortcut<Integer>(WHEEL, modifier),
-				action);
-	}
-
+	
 	public void setCameraWheelShortcut(Scene.MouseAction action) {
-		cameraWheelActions.setMapping(new Shortcut<Integer>(WHEEL), action);
+		setCameraWheelShortcut(0, action);
 	}
 
-	public void removeCameraWheelShortcut(Scene.Modifier modifier) {
-		cameraWheelActions.removeMapping(new Shortcut<Integer>(WHEEL, modifier));
+	public void setCameraWheelShortcut(Integer mask, Scene.MouseAction action) {
+		cameraWheelActions.setMapping(mask, action);
 	}
-
+	
 	public void removeCameraWheelShortcut() {
-		cameraWheelActions.removeMapping(new Shortcut<Integer>(WHEEL));
+		removeCameraWheelShortcut(0);
 	}
 
-	public Scene.MouseAction cameraWheelShortcut(Scene.Modifier modifier) {
-		return cameraWheelActions.mapping(new Shortcut<Integer>(WHEEL, modifier));
+	public void removeCameraWheelShortcut(Integer mask) {
+		cameraWheelActions.removeMapping(mask);
 	}
 
 	public Scene.MouseAction cameraWheelShortcut() {
-		return cameraWheelActions.mapping(new Shortcut<Integer>(WHEEL));
+		return cameraWheelActions.mapping(0);
+	}
+	
+	public Scene.MouseAction cameraWheelShortcut(Integer mask) {
+		return cameraWheelActions.mapping(mask);
 	}
 	
 	protected MouseAction cameraWheelMouseAction(MouseWheelEvent e) {
-		MouseAction wMouseAction = MouseAction.NO_MOUSE_ACTION;
-
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-				|| e.isShiftDown()) {
-			if (e.isAltDown())
-				wMouseAction = cameraWheelShortcut(Scene.Modifier.ALT);
-			if (e.isAltGraphDown())
-				wMouseAction = cameraWheelShortcut(Scene.Modifier.ALT_GRAPH);
-			if (e.isControlDown())
-				wMouseAction = cameraWheelShortcut(Scene.Modifier.CONTROL);
-			if (e.isShiftDown())
-				wMouseAction = cameraWheelShortcut(Scene.Modifier.SHIFT);
-			if (wMouseAction != null)
-				return wMouseAction;
-		}
-
-		wMouseAction = cameraWheelShortcut();
-
+		MouseAction wMouseAction = cameraWheelShortcut(e.getModifiersEx());
 		if (wMouseAction == null)
 			wMouseAction = MouseAction.NO_MOUSE_ACTION;
-
 		return wMouseAction;
 	}
 	
@@ -522,61 +472,42 @@ public class CameraProfile {
 		frameWheelActions.removeAllMappings();
 	}
 
-	public boolean isFrameWheelKeyInUse(Shortcut<Integer> key) {
-		return frameWheelActions.isShortcutInUse(key);
+	public boolean isFrameWheelKeyInUse(Integer mask) {
+		return frameWheelActions.isShortcutInUse(mask);
 	}
 
 	public boolean isWheelActionBindedToFrame(Scene.MouseAction action) {
 		return frameWheelActions.isActionMapped(action);
 	}
 
-	public void setFrameWheelShortcut(Scene.Modifier modifier,	Scene.MouseAction action) {
-		frameWheelActions.setMapping(new Shortcut<Integer>(WHEEL, modifier),
-				action);
-	}
-
 	public void setFrameWheelShortcut(Scene.MouseAction action) {
-		frameWheelActions.setMapping(new Shortcut<Integer>(WHEEL), action);
+		setFrameWheelShortcut(0, action);
 	}
-
-	public void removeFrameWheelShortcut(Scene.Modifier modifier) {
-		frameWheelActions.removeMapping(new Shortcut<Integer>(WHEEL, modifier));
+	
+	public void setFrameWheelShortcut(Integer mask, Scene.MouseAction action) {
+		frameWheelActions.setMapping(mask, action);
 	}
-
+	
 	public void removeFrameWheelShortcut() {
-		frameWheelActions.removeMapping(new Shortcut<Integer>(WHEEL));
+		removeFrameWheelShortcut(0);
 	}
 
-	public Scene.MouseAction frameWheelShortcut(Scene.Modifier modifier) {
-		return frameWheelActions.mapping(new Shortcut<Integer>(WHEEL, modifier));
+	public void removeFrameWheelShortcut(Integer mask) {
+		frameWheelActions.removeMapping(mask);
 	}
-
+	
 	public Scene.MouseAction frameWheelShortcut() {
-		return frameWheelActions.mapping(new Shortcut<Integer>(WHEEL));
+		return frameWheelShortcut(0);
+	}
+	
+	public Scene.MouseAction frameWheelShortcut(Integer mask) {
+		return frameWheelActions.mapping(mask);
 	}
 	
 	protected MouseAction frameWheelMouseAction(MouseWheelEvent e) {
-		MouseAction fMouseAction = MouseAction.NO_MOUSE_ACTION;
-
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-				|| e.isShiftDown()) {
-			if (e.isAltDown())
-				fMouseAction = frameWheelShortcut(Scene.Modifier.ALT);
-			if (e.isAltGraphDown())
-				fMouseAction = frameWheelShortcut(Scene.Modifier.ALT_GRAPH);
-			if (e.isControlDown())
-				fMouseAction = frameWheelShortcut(Scene.Modifier.CONTROL);
-			if (e.isShiftDown())
-				fMouseAction = frameWheelShortcut(Scene.Modifier.SHIFT);
-			if (fMouseAction != null)
-				return fMouseAction;
-		}
-
-		fMouseAction = frameWheelShortcut();
-
+		MouseAction fMouseAction = frameWheelShortcut( e.getModifiersEx() );
 		if (fMouseAction == null)
 			fMouseAction = MouseAction.NO_MOUSE_ACTION;
-
 		return fMouseAction;
 	}
 }

@@ -5,33 +5,26 @@ import java.awt.event.*;
 
 import processing.core.PApplet;
 
-import remixlab.proscene.Scene.Arrow;
 import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.KeyboardAction;
-import remixlab.proscene.Scene.Modifier;
 import remixlab.proscene.Scene.MouseAction;
 
 public class DesktopEvents implements MouseWheelListener {
 	protected Scene scene;
 	protected PApplet parent;
 	protected MouseAction camMouseAction;
+	protected boolean keyHandled;
   //Z O O M _ O N _ R E G I O N
 	public Point fCorner;// also used for SCREEN_ROTATE
 	public Point lCorner;
-  //C L I C K A C T I O N S
-	private Integer numberOfClicks;
-	//private java.util.Timer clickTimer;
-	//private Timer clickTimer;	
-	//private boolean hasMouseDoubleClicked;
-	//private Button clickButton;
-	//private Modifier clickModifier;
 	
 	public DesktopEvents(Scene s) {
 		scene = s;
 		parent = s.parent;
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
+		keyHandled = false;
 	}
 	
 	// 1. KeyEvents
@@ -43,61 +36,44 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see remixlab.proscene.Scene#enableKeyboardHandling(boolean)
 	 */
 	public void keyEvent(KeyEvent e) {
-		switch (e.getID()) {
+		keyHandled = false;
+		switch (e.getID()) {		
 		case KeyEvent.KEY_PRESSED:
+			break;
+		case KeyEvent.KEY_TYPED:
+			keyTyped(e);
 			break;
 		case KeyEvent.KEY_RELEASED:
 			keyReleased(e);
 			break;
-		case KeyEvent.KEY_TYPED:
-			break;
 		}
+	}
+	
+	protected void keyTyped(KeyEvent e) {
+		boolean handled = false;		
+		if (scene.currentCameraProfile() != null)
+			handled = handleKeyTypedCameraKeyboardAction(e);
+		if (!handled)
+			handled = handleKeyTypedKeyboardAction(e);
+		keyHandled = handled;
 	}
 	
 	/**
 	 * Associates the different interactions to the keys.
 	 */
 	protected void keyReleased(KeyEvent e) {
+		if(keyHandled)
+			return;
 		boolean handled = false;
 		if (scene.currentCameraProfile() != null)
-			handled = handleCameraKeyboardAction(e);
+			handled = handleKeyReleasedCameraKeyboardAction(e);
 		if (!handled)
-			handleKeyboardAction(e);
+			handleKeyReleasedKeyboardAction(e);
 	}
 	
-	protected boolean handleCameraKeyboardAction(KeyEvent e) {
-		// TODO debug
-		// PApplet.println(parent.key + " pressed");
+	protected boolean handleKeyTypedCameraKeyboardAction(KeyEvent e) {
 		CameraKeyboardAction kba = null;
-		kba = scene.currentCameraProfile().shortcut(parent.key);
-		if (kba == null) {
-			if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-					|| e.isShiftDown()) {
-				if (e.isAltDown())
-					kba = scene.currentCameraProfile().shortcut(e.getKeyCode(), Modifier.ALT);
-				if (e.isAltGraphDown())
-					kba = scene.currentCameraProfile().shortcut(e.getKeyCode(),
-							Modifier.ALT_GRAPH);
-				if (e.isControlDown())
-					kba = scene.currentCameraProfile().shortcut(e.getKeyCode(),
-							Modifier.CONTROL);
-				if (e.isShiftDown())
-					kba = scene.currentCameraProfile().shortcut(e.getKeyCode(), Modifier.SHIFT);
-			} else if (parent.key == PApplet.CODED) {
-				if ((parent.keyCode == PApplet.UP) || (parent.keyCode == PApplet.DOWN)
-						|| (parent.keyCode == PApplet.RIGHT) || (parent.keyCode == PApplet.LEFT)) {
-					if (parent.keyCode == PApplet.UP)
-						kba = scene.currentCameraProfile().shortcut(Arrow.UP);
-					if (parent.keyCode == PApplet.DOWN)
-						kba = scene.currentCameraProfile().shortcut(Arrow.DOWN);
-					if (parent.keyCode == PApplet.RIGHT)
-						kba = scene.currentCameraProfile().shortcut(Arrow.RIGHT);
-					if (parent.keyCode == PApplet.LEFT)
-						kba = scene.currentCameraProfile().shortcut(Arrow.LEFT);
-				}
-			}
-		}
-
+		kba = scene.currentCameraProfile().shortcut( e.getKeyChar() );
 		if (kba == null)
 			return false;
 		else {
@@ -106,72 +82,60 @@ public class DesktopEvents implements MouseWheelListener {
 		}
 	}
 	
-	protected boolean handleKeyboardAction(KeyEvent e) {
-		// keyframes:
-		//Integer path = path(parent.key);
-		// TODO debug
-		// PApplet.println(parent.key + " pressed");
-		/**
-		if (path != null) {
-			if (!e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown()
-					&& !e.isShiftDown()) {
-				PApplet.println("playing");
+	protected boolean handleKeyTypedKeyboardAction( KeyEvent e) {
+		if (!e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown()	&& !e.isShiftDown()) {
+			Integer path = scene.path(e.getKeyChar());
+			if (path != null) {
 				scene.camera().playPath(path);
 				return true;
 			}
-			if (((addKeyFrameKeyboardModifier == Modifier.ALT) && (e.isAltDown()))
-					|| ((addKeyFrameKeyboardModifier == Modifier.ALT_GRAPH) && (e
-							.isAltGraphDown()))
-					|| ((addKeyFrameKeyboardModifier == Modifier.CONTROL) && (e
-							.isControlDown()))
-					|| ((addKeyFrameKeyboardModifier == Modifier.SHIFT) && (e
-							.isShiftDown()))) {
-				PApplet.println("adding");
-				camera().addKeyFrameToPath(path);
-				return true;
-			}
-			if (((deleteKeyFrameKeyboardModifier == Modifier.ALT) && (e.isAltDown()))
-					|| ((deleteKeyFrameKeyboardModifier == Modifier.ALT_GRAPH) && (e
-							.isAltGraphDown()))
-					|| ((deleteKeyFrameKeyboardModifier == Modifier.CONTROL) && (e
-							.isControlDown()))
-					|| ((deleteKeyFrameKeyboardModifier == Modifier.SHIFT) && (e
-							.isShiftDown()))) {
-				scene.camera().deletePath(path);
-				PApplet.println("removing");
-				return true;
-			}
 		}
-		*/
-
+		
 		KeyboardAction kba = null;
-		kba = scene.shortcut(parent.key);
-		if (kba == null) {
-			if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown()
-					|| e.isShiftDown()) {
-				if (e.isAltDown())
-					kba = scene.shortcut(e.getKeyCode(), Modifier.ALT);
-				if (e.isAltGraphDown())
-					kba = scene.shortcut(e.getKeyCode(), Modifier.ALT_GRAPH);
-				if (e.isControlDown())
-					kba = scene.shortcut(e.getKeyCode(), Modifier.CONTROL);
-				if (e.isShiftDown())
-					kba = scene.shortcut(e.getKeyCode(), Modifier.SHIFT);
-			} else if (parent.key == PApplet.CODED) {
-				if ((parent.keyCode == PApplet.UP) || (parent.keyCode == PApplet.DOWN)
-						|| (parent.keyCode == PApplet.RIGHT) || (parent.keyCode == PApplet.LEFT)) {
-					if (parent.keyCode == PApplet.UP)
-						kba = scene.shortcut(Arrow.UP);
-					if (parent.keyCode == PApplet.DOWN)
-						kba = scene.shortcut(Arrow.DOWN);
-					if (parent.keyCode == PApplet.RIGHT)
-						kba = scene.shortcut(Arrow.RIGHT);
-					if (parent.keyCode == PApplet.LEFT)
-						kba = scene.shortcut(Arrow.LEFT);
-				}
+		kba = scene.shortcut(e.getKeyChar());
+		if (kba == null)
+			return false;
+		else {
+			scene.handleKeyboardAction(kba);
+			return true;
+		}
+	}
+	
+	protected boolean handleKeyReleasedCameraKeyboardAction(KeyEvent e) {
+		CameraKeyboardAction kba = null;
+		kba = scene.currentCameraProfile().shortcut( e.getModifiersEx(), e.getKeyCode() );
+		if (kba == null)
+			return false;
+		else {
+			scene.handleCameraKeyboardAction(kba);
+			return true;
+		}
+	}
+	
+	protected boolean handleKeyReleasedKeyboardAction( KeyEvent e) {
+		if (((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
+	   || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isAltGraphDown()))
+		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.CONTROL) && (e.isControlDown()))
+		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
+			Integer path = scene.path(e.getKeyCode());
+			if (path != null) {
+				scene.camera().addKeyFrameToPath(path);
+				return true;
 			}
 		}
-
+		if (((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
+		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isAltGraphDown()))
+		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.CONTROL) && (e.isControlDown()))
+		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
+			Integer path = scene.path(e.getKeyCode());
+			if (path != null) {
+				scene.camera().deletePath(path);
+				return true;
+			}
+		}
+		
+		KeyboardAction kba = null;
+		kba = scene.shortcut( e.getModifiersEx(), e.getKeyCode() );
 		if (kba == null)
 			return false;
 		else {
@@ -230,162 +194,24 @@ public class DesktopEvents implements MouseWheelListener {
 	
   //click event
 	protected void mouseClicked(MouseEvent e) {
-		// 1. get button
-		Button button = getButton(e);
-		// 2. get modifier
-		/**
-		clickModifier = null;
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
-			if (e.isAltDown())
-				clickModifier = Modifier.ALT;
-			if (e.isAltGraphDown())
-				clickModifier = Modifier.ALT_GRAPH;
-			if (e.isControlDown())
-				clickModifier = Modifier.CONTROL;
-			if (e.isShiftDown())
-				clickModifier = Modifier.SHIFT;
-		}
-		*/
-
-		// 2. get number of clicks
-		numberOfClicks = e.getClickCount();
-		
-		/**
-		final int clickDelay = 200;		
-		hasMouseDoubleClicked = false;
-		if (e.getClickCount() == 2) {
-			numberOfClicks = 2;
-			PApplet.println( "  and it's a double click!");
-			hasMouseDoubleClicked = true;
-		} else {
-			clickTimer = new Timer(clickDelay, new ActionListener() {
-				public void actionPerformed(ActionEvent evt) {
-					if (hasMouseDoubleClicked) {
-						hasMouseDoubleClicked = false; // reset flag
-					}
-					else {
-						numberOfClicks = 1;
-						PApplet.println( "  and it's a simple click!");
-					}
-				}
-			});
-			clickTimer.setRepeats(false);
-			clickTimer.start();
-		}
+		 /**
+		String text = InputEvent.getModifiersExText(e.getModifiersEx());		
+		PApplet.println("modifiers in mouse click: " + text);
+		PApplet.println("number of clicks: " + e.getClickCount());
 		// */
 		
-		/**
-		if (e.getClickCount() == 1 && !e.isConsumed()) {
-			e.consume();
-			numberOfClicks = 1;
-			//handle double click.
-		}
-		*/
-		/**
-		if (e.getClickCount() == 2 && !e.isConsumed()) {
-			e.consume();
-			numberOfClicks = 2;
-			//handle double click.
-		}
-		if (e.getClickCount() == 1 && !e.isConsumed() ) {
-			e.consume();
-			numberOfClicks = 1;
-			//handle double click.
-		}
-		*/
-		
-		 /**		
-		numberOfClicks = 0;
-		hasMouseDoubleClicked = true;
-		if (e.getClickCount() == 1)  {
-			clickTimer = new java.util.Timer();
-			clickTimer.schedule(new TimerTask() {
-				public void run() {
-					if (!hasMouseDoubleClicked) {
-						numberOfClicks = 1;
-						// Handle single-click
-					}
-					hasMouseDoubleClicked = false;
-					clickTimer.cancel();
-					}
-				}, 175);
-    }
-    else if (e.getClickCount() == 2) {
-    	numberOfClicks = 2;
-    	hasMouseDoubleClicked = true;
-    }
-		// */	
-
-		/**
-		final int clickDelay=200; //delay in msec before processing events
-	  if (e.getClickCount() == 1) {
-	    clickTimer = new Timer(clickDelay, new ActionListener() {
-	    	public void actionPerformed(ActionEvent ae) {	    		
-	    		//do something for the single click
-	    		PApplet.println("single click");
-	    		numberOfClicks = 1;
-	    		test(numberOfClicks);
-	    		}
-	    	});
-	    clickTimer.setRepeats(false); //after expiring once, stop the timer
-	    clickTimer.start();
-	  }
-	  else if (e.getClickCount() == 2) {
-	    clickTimer.stop(); //the single click will not be processed
-	    PApplet.println("double click");
-	    //do something for the double click
-	    numberOfClicks = 2;
-	    test(numberOfClicks);
-	  }
-	  // */
-	  // you can repeat this pattern for more clicks		
-		
-		// debug:
-		//PApplet.println("number of clicks: " + numberOfClicks);
-	  // /**
-		ClickAction ca = null;
-		
-		if (e.isAltDown() || e.isAltGraphDown() || e.isControlDown() || e.isShiftDown()) {
-			if (e.isAltDown())
-				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.ALT, numberOfClicks);
-			if (e.isAltGraphDown())
-				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.ALT_GRAPH, numberOfClicks);
-			if (e.isControlDown())
-				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.CONTROL, numberOfClicks);
-			if (e.isShiftDown())
-				ca = scene.currentCameraProfile().clickShortcut(button, Modifier.SHIFT, numberOfClicks);
-		}	
-		
-		if (ca == null)
-			ca = scene.currentCameraProfile().clickShortcut(button, numberOfClicks);			
-
-		if (ca == null)
+		//1. get button
+		Button button = getButton(e);
+		ClickAction ca = scene.currentCameraProfile().clickShortcut(e.getModifiersEx(), button, e.getClickCount());		
+		if (ca == null) {
+			//debug:
+			PApplet.println("click action is null!!!");
 			return;
+		}
 		else {
 			scene.handleClickAction(ca);
 		}
-		// */
 	}
-	
-	/**
-	private void test(int n) {
-		ClickAction ca = null;		
-		if(clickButton == null)
-			return;
-		
-		if ( clickModifier != null ) 
-				ca = clickShortcut(clickButton, clickModifier, n);
-		
-		if (ca == null)
-			ca = clickShortcut(clickButton, n);			
-
-		if (ca == null)
-			return;
-		else {
-			handleClickAction(ca);
-		}		
-	}
-	// */
 	
 	/**
 	 * Sets the Camera from processing camera parameters.
@@ -393,7 +219,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabber)} to the MouseGrabber that grabs the
 	 * mouse (or to {@code null} if none of them grab it).
 	 */
-	public void mouseMoved(MouseEvent event) {
+	public void mouseMoved(MouseEvent event) {		
 		scene.setMouseGrabber(null);
 		for (MouseGrabber mg : scene.MouseGrabberPool) {
 			mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
@@ -411,6 +237,10 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
+	  /**
+		String text = InputEvent.getModifiersExText(event.getModifiersEx());		
+		PApplet.println("modifiers in mouse press: " + text);
+		// */
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
