@@ -28,11 +28,11 @@ package remixlab.proscene;
 
 import java.util.HashMap;
 
-public class ShortcutMappings<K, A> {
+public class Bindings<K, A> {
 	protected Scene scene;
 	protected HashMap<K, A> map;
 
-	public ShortcutMappings(Scene scn) {
+	public Bindings(Scene scn) {
 		scene = scn;
 		map = new HashMap<K, A>();
 	}
@@ -44,12 +44,12 @@ public class ShortcutMappings<K, A> {
 	 * The returned keyboard shortcut may be null (if no keycombo is defined for
 	 * keyboard {@code action}).
 	 */
-	protected A mapping(K key) {
+	protected A binding(K key) {
 		return map.get(key);
 	}
 
 	/**
-	 * Defines the {@link #mapping(Object)} that triggers a given action.
+	 * Defines the {@link #binding(Object)} that triggers a given action.
 	 * 
 	 * Here are some examples:
 	 * 
@@ -57,15 +57,15 @@ public class ShortcutMappings<K, A> {
 	 * shortcut cannot be assigned to more than one action. If a shortcut is
 	 * assigned to more than one action, only the last one would be active.
 	 */
-	protected void setMapping(K key, A action) {
+	protected void setBinding(K key, A action) {
 		map.put(key, action);
 	}
 
-	protected void removeMapping(K key) {
+	protected void removeBinding(K key) {
 		map.remove(key);
 	}
 
-	protected void removeAllMappings() {
+	protected void removeAllBindings() {
 		map.clear();
 	}
 

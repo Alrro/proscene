@@ -36,13 +36,13 @@ public class CameraProfile {
 	protected String name;
 	protected Scene scene;
 	protected Mode mode;
-	protected ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
-	protected ShortcutMappings<Integer, Scene.MouseAction> cameraActions;
-	protected ShortcutMappings<Integer, Scene.MouseAction> iFrameActions;
+	protected Bindings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
+	protected Bindings<Integer, Scene.MouseAction> cameraActions;
+	protected Bindings<Integer, Scene.MouseAction> iFrameActions;
 	// C L I C K A C T I O N S
-	protected ShortcutMappings<ClickShortcut, ClickAction> clickActions;
-	protected ShortcutMappings<Integer, Scene.MouseAction> cameraWheelActions;
-	protected ShortcutMappings<Integer, Scene.MouseAction> frameWheelActions;
+	protected Bindings<ClickShortcut, ClickAction> clickActions;
+	protected Bindings<Integer, Scene.MouseAction> cameraWheelActions;
+	protected Bindings<Integer, Scene.MouseAction> frameWheelActions;
 	
 	public CameraProfile(Scene scn, String n) {
 		this(scn, n, Mode.CUSTOM);
@@ -52,10 +52,10 @@ public class CameraProfile {
 		scene = scn;		
 		name = n;
 		mode = m;
-		keyboard = new ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
-		cameraActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);
-		iFrameActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);		
-		clickActions = new ShortcutMappings<ClickShortcut, Scene.ClickAction>(scene);
+		keyboard = new Bindings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
+		cameraActions = new Bindings<Integer, Scene.MouseAction>(scene);
+		iFrameActions = new Bindings<Integer, Scene.MouseAction>(scene);		
+		clickActions = new Bindings<ClickShortcut, Scene.ClickAction>(scene);
 		
 		/**
 		scene.parent.addMouseWheelListener( scene.dE );
@@ -68,8 +68,8 @@ public class CameraProfile {
 			arcballDefaultShortcuts();
 			break;
 		case WHEELED_ARCBALL:
-			cameraWheelActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);
-			frameWheelActions = new ShortcutMappings<Integer, Scene.MouseAction>(scene);
+			cameraWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
+			frameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
 			
 			arcballDefaultShortcuts();
 			
@@ -84,7 +84,6 @@ public class CameraProfile {
 			scene.parent.addMouseWheelListener( scene.dE );
 			break;
 		case FIRST_PERSON:
-			// setShortcut('a', CameraKeyboardAction.SHOW_ALL);
 			setCameraShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
 			setCameraShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
 			setCameraShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
@@ -155,14 +154,6 @@ public class CameraProfile {
 	}
 	
 	protected MouseAction iFrameMouseAction(MouseEvent e) {
-		/**
-		MouseAction iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-		Button button = scene.dE.getButton(e);
-		if (button == null) {
-			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
-			return iFrameMouseAction;
-		}
-		*/
 		MouseAction iFrameMouseAction = iFrameShortcut( e.getModifiersEx() );
 		if (iFrameMouseAction == null)
 			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
@@ -170,14 +161,6 @@ public class CameraProfile {
 	}
 	
 	protected MouseAction cameraMouseAction(MouseEvent e) {
-		/**
-		MouseAction camMouseAction = MouseAction.NO_MOUSE_ACTION;
-		Button button = scene.dE.getButton(e);
-		if (button == null) {
-			camMouseAction = MouseAction.NO_MOUSE_ACTION;
-			return camMouseAction;
-		}
-		*/
 		MouseAction camMouseAction = cameraShortcut( e.getModifiersEx() );
 		if (camMouseAction == null)
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
@@ -200,55 +183,79 @@ public class CameraProfile {
 		scene.unregisterCameraProfile(this);
 	}
 
-	public ShortcutMappings<KeyboardShortcut, Scene.CameraKeyboardAction> keyBindings() {
+	public Bindings<KeyboardShortcut, Scene.CameraKeyboardAction> keyBindings() {
 		return keyboard;
 	}
 
 	// keyboard wrappers:
 	public void setShortcut(Character key, CameraKeyboardAction action) {
-		keyboard.setMapping(new KeyboardShortcut(key), action);
+		keyboard.setBinding(new KeyboardShortcut(key), action);
 	}
 	
+	//high level call
+	public void setShortcut(Integer mask, Character key, CameraKeyboardAction action) {
+		setShortcut(mask, MathUtils.getVKey(key), action);
+	}
+	
+	//low level call
 	public void setShortcut(Integer mask, Integer vKey, CameraKeyboardAction action) {
-		keyboard.setMapping(new KeyboardShortcut(mask, vKey), action);
+		keyboard.setBinding(new KeyboardShortcut(mask, vKey), action);
 	}
 	
 	public void setShortcut(Integer vKey, CameraKeyboardAction action) {
-		keyboard.setMapping(new KeyboardShortcut(vKey), action);
+		keyboard.setBinding(new KeyboardShortcut(vKey), action);
 	}
 
 	public void removeAllKeyboardShortcuts() {
-		keyboard.removeAllMappings();
+		keyboard.removeAllBindings();
 	}
 	
 	public void removeShortcut(Character key) {
-		keyboard.removeMapping(new KeyboardShortcut(key));
+		keyboard.removeBinding(new KeyboardShortcut(key));
 	}
 	
+	//high level call
+	public void removeShortcut(Integer mask, Character key) {
+		removeShortcut(mask, MathUtils.getVKey(key));
+	}
+	
+	//low level call
 	public void removeShortcut(Integer mask, Integer vKey) {
-		keyboard.removeMapping(new KeyboardShortcut(mask, vKey));
+		keyboard.removeBinding(new KeyboardShortcut(mask, vKey));
 	}
 
 	public void removeShortcut(Integer vKey) {
-		keyboard.removeMapping(new KeyboardShortcut(vKey));
+		keyboard.removeBinding(new KeyboardShortcut(vKey));
 	}
 
 	public CameraKeyboardAction shortcut(Character key) {
-		return keyboard.mapping(new KeyboardShortcut(key));
+		return keyboard.binding(new KeyboardShortcut(key));
+	}
+	
+  //high level call
+	public CameraKeyboardAction shortcut(Integer mask, Character key) {
+		return shortcut(mask, MathUtils.getVKey(key));
 	}
 
+	//low level call
 	public CameraKeyboardAction shortcut(Integer mask, Integer vKey) {
-		return keyboard.mapping(new KeyboardShortcut(mask, vKey));
+		return keyboard.binding(new KeyboardShortcut(mask, vKey));
 	}
 
 	public CameraKeyboardAction shortcut(Integer vKey) {
-		return keyboard.mapping(new KeyboardShortcut(vKey));
+		return keyboard.binding(new KeyboardShortcut(vKey));
 	}
 
 	public boolean isKeyInUse(Character key) {
 		return keyboard.isShortcutInUse(new KeyboardShortcut(key));
 	}
 	
+  //high level call
+	public boolean isKeyInUse(Integer mask, Character key) {
+		return isKeyInUse(mask, MathUtils.getVKey(key));
+	}
+	
+  //low level call
 	public boolean isKeyInUse(Integer mask, Integer vKey) {
 		return keyboard.isShortcutInUse(new KeyboardShortcut(mask, vKey));
 	}
@@ -263,7 +270,7 @@ public class CameraProfile {
 
 	// camera wrappers:
 	public void removeAllCameraShortcuts() {
-		cameraActions.removeAllMappings();
+		cameraActions.removeAllBindings();
 	}
 
 	public boolean isCameraKeyInUse(Integer mask) {
@@ -275,20 +282,20 @@ public class CameraProfile {
 	}
 
 	public void setCameraShortcut(Integer mask,	Scene.MouseAction action) {
-		cameraActions.setMapping(mask, action);
+		cameraActions.setBinding(mask, action);
 	}
 
 	public void removeCameraShortcut(Integer mask) {
-		cameraActions.removeMapping(mask);
+		cameraActions.removeBinding(mask);
 	}
 
 	public Scene.MouseAction cameraShortcut(Integer mask) {
-		return cameraActions.mapping(mask);
+		return cameraActions.binding(mask);
 	}
 
 	// iFrame wrappers:
 	public void removeAllIFrameShortcuts() {
-		iFrameActions.removeAllMappings();
+		iFrameActions.removeAllBindings();
 	}
 
 	public boolean isIFrameKeyInUse(Integer mask) {
@@ -300,20 +307,20 @@ public class CameraProfile {
 	}
 	
 	public void setIFrameShortcut(Integer mask, Scene.MouseAction action) {
-		iFrameActions.setMapping(mask, action);
+		iFrameActions.setBinding(mask, action);
 	}
 
 	public void removeIFrameShortcut(Integer mask) {
-		iFrameActions.removeMapping(mask);
+		iFrameActions.removeBinding(mask);
 	}
 
 	public Scene.MouseAction iFrameShortcut(Integer mask) {
-		return iFrameActions.mapping(mask);
+		return iFrameActions.binding(mask);
 	}
 	
 	// click wrappers:
 	public void removeAllClickActionShortcuts() {
-		clickActions.removeAllMappings();
+		clickActions.removeAllBindings();
 	}
 	
 	public boolean isClickKeyInUse(Scene.Button button) {
@@ -337,51 +344,51 @@ public class CameraProfile {
 	}
 	
 	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button), action);
+		clickActions.setBinding(new ClickShortcut(button), action);
 	}
 
 	public void setClickShortcut(Integer mask, Scene.Button button, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(mask, button), action);
+		clickActions.setBinding(new ClickShortcut(mask, button), action);
 	}
 	
 	public void setClickShortcut(Scene.Button button, Integer nc, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(button, nc), action);
+		clickActions.setBinding(new ClickShortcut(button, nc), action);
 	}
 
 	public void setClickShortcut(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
-		clickActions.setMapping(new ClickShortcut(mask, button, nc), action);
+		clickActions.setBinding(new ClickShortcut(mask, button, nc), action);
 	}
 	
 	public void removeClickShortcut(Scene.Button button) {
-		clickActions.removeMapping(new ClickShortcut(button));
+		clickActions.removeBinding(new ClickShortcut(button));
 	}
 
 	public void removeClickShortcut(Integer mask, Scene.Button button) {
-		clickActions.removeMapping(new ClickShortcut(mask, button));
+		clickActions.removeBinding(new ClickShortcut(mask, button));
 	}
 	
 	public void removeClickShortcut(Scene.Button button, Integer nc) {
-		clickActions.removeMapping(new ClickShortcut(button, nc));
+		clickActions.removeBinding(new ClickShortcut(button, nc));
 	}
 		
 	public void removeClickShortcut(Integer mask, Scene.Button button, Integer nc) {
-		clickActions.removeMapping(new ClickShortcut(mask, button, nc));
+		clickActions.removeBinding(new ClickShortcut(mask, button, nc));
 	}
 	
 	public Scene.ClickAction clickShortcut(Scene.Button button) {
-		return clickActions.mapping(new ClickShortcut(button));
+		return clickActions.binding(new ClickShortcut(button));
 	}
 
 	public Scene.ClickAction clickShortcut(Integer mask, Scene.Button button) {
-		return clickActions.mapping(new ClickShortcut(mask, button));
+		return clickActions.binding(new ClickShortcut(mask, button));
 	}
 	
 	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
-		return clickActions.mapping(new ClickShortcut(button, nc));
+		return clickActions.binding(new ClickShortcut(button, nc));
 	}
 
 	public Scene.ClickAction clickShortcut(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.mapping(new ClickShortcut(mask, button, nc));
+		return clickActions.binding(new ClickShortcut(mask, button, nc));
 	}
 	
 	/**
@@ -425,7 +432,7 @@ public class CameraProfile {
 	// wheel
 	//Camera Wheel
 	public void removeAllCameraWheelShortcuts() {
-		cameraWheelActions.removeAllMappings();
+		cameraWheelActions.removeAllBindings();
 	}
 
 	public boolean isCameraWheelKeyInUse(Integer mask) {
@@ -441,7 +448,7 @@ public class CameraProfile {
 	}
 
 	public void setCameraWheelShortcut(Integer mask, Scene.MouseAction action) {
-		cameraWheelActions.setMapping(mask, action);
+		cameraWheelActions.setBinding(mask, action);
 	}
 	
 	public void removeCameraWheelShortcut() {
@@ -449,15 +456,15 @@ public class CameraProfile {
 	}
 
 	public void removeCameraWheelShortcut(Integer mask) {
-		cameraWheelActions.removeMapping(mask);
+		cameraWheelActions.removeBinding(mask);
 	}
 
 	public Scene.MouseAction cameraWheelShortcut() {
-		return cameraWheelActions.mapping(0);
+		return cameraWheelActions.binding(0);
 	}
 	
 	public Scene.MouseAction cameraWheelShortcut(Integer mask) {
-		return cameraWheelActions.mapping(mask);
+		return cameraWheelActions.binding(mask);
 	}
 	
 	protected MouseAction cameraWheelMouseAction(MouseWheelEvent e) {
@@ -469,7 +476,7 @@ public class CameraProfile {
 	
   //Frame Wheel
 	public void removeAllFrameWheelShortcuts() {
-		frameWheelActions.removeAllMappings();
+		frameWheelActions.removeAllBindings();
 	}
 
 	public boolean isFrameWheelKeyInUse(Integer mask) {
@@ -485,7 +492,7 @@ public class CameraProfile {
 	}
 	
 	public void setFrameWheelShortcut(Integer mask, Scene.MouseAction action) {
-		frameWheelActions.setMapping(mask, action);
+		frameWheelActions.setBinding(mask, action);
 	}
 	
 	public void removeFrameWheelShortcut() {
@@ -493,7 +500,7 @@ public class CameraProfile {
 	}
 
 	public void removeFrameWheelShortcut(Integer mask) {
-		frameWheelActions.removeMapping(mask);
+		frameWheelActions.removeBinding(mask);
 	}
 	
 	public Scene.MouseAction frameWheelShortcut() {
@@ -501,7 +508,7 @@ public class CameraProfile {
 	}
 	
 	public Scene.MouseAction frameWheelShortcut(Integer mask) {
-		return frameWheelActions.mapping(mask);
+		return frameWheelActions.binding(mask);
 	}
 	
 	protected MouseAction frameWheelMouseAction(MouseWheelEvent e) {
