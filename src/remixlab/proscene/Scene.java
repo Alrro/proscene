@@ -164,7 +164,7 @@ public class Scene implements PConstants {
 	}
 
 	// K E Y F R A M E S
-	protected ShortcutMappings<KeyboardShortcut, Integer> pathKeys;
+	protected ShortcutMappings<Integer, Integer> pathKeys;
 	protected Modifier addKeyFrameKeyboardModifier;
 	protected Modifier deleteKeyFrameKeyboardModifier;
 
@@ -274,9 +274,8 @@ public class Scene implements PConstants {
 
 		dE = new DesktopEvents(this);
 
-		gProfile = new ShortcutMappings<KeyboardShortcut, KeyboardAction>(
-				this);
-		pathKeys = new ShortcutMappings<KeyboardShortcut, Integer>(this);		
+		gProfile = new ShortcutMappings<KeyboardShortcut, KeyboardAction>(this);
+		pathKeys = new ShortcutMappings<Integer, Integer>(this);		
 		setActionDescriptions();
 		setDefaultShortcuts();
 
@@ -2080,13 +2079,15 @@ public class Scene implements PConstants {
 		// gProfile.setShortcut('a', PApplet.CONTROL,
 		// Scene.KeyboardAction.DRAW_AXIS);
 		setShortcut('a', KeyboardAction.DRAW_AXIS);
+		//setShortcut(KeyEvent.VK_RIGHT, KeyboardAction.DRAW_AXIS);
 		// test CASE
 		// setShortcut('A', GlobalKeyboardAction.DRAW_AXIS);
 		// setShortcut('G', GlobalKeyboardAction.DRAW_GRID);
 		setShortcut('g', KeyboardAction.DRAW_GRID);
 		//setShortcut(KeyEvent.VK_G, Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
-		setShortcut('g', Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
-		setShortcut('B', KeyboardAction.DRAW_GRID);
+		//setShortcut('g', Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
+		//setShortcut('B', KeyboardAction.DRAW_GRID);
+		setShortcut(InputEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, KeyboardAction.DRAW_GRID);
 		setShortcut(' ', KeyboardAction.CAMERA_PROFILE);
 		setShortcut('e', KeyboardAction.CAMERA_TYPE);
 		setShortcut('k', KeyboardAction.CAMERA_KIND);
@@ -2109,15 +2110,27 @@ public class Scene implements PConstants {
 	}
 
 	public void setPathKey(Character key, Integer path) {
-		pathKeys.setMapping(new KeyboardShortcut(key), path);
+		setPathKey(MathUtils.getVKey(key), path);
+	}
+	
+	public void setPathKey(Integer vKey, Integer path) {
+		pathKeys.setMapping(vKey, path);
 	}
 
 	public Integer path(Character key) {
-		return pathKeys.mapping(new KeyboardShortcut(key));
+		return path(MathUtils.getVKey(key));
+	}
+	
+	public Integer path(Integer vKey) {
+		return pathKeys.mapping(vKey);
 	}
 
 	public void removePathKey(Character key) {
-		pathKeys.removeMapping(new KeyboardShortcut(key));
+		removePathKey(MathUtils.getVKey(key));
+	}
+	
+	public void removePathKey(Integer vKey) {
+		pathKeys.removeMapping(vKey);
 	}
 
 	public void setAddKeyFrameKeyboardModifier(Modifier modifier) {
@@ -2128,66 +2141,57 @@ public class Scene implements PConstants {
 		deleteKeyFrameKeyboardModifier = modifier;
 	}
 
-	// wrappers:
-	public void setShortcut(char key, Modifier modifier, KeyboardAction action) {
-		int vKey = MathUtils.getVKey(key);
-		if (vKey >= 0 )
-			setShortcut(vKey, modifier, action);
-	}
-	
-	public void setShortcut(Integer vKey, Modifier modifier, KeyboardAction action) {
-		gProfile.setMapping(new KeyboardShortcut(vKey, modifier), action);
-	}
-
-	public void setShortcut(Arrow arrow, KeyboardAction action) {
-		gProfile.setMapping(new KeyboardShortcut(arrow), action);
-	}
-
+	// wrappers:	
 	public void setShortcut(Character key, KeyboardAction action) {
 		gProfile.setMapping(new KeyboardShortcut(key), action);
+	}
+	
+	public void setShortcut(Integer mask, Integer vKey, KeyboardAction action) {
+		gProfile.setMapping(new KeyboardShortcut(mask, vKey), action);
+	}
+
+	public void setShortcut(Integer vKey, KeyboardAction action) {
+		gProfile.setMapping(new KeyboardShortcut(vKey), action);
 	}
 
 	public void removeAllShortcuts() {
 		gProfile.removeAllMappings();
 	}
 	
-	public void removeShortcut(char key, Scene.Modifier modifier) {
-		removeShortcut(MathUtils.getVKey(key), modifier);
-	}
-
-	public void removeShortcut(Integer vKey, Modifier modifier) {
-		gProfile.removeMapping(new KeyboardShortcut(vKey, modifier));
-	}
-
-	// 2.
-
-	public void removeShortcut(Arrow arrow) {
-		gProfile.removeMapping(new KeyboardShortcut(arrow));
-	}
-
-	// 3.
 	public void removeShortcut(Character key) {
 		gProfile.removeMapping(new KeyboardShortcut(key));
 	}
+
+	public void removeShortcut(Integer mask, Integer vKey) {
+		gProfile.removeMapping(new KeyboardShortcut(mask, vKey));
+	}
+
+	public void removeShortcut(Integer vKey) {
+		gProfile.removeMapping(new KeyboardShortcut(vKey));
+	}
 	
-	public KeyboardAction shortcut(char key, Scene.Modifier modifier) {
-		return shortcut(MathUtils.getVKey(key), modifier);
-	}
-
-	public KeyboardAction shortcut(Integer vKey, Modifier modifier) {
-		return gProfile.mapping(new KeyboardShortcut(vKey, modifier));
-	}
-
-	public KeyboardAction shortcut(Arrow arrow) {
-		return gProfile.mapping(new KeyboardShortcut(arrow));
-	}
-
 	public KeyboardAction shortcut(Character key) {
 		return gProfile.mapping(new KeyboardShortcut(key));
+	}	
+
+	public KeyboardAction shortcut(Integer mask, Integer vKey) {
+		return gProfile.mapping(new KeyboardShortcut(mask, vKey));
 	}
 
-	public boolean isKeyInUse(KeyboardShortcut key) {
-		return gProfile.isShortcutInUse(key);
+	public KeyboardAction shortcut(Integer vKey) {
+		return gProfile.mapping(new KeyboardShortcut(vKey));
+	}
+
+	public boolean isKeyInUse(Character key) {
+		return gProfile.isShortcutInUse(new KeyboardShortcut(key));
+	}
+	
+	public boolean isKeyInUse(Integer mask, Integer vKey) {
+		return gProfile.isShortcutInUse(new KeyboardShortcut(mask, vKey));
+	}
+	
+	public boolean isKeyInUse(Integer vKey) {
+		return gProfile.isShortcutInUse(new KeyboardShortcut(vKey));
 	}
 
 	public boolean isActionBinded(KeyboardAction action) {

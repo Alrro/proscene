@@ -31,9 +31,9 @@ public final class KeyboardShortcut {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((arrow == null) ? 0 : arrow.hashCode());
 		result = prime * result + ((key == null) ? 0 : key.hashCode());
-		result = prime * result + ((keyCombo == null) ? 0 : keyCombo.hashCode());
+		result = prime * result + ((mask == null) ? 0 : mask.hashCode());
+		result = prime * result + ((vKey == null) ? 0 : vKey.hashCode());
 		return result;
 	}
 
@@ -46,43 +46,41 @@ public final class KeyboardShortcut {
 		if (getClass() != obj.getClass())
 			return false;
 		KeyboardShortcut other = (KeyboardShortcut) obj;
-		if (arrow == null) {
-			if (other.arrow != null)
-				return false;
-		} else if (!arrow.equals(other.arrow))
-			return false;
 		if (key == null) {
 			if (other.key != null)
 				return false;
 		} else if (!key.equals(other.key))
 			return false;
-		if (keyCombo == null) {
-			if (other.keyCombo != null)
+		if (mask == null) {
+			if (other.mask != null)
 				return false;
-		} else if (!keyCombo.equals(other.keyCombo))
+		} else if (!mask.equals(other.mask))
+			return false;
+		if (vKey == null) {
+			if (other.vKey != null)
+				return false;
+		} else if (!vKey.equals(other.vKey))
 			return false;
 		return true;
 	}
 
-	public KeyboardShortcut(Character myKey) {
-		key = myKey;
-		arrow = null;
-		keyCombo = null;
+	public KeyboardShortcut(Character k) {
+		this.key = k;
+		this.mask = null;
+		this.vKey = null;
+	}
+	
+	public KeyboardShortcut(Integer vk) {
+		this(0, vk);
 	}
 
-	public KeyboardShortcut(Scene.Arrow myArrow) {
-		key = null;
-		arrow = myArrow;
-		keyCombo = null;
-	}
+	public KeyboardShortcut(Integer m, Integer vk) {
+		this.mask = m;
+		this.vKey = vk;
+		this.key = null;
+	}	
 
-	public KeyboardShortcut(Integer vKey, Scene.Modifier myModifier) {
-		key = null;
-		arrow = null;
-		keyCombo = new Shortcut<Integer>(vKey, myModifier);
-	}
-
-	public final Character key;
-	public final Scene.Arrow arrow;
-	public final Shortcut<Integer> keyCombo;
+	public final Integer mask;
+	public final Integer vKey;
+	public final Character key;		
 }
