@@ -112,47 +112,67 @@ public class Scene implements PConstants {
 	// protected MouseAction iFrameMouseAction;
 
 	public enum Button {
-		LEFT, MIDDLE, RIGHT
+		// values correspond to: BUTTON1_DOWN_MASK, BUTTON2_DOWN_MASK and BUTTON3_DOWN_MASK
+		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
+		LEFT(1024), MIDDLE(2048), RIGHT(4096);
+		public final int ID;
+    Button(int code) {
+    	this.ID = code;
+    }    
+    //The following code works but is considered overkill :)
+    /**
+    public int id() { return ID; }
+    private static final Map<Integer,Button> lookup = new HashMap<Integer,Button>();
+    static {
+    	for(Button s : EnumSet.allOf(Button.class))
+         lookup.put(s.id(), s);
+    }
+    public static Button get(int code) { 
+      return lookup.get(code);
+    }
+    // */
 	}
 
 	public enum Arrow {
 		UP(PApplet.UP), DOWN(PApplet.DOWN), LEFT(PApplet.LEFT), RIGHT(PApplet.RIGHT);
-		private final int code; //taken from KeyEvent
+		public final int ID;
     Arrow(int code) {
-        this.code = code;
-    }
-    public int getCode() { return code; }
+    	this.ID = code;
+    }    
     //The following code works but is considered overkill :)
-    /**    
+    /**
+    public int id() { return ID; }
     private static final Map<Integer,Arrow> lookup = new HashMap<Integer,Arrow>();
     static {
     	for(Arrow s : EnumSet.allOf(Arrow.class))
-         lookup.put(s.getCode(), s);
+         lookup.put(s.id(), s);
     }
     public static Arrow get(int code) { 
       return lookup.get(code);
     }
-    */
+    // */
 	}
 
 	public enum Modifier {
-		ALT(PApplet.ALT), SHIFT(PApplet.SHIFT), CONTROL(PApplet.CONTROL), ALT_GRAPH(65406);
-		private final int code; //taken from KeyEvent
+		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, ALT_GRAPH_DOWN_MASK
+		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
+		ALT(512), SHIFT(64), CTRL(128), ALT_GRAPH(8192);
+		public final int ID;
 		Modifier(int code) {
-      this.code = code;
-    }		    
-    public int getCode() { return code; }
+      this.ID = code;
+    }
     //The following code works but is considered overkill :)
     /**
+    public int id() { return ID; }
     private static final Map<Integer,Modifier> lookup = new HashMap<Integer,Modifier>();
     static {
     	for(Modifier s : EnumSet.allOf(Modifier.class))
-         lookup.put(s.getCode(), s);
+         lookup.put(s.id(), s);
     }
     public static Modifier get(int code) {
       return lookup.get(code);
     }
-    */
+    // */
 	}
 
 	/**
@@ -164,12 +184,12 @@ public class Scene implements PConstants {
 	}
 
 	// K E Y F R A M E S
-	protected ShortcutMappings<Integer, Integer> pathKeys;
+	protected Bindings<Integer, Integer> pathKeys;
 	protected Modifier addKeyFrameKeyboardModifier;
 	protected Modifier deleteKeyFrameKeyboardModifier;
 
 	// S h o r t c u t k e y s
-	protected ShortcutMappings<KeyboardShortcut, KeyboardAction> gProfile;
+	protected Bindings<KeyboardShortcut, KeyboardAction> gProfile;
 	protected HashMap<KeyboardAction, String> keyboardActionDescription;
 
 	// c a m e r a p r o f i l e s
@@ -274,8 +294,8 @@ public class Scene implements PConstants {
 
 		dE = new DesktopEvents(this);
 
-		gProfile = new ShortcutMappings<KeyboardShortcut, KeyboardAction>(this);
-		pathKeys = new ShortcutMappings<Integer, Integer>(this);		
+		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
+		pathKeys = new Bindings<Integer, Integer>(this);		
 		setActionDescriptions();
 		setDefaultShortcuts();
 
@@ -353,7 +373,7 @@ public class Scene implements PConstants {
 		return cam;
 	}
 
-	public ShortcutMappings<KeyboardShortcut, KeyboardAction> keyBindings() {
+	public Bindings<KeyboardShortcut, KeyboardAction> keyBindings() {
 		return gProfile;
 	}
 
@@ -2087,7 +2107,6 @@ public class Scene implements PConstants {
 		//setShortcut(KeyEvent.VK_G, Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
 		//setShortcut('g', Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
 		//setShortcut('B', KeyboardAction.DRAW_GRID);
-		setShortcut(InputEvent.CTRL_DOWN_MASK, KeyEvent.VK_X, KeyboardAction.DRAW_GRID);
 		setShortcut(' ', KeyboardAction.CAMERA_PROFILE);
 		setShortcut('e', KeyboardAction.CAMERA_TYPE);
 		setShortcut('k', KeyboardAction.CAMERA_KIND);
@@ -2098,7 +2117,7 @@ public class Scene implements PConstants {
 		setShortcut('w', KeyboardAction.CONSTRAIN_FRAME);
 
 		// K e y f r a m e s s h o r t c u t k e y s
-		setAddKeyFrameKeyboardModifier(Modifier.CONTROL);
+		setAddKeyFrameKeyboardModifier(Modifier.CTRL);
 		setDeleteKeyFrameKeyboardModifier(Modifier.ALT);
 		setPathKey('1', 1);
 		setPathKey('2', 2);
@@ -2114,7 +2133,7 @@ public class Scene implements PConstants {
 	}
 	
 	public void setPathKey(Integer vKey, Integer path) {
-		pathKeys.setMapping(vKey, path);
+		pathKeys.setBinding(vKey, path);
 	}
 
 	public Integer path(Character key) {
@@ -2122,7 +2141,7 @@ public class Scene implements PConstants {
 	}
 	
 	public Integer path(Integer vKey) {
-		return pathKeys.mapping(vKey);
+		return pathKeys.binding(vKey);
 	}
 
 	public void removePathKey(Character key) {
@@ -2130,7 +2149,7 @@ public class Scene implements PConstants {
 	}
 	
 	public void removePathKey(Integer vKey) {
-		pathKeys.removeMapping(vKey);
+		pathKeys.removeBinding(vKey);
 	}
 
 	public void setAddKeyFrameKeyboardModifier(Modifier modifier) {
@@ -2143,49 +2162,73 @@ public class Scene implements PConstants {
 
 	// wrappers:	
 	public void setShortcut(Character key, KeyboardAction action) {
-		gProfile.setMapping(new KeyboardShortcut(key), action);
+		gProfile.setBinding(new KeyboardShortcut(key), action);
 	}
 	
+  //high level call
+	public void setShortcut(Integer mask, Character key, KeyboardAction action) {
+		setShortcut(mask, MathUtils.getVKey(key), action);
+	}
+	
+  //low level call
 	public void setShortcut(Integer mask, Integer vKey, KeyboardAction action) {
-		gProfile.setMapping(new KeyboardShortcut(mask, vKey), action);
+		gProfile.setBinding(new KeyboardShortcut(mask, vKey), action);
 	}
 
 	public void setShortcut(Integer vKey, KeyboardAction action) {
-		gProfile.setMapping(new KeyboardShortcut(vKey), action);
+		gProfile.setBinding(new KeyboardShortcut(vKey), action);
 	}
 
 	public void removeAllShortcuts() {
-		gProfile.removeAllMappings();
+		gProfile.removeAllBindings();
 	}
 	
 	public void removeShortcut(Character key) {
-		gProfile.removeMapping(new KeyboardShortcut(key));
+		gProfile.removeBinding(new KeyboardShortcut(key));
+	}
+	
+  //high level call
+	public void removeShortcut(Integer mask, Character key) {
+		removeShortcut(mask, MathUtils.getVKey(key));
 	}
 
+  //low level call
 	public void removeShortcut(Integer mask, Integer vKey) {
-		gProfile.removeMapping(new KeyboardShortcut(mask, vKey));
+		gProfile.removeBinding(new KeyboardShortcut(mask, vKey));
 	}
 
 	public void removeShortcut(Integer vKey) {
-		gProfile.removeMapping(new KeyboardShortcut(vKey));
+		gProfile.removeBinding(new KeyboardShortcut(vKey));
 	}
 	
 	public KeyboardAction shortcut(Character key) {
-		return gProfile.mapping(new KeyboardShortcut(key));
-	}	
+		return gProfile.binding(new KeyboardShortcut(key));
+	}
+	
+  //high level call
+	public KeyboardAction shortcut(Integer mask, Character key) {
+		return shortcut(mask, MathUtils.getVKey(key));
+	}
 
+  //low level call
 	public KeyboardAction shortcut(Integer mask, Integer vKey) {
-		return gProfile.mapping(new KeyboardShortcut(mask, vKey));
+		return gProfile.binding(new KeyboardShortcut(mask, vKey));
 	}
 
 	public KeyboardAction shortcut(Integer vKey) {
-		return gProfile.mapping(new KeyboardShortcut(vKey));
+		return gProfile.binding(new KeyboardShortcut(vKey));
 	}
 
 	public boolean isKeyInUse(Character key) {
 		return gProfile.isShortcutInUse(new KeyboardShortcut(key));
 	}
 	
+  //high level call
+	public boolean isKeyInUse(Integer mask, Character key) {
+		return isKeyInUse(mask, MathUtils.getVKey(key));
+	}
+	
+  //low level call
 	public boolean isKeyInUse(Integer mask, Integer vKey) {
 		return gProfile.isShortcutInUse(new KeyboardShortcut(mask, vKey));
 	}

@@ -115,7 +115,7 @@ public class DesktopEvents implements MouseWheelListener {
 	protected boolean handleKeyReleasedKeyboardAction( KeyEvent e) {
 		if (((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
 	   || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isAltGraphDown()))
-		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.CONTROL) && (e.isControlDown()))
+		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.CTRL) && (e.isControlDown()))
 		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
 			if (path != null) {
@@ -125,7 +125,7 @@ public class DesktopEvents implements MouseWheelListener {
 		}
 		if (((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
 		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isAltGraphDown()))
-		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.CONTROL) && (e.isControlDown()))
+		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.CTRL) && (e.isControlDown()))
 		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
 			if (path != null) {
@@ -203,14 +203,10 @@ public class DesktopEvents implements MouseWheelListener {
 		//1. get button
 		Button button = getButton(e);
 		ClickAction ca = scene.currentCameraProfile().clickShortcut(e.getModifiersEx(), button, e.getClickCount());		
-		if (ca == null) {
-			//debug:
-			PApplet.println("click action is null!!!");
+		if (ca == null) 
 			return;
-		}
-		else {
+		else
 			scene.handleClickAction(ca);
-		}
 	}
 	
 	/**
