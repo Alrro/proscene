@@ -10,10 +10,8 @@
  * screen coordinates should be specified as:
  * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
  * 
- * Press 't' to toggle the screen drawing.
- * 
- * Press 'x' to clean your screen drawing.
- * 
+ * Press 'x' to toggle the screen drawing.
+ * Press 'y' to clean your screen drawing.
  * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
@@ -28,6 +26,7 @@ ArrayList points;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.setRadius(150);
   scene.showAll();
   

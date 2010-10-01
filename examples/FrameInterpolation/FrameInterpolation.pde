@@ -31,12 +31,13 @@ int nbKeyFrames;
 void setup() {
   size(640, 360, P3D);
   nbKeyFrames = 4;
-  scene = new Scene(this);
+  scene = new Scene(this);  
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
   scene.setRadius(70);
   scene.showAll();
   scene.setFrameSelectionHintIsDrawn(true);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   kfi = new KeyFrameInterpolator(this);
   kfi.setLoopInterpolation();
   

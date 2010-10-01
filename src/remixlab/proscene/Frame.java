@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-alpha1)      
+ *                     ProScene (version 1.0.0-beta1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -40,7 +40,6 @@ import processing.core.*;
  * the Frame is first translated and then rotated around the new translated
  * origin.
  */
-
 public class Frame implements Cloneable {
 	protected PVector trans;
 	protected Quaternion rot;
@@ -362,8 +361,7 @@ public class Frame implements Cloneable {
 	 */
 	public final void setReferenceFrame(Frame rFrame) {
 		if (settingAsReferenceFrameWillCreateALoop(rFrame))
-			PApplet
-					.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
+			System.out.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
 		else {
 			boolean identical = (this.refFrame == rFrame);
 			this.refFrame = rFrame;

@@ -19,6 +19,7 @@ Box [] boxes;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.setAxisIsDrawn(false);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setRadius(150);

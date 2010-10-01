@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-alpha1)      
+ *                     ProScene (version 1.0.0-beta1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -1114,8 +1114,7 @@ public class Camera implements Cloneable {
 	 */
 	public float distanceToFrustumPlane(int index, PVector pos) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet
-					.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		PVector myVec = new PVector(fpCoefficients[index][0],
@@ -1143,8 +1142,7 @@ public class Camera implements Cloneable {
 	 */
 	public boolean pointIsVisible(PVector point) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet
-					.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		for (int i = 0; i < 6; ++i)
@@ -1176,8 +1174,7 @@ public class Camera implements Cloneable {
 	 */
 	public Visibility sphereIsVisible(PVector center, float radius) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet
-					.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		for (int i = 0; i < 6; ++i) {
@@ -1213,8 +1210,7 @@ public class Camera implements Cloneable {
 	 */
 	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet
-					.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		boolean allInForAllPlanes = true;
@@ -1291,8 +1287,7 @@ public class Camera implements Cloneable {
 	 */
 	public float[][] getFrustumEquations() {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet
-					.println("The camera frustum plane equations may be outdated. Please "
+			System.out.println("The camera frustum plane equations may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		return fpCoefficients;
@@ -1463,8 +1458,7 @@ public class Camera implements Cloneable {
 	 */
 	public void setSceneRadius(float radius) {
 		if (radius <= 0.0f) {
-			PApplet
-					.println("Warning: Scene radius must be positive - Ignoring value");
+			System.out.println("Warning: Scene radius must be positive - Ignoring value");
 			return;
 		}
 
@@ -1771,7 +1765,7 @@ public class Camera implements Cloneable {
 		boolean info = true;
 		if (!kfi.containsKey(key)) {
 			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), parent));
-			PApplet.println("Position " + key + " saved");
+			System.out.println("Position " + key + " saved");
 			info = false;
 		}
 
@@ -1781,7 +1775,7 @@ public class Camera implements Cloneable {
 			kfi.get(key).addKeyFrame(frame(), false);
 
 		if (info)
-			PApplet.println("Path " + key + ", position "
+			System.out.println("Path " + key + ", position "
 					+ kfi.get(key).numberOfKeyFrames() + " added");
 	}
 
@@ -1801,12 +1795,12 @@ public class Camera implements Cloneable {
 		if (kfi.containsKey(key)) {
 			if (kfi.get(key).interpolationIsStarted()) {
 				kfi.get(key).stopInterpolation();
-				PApplet.println("Path " + key + " stopped");
+				System.out.println("Path " + key + " stopped");
 			} else {
 				if (anyInterpolationIsStarted())
 					stopAllInterpolations();
 				kfi.get(key).startInterpolation();
-				PApplet.println("Path " + key + " started");
+				System.out.println("Path " + key + " started");
 			}
 		}
 	}
@@ -1822,7 +1816,7 @@ public class Camera implements Cloneable {
 			kfi.get(key).stopInterpolation();
 			kfi.get(key).deletePath();
 			kfi.remove(key);
-			PApplet.println("Path " + key + " deleted");
+			System.out.println("Path " + key + " deleted");
 		}
 	}
 

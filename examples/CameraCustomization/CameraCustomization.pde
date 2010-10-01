@@ -26,13 +26,16 @@ void setup() {
   // Note that there are some defaults set (soon to be  documented ;)
   // change interaction between camera an interactive frame:
   scene.setShortcut('f', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+  // draw frame selection hint
+  scene.setShortcut(Scene.Modifier.ALT.ID, 'i', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   // change the camera projection
   scene.setShortcut('z', Scene.KeyboardAction.CAMERA_TYPE);
 
   // 2. Customized camera profile:
   wProfile = new WeirdCameraProfile(scene, "MY_PROFILE");
   scene.registerCameraProfile(wProfile);
-  // Unregister the  first-person camera profile (i.e., leave ARCBALL and MY_PROFILE):
+  // Unregister the  first-person camera profile (i.e., leave WHEELED_ARCBALL
+  // and MY_PROFILE):
   scene.unregisterCameraProfile("FIRST_PERSON");
 }
 

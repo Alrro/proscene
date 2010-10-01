@@ -22,6 +22,8 @@ void setup() {
   // A Scene has a single InteractiveFrame (null by default). We set it here.
   scene.setInteractiveFrame(new InteractiveFrame(scene));
   scene.interactiveFrame().translate(new PVector(30, 30, 0));
+  scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 }
 
 void draw() {

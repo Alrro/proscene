@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-alpha1)      
+ *                     ProScene (version 1.0.0-beta1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -616,8 +616,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			interpolationTm = time;
 
 		if ((!keyFr.isEmpty()) && (keyFr.get(keyFr.size() - 1).time() > time))
-			PApplet
-					.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
+			System.out.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
 		else
 			keyFr.add(new KeyFrame(frame, time, setRef));
 
@@ -1026,7 +1025,7 @@ public class KeyFrameInterpolator implements Cloneable {
 		frame().setRotationWithConstraint(q);
 
 		// debug
-		// PApplet.println( frame().position().x + " " + frame().position().y + " "
+		// System.out.println( frame().position().x + " " + frame().position().y + " "
 		// + frame().position().z + " " + frame().orientation().x + " " +
 		// frame().orientation().y + " " + frame().orientation().z + " " +
 		// frame().orientation().w );

@@ -34,8 +34,8 @@ boolean avoidWalls = true;
 void setup() {
   size(640, 360, P3D);  
   scene = new Scene(this);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
-  scene.background(180,250,250);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
   scene.setBoundingBox(new PVector(0,0,0), new PVector(flockWidth,flockHeight,flockDepth));
@@ -53,7 +53,7 @@ void draw() {
   ambientLight(128,128,128);
   directionalLight(255, 255, 255, 0, 1, -100);
   noFill();
-  stroke(0);
+  stroke(255);
 
   line(0, 0, 0, 0, flockHeight, 0);
   line(0, 0, flockDepth, 0, flockHeight, flockDepth);

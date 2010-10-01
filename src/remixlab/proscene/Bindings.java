@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-alpha1)      
+ *                     ProScene (version 1.0.0-beta1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -28,51 +28,75 @@ package remixlab.proscene;
 
 import java.util.HashMap;
 
+/**
+ * A parameterized template class used to define shortcut bindings. This is
+ * an internal class that should not be instantiated. 
+ * <p>
+ * Shortcuts are mapped to keyboard and mouse actions in different places:
+ * 1. Scene global keyboard actions; 2. CameraProfile keyboard actions
+ * and mouse (and mouse-click) actions.
+ * <p>
+ * Internally, this class is simply a parameterized hash-map wrap
+ * (HashMap<K, A>). 
+ */
 public class Bindings<K, A> {
 	protected Scene scene;
 	protected HashMap<K, A> map;
 
-	public Bindings(Scene scn) {
+	protected Bindings(Scene scn) {
 		scene = scn;
 		map = new HashMap<K, A>();
 	}
 
 	/**
-	 * Returns the keyboard shortcut associated to a given Keyboard {@code action}
-	 * .
-	 * <p>
-	 * The returned keyboard shortcut may be null (if no keycombo is defined for
-	 * keyboard {@code action}).
+	 * Returns the action associated to a given Keyboard shortcut {@code key}.
 	 */
 	protected A binding(K key) {
 		return map.get(key);
 	}
-
+	
 	/**
-	 * Defines the {@link #binding(Object)} that triggers a given action.
+	 * Defines the shortcut that triggers a given action.
 	 * 
-	 * Here are some examples:
-	 * 
-	 * One or many shortcuts can be assigned to a given Scene action, but a given
-	 * shortcut cannot be assigned to more than one action. If a shortcut is
-	 * assigned to more than one action, only the last one would be active.
+	 * @param key shortcut.
+	 * @param action action.
 	 */
 	protected void setBinding(K key, A action) {
 		map.put(key, action);
 	}
-
+	
+	/**
+	 * Removes the shortcut binding.
+	 * 
+	 * @param key shortcut
+	 */
 	protected void removeBinding(K key) {
 		map.remove(key);
 	}
-
+	
+	/**
+	 * Removes all the shortcuts from this object.
+	 */
 	protected void removeAllBindings() {
 		map.clear();
 	}
 
+	/**
+	 * Returns true if this object contains a binding for the specified shortcut.
+	 * 
+	 * @param key shortcut
+	 * @return true if this object contains a binding for the specified shortcut.
+	 */
 	protected boolean isShortcutInUse(K key) {
 		return map.containsKey(key);
 	}
 
+	/**
+	 * Returns true if this object maps one or more shortcuts to the specified action.
+	 * 
+	 * @param action action whose presence in this object is to be tested
+	 * @return true if this object maps one or more shortcuts to the specified action.
+	 */
 	protected boolean isActionMapped(A action) {
 		return map.containsValue(action);
 	}
