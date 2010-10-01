@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-alpha1)      
+ *                     ProScene (version 1.0.0-beat1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -156,8 +156,7 @@ public class AxisPlaneConstraint extends Constraint {
 				&& (translationConstraintType() != AxisPlaneConstraint.Type.FORBIDDEN)) {
 			float norm = direction.mag();
 			if (norm < 1E-8) {
-				PApplet
-						.println("Warning: AxisPlaneConstraint.setTranslationConstraintDir: null vector for translation constraint");
+				System.out.println("Warning: AxisPlaneConstraint.setTranslationConstraintDir: null vector for translation constraint");
 				transConstraintType = AxisPlaneConstraint.Type.FREE;
 			} else
 				transConstraintDir = PVector.mult(direction, (1.0f / norm));
@@ -182,8 +181,7 @@ public class AxisPlaneConstraint extends Constraint {
 				&& (rotationConstraintType() != AxisPlaneConstraint.Type.FORBIDDEN)) {
 			float norm = direction.mag();
 			if (norm < 1E-8) {
-				PApplet
-						.println("Warning: AxisPlaneConstraint.setRotationConstraintDir: null vector for rotation constraint");
+				System.out.println("Warning: AxisPlaneConstraint.setRotationConstraintDir: null vector for rotation constraint");
 				rotConstraintType = AxisPlaneConstraint.Type.FREE;
 			} else
 				rotConstraintDir = PVector.mult(direction, (1.0f / norm));
@@ -214,8 +212,7 @@ public class AxisPlaneConstraint extends Constraint {
 	 */
 	public void setRotationConstraintType(Type type) {
 		if (rotationConstraintType() == AxisPlaneConstraint.Type.PLANE) {
-			PApplet
-					.println("Warning: AxisPlaneConstraint.setRotationConstraintType: the PLANE type cannot be used for a rotation constraints");
+			System.out.println("Warning: AxisPlaneConstraint.setRotationConstraintType: the PLANE type cannot be used for a rotation constraints");
 			return;
 		}
 

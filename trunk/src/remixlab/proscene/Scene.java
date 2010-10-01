@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-alpha1)      
+ *                     ProScene (version 1.0.0-beta1)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -34,15 +34,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
 
 import javax.swing.Timer;
 
 /**
- * A processing 3D interactive scene. A Scene provides a default interactivity
- * for your scene through the mouse and keyboard in the hope that it should fit
- * most user needs. For those users whose needs are not completely fulfill by
- * default, proscene main interactivity mechanisms can easily be extended to fit
- * them.
+ * A 3D interactive Processing scene.
  * <p>
  * A Scene has a full reach Camera, an two means to manipulate objects: an
  * {@link #interactiveFrame()} single instance (which by default is null) and a
@@ -52,65 +49,169 @@ import javax.swing.Timer;
  * <ol>
  * <li><b>Direct instantiation</b>. In this case you should instantiate your own
  * Scene object at the {@code PApplet.setup()} function.
+ * See the example <i>BasicUse</i>.
  * <li><b>Inheritance</b>. In this case, once you declare a Scene derived class,
  * you should implement {@link #proscenium()} which defines the objects in your
  * scene. Just make sure to define the {@code PApplet.draw()} method, even if
- * it's empty.
+ * it's empty. See the example <i>AlternativeUse</i>.
  * <li><b>External draw handler registration</b>. You can even declare an
  * external drawing method and then register it at the Scene with
  * {@link #addDrawHandler(Object, String)}. That method should return {@code
  * void} and have one single {@code Scene} or {@code PApplet} parameter. This
  * strategy may be useful when there are multiple viewers sharing the same
- * drawing code.
+ * drawing code. See the example <i>StandardCamera</i>.
  * </ol>
  * <p>
- * See the examples <i>BasicUse</i>, <i>AlternativeUse</i> and
- * <i>StandardCamera</i> for an illustration of these techniques.
- * <p>
+ * Proscene provides two interactivity mechanisms to manage your scene: global
+ * keyboard shortcuts and camera profiles.
+ * <ol>
+ * <li><b>Global keyboard shortcuts</b> provide global configuration options
+ * such as {@link #drawGrid()} or {@link #drawAxis()} that are common among
+ * the different registered camera profiles.
+ * {@link #setShortcut(Character, KeyboardAction)} or one of its different forms. 
+ * <li><b>Camera profiles</b> represent a set of camera and keyboard bindings
+ * which together represent a "camera mode". The scene provide high-level methods
+ * to manage camera profiles such as {@link #registerCameraProfile(CameraProfile)},
+ * {@link #unregisterCameraProfile(CameraProfile)} or {@link #currentCameraProfile()}
+ * among others. To perform the configuration of a camera profile see the
+ * CameraProfile class documentation.
+ * </ol>
  * <b>Attention:</b> To set the PApplet's background you should call one of the
  * {@code Scene.background()} versions instead of any of the {@code
  * PApplet.background()} ones. The background is set to black by default.
  */
 public class Scene implements PConstants {
+	//TODO add descriptions in the enums themselves!
 	/**
 	 * Defines the different actions that can be associated with a specific
 	 * keyboard key.
 	 */
-	public enum KeyboardAction {
-		DRAW_AXIS, DRAW_GRID, CAMERA_PROFILE, CAMERA_TYPE, CAMERA_KIND,
+	public enum KeyboardAction {		
+		DRAW_AXIS("Toggles the display of the world axis"),
+		DRAW_GRID("Toggles the display of the XY grid"),
+		CAMERA_PROFILE("Cycles to the registered camera profiles"),
+		CAMERA_TYPE("Toggles camera type (orthographic or perspective)"),
+		CAMERA_KIND("Toggles camera kind (proscene or standard)"),
 		/** STEREO, */
-		ARP_FROM_PIXEL, RESET_ARP, HELP, EDIT_CAMERA_PATH, FOCUS_INTERACTIVE_FRAME, DRAW_FRAME_SELECTION_HINT, CONSTRAIN_FRAME
+		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
+		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
+		GLOBAL_HELP("Displays the global help"),
+		CURRENT_CAMERA_PROFILE_HELP("Displays the current camera profile help"),
+		EDIT_CAMERA_PATH("Toggles the key frame camera paths (if any) for edition"),
+		FOCUS_INTERACTIVE_FRAME("Toggle interactivity between camera and interactive frame (if any)"),
+		DRAW_FRAME_SELECTION_HINT("Toggle interactive frame selection region drawing"),
+		CONSTRAIN_FRAME("Toggles on and off frame constraints (if any)");
+		
+		private String description;
+		
+		KeyboardAction(String description) {
+       this.description = description;
+    }
+    
+    public String description() {
+      return description;
+    }
 	}
 
 	/**
-	 * Defines the different actions that can be associated with a specific
-	 * keyboard key.
+	 * Defines the different camera actions that can be associated with a specific
+	 * keyboard key. Actions are defined here, but bindings are defined at the CameraProfile level,
+	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
 	 */
 	public enum CameraKeyboardAction {
-		INTERPOLATE_TO_ZOOM_ON_PIXEL, INTERPOLATE_TO_FIT_SCENE, SHOW_ALL,
-		/** ANIMATION, */
-		/** AZIMUTH, INCLINATION, TRACKING_DISTANCE, */
-		MOVE_CAMERA_LEFT, MOVE_CAMERA_RIGHT, MOVE_CAMERA_UP, MOVE_CAMERA_DOWN, INCREASE_ROTATION_SENSITIVITY, DECREASE_ROTATION_SENSITIVITY, INCREASE_CAMERA_FLY_SPEED, DECREASE_CAMERA_FLY_SPEED, INCREASE_AVATAR_FLY_SPEED, DECREASE_AVATAR_FLY_SPEED, INCREASE_AZYMUTH, DECREASE_AZYMUTH, INCREASE_INCLINATION, DECREASE_INCLINATION, INCREASE_TRACKING_DISTANCE, DECREASE_TRACKING_DISTANCE
-	}
-
-	public enum ClickAction {
-		NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT, /** SELECT, */
-		ARP_FROM_PIXEL, RESET_ARP, CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA
+		INTERPOLATE_TO_ZOOM_ON_PIXEL("Interpolate the camera to zoom on pixel"),
+		INTERPOLATE_TO_FIT_SCENE("Interpolate the camera to fit the whole scene"),
+		SHOW_ALL("Show the whole scene"),
+		MOVE_CAMERA_LEFT("Move camera to the left"),
+		MOVE_CAMERA_RIGHT("Move camera to the right"),
+		MOVE_CAMERA_UP("Move camera up"),
+		MOVE_CAMERA_DOWN("Move camera down"),
+		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)"),
+		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)"),
+		INCREASE_CAMERA_FLY_SPEED("Increase camera fly speed (only meaningful in first-person mode)"),
+		DECREASE_CAMERA_FLY_SPEED("Decrease camera fly speed (only meaningful in first-person mode)"),
+		INCREASE_AVATAR_FLY_SPEED("Increase avatar fly speed (only meaningful in third-person mode)"),
+		DECREASE_AVATAR_FLY_SPEED("Decrease avatar fly speed (only meaningful in third-person mode)"),
+		INCREASE_AZYMUTH("Increase camera azymuth respect to the avatar (only meaningful in third-person mode)"),
+		DECREASE_AZYMUTH("Decrease camera azymuth respect to the avatar (only meaningful in third-person mode)"),
+		INCREASE_INCLINATION("Increase camera inclination respect to the avatar (only meaningful in third-person mode)"),
+		DECREASE_INCLINATION("Decrease camera inclination respect to the avatar (only meaningful in third-person mode)"),
+		INCREASE_TRACKING_DISTANCE("Increase camera tracking distance respect to the avatar (only meaningful in third-person mode)"),
+		DECREASE_TRACKING_DISTANCE("Decrease camera tracking distance respect to the avatar (only meaningful in third-person mode)");
+		
+		private String description;
+		
+		CameraKeyboardAction(String description) {
+       this.description = description;
+    }
+		
+    public String description() {
+        return description;
+    }
 	}
 
 	/**
-	 * This enum defines mouse actions to be binded to the mouse.
+	 * This enum defines mouse click actions to be binded to the mouse.
+	 * Actions are defined here, but bindings are defined at the CameraProfile level,
+	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
 	 */
-	public enum MouseAction {
-		NO_MOUSE_ACTION, ROTATE, ZOOM, TRANSLATE, MOVE_FORWARD, LOOK_AROUND, MOVE_BACKWARD, SCREEN_ROTATE, ROLL, DRIVE, SCREEN_TRANSLATE, ZOOM_ON_REGION
+	public enum ClickAction {
+		NO_CLICK_ACTION("No click action"),
+		ZOOM_ON_PIXEL("Zoom on pixel"),
+		ZOOM_TO_FIT("Zoom to fit the scene"),
+		/** SELECT, */
+		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
+		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
+		CENTER_FRAME("Center frame"),
+		CENTER_SCENE("Center scene"),
+		SHOW_ALL("Show the whole scene"),
+		ALIGN_FRAME("Align interactive frame (if any) with world"),
+		ALIGN_CAMERA("Align camera with world");
+
+		private String description;
+		
+		ClickAction(String description) {
+       this.description = description;
+    }
+		
+    public String description() {
+        return description;
+    }
 	}
 
-	// TODO: add descriptions to all atomic actions
+	/**
+	 * This enum defines mouse actions (click + drag) to be binded to the mouse.
+	 * Actions are defined here, but bindings are defined at the CameraProfile level,
+	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
+	 */
+	public enum MouseAction {
+		NO_MOUSE_ACTION("No mouse action"),
+		ROTATE("Rotate frame (camera or interactive frame)"),
+		ZOOM("Zoom"),
+		TRANSLATE("Translate frame (camera or interactive frame)"),
+		MOVE_FORWARD("Move forward frame (camera or interactive frame)"),
+		MOVE_BACKWARD("move backward frame (camera or interactive frame)"),
+		LOOK_AROUND("Look around with frame (camera or interactive drivable frame)"),
+		SCREEN_ROTATE("Screen rotate (camera or interactive frame)"),
+		ROLL("Roll frame (camera or interactive drivable frame)"),
+		DRIVE("Drive (camera or interactive drivable frame)"),
+		SCREEN_TRANSLATE("Screen translate frame (camera or interactive frame)"),
+		ZOOM_ON_REGION("Zoom on region (camera or interactive drivable frame)");		
 
-	protected DesktopEvents dE;
+		private String description;
+		
+		MouseAction(String description) {
+       this.description = description;
+    }
+		
+    public String description() {
+        return description;
+    }
+	}
 
-	// protected MouseAction iFrameMouseAction;
-
+	/**
+	 * Constants associated to the different mouse buttons which follow java conventions.
+	 */
 	public enum Button {
 		// values correspond to: BUTTON1_DOWN_MASK, BUTTON2_DOWN_MASK and BUTTON3_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
@@ -133,12 +234,16 @@ public class Scene implements PConstants {
     // */
 	}
 
+	/**
+	 * Constants associated to the different arrow keys. Taken from Processing constants 
+	 * (which follows java conventions). 
+	 */	
 	public enum Arrow {
 		UP(PApplet.UP), DOWN(PApplet.DOWN), LEFT(PApplet.LEFT), RIGHT(PApplet.RIGHT);
 		public final int ID;
     Arrow(int code) {
     	this.ID = code;
-    }    
+    }
     //The following code works but is considered overkill :)
     /**
     public int id() { return ID; }
@@ -153,6 +258,9 @@ public class Scene implements PConstants {
     // */
 	}
 
+	/**
+	 * Constants associated to the different modifier keys which follow java conventions.
+	 */
 	public enum Modifier {
 		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, ALT_GRAPH_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
@@ -190,7 +298,6 @@ public class Scene implements PConstants {
 
 	// S h o r t c u t k e y s
 	protected Bindings<KeyboardShortcut, KeyboardAction> gProfile;
-	protected HashMap<KeyboardAction, String> keyboardActionDescription;
 
 	// c a m e r a p r o f i l e s
 	private HashMap<String, CameraProfile> cameraProfileMap;
@@ -209,12 +316,13 @@ public class Scene implements PConstants {
 	float gray, alpha, x, y, z;
 	PImage image;
 
-	// P R O C E S S I N G A P P L E T A N D O B J E C T S
+	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
 	public PGraphics3D pg3d;
 	int width, height;// size
 
 	// O B J E C T S
+	protected DesktopEvents dE;
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
 	boolean interactiveFrameIsDrivable;
@@ -228,10 +336,6 @@ public class Scene implements PConstants {
 	float halfWidthSpace;
 	float halfHeightSpace;
 	float zC;
-
-	// Z O O M _ O N _ R E G I O N
-	//Point fCorner;// also used for SCREEN_ROTATE
-	//Point lCorner;
 
 	// R E V O L V E A R O U N D P O I N T
 	private Timer utilityTimer;
@@ -262,11 +366,6 @@ public class Scene implements PConstants {
 	protected boolean mouseHandling;
 	protected boolean keyboardHandling;
 
-	// O N L I N E H E L P
-
-	// T H I R D P E R S O N
-	// private PVector target;
-
 	// R E G I S T E R D R A W M E T H O D
 	/** Draw handler is called on this or on the papplet */
 	protected Boolean drawHandlerParamIsThis;
@@ -296,7 +395,6 @@ public class Scene implements PConstants {
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
 		pathKeys = new Bindings<Integer, Integer>(this);		
-		setActionDescriptions();
 		setDefaultShortcuts();
 
 		MouseGrabberPool = new ArrayList<MouseGrabber>();
@@ -359,9 +457,43 @@ public class Scene implements PConstants {
 		// called only once
 		init();
 	}
+	
+	// 1. Scene overloaded
+	
+	/**
+	 * This method is called before the first drawing happen and should be overloaded to
+	 * initialize stuff not initialized in {@code PApplet.setup()}. The default
+	 * implementation is empty.
+	 * <p>
+	 * Typical usage include {@link #camera()} initialization ({@link #showAll()})
+	 * and Scene state setup ({@link #setAxisIsDrawn(boolean)} and
+	 * {@link #setGridIsDrawn(boolean)}.
+	 */
+	public void init() {}
+	
+	/**
+	 * The method that actually defines the scene.
+	 * <p>
+	 * If you build a class that inherits from Scene, this is the method you
+	 * should overload, but no if you instantiate your own Scene object (in this
+	 * case you should just overload {@code PApplet.draw()} to define your scene).
+	 * <p>
+	 * The processing camera set in {@link #pre()} converts from the world to the
+	 * camera coordinate systems. Vertices given in {@link #draw()} can then be
+	 * considered as being given in the world coordinate system. The camera is
+	 * moved in this world using the mouse. This representation is much more
+	 * intuitive than a camera-centric system (which for instance is the standard
+	 * in OpenGL).
+	 */
+	public void proscenium() {}
 
-	// 1. Associated objects
+	// 2. Associated objects
 
+	/**
+	 * Returns a list containing references to all the active MouseGrabbers.
+	 * 
+	 * @see remixlab.proscene.MouseGrabber#getMouseGrabberPool()
+	 */
 	public List<MouseGrabber> mouseGrabberPool() {
 		return MouseGrabberPool;
 	}
@@ -371,10 +503,6 @@ public class Scene implements PConstants {
 	 */
 	public Camera camera() {
 		return cam;
-	}
-
-	public Bindings<KeyboardShortcut, KeyboardAction> keyBindings() {
-		return gProfile;
 	}
 
 	/**
@@ -416,6 +544,8 @@ public class Scene implements PConstants {
 	/**
 	 * Sets the avatar object to be tracked by the Camera when
 	 * {@link #currentCameraProfile()} is an instance of ThirdPersonCameraProfile.
+	 * 
+	 * @see #unsetAvatar()
 	 */
 	public void setAvatar(Trackable t) {
 		trck = t;
@@ -444,6 +574,11 @@ public class Scene implements PConstants {
 		}
 	}
 
+	/**
+	 * If there's a avatar unset it.
+	 * 
+	 * @see #setAvatar(Trackable)
+	 */
 	public void unsetAvatar() {
 		trck = null;
 		avatarIsInteractiveAvatarFrame = false;
@@ -494,7 +629,7 @@ public class Scene implements PConstants {
 		mouseGrabberIsADrivableFrame = ((mouseGrabber != camera().frame()) && (mouseGrabber instanceof InteractiveDrivableFrame));
 	}
 
-	// 2. State of the viewer
+	// 3. State of the viewer
 
 	/**
 	 * Enables background handling in the Scene (see the different {@code
@@ -857,20 +992,163 @@ public class Scene implements PConstants {
 		else
 			setDrawWithConstraint(true);
 	}
-
-	// 3. Drawing methods
+	
+	/**
+	 * Returns the current {@link #camera()} type.
+	 */
+	public final Camera.Type cameraType() {
+		return camera().type();
+	}
 
 	/**
-	 * This method is called before the first drawing and should be overloaded to
-	 * initialize stuff not initialized in {@code PApplet.setup()}. The default
-	 * implementation is empty.
-	 * <p>
-	 * Typical usage include {@link #camera()} initialization ({@link #showAll()})
-	 * and Scene state setup ({@link #setAxisIsDrawn(boolean)} and
-	 * {@link #setGridIsDrawn(boolean)}.
+	 * Sets the {@link #camera()} type.
 	 */
-	public void init() {
+	public void setCameraType(Camera.Type type) {
+		if (type != camera().type())
+			camera().setType(type);
 	}
+
+	/**
+	 * Returns the current {@link #camera()} kind.
+	 */
+	public final Camera.Kind cameraKind() {
+		return camera().kind();
+	}
+
+	/**
+	 * Sets the {@link #camera()} kind.
+	 */
+	public void setCameraKind(Camera.Kind kind) {
+		if (kind != camera().kind()) {
+			camera().setKind(kind);
+			if (kind == Camera.Kind.PROSCENE)
+				System.out.println("Changing camera kind to Proscene");
+			else
+				System.out.println("Changing camera kind to Standard");
+		}
+	}
+	
+	/**
+	 * Returns {@code true} if axis is currently being drawn and {@code false}
+	 * otherwise.
+	 */
+	public boolean axisIsDrawn() {
+		return axisIsDrwn;
+	}
+
+	/**
+	 * Returns {@code true} if grid is currently being drawn and {@code false}
+	 * otherwise.
+	 */
+	public boolean gridIsDrawn() {
+		return gridIsDrwn;
+	}
+
+	/**
+	 * Returns {@code true} if the frames selection visual hints are currently
+	 * being drawn and {@code false} otherwise.
+	 */
+	public boolean frameSelectionHintIsDrawn() {
+		return frameSelectionHintIsDrwn;
+	}
+
+	/**
+	 * Returns {@code true} if the camera key frame paths are currently being
+	 * drawn and {@code false} otherwise.
+	 */
+	public boolean cameraPathsAreDrawn() {
+		return cameraPathsAreDrwn;
+	}
+
+	/**
+	 * Returns {@code true} if axis is currently being drawn and {@code false}
+	 * otherwise.
+	 */
+	public boolean interactiveFrameIsDrawn() {
+		return iFrameIsDrwn;
+	}
+
+	/**
+	 * Convenience function that simply calls {@code setAxisIsDrawn(true)}
+	 */
+	public void setAxisIsDrawn() {
+		setAxisIsDrawn(true);
+	}
+
+	/**
+	 * Sets the display of the axis according to {@code draw}
+	 */
+	public void setAxisIsDrawn(boolean draw) {
+		axisIsDrwn = draw;
+	}
+
+	/**
+	 * Convenience function that simply calls {@code setGridIsDrawn(true)}
+	 */
+	public void setGridIsDrawn() {
+		setGridIsDrawn(true);
+	}
+
+	/**
+	 * Sets the display of the grid according to {@code draw}
+	 */
+	public void setGridIsDrawn(boolean draw) {
+		gridIsDrwn = draw;
+	}
+
+	/**
+	 * Sets the display of the interactive frames' selection hints according to
+	 * {@code draw}
+	 */
+	public void setFrameSelectionHintIsDrawn(boolean draw) {
+		frameSelectionHintIsDrwn = draw;
+	}
+
+	/**
+	 * Sets the display of the camera key frame paths according to {@code draw}
+	 */
+	public void setCameraPathsAreDrawn(boolean draw) {
+		cameraPathsAreDrwn = draw;
+	}
+
+	/**
+	 * Convenience function that simply calls {@code setDrawInteractiveFrame(true)}.
+	 * 
+	 * @see #setDrawInteractiveFrame(boolean)
+	 */
+	public void setDrawInteractiveFrame() {
+		setDrawInteractiveFrame(true);
+	}
+
+	/**
+	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance
+	 * according to {@code draw}
+	 */
+	public void setDrawInteractiveFrame(boolean draw) {
+		if (draw && (glIFrame == null))
+			return;
+		if (!draw && (currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
+				&& interactiveFrame().equals(avatar()))// more natural than to bypass it
+			return;
+		iFrameIsDrwn = draw;
+	}
+	
+	/**
+	 * Returns {@code true} if drawn is currently being constrained and {@code
+	 * false} otherwise.
+	 */
+	public boolean drawIsConstrained() {
+		return withConstraint;
+	}
+
+	/**
+	 * Constrain frame displacements according to {@code wConstraint}
+	 */
+	public void setDrawWithConstraint(boolean wConstraint) {
+		withConstraint = wConstraint;
+	}
+
+	// 4. Drawing methods
 
 	/**
 	 * Internal use. Display various visual hints to be called from {@link #pre()}
@@ -978,7 +1256,7 @@ public class Scene implements PConstants {
 	 * could be overloaded. then, if there's an additional drawing method
 	 * registered at the Scene, calls it (see
 	 * {@link #addDrawHandler(Object, String)}). Finally, displays the
-	 * {@link #help()} and some visual hints (such {@link #drawZoomWindowHint()},
+	 * {@link #displayGlobalHelp()} and some visual hints (such {@link #drawZoomWindowHint()},
 	 * {@link #drawScreenRotateLineHint()} and
 	 * {@link #drawArcballReferencePointHint()}) according to user interaction and
 	 * flags.
@@ -998,7 +1276,7 @@ public class Scene implements PConstants {
 				else
 					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { parent });
 			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "
+				System.out.println("Something went wrong when invoking your "
 						+ drawHandlerMethodName + " method");
 				e.printStackTrace();
 			}
@@ -1007,23 +1285,6 @@ public class Scene implements PConstants {
 		// 3. Try to draw what should have been draw in the pre()
 		if (!backgroundIsHandled())
 			displayVisualHints();
-	}
-
-	/**
-	 * The method that actually defines the scene.
-	 * <p>
-	 * If you build a class that inherits from Scene, this is the method you
-	 * should overload, but no if you instantiate your own Scene object (in this
-	 * case you should just overload {@code PApplet.draw()} to define your scene).
-	 * <p>
-	 * The processing camera set in {@link #pre()} converts from the world to the
-	 * camera coordinate systems. Vertices given in {@link #draw()} can then be
-	 * considered as being given in the world coordinate system. The camera is
-	 * moved in this world using the mouse. This representation is much more
-	 * intuitive than a camera-centric system (which for instance is the standard
-	 * in OpenGL).
-	 */
-	public void proscenium() {
 	}
 
 	// 4. Scene dimensions
@@ -1159,43 +1420,6 @@ public class Scene implements PConstants {
 		return camera().setSceneCenterFromPixel(pixel);
 	}
 
-	// 5. State of the viewer
-
-	/**
-	 * Returns the current {@link #camera()} type.
-	 */
-	public final Camera.Type cameraType() {
-		return camera().type();
-	}
-
-	/**
-	 * Sets the {@link #camera()} type.
-	 */
-	public void setCameraType(Camera.Type type) {
-		if (type != camera().type())
-			camera().setType(type);
-	}
-
-	/**
-	 * Returns the current {@link #camera()} kind.
-	 */
-	public final Camera.Kind cameraKind() {
-		return camera().kind();
-	}
-
-	/**
-	 * Sets the {@link #camera()} kind.
-	 */
-	public void setCameraKind(Camera.Kind kind) {
-		if (kind != camera().kind()) {
-			camera().setKind(kind);
-			if (kind == Camera.Kind.PROSCENE)
-				PApplet.println("Changing camera kind to Proscene");
-			else
-				PApplet.println("Changing camera kind to Standard");
-		}
-	}
-
 	/**
 	 * Returns the {@link PApplet#width} to {@link PApplet#height} aspect ratio of
 	 * the processing display window.
@@ -1204,122 +1428,7 @@ public class Scene implements PConstants {
 		return (float) pg3d.width / (float) pg3d.height;
 	}
 
-	// 6. Display of visual hints and Display methods
-
-	/**
-	 * Returns {@code true} if axis is currently being drawn and {@code false}
-	 * otherwise.
-	 */
-	public boolean axisIsDrawn() {
-		return axisIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if grid is currently being drawn and {@code false}
-	 * otherwise.
-	 */
-	public boolean gridIsDrawn() {
-		return gridIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if the frames selection visual hints are currently
-	 * being drawn and {@code false} otherwise.
-	 */
-	public boolean frameSelectionHintIsDrawn() {
-		return frameSelectionHintIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if the camera key frame paths are currently being
-	 * drawn and {@code false} otherwise.
-	 */
-	public boolean cameraPathsAreDrawn() {
-		return cameraPathsAreDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if axis is currently being drawn and {@code false}
-	 * otherwise.
-	 */
-	public boolean interactiveFrameIsDrawn() {
-		return iFrameIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if drawn is currently being constrained and {@code
-	 * false} otherwise.
-	 */
-	public boolean drawIsConstrained() {
-		return withConstraint;
-	}
-
-	/**
-	 * Convenience function that simply calls {@code setAxisIsDrawn(true)}
-	 */
-	public void setAxisIsDrawn() {
-		setAxisIsDrawn(true);
-	}
-
-	/**
-	 * Sets the display of the axis according to {@code draw}
-	 */
-	public void setAxisIsDrawn(boolean draw) {
-		axisIsDrwn = draw;
-	}
-
-	/**
-	 * Convenience function that simply calls {@code setGridIsDrawn(true)}
-	 */
-	public void setGridIsDrawn() {
-		setGridIsDrawn(true);
-	}
-
-	/**
-	 * Sets the display of the grid according to {@code draw}
-	 */
-	public void setGridIsDrawn(boolean draw) {
-		gridIsDrwn = draw;
-	}
-
-	/**
-	 * Sets the display of the interactive frames' selection hints according to
-	 * {@code draw}
-	 */
-	public void setFrameSelectionHintIsDrawn(boolean draw) {
-		frameSelectionHintIsDrwn = draw;
-	}
-
-	/**
-	 * Sets the display of the camera key frame paths according to {@code draw}
-	 */
-	public void setCameraPathsAreDrawn(boolean draw) {
-		cameraPathsAreDrwn = draw;
-	}
-
-	public void setDrawInteractiveFrame() {
-		setDrawInteractiveFrame(true);
-	}
-
-	/**
-	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance
-	 * according to {@code draw}
-	 */
-	public void setDrawInteractiveFrame(boolean draw) {
-		if (draw && (glIFrame == null))
-			return;
-		if (!draw && (currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-				&& interactiveFrame().equals(avatar()))// more natural than to bypass it
-			return;
-		iFrameIsDrwn = draw;
-	}
-
-	/**
-	 * Constrain frame displacements according to {@code wConstraint}
-	 */
-	public void setDrawWithConstraint(boolean wConstraint) {
-		withConstraint = wConstraint;
-	}
+	// 5. Display of visual hints and Display methods
 
 	/**
 	 * Convenience wrapper function that simply calls {@code
@@ -1771,28 +1880,35 @@ public class Scene implements PConstants {
 		pupFlag = false;
 	}
 
-	// 7. Camera profiles
+	// 6. Camera profiles
 
+	/**
+	 * Internal method that defines the default camera profiles: WHEELED_ARCBALL
+	 * and FIRST_PERSON.
+	 */
 	private void initDefaultCameraProfiles() {
 		cameraProfileMap = new HashMap<String, CameraProfile>();
 		cameraProfileNames = new ArrayList<String>();
 		currentCameraProfile = null;
 		// register here the default profiles
 		//registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
-		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );//TODO test
-		registerCameraProfile(new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON));
+		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
+		registerCameraProfile( new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON) );
 		//setCurrentCameraProfile("ARCBALL");
 		setCurrentCameraProfile("WHEELED_ARCBALL");
 	}
 
 	/**
-	 * public HashMap<String, CameraProfile> cameraProfileHandler() { return
-	 * cameraProfileHandler; }
-	 */
-
-	/**
-	 * Make it current if size==1 or makeCurrent Doesn't allow to register nulls.
-	 * Doesn't allow to register duplicates.
+	 * Registers a camera profile. Returns true if succeeded. If there's a
+	 * registered camera profile with the same name, registration will fail. 
+	 * <p>
+	 * <b>Attention:</b> This method doesn't make current {@code cp}. For that call
+	 * {@link #setCurrentCameraProfile(CameraProfile)}.
+	 * 
+	 * @param cp camera profile
+	 * 
+	 * @see #setCurrentCameraProfile(CameraProfile)
+	 * @see #unregisterCameraProfile(CameraProfile) 
 	 */
 	public boolean registerCameraProfile(CameraProfile cp) {
 		// if(!isCameraProfileRegistered(cp)) {
@@ -1806,10 +1922,25 @@ public class Scene implements PConstants {
 		return false;
 	}
 
+	/**
+	 * Convenience function that simply returns {@code unregisterCameraProfile(cp.name())}.
+	 */
 	public boolean unregisterCameraProfile(CameraProfile cp) {
 		return unregisterCameraProfile(cp.name());
 	}
 
+	/**
+	 * Unregisters the given camera profile by its name. Returns true if succeeded.
+	 * Registration will fail in two cases: no camera profile is registered under
+	 * the provided name, or the camera profile is the only registered camera profile which
+	 * mode is different than THIRD_PERSON.
+	 * <p>
+	 * The last condition above guarantees that there should always be registered at least
+	 * one camera profile which mode is different than THIRD_PERSON. 
+	 * 
+	 * @param cp camera profile
+	 * @return true if succeeded
+	 */
 	public boolean unregisterCameraProfile(String cp) {
 		if (!isCameraProfileRegistered(cp))
 			return false;
@@ -1836,40 +1967,67 @@ public class Scene implements PConstants {
 		return false;
 	}
 
+	/**
+	 * Returns the camera profile which name matches the one provided.
+	 * Returns null if there's no camera profile registered by this name.
+	 * 
+	 * @param name camera profile name
+	 * @return camera profile object
+	 */
 	public CameraProfile cameraProfile(String name) {
 		return cameraProfileMap.get(name);
 	}
 	
+	/**
+	 * Returns an array of the camera profile objects that are currently
+	 * registered at the Scene.
+	 */
 	public CameraProfile [] getCameraProfiles() {		
 		return cameraProfileMap.values().toArray(new CameraProfile[0]);
 	}
 
+	/**
+	 * Returns true the given camera profile is currently registered.
+	 */
 	public boolean isCameraProfileRegistered(CameraProfile cp) {
 		return cameraProfileMap.containsValue(cp);
 	}
 
+	/**
+	 * Returns true if currently there's a camera profile registered by
+	 * the given name.
+	 */
 	public boolean isCameraProfileRegistered(String name) {
 		return cameraProfileMap.containsKey(name);
 	}
 
 	/**
-	 * should not be null ever
+	 * Returns the current camera profile object. Never null.
 	 */
 	public CameraProfile currentCameraProfile() {
 		return currentCameraProfile;
 	}
 
+	/**
+	 * Returns true if the {@link #currentCameraProfile()} matches 
+	 * the one by the given name.
+	 */
 	boolean isCurrentCameraProfile(String cp) {
 		return isCurrentCameraProfile(cameraProfileMap.get(cp));
 	}
 
+	/**
+	 * Returns true if the {@link #currentCameraProfile()} matches 
+	 * the one given.
+	 */
 	boolean isCurrentCameraProfile(CameraProfile cp) {
 		return currentCameraProfile() == cp;
 	}
 
 	/**
-	 * only true if cp is non-null and succeeded making it current. cp is first
-	 * register if necessary.
+	 * Set current the given camera profile. Returns true if succeeded.
+	 * <p>
+	 * Registers first the given camera profile if it is not registered.
 	 */
 	public boolean setCurrentCameraProfile(CameraProfile cp) {
 		if (cp == null) {
@@ -1881,9 +2039,13 @@ public class Scene implements PConstants {
 
 		return setCurrentCameraProfile(cp.name());
 	}
-
+	
 	/**
-	 * only true if succeeded making cp current.
+	 * Set current the camera profile associated to the given name.
+	 * Returns true if succeeded.
+	 * <p>
+	 * This method triggers smooth transition animations
+	 * when switching between camera profile modes.
 	 */
 	public boolean setCurrentCameraProfile(String cp) {
 		CameraProfile camProfile = cameraProfileMap.get(cp);
@@ -1933,7 +2095,9 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Sets the next camera profile.
+	 * Sets the next registered camera profile as current.
+	 * <p>
+	 * Camera profiles are ordered by their registration order.
 	 */
 	public void nextCameraProfile() {
 		int currentCameraProfileIndex = cameraProfileNames
@@ -1941,6 +2105,9 @@ public class Scene implements PConstants {
 		nextCameraProfile(++currentCameraProfileIndex);
 	}
 
+	/**
+	 * Internal use. Used by {@link #nextCameraProfile()}.
+	 */
 	private void nextCameraProfile(int index) {
 		if (!cameraProfileNames.isEmpty()) {
 			if (index == cameraProfileNames.size())
@@ -1950,12 +2117,12 @@ public class Scene implements PConstants {
 				nextCameraProfile(++index);
 			// debug:
 			else
-				PApplet.println("Camera profile changed to: "
+				System.out.println("Camera profile changed to: "
 						+ cameraProfileNames.get(index));
 		}
 	}
 
-	// 8. Keyboard customization
+	// 7. Keyboard customization
 
 	/**
 	 * Parses the sketch to find if any KeyXxxx method has been implemented. If
@@ -2000,10 +2167,8 @@ public class Scene implements PConstants {
 		if (foundKP || foundKR || foundKT) {
 			// if( (foundKP || foundKR || foundKT) &&
 			// (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
-			PApplet
-					.println("It seems that you have implemented some KeyXxxxMethod in your sketch! Please bear in mind that proscene reserves some keys for its own use."
-							+ " To avoid possible conflicts with proscene you may disable proscene keyboard handling while doing your keyboard manipulation by calling"
-							+ " Scene.disableKeyboardHandling() (you can re-enable it later by calling Scene.enableKeyboardHandling()).");
+			System.out.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene" +
+					"keyboard handling with Scene.disableKeyboardHandling() (you can re-enable it later with Scene.enableKeyboardHandling()).");
 		}
 	}
 
@@ -2038,83 +2203,61 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Enables proscene keyboard handling.
+	 * Enables Proscene keyboard handling.
 	 * 
 	 * @see #keyboardIsHandled()
+	 * @see #enableMouseHandling()
+	 * @see #disableKeyboardHandling()
 	 */
 	public void enableKeyboardHandling() {
 		keyboardHandling = true;
-		//parent.registerKeyEvent(this);
 		parent.registerKeyEvent(dE);
 	}
 
 	/**
-	 * Disables proscene keyboard handling.
+	 * Disables Proscene keyboard handling.
 	 * 
 	 * @see #keyboardIsHandled()
 	 */
 	public void disableKeyboardHandling() {
 		keyboardHandling = false;
-		//parent.unregisterKeyEvent(this);
 		parent.unregisterKeyEvent(dE);
 	}
 
-	private void setActionDescriptions() {
-		// 1. keyboard
-		keyboardActionDescription = new HashMap<KeyboardAction, String>();
-		keyboardActionDescription.put(KeyboardAction.DRAW_AXIS,
-				"Toggles the display of the world axis");
-		keyboardActionDescription.put(KeyboardAction.DRAW_GRID,
-				"Toggles the display of the XY grid");
-		keyboardActionDescription.put(KeyboardAction.CAMERA_PROFILE,
-				"Cycles to the registered camera profiles");
-		keyboardActionDescription.put(KeyboardAction.CAMERA_TYPE,
-				"Toggles camera type: orthographic or perspective");
-		keyboardActionDescription.put(KeyboardAction.CAMERA_KIND,
-				"Toggles camera kind: proscene or standard");
-		keyboardActionDescription.put(KeyboardAction.HELP,
-				"Toggles the display of the help");
-		keyboardActionDescription.put(KeyboardAction.EDIT_CAMERA_PATH,
-				"Toggles the key frame camera paths (if any) for edition");
-		keyboardActionDescription.put(KeyboardAction.FOCUS_INTERACTIVE_FRAME,
-				"Toggle interactivity between camera and interactive frame (if any)");
-		keyboardActionDescription.put(
-				KeyboardAction.DRAW_FRAME_SELECTION_HINT,
-				"Toggle interactive frame selection region drawing");
-		keyboardActionDescription.put(KeyboardAction.CONSTRAIN_FRAME,
-				"Toggles on and off frame constraints (if any)");
-		// 2. mouse click
-
-		// 3. mouse actions
-	}
-
-	// Key bindings. 0 means not defined
+	/**
+	 * Sets global default keyboard shortcuts and the default key-frame shortcut keys.
+	 * <p>
+	 * Default keyboard shortcuts are:
+	 * <p>
+	 * <ul>
+	 * <li><b>'a'</b>: {@link remixlab.proscene.Scene.KeyboardAction#DRAW_AXIS}.
+	 * <li><b>'e'</b>: {@link remixlab.proscene.Scene.KeyboardAction#CAMERA_TYPE}.
+	 * <li><b>'g'</b>: {@link remixlab.proscene.Scene.KeyboardAction#DRAW_GRID}.
+	 * <li><b>'h'</b>: {@link remixlab.proscene.Scene.KeyboardAction#GLOBAL_HELP}
+	 * <li><b>'H'</b>: {@link remixlab.proscene.Scene.KeyboardAction#CURRENT_CAMERA_PROFILE_HELP}
+	 * <li><b>'r'</b>: {@link remixlab.proscene.Scene.KeyboardAction#EDIT_CAMERA_PATH}.
+	 * <li><b>space bar</b>: {@link remixlab.proscene.Scene.KeyboardAction#CAMERA_PROFILE}.
+	 * </ul> 
+	 * <p>
+	 * Default key-frame shortcuts keys:
+	 * <ul>
+	 * <li><b>'[1..5]'</b>: Play path [1..5]. 
+	 * <li><b>'CTRL'+'[1..5]'</b>: Add key-frame to path [1..5].   
+	 * <li><b>'ALT'+'[1..5]'</b>: Remove path [1..5].
+	 * </ul> 
+	 */
 	public void setDefaultShortcuts() {
 		/**
 		 * ARP_FROM_PIXEL, RESET_ARP,
 		 */
-		// D e f a u l t s h o r t c u t s
-		// gProfile.setShortcut(KeyEvent.VK_A, KeyBindings.Modifier.CONTROL,
-		// Scene.KeyboardAction.DRAW_AXIS);
-		// gProfile.setShortcut('a', PApplet.CONTROL,
-		// Scene.KeyboardAction.DRAW_AXIS);
+		// D e f a u l t s h o r t c u t s		
 		setShortcut('a', KeyboardAction.DRAW_AXIS);
-		//setShortcut(KeyEvent.VK_RIGHT, KeyboardAction.DRAW_AXIS);
-		// test CASE
-		// setShortcut('A', GlobalKeyboardAction.DRAW_AXIS);
-		// setShortcut('G', GlobalKeyboardAction.DRAW_GRID);
 		setShortcut('g', KeyboardAction.DRAW_GRID);
-		//setShortcut(KeyEvent.VK_G, Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
-		//setShortcut('g', Modifier.ALT_GRAPH, KeyboardAction.DRAW_GRID);
-		//setShortcut('B', KeyboardAction.DRAW_GRID);
 		setShortcut(' ', KeyboardAction.CAMERA_PROFILE);
-		setShortcut('e', KeyboardAction.CAMERA_TYPE);
-		setShortcut('k', KeyboardAction.CAMERA_KIND);
-		setShortcut('h', KeyboardAction.HELP);
+		setShortcut('e', KeyboardAction.CAMERA_TYPE);		
+		setShortcut('h', KeyboardAction.GLOBAL_HELP);
+		setShortcut('H', KeyboardAction.CURRENT_CAMERA_PROFILE_HELP);
 		setShortcut('r', KeyboardAction.EDIT_CAMERA_PATH);
-		setShortcut('i', KeyboardAction.FOCUS_INTERACTIVE_FRAME);
-		setShortcut('f', KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-		setShortcut('w', KeyboardAction.CONSTRAIN_FRAME);
 
 		// K e y f r a m e s s h o r t c u t k e y s
 		setAddKeyFrameKeyboardModifier(Modifier.CTRL);
@@ -2124,123 +2267,337 @@ public class Scene implements PConstants {
 		setPathKey('3', 3);
 		setPathKey('4', 4);
 		setPathKey('5', 5);
-		// setPathKey('q', 6);//TODO need it to be more general and handle any kind
-		// of key?
 	}
 
+	/**
+	 * Associates key-frame interpolator path to key. High-level version
+	 * of {@link #setPathKey(Integer, Integer)}.
+	 *  
+	 * @param key character (internally converted to a key coded) defining the shortcut
+	 * @param path key-frame interpolator path
+	 * 
+	 * @see #setPathKey(Integer, Integer)
+	 */
 	public void setPathKey(Character key, Integer path) {
-		setPathKey(MathUtils.getVKey(key), path);
+		setPathKey(KeyboardShortcut.getVKey(key), path);
 	}
 	
+	/**
+	 * Associates key-frame interpolator path to the given virtual key. Low-level version
+	 * of {@link #setPathKey(Character, Integer)}.
+	 * 
+	 * @param vKey shortcut
+	 * @param path key-frame interpolator path
+	 * 
+	 * @see #setPathKey(Character, Integer)
+	 */
 	public void setPathKey(Integer vKey, Integer path) {
+		if ( isPathKeyInUse(vKey) ) {
+			Integer p = path(vKey);
+			System.out.println("Warning: overwritting path key which was previously binded to path " + p);
+		}
 		pathKeys.setBinding(vKey, path);
 	}
 
+	/**
+	 * Returns the key-frame interpolator path associated with key. High-level version
+	 * of {@link #path(Integer)}.
+	 * 
+	 * @param key character (internally converted to a key coded) defining the shortcut
+	 * 
+	 * @see #path(Integer)
+	 */
 	public Integer path(Character key) {
-		return path(MathUtils.getVKey(key));
+		return path(KeyboardShortcut.getVKey(key));
 	}
 	
+	/**
+	 * Returns the key-frame interpolator path associated with key. Low-level version
+	 * of {@link #path(Character)}.
+	 * 
+	 * @param vKey shortcut
+	 * 
+	 * @see #path(Character)
+	 */
 	public Integer path(Integer vKey) {
 		return pathKeys.binding(vKey);
 	}
 
+	/**
+	 * Removes the key-frame interpolator shortcut. High-level version
+	 * of {@link #removePathKey(Integer)}.
+	 * 
+	 * @param key character (internally converted to a key coded) defining the shortcut
+	 * 
+	 * @see #removePathKey(Integer)
+	 */
 	public void removePathKey(Character key) {
-		removePathKey(MathUtils.getVKey(key));
+		removePathKey(KeyboardShortcut.getVKey(key));
 	}
 	
+	/**
+	 * Removes the key-frame interpolator shortcut. Low-level version
+	 * of {@link #removePathKey(Character)}.
+	 * 
+	 * @param vKey shortcut
+	 * 
+	 * @see #removePathKey(Character)
+	 */
 	public void removePathKey(Integer vKey) {
 		pathKeys.removeBinding(vKey);
 	}
+	
+	/**
+	 * Returns true if the given key binds a key-frame interpolator path. High-level version
+	 * of {@link #isPathKeyInUse(Integer)}.
+	 * 
+	 * @param key character (internally converted to a key coded) defining the shortcut
+	 * 
+	 * @see #isPathKeyInUse(Integer)
+	 */
+	public boolean isPathKeyInUse(Character key) {
+		return isPathKeyInUse(KeyboardShortcut.getVKey(key));
+	}
+	
+	/**
+	 * Returns true if the given virtual key binds a key-frame interpolator path. Low-level version
+	 * of {@link #isPathKeyInUse(Character)}.
+	 * 
+	 * @param vKey shortcut
+	 * 
+	 * @see #isPathKeyInUse(Character)
+	 */
+	public boolean isPathKeyInUse(Integer vKey) {
+		return pathKeys.isShortcutInUse(vKey);
+	}
 
+	/**
+	 * Sets the modifier key needed to play the key-frame interpolator paths.
+	 * 
+	 * @param modifier
+	 */
 	public void setAddKeyFrameKeyboardModifier(Modifier modifier) {
 		addKeyFrameKeyboardModifier = modifier;
 	}
 
+	/**
+	 * Sets the modifier key needed to delete the key-frame interpolator paths.
+	 * 
+	 * @param modifier
+	 */
 	public void setDeleteKeyFrameKeyboardModifier(Modifier modifier) {
 		deleteKeyFrameKeyboardModifier = modifier;
 	}
 
-	// wrappers:	
+  /**
+   * Defines a global keyboard shortcut to bind the given action.
+   * 
+   * @param key shortcut
+   * @param action keyboard action
+   */
 	public void setShortcut(Character key, KeyboardAction action) {
+		if ( isKeyInUse(key) ) {
+			KeyboardAction a = shortcut(key);
+			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+		}
 		gProfile.setBinding(new KeyboardShortcut(key), action);
 	}
 	
-  //high level call
+  /**
+   * Defines a global keyboard shortcut to bind the given action. High-level version
+   * of {@link #setShortcut(Integer, Integer, KeyboardAction)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param key character (internally converted to a coded key) defining the shortcut
+   * @param action keyboard action
+   * 
+   * @see #setShortcut(Integer, Integer, KeyboardAction)
+   */
 	public void setShortcut(Integer mask, Character key, KeyboardAction action) {
-		setShortcut(mask, MathUtils.getVKey(key), action);
+		setShortcut(mask, KeyboardShortcut.getVKey(key), action);
 	}
 	
-  //low level call
+  /**
+   * Defines a global keyboard shortcut to bind the given action. High-level version
+   * of {@link #setShortcut(Integer, Character, KeyboardAction)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param vKey coded key defining the shortcut
+   * @param action keyboard action
+   * 
+   * @see #setShortcut(Integer, Character, KeyboardAction)
+   */
 	public void setShortcut(Integer mask, Integer vKey, KeyboardAction action) {
+		if ( isKeyInUse(mask, vKey) ) {
+			KeyboardAction a = shortcut(mask, vKey);
+			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+		}
 		gProfile.setBinding(new KeyboardShortcut(mask, vKey), action);
 	}
 
+	/**
+	 * Defines a global keyboard shortcut to bind the given action.
+	 * 
+	 * @param vKey coded key defining the shortcut
+	 * @param action keyboard action
+	 */
 	public void setShortcut(Integer vKey, KeyboardAction action) {
+		if ( isKeyInUse(vKey) ) {
+			KeyboardAction a = shortcut(vKey);
+			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+		}
 		gProfile.setBinding(new KeyboardShortcut(vKey), action);
 	}
 
+	/**
+	 * Removes all global keyboard shortcuts.
+	 */
 	public void removeAllShortcuts() {
 		gProfile.removeAllBindings();
 	}
 	
+	/**
+	 * Removes the global keyboard shortcut.
+	 * 
+	 * @param key shortcut
+	 */
 	public void removeShortcut(Character key) {
 		gProfile.removeBinding(new KeyboardShortcut(key));
 	}
 	
-  //high level call
+  /**
+   * Removes the global keyboard shortcut. High-level version
+   * of {@link #removeShortcut(Integer, Integer)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param key character (internally converted to a coded key) defining the shortcut
+   * 
+   * @see #removeShortcut(Integer, Integer)
+   */
 	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, MathUtils.getVKey(key));
+		removeShortcut(mask, KeyboardShortcut.getVKey(key));
 	}
 
-  //low level call
+	/**
+   * Removes the global keyboard shortcut. Low-level version
+   * of {@link #removeShortcut(Integer, Character)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param vKey virtual coded-key defining the shortcut
+   * 
+   * @see #removeShortcut(Integer, Character)
+   */
 	public void removeShortcut(Integer mask, Integer vKey) {
 		gProfile.removeBinding(new KeyboardShortcut(mask, vKey));
 	}
 
+	/**
+	 * Removes the global keyboard shortcut.
+	 * 
+	 * @param vKey virtual coded-key defining the shortcut
+	 */
 	public void removeShortcut(Integer vKey) {
 		gProfile.removeBinding(new KeyboardShortcut(vKey));
 	}
 	
+	/**
+	 * Returns the action that is binded to the given global keyboard shortcut.
+	 * 
+	 * @param key shortcut
+	 */
 	public KeyboardAction shortcut(Character key) {
 		return gProfile.binding(new KeyboardShortcut(key));
 	}
 	
-  //high level call
+  /**
+   * Returns the action that is binded to the given global keyboard shortcut.
+   * High-level version of {@link #shortcut(Integer, Integer)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param key character (internally converted to a coded key) defining the shortcut
+   * 
+   * @see #shortcut(Integer, Integer)
+   */
 	public KeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, MathUtils.getVKey(key));
+		return shortcut(mask, KeyboardShortcut.getVKey(key));
 	}
 
-  //low level call
+	/**
+   * Returns the action that is binded to the given global keyboard shortcut.
+   * Low-level version of {@link #shortcut(Integer, Character)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param vKey virtual coded-key defining the shortcut
+   * 
+   * @see #shortcut(Integer, Character)
+   */
 	public KeyboardAction shortcut(Integer mask, Integer vKey) {
 		return gProfile.binding(new KeyboardShortcut(mask, vKey));
 	}
 
+	/**
+	 * Returns the action that is binded to the given global keyboard shortcut.
+	 * 
+	 * @param vKey virtual coded-key defining the shortcut
+	 */
 	public KeyboardAction shortcut(Integer vKey) {
 		return gProfile.binding(new KeyboardShortcut(vKey));
 	}
 
+	/**
+	 * Returns true if the given global keyboard shortcut binds an action.
+	 * 
+	 * @param key shortcut
+	 */
 	public boolean isKeyInUse(Character key) {
 		return gProfile.isShortcutInUse(new KeyboardShortcut(key));
 	}
 	
-  //high level call
+  /**
+   * Returns true if the given global keyboard shortcut binds an action.
+   * High-level version of {@link #isKeyInUse(Integer, Integer)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param key character (internally converted to a coded key) defining the shortcut
+   * 
+   * @see #isKeyInUse(Integer, Integer)
+   */
 	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, MathUtils.getVKey(key));
+		return isKeyInUse(mask, KeyboardShortcut.getVKey(key));
 	}
 	
-  //low level call
+	/**
+   * Returns true if the given global keyboard shortcut binds an action.
+   * Low-level version of {@link #isKeyInUse(Integer, Character)}.
+   * 
+   * @param mask modifier mask defining the shortcut
+   * @param vKey virtual coded-key defining the shortcut
+   * 
+   * @see #isKeyInUse(Integer, Character)
+   */
 	public boolean isKeyInUse(Integer mask, Integer vKey) {
 		return gProfile.isShortcutInUse(new KeyboardShortcut(mask, vKey));
 	}
 	
+	/**
+	 * Returns true if the given global keyboard shortcut binds an action.
+	 * 
+	 * @param vKey virtual coded-key defining the shortcut
+	 */
 	public boolean isKeyInUse(Integer vKey) {
 		return gProfile.isShortcutInUse(new KeyboardShortcut(vKey));
 	}
 
+	/**
+	 * Returns true if there is a global keyboard shortcut for the given action.
+	 */
 	public boolean isActionBinded(KeyboardAction action) {
 		return gProfile.isActionMapped(action);
 	}
 
+	/**
+	 * Internal method. Handles the different global keyboard actions.
+	 */
 	protected void handleKeyboardAction(KeyboardAction id) {
 		switch (id) {
 		case DRAW_AXIS:
@@ -2260,7 +2617,7 @@ public class Scene implements PConstants {
 			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
@@ -2272,8 +2629,11 @@ public class Scene implements PConstants {
 			arpFlag = true;
 			utilityTimer.start();
 			break;
-		case HELP:
-			help();
+		case GLOBAL_HELP:
+			displayGlobalHelp();
+			break;
+		case CURRENT_CAMERA_PROFILE_HELP:
+			displayCurrentCameraProfileHelp();
 			break;
 		case EDIT_CAMERA_PATH:
 			toggleCameraPathsAreDrawn();
@@ -2290,12 +2650,14 @@ public class Scene implements PConstants {
 		}
 	}
 
+	/**
+	 * Internal method. Handles the different camera keyboard actions.
+	 */
 	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
 		switch (id) {
 		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
 			if (Camera.class == camera().getClass())
-				PApplet
-						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else {
 				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(
@@ -2405,14 +2767,135 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Displays the help text describing how interactivity actions are binded to
-	 * the keyboard and mouse.
+	 * Convenience funstion that simply calls {@code displayGlobalHelp(true)}.
+	 * 
+	 * @see #displayGlobalHelp(boolean)
 	 */
-	public void help() {
-		// TODO implement me!
+	public void displayGlobalHelp() {
+		displayGlobalHelp(true);
+	}
+	
+	/**
+	 * Displays global keyboard bindings.
+	 * 
+	 * @param onConsole if this flag is true displays the help on console.
+	 * Otherwise displays it on the applet
+	 * 
+	 * @see #displayGlobalHelp()
+	 */
+	public void displayGlobalHelp(boolean onConsole) {
+		if (onConsole)
+			System.out.println(globalHelp());
+		else { //on applet
+			parent.textFont(parent.createFont("Arial", 12));
+			parent.textMode(SCREEN);
+			parent.fill(0,255,0);
+			parent.textLeading(20);
+			parent.text(globalHelp(), 10, 10, (parent.width-20), (parent.height-20));
+		}
+	}
+	
+	/**
+	 * Returns a String with the global keyboard bindings.
+	 * 
+	 * @see #displayGlobalHelp()
+	 */
+	public String globalHelp() {
+		String description = new String();
+		description += "GLOBAL keyboard shortcut bindings\n";
+		for (Entry<KeyboardShortcut, Scene.KeyboardAction> entry : gProfile.map.entrySet()) {			
+			Character space = ' ';
+			if (!entry.getKey().description().equals(space.toString())) 
+				description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
+			else
+				description += "space_bar" + " -> " + entry.getValue().description() + "\n";
+		}
+		
+		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
+			description += KeyEvent.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
+		description += KeyEvent.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
+		description += KeyEvent.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+		
+		return description;		
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code displayCurrentCameraProfileHelp(true)}.
+	 * 
+	 * @see #displayCurrentCameraProfileHelp(boolean)
+	 */
+	public void displayCurrentCameraProfileHelp() {
+		displayCurrentCameraProfileHelp(true);
+	}
+	
+	/**
+	 * Displays the {@link #currentCameraProfile()} bindings.
+	 * 
+	 * @param onConsole if this flag is true displays the help on console.
+	 * Otherwise displays it on the applet
+	 * 
+	 * @see #displayCurrentCameraProfileHelp()
+	 */
+	public void displayCurrentCameraProfileHelp(boolean onConsole) {
+		if (onConsole)
+			System.out.println(currentCameraProfileHelp());
+		else { //on applet
+			parent.textFont(parent.createFont("Arial", 12));
+			parent.textMode(SCREEN);
+			parent.fill(0,255,0);
+			parent.textLeading(20);
+			parent.text(currentCameraProfileHelp(), 10, 10, (parent.width-20), (parent.height-20));			
+		}
+	}
+	
+	/**
+	 * Returns a String with the {@link #currentCameraProfile()} keyboard and mouse bindings.
+	 * 
+	 * @see remixlab.proscene.CameraProfile#cameraMouseBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#iFrameMouseBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#mouseClickBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#keyboardBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#iFrameWheelBindingsDescription()
+	 */
+	public String currentCameraProfileHelp() {
+		String description = new String();
+		description += currentCameraProfile().name() + " camera profile shortcut bindings\n";
+		int index = 1;
+		if( currentCameraProfile().keyboardBindingsDescription().length() != 0 ) {
+			description += index + ". " + "Keyboard shortcut bindings\n";
+			description += currentCameraProfile().keyboardBindingsDescription();
+			index++;
+		}
+		if( currentCameraProfile().cameraMouseBindingsDescription().length() != 0 ) {
+			description += index + ". " + "Camera mouse shortcut bindings\n";
+			description += currentCameraProfile().cameraMouseBindingsDescription();
+			index++;
+		}
+		if( currentCameraProfile().mouseClickBindingsDescription().length() != 0 ) {
+			description += index + ". " + "Mouse click shortcut bindings\n";
+			description += currentCameraProfile().mouseClickBindingsDescription();
+			index++;
+		}
+		if( currentCameraProfile().iFrameMouseBindingsDescription().length() != 0 ) {
+			description += index + ". " + "Interactive frame mouse shortcut bindings\n";
+			description += currentCameraProfile().iFrameMouseBindingsDescription();
+			index++;
+		}
+		if( currentCameraProfile().cameraWheelBindingsDescription().length() != 0 ) {
+			description += index + ". " + "Camera mouse wheel shortcut bindings\n";
+			description += currentCameraProfile().cameraWheelBindingsDescription();
+			index++;
+		}
+		if( currentCameraProfile().iFrameWheelBindingsDescription().length() != 0 ) {
+			description += index + ". " + "Interactive frame mouse wheel shortcut bindings\n";
+			description += currentCameraProfile().iFrameWheelBindingsDescription();
+			index++;
+		}
+		return description;
 	}
 
-	// 9. Mouse customization
+	// 8. Mouse customization
 
 	/**
 	 * Parses the sketch to find if any mouseXxxx method has been implemented. If
@@ -2474,11 +2957,9 @@ public class Scene implements PConstants {
 			foundMC = false;
 		}
 
-		if (foundMD || foundMM || foundMR || foundMP || foundMC) {
-			PApplet
-					.println("It seems that you have implemented some mouseXxxxMethod in your sketch! Please bear in mind that proscene overrides processing"
-							+ " mouse event methods to handle the camera for you. To avoid posibble conflicts you can disable proscene mouse handling while doing your"
-							+ " mouse manipulation by calling Scene.disableMouseHandling() (you can re-enable it later by calling Scene.enableMouseHandling()).");
+		if (foundMD || foundMM || foundMR || foundMP || foundMC) {			
+			System.out.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene" +
+			"mouse handling with Scene.disableMouseHandling() (you can re-enable it later with Scene.enableMouseHandling()).");
 		}
 	}
 
@@ -2513,28 +2994,31 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Enables proscene mouse handling.
+	 * Enables Proscene mouse handling.
 	 * 
 	 * @see #mouseIsHandled()
+	 * @see #disableMouseHandling()
+	 * @see #enableKeyboardHandling()
 	 */
 	public void enableMouseHandling() {
 		mouseHandling = true;
-		//parent.registerMouseEvent(this);
 		parent.registerMouseEvent(dE);
 	}
 
 	/**
-	 * Disables proscene mouse handling.
+	 * Disables Proscene mouse handling.
 	 * 
 	 * 
 	 * @see #mouseIsHandled()
 	 */
 	public void disableMouseHandling() {
 		mouseHandling = false;
-		//parent.unregisterMouseEvent(this);
 		parent.unregisterMouseEvent(dE);
 	}
 
+	/**
+	 * Internal method. Handles the different mouse click actions.
+	 */
 	protected void handleClickAction(ClickAction action) {
 		// public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT,
 		// SELECT, ARP_FROM_PIXEL, RESET_ARP,
@@ -2563,7 +3047,7 @@ public class Scene implements PConstants {
 			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
@@ -2596,7 +3080,7 @@ public class Scene implements PConstants {
 		}
 	}	
 
-	// 10. Register draw method
+	// 9. Draw method registration
 
 	/**
 	 * Attempt to add a 'draw' handler method to the Scene. The default event
@@ -2624,7 +3108,7 @@ public class Scene implements PConstants {
 				drawHandlerMethodName = methodName;
 			} catch (Exception e) {
 				drawHandlerParamIsThis = null;
-				PApplet.println("Something went wrong when registering your "
+				System.out.println("Something went wrong when registering your "
 						+ methodName + " method");
 				e.printStackTrace();
 			}
@@ -2654,7 +3138,7 @@ public class Scene implements PConstants {
 		return true;
 	}
 
-	// 11. Processing objects
+	// 10. Processing objects
 
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}. Calls

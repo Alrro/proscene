@@ -30,6 +30,8 @@ void setup() {
   textMode(SCREEN);
 
   scene = new Scene(this);
+  scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setGridIsDrawn(false);
 
