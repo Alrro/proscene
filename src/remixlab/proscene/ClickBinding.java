@@ -35,7 +35,7 @@ import java.awt.event.KeyEvent;
  * and can be of one out of two forms: 1. A mouse button; and, 2. A mouse
  * button plus a key-modifier (such as the CTRL key).
  */
-public class ClickShortcut {
+public class ClickBinding {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -54,7 +54,7 @@ public class ClickShortcut {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		ClickShortcut other = (ClickShortcut) obj;
+		ClickBinding other = (ClickBinding) obj;
 		if (button == null) {
 			if (other.button != null)
 				return false;
@@ -78,7 +78,7 @@ public class ClickShortcut {
 	 * 
 	 * @param b mouse button
 	 */
-	public ClickShortcut(Scene.Button b) {
+	public ClickBinding(Scene.Button b) {
 		this(0, b, 1);
 	}
 	
@@ -89,7 +89,7 @@ public class ClickShortcut {
 	 * @param m modifier mask
 	 * @param b mouse button
 	 */
-	public ClickShortcut(Integer m, Scene.Button b) {
+	public ClickBinding(Integer m, Scene.Button b) {
 		this(m, b, 1);
 	}
 	
@@ -100,7 +100,7 @@ public class ClickShortcut {
 	 * @param b mouse button
 	 * @param c number of clicks
 	 */
-	public ClickShortcut(Scene.Button b, Integer c) {
+	public ClickBinding(Scene.Button b, Integer c) {
 		this(0, b, c);
 	}
 	
@@ -112,7 +112,7 @@ public class ClickShortcut {
 	 * @param b mouse button
 	 * @param c bumber of clicks
 	 */
-	public ClickShortcut(Integer m, Scene.Button b, Integer c) {
+	public ClickBinding(Integer m, Scene.Button b, Integer c) {
 		// TODO 0 < numberOfClicks < 3(?)
 		this.mask = m;
 		this.button = b;		

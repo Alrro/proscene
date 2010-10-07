@@ -2852,19 +2852,19 @@ public class Scene implements PConstants {
 	 * Returns a String with the {@link #currentCameraProfile()} keyboard and mouse bindings.
 	 * 
 	 * @see remixlab.proscene.CameraProfile#cameraMouseBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#iFrameMouseBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#frameMouseBindingsDescription()
 	 * @see remixlab.proscene.CameraProfile#mouseClickBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#keyboardBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#keyboardShortcutsDescription()
 	 * @see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#iFrameWheelBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#frameWheelBindingsDescription()
 	 */
 	public String currentCameraProfileHelp() {
 		String description = new String();
 		description += currentCameraProfile().name() + " camera profile shortcut bindings\n";
 		int index = 1;
-		if( currentCameraProfile().keyboardBindingsDescription().length() != 0 ) {
+		if( currentCameraProfile().keyboardShortcutsDescription().length() != 0 ) {
 			description += index + ". " + "Keyboard shortcut bindings\n";
-			description += currentCameraProfile().keyboardBindingsDescription();
+			description += currentCameraProfile().keyboardShortcutsDescription();
 			index++;
 		}
 		if( currentCameraProfile().cameraMouseBindingsDescription().length() != 0 ) {
@@ -2877,9 +2877,9 @@ public class Scene implements PConstants {
 			description += currentCameraProfile().mouseClickBindingsDescription();
 			index++;
 		}
-		if( currentCameraProfile().iFrameMouseBindingsDescription().length() != 0 ) {
+		if( currentCameraProfile().frameMouseBindingsDescription().length() != 0 ) {
 			description += index + ". " + "Interactive frame mouse shortcut bindings\n";
-			description += currentCameraProfile().iFrameMouseBindingsDescription();
+			description += currentCameraProfile().frameMouseBindingsDescription();
 			index++;
 		}
 		if( currentCameraProfile().cameraWheelBindingsDescription().length() != 0 ) {
@@ -2887,9 +2887,9 @@ public class Scene implements PConstants {
 			description += currentCameraProfile().cameraWheelBindingsDescription();
 			index++;
 		}
-		if( currentCameraProfile().iFrameWheelBindingsDescription().length() != 0 ) {
+		if( currentCameraProfile().frameWheelBindingsDescription().length() != 0 ) {
 			description += index + ". " + "Interactive frame mouse wheel shortcut bindings\n";
-			description += currentCameraProfile().iFrameWheelBindingsDescription();
+			description += currentCameraProfile().frameWheelBindingsDescription();
 			index++;
 		}
 		return description;

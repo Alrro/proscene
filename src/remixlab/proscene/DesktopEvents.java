@@ -297,7 +297,7 @@ public class DesktopEvents implements MouseWheelListener {
 	protected void mouseClicked(MouseEvent event) {		
 		//1. get button
 		Button button = getButton(event);
-		ClickAction ca = scene.currentCameraProfile().clickShortcut(event.getModifiersEx(), button, event.getClickCount());		
+		ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiersEx(), button, event.getClickCount());		
 		if (ca == null) 
 			return;
 		else
@@ -339,14 +339,14 @@ public class DesktopEvents implements MouseWheelListener {
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
-				iFrame.startAction(scene.currentCameraProfile().iFrameMouseAction(event), scene.drawIsConstrained());
+				iFrame.startAction(scene.currentCameraProfile().frameMouseAction(event), scene.drawIsConstrained());
 				iFrame.mousePressed(event.getPoint(), scene.camera());
 			} else
 				scene.mouseGrabber().mousePressed(event.getPoint(), scene.camera());
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-			scene.interactiveFrame().startAction(scene.currentCameraProfile().iFrameMouseAction(event), scene.drawIsConstrained());
+			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameMouseAction(event), scene.drawIsConstrained());
 			scene.interactiveFrame().mousePressed(event.getPoint(), scene.camera());
 			return;
 		}
@@ -467,12 +467,12 @@ public class DesktopEvents implements MouseWheelListener {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				if (scene.mouseGrabberIsADrivableFrame) {	
 					InteractiveDrivableFrame iFrame = (InteractiveDrivableFrame) scene.mouseGrabber();
-					iFrame.startAction(scene.currentCameraProfile().iFrameWheelMouseAction(event), scene.drawIsConstrained());
+					iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
 					iFrame.iDrivableMouseWheelMoved(event.getWheelRotation(), scene.camera());
 				}
 				else {
 					InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
-					iFrame.startAction(scene.currentCameraProfile().iFrameWheelMouseAction(event), scene.drawIsConstrained());
+					iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
 					iFrame.mouseWheelMoved(event.getWheelRotation(), scene.camera());
 				}
 			} else
@@ -480,7 +480,7 @@ public class DesktopEvents implements MouseWheelListener {
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-			scene.interactiveFrame().startAction(scene.currentCameraProfile().iFrameWheelMouseAction(event), scene.drawIsConstrained());
+			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
 			scene.interactiveFrame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 			return;
 		}

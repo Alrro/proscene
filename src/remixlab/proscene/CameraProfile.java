@@ -34,7 +34,8 @@ import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
 
 /**
- * This class encapsulates a set of camera and keyboard bindings which together
+ * //TODO update description
+ * This class encapsulates a set of camera (and frame) bindings and keyboard shortcuts which together
  * represent a "camera mode".
  * <p>
  * Once instantiated, to use a camera profile you need to {@link #register()} it
@@ -64,9 +65,9 @@ public class CameraProfile {
 	protected Mode mode;
 	protected Bindings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
 	protected Bindings<Integer, Scene.MouseAction> cameraActions;
-	protected Bindings<Integer, Scene.MouseAction> iFrameActions;
+	protected Bindings<Integer, Scene.MouseAction> frameActions;
 	// C L I C K A C T I O N S
-	protected Bindings<ClickShortcut, ClickAction> clickActions;
+	protected Bindings<ClickBinding, ClickAction> clickActions;
 	protected Bindings<Integer, Scene.MouseAction> cameraWheelActions;
 	protected Bindings<Integer, Scene.MouseAction> iFrameWheelActions;
 	
@@ -103,8 +104,8 @@ public class CameraProfile {
 		mode = m;
 		keyboard = new Bindings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
 		cameraActions = new Bindings<Integer, Scene.MouseAction>(scene);
-		iFrameActions = new Bindings<Integer, Scene.MouseAction>(scene);		
-		clickActions = new Bindings<ClickShortcut, Scene.ClickAction>(scene);
+		frameActions = new Bindings<Integer, Scene.MouseAction>(scene);		
+		clickActions = new Bindings<ClickBinding, Scene.ClickAction>(scene);
 		
 		cameraWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
 		iFrameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);		
@@ -117,13 +118,13 @@ public class CameraProfile {
 		case WHEELED_ARCBALL:			
 			arcballDefaultShortcuts();
 			
-			setCameraWheelShortcut( MouseAction.ZOOM );
+			setCameraWheelBinding( MouseAction.ZOOM );
 			/**
 			setCameraWheelShortcut( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
 			setCameraWheelShortcut( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
 			*/
 			//should work only iFrame is an instance of drivable
-			setIFrameWheelShortcut( MouseAction.ZOOM );
+			setFrameWheelBinding( MouseAction.ZOOM );
 			/**
 			setIFrameWheelShortcut( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
 			setIFrameWheelShortcut( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
@@ -132,14 +133,14 @@ public class CameraProfile {
 			//scene.parent.addMouseWheelListener( scene.dE );
 			break;
 		case FIRST_PERSON:
-			setCameraShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
-			setCameraShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
-			setCameraShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
-			setCameraShortcut((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
-			setCameraShortcut((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ),	Scene.MouseAction.DRIVE);
-			setIFrameShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
-			setIFrameShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
-			setIFrameShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
+			setCameraMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
+			setCameraMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
+			setCameraMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
+			setCameraMouseBinding((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
+			setCameraMouseBinding((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ),	Scene.MouseAction.DRIVE);
+			setFrameMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
+			setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
+			setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_CAMERA_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_CAMERA_FLY_SPEED);
@@ -148,11 +149,11 @@ public class CameraProfile {
 			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 			break;
 		case THIRD_PERSON:
-			setIFrameShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
-			setIFrameShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
-			setIFrameShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
-			setIFrameShortcut((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
-			setIFrameShortcut((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.DRIVE);
+			setFrameMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
+			setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
+			setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
+			setFrameMouseBinding((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
+			setFrameMouseBinding((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.DRIVE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_AVATAR_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);
@@ -177,16 +178,16 @@ public class CameraProfile {
 		setShortcut(KeyEvent.VK_UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
 		setShortcut(KeyEvent.VK_DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
 
-		setCameraShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
-		setCameraShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
-		setCameraShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
-		setIFrameShortcut(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
-		setIFrameShortcut(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
-		setIFrameShortcut(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
+		setCameraMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
+		setCameraMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
+		setCameraMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
+		setFrameMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
+		setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
+		setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
 
 		//setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
-		setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
-		setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), Scene.MouseAction.SCREEN_ROTATE);
+		setCameraMouseBinding( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
+		setCameraMouseBinding( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), Scene.MouseAction.SCREEN_ROTATE);
 
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
 		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
@@ -194,9 +195,9 @@ public class CameraProfile {
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 		
-		setClickShortcut(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
-		setClickShortcut(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
-		setClickShortcut(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
+		setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
+		setClickBinding(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
+		setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 		//setClickShortcut((InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	
@@ -262,7 +263,7 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
-		MouseAction camMouseAction = cameraShortcut( e.getModifiersEx() );
+		MouseAction camMouseAction = cameraMouseBinding( e.getModifiersEx() );
 		if (camMouseAction == null)
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return camMouseAction;
@@ -274,8 +275,8 @@ public class CameraProfile {
 	 * <p>
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
-	protected MouseAction iFrameMouseAction(MouseEvent e) {
-		MouseAction iFrameMouseAction = iFrameShortcut( e.getModifiersEx() );
+	protected MouseAction frameMouseAction(MouseEvent e) {
+		MouseAction iFrameMouseAction = frameMouseBinding( e.getModifiersEx() );
 		if (iFrameMouseAction == null)
 			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return iFrameMouseAction;
@@ -288,7 +289,7 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
 	protected MouseAction cameraWheelMouseAction(MouseWheelEvent e) {
-		MouseAction wMouseAction = cameraWheelShortcut(e.getModifiersEx());
+		MouseAction wMouseAction = cameraWheelBinding(e.getModifiersEx());
 		if (wMouseAction == null)
 			wMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return wMouseAction;
@@ -300,8 +301,8 @@ public class CameraProfile {
 	 * <p>
 	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
-	protected MouseAction iFrameWheelMouseAction(MouseWheelEvent e) {
-		MouseAction fMouseAction = iFrameWheelShortcut( e.getModifiersEx() );
+	protected MouseAction frameWheelMouseAction(MouseWheelEvent e) {
+		MouseAction fMouseAction = frameWheelBinding( e.getModifiersEx() );
 		if (fMouseAction == null)
 			fMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return fMouseAction;
@@ -320,9 +321,9 @@ public class CameraProfile {
 	/**
 	 * Returns a String containing the interactive frame mouse bindings' descriptions.
 	 */
-	public String iFrameMouseBindingsDescription() {
+	public String frameMouseBindingsDescription() {
 		String description = new String();
-		for (Entry<Integer, MouseAction> entry : iFrameActions.map.entrySet())
+		for (Entry<Integer, MouseAction> entry : frameActions.map.entrySet())
       description += KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -332,7 +333,7 @@ public class CameraProfile {
 	 */
 	public String mouseClickBindingsDescription() {
 		String description = new String();
-		for (Entry<ClickShortcut, ClickAction> entry : clickActions.map.entrySet())
+		for (Entry<ClickBinding, ClickAction> entry : clickActions.map.entrySet())
       description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -340,7 +341,7 @@ public class CameraProfile {
 	/**
 	 * Returns a String containing the camera keyboard bindings' descriptions.
 	 */
-	public String keyboardBindingsDescription() {
+	public String keyboardShortcutsDescription() {
 		String description = new String();
 		for (Entry<KeyboardShortcut, Scene.CameraKeyboardAction> entry : keyboard.map.entrySet())
       description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
@@ -364,7 +365,7 @@ public class CameraProfile {
 	/**
 	 * Returns a String containing the interactive frame mouse wheel bindings' descriptions.
 	 */
-	public String iFrameWheelBindingsDescription() {
+	public String frameWheelBindingsDescription() {
 		String description = new String();
 		for (Entry<Integer, Scene.MouseAction> entry : iFrameWheelActions.map.entrySet())
 			if (KeyEvent.getModifiersExText(entry.getKey()).length() != 0 )
@@ -444,7 +445,7 @@ public class CameraProfile {
 	/**
 	 * Removes all camera keyboard shortcuts.
 	 */
-	public void removeAllKeyboardShortcuts() {
+	public void removeAllShortcuts() {
 		keyboard.removeAllBindings();
 	}
 	
@@ -596,368 +597,368 @@ public class CameraProfile {
 	/**
 	 * Returns true if there is a camera keyboard shortcut for the given action.
 	 */
-	public boolean isActionBinded(CameraKeyboardAction action) {
+	public boolean isKeyboardActionBinded(CameraKeyboardAction action) {
 		return keyboard.isActionMapped(action);
 	}
 
 	// camera wrappers:
 	
 	/**
-	 * Removes all camera mouse shortcuts.
+	 * Removes all camera mouse-action bindings.
 	 */
-	public void removeAllCameraShortcuts() {
+	public void removeAllCameraMouseBindings() {
 		cameraActions.removeAllBindings();
 	}
 
 	/**
-	 * Returns true if the given camera mouse shortcut binds an action.
+	 * Returns true if the given binding binds a camera mouse-action.
 	 * 
-	 * @param mask modifier mask that defines the shortcut
+	 * @param mask modifier mask that defines the binding
 	 */
-	public boolean isCameraKeyInUse(Integer mask) {
+	public boolean isCameraMouseBindingInUse(Integer mask) {
 		return cameraActions.isShortcutInUse(mask);
 	}
 
 	/**
-	 * Returns true if there is a camera mouse shortcut for the given action.
+	 * Returns true if the given camera mouse-action is binded.
 	 */
-	public boolean isActionBindedToCamera(Scene.MouseAction action) {
+	public boolean isCameraMouseActionBinded(Scene.MouseAction action) {
 		return cameraActions.isActionMapped(action);
 	}
 
 	/**
-	 * Defines a camera mouse shortcut to bind the given action.
+	 * Binds the camera mouse-action to the given binding
 	 * 
-	 * @param mask modifier mask that defines the shortcut
+	 * @param mask modifier mask that defines the binding
 	 * @param action action to be binded
 	 */
-	public void setCameraShortcut(Integer mask,	Scene.MouseAction action) {
-		if ( isCameraKeyInUse(mask) ) {
-			MouseAction a = cameraShortcut(mask);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setCameraMouseBinding(Integer mask,	Scene.MouseAction action) {
+		if ( isCameraMouseBindingInUse(mask) ) {
+			MouseAction a = cameraMouseBinding(mask);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		cameraActions.setBinding(mask, action);
 	}
 
 	/**
-	 * Removes the camera mouse shortcut.
+	 * Removes the camera mouse-action binding.
 	 * 
-	 * @param mask modifier mask that defines the shortcut
+	 * @param mask modifier mask that defines the binding
 	 */
-	public void removeCameraShortcut(Integer mask) {
+	public void removeCameraMouseBinding(Integer mask) {
 		cameraActions.removeBinding(mask);
 	}
 	
 	/**
-	 * Returns the action that is binded to the given camera mouse shortcut.
+	 * Returns the camera mouse-action associated to the given binding.
 	 * 
-	 * @param mask  modifier mask that defines the shortcut
+	 * @param mask  modifier mask that defines the binding
 	 */
-	public Scene.MouseAction cameraShortcut(Integer mask) {
+	public Scene.MouseAction cameraMouseBinding(Integer mask) {
 		return cameraActions.binding(mask);
 	}
 
 	// iFrame wrappers:
 	
 	/**
-	 * Removes all interactive-frame mouse shortcuts.
+	 * Removes all frame mouse-action bindings.
 	 */
-	public void removeAllIFrameShortcuts() {
-		iFrameActions.removeAllBindings();
+	public void removeAllFrameBindings() {
+		frameActions.removeAllBindings();
 	}
 
 	/**
-	 * Returns true if the given interactive-frame mouse shortcut binds an action.
+	 * Returns true if the given binding binds a frame mouse-action.
 	 * 
-	 * @param mask modifier mask that defines the shortcut
+	 * @param mask modifier mask that defines the binding
 	 */
-	public boolean isIFrameKeyInUse(Integer mask) {
-		return iFrameActions.isShortcutInUse(mask);
+	public boolean isFrameMouseBindingInUse(Integer mask) {
+		return frameActions.isShortcutInUse(mask);
 	}
 
 	/**
-	 * Returns true if there is a interactive-frame mouse shortcut for the given action.
+	 * Returns true if the given frame mouse-action is binded.
 	 */
-	public boolean isActionBindedToIFrame(Scene.MouseAction action) {
-		return iFrameActions.isActionMapped(action);
+	public boolean isFrameMouseActionBinded(Scene.MouseAction action) {
+		return frameActions.isActionMapped(action);
 	}
 	
 	/**
-	 * Defines a interactive-frame mouse shortcut to bind the given action.
+	 * Binds the frame mouse-action to the given binding.
 	 * 
-	 * @param mask modifier mask that defines the shortcut
+	 * @param mask modifier mask that defines the binding
 	 * @param action action to be binded
 	 */
-	public void setIFrameShortcut(Integer mask, Scene.MouseAction action) {
-		if ( isIFrameKeyInUse(mask) ) {
-			MouseAction a = iFrameShortcut(mask);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setFrameMouseBinding(Integer mask, Scene.MouseAction action) {
+		if ( isFrameMouseBindingInUse(mask) ) {
+			MouseAction a = frameMouseBinding(mask);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		iFrameActions.setBinding(mask, action);
+		frameActions.setBinding(mask, action);
+	}
+	
+	/**
+	 * Removes the frame mouse-action binding.
+	 * 
+	 * @param mask modifier mask that defines the binding
+	 */
+	public void removeFrameMouseBinding(Integer mask) {
+		frameActions.removeBinding(mask);
 	}
 
 	/**
-	 * Removes the interactive-frame mouse shortcut.
+	 * Returns the frame mouse-action associated to the given binding.
 	 * 
-	 * @param mask modifier mask that defines the shortcut
+	 * @param mask  modifier mask that defines the binding
 	 */
-	public void removeIFrameShortcut(Integer mask) {
-		iFrameActions.removeBinding(mask);
-	}
-
-	/**
-	 * Returns the action that is binded to the given interactive-frame mouse shortcut.
-	 * 
-	 * @param mask  modifier mask that defines the shortcut
-	 */
-	public Scene.MouseAction iFrameShortcut(Integer mask) {
-		return iFrameActions.binding(mask);
+	public Scene.MouseAction frameMouseBinding(Integer mask) {
+		return frameActions.binding(mask);
 	}
 	
 	// click wrappers:
 	
 	/**
-	 * Removes all camera mouse-click shortcuts.
+	 * Removes all camera mouse-click bindings.
 	 */
-	public void removeAllClickActionShortcuts() {
+	public void removeAllClickBindings() {
 		clickActions.removeAllBindings();
 	}
 	
 	/**
-	 * Returns true if the given camera mouse-click shortcut binds an action.
+	 * Returns true if the given binding binds a click-action.
 	 * 	
-	 * @param button shortcut
+	 * @param button binding
 	 */
-	public boolean isClickKeyInUse(Scene.Button button) {
-		return clickActions.isShortcutInUse(new ClickShortcut(button));
+	public boolean isClickBindingInUse(Scene.Button button) {
+		return clickActions.isShortcutInUse(new ClickBinding(button));
 	}
 	
 	/**
-	 * Returns true if the given camera mouse-click shortcut binds an action.
+	 * Returns true if the given binding binds a click-action.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button button defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button button defining the binding
 	 */
-	public boolean isClickKeyInUse(Integer mask, Scene.Button button) {
-		return clickActions.isShortcutInUse(new ClickShortcut(mask, button));
+	public boolean isClickBindingInUse(Integer mask, Scene.Button button) {
+		return clickActions.isShortcutInUse(new ClickBinding(mask, button));
 	}
 	
 	/**
-	 * Returns true if the given camera mouse-click shortcut binds an action.
+	 * Returns true if the given binding binds a click-action.
 	 * 
-	 * @param button button defining the shortcut
-	 * @param nc number of clicks defining the shortcut
+	 * @param button button defining the binding
+	 * @param nc number of clicks defining the binding
 	 */
-	public boolean isClickKeyInUse(Scene.Button button, Integer nc) {
-		return clickActions.isShortcutInUse(new ClickShortcut(button, nc));
+	public boolean isClickBindingInUse(Scene.Button button, Integer nc) {
+		return clickActions.isShortcutInUse(new ClickBinding(button, nc));
 	}
 
 	/**
-	 * Returns true if the given camera mouse-click shortcut binds an action.
+	 * Returns true if the given binding binds a click-action.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button button defining the shortcut
-	 * @param nc number of clicks defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button button defining the binding
+	 * @param nc number of clicks defining the binding
 	 */
-	public boolean isClickKeyInUse(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.isShortcutInUse(new ClickShortcut(mask, button, nc)); 
+	public boolean isClickBindingInUse(Integer mask, Scene.Button button, Integer nc) {
+		return clickActions.isShortcutInUse(new ClickBinding(mask, button, nc)); 
 	}
 
-	/**
-	 * Returns true if there is a camera mouse-click shortcut for the given action.
+	/** 
+	 * Returns true if the given click-action is binded.
 	 */
 	public boolean isClickActionBinded(Scene.ClickAction action) {
 		return clickActions.isActionMapped(action);
 	}
 	
 	/**
-	 * Defines a camera mouse-click shortcut to bind the given action.
+	 * Binds the click-action to the given binding.
 	 * 
-	 * @param button shortcut
+	 * @param button binding
 	 * @param action action to be binded
 	 */
-	public void setClickShortcut(Scene.Button button, Scene.ClickAction action) {
-		if ( isClickKeyInUse(button) ) {
-			ClickAction a = clickShortcut(button);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setClickBinding(Scene.Button button, Scene.ClickAction action) {
+		if ( isClickBindingInUse(button) ) {
+			ClickAction a = clickBinding(button);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickShortcut(button), action);
+		clickActions.setBinding(new ClickBinding(button), action);
 	}
 
 	/**
-	 * Defines a camera mouse-click shortcut to bind the given action.
+	 * Binds the click-action to the given binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button mouse button defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button mouse button defining the binding
 	 * @param action action to be binded
 	 */
-	public void setClickShortcut(Integer mask, Scene.Button button, Scene.ClickAction action) {
-		if ( isClickKeyInUse(mask, button) ) {
-			ClickAction a = clickShortcut(mask, button);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setClickBinding(Integer mask, Scene.Button button, Scene.ClickAction action) {
+		if ( isClickBindingInUse(mask, button) ) {
+			ClickAction a = clickBinding(mask, button);
+			System.out.println("Warning: overwritting bindings which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickShortcut(mask, button), action);
+		clickActions.setBinding(new ClickBinding(mask, button), action);
 	}
 	
 	/**
-	 * Defines a camera mouse-click shortcut to bind the given action.
+	 * Binds the click-action to the given binding.
 	 * 
-	 * @param button mouse button defining the shortcut
-	 * @param nc number of clicks that defines the shortcut
+	 * @param button mouse button defining the binding
+	 * @param nc number of clicks that defines the binding
 	 * @param action action to be binded
 	 */
-	public void setClickShortcut(Scene.Button button, Integer nc, Scene.ClickAction action) {
-		if ( isClickKeyInUse(button, nc) ) {
-			ClickAction a = clickShortcut(button, nc);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setClickBinding(Scene.Button button, Integer nc, Scene.ClickAction action) {
+		if ( isClickBindingInUse(button, nc) ) {
+			ClickAction a = clickBinding(button, nc);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickShortcut(button, nc), action);
+		clickActions.setBinding(new ClickBinding(button, nc), action);
 	}
 
 	/**
-	 * Defines a camera mouse-click shortcut to bind the given action.
+	 * Binds the click-action to the given binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button mouse button defining the shortcut
-	 * @param nc number of clicks that defines the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button mouse button defining the binding
+	 * @param nc number of clicks that defines the binding
 	 * @param action action to be binded
 	 */
-	public void setClickShortcut(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
-		if ( isClickKeyInUse(mask, button, nc) ) {
-			ClickAction a = clickShortcut(mask, button, nc);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setClickBinding(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
+		if ( isClickBindingInUse(mask, button, nc) ) {
+			ClickAction a = clickBinding(mask, button, nc);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickShortcut(mask, button, nc), action);
+		clickActions.setBinding(new ClickBinding(mask, button, nc), action);
 	}
 	
 	/**
-	 * Removes the camera mouse-click shortcut.
+	 * Removes the mouse-click binding.
 	 * 
-	 * @param button shortcut
+	 * @param button binding
 	 */
-	public void removeClickShortcut(Scene.Button button) {
-		clickActions.removeBinding(new ClickShortcut(button));
+	public void removeClickBinding(Scene.Button button) {
+		clickActions.removeBinding(new ClickBinding(button));
 	}
 
 	/**
-	 * Removes the camera mouse-click shortcut.
+	 * Removes the mouse-click binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button mouse button defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button mouse button defining the binding
 	 */
-	public void removeClickShortcut(Integer mask, Scene.Button button) {
-		clickActions.removeBinding(new ClickShortcut(mask, button));
+	public void removeClickBinding(Integer mask, Scene.Button button) {
+		clickActions.removeBinding(new ClickBinding(mask, button));
 	}
 	
 	/**
-	 * Removes the camera mouse-click shortcut.
+	 * Removes the mouse-click binding.
 	 * 
-	 * @param button mouse button defining the shortcut
-	 * @param nc number of clicks defining the shortcut
+	 * @param button mouse button defining the binding
+	 * @param nc number of clicks defining the binding
 	 */
-	public void removeClickShortcut(Scene.Button button, Integer nc) {
-		clickActions.removeBinding(new ClickShortcut(button, nc));
+	public void removeClickBinding(Scene.Button button, Integer nc) {
+		clickActions.removeBinding(new ClickBinding(button, nc));
 	}
 	
 	/**
-	 * Removes the camera mouse-click shortcut.
+	 * Removes the mouse-click binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button mouse button defining the shortcut
-	 * @param nc number of clicks defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button mouse button defining the binding
+	 * @param nc number of clicks defining the binding
 	 */
-	public void removeClickShortcut(Integer mask, Scene.Button button, Integer nc) {
-		clickActions.removeBinding(new ClickShortcut(mask, button, nc));
+	public void removeClickBinding(Integer mask, Scene.Button button, Integer nc) {
+		clickActions.removeBinding(new ClickBinding(mask, button, nc));
 	}
 	
 	/**
-	 * Returns the action that is binded to the given camera mouse-click shortcut.
+	 * Returns the click-action associated to the given binding.
 	 * 
-	 * @param button shortcut
+	 * @param button binding
 	 */
-	public Scene.ClickAction clickShortcut(Scene.Button button) {
-		return clickActions.binding(new ClickShortcut(button));
+	public Scene.ClickAction clickBinding(Scene.Button button) {
+		return clickActions.binding(new ClickBinding(button));
 	}
 
 	/**
-	 * Returns the action that is binded to the given camera mouse-click shortcut.
+	 * Returns the click-action associated to the given binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button mouse button defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button mouse button defining the binding
 	 */
-	public Scene.ClickAction clickShortcut(Integer mask, Scene.Button button) {
-		return clickActions.binding(new ClickShortcut(mask, button));
+	public Scene.ClickAction clickBinding(Integer mask, Scene.Button button) {
+		return clickActions.binding(new ClickBinding(mask, button));
 	}
 	
 	/**
-	 * Returns the action that is binded to the given camera mouse-click shortcut.
+	 * Returns the click-action associated to the given binding.
 	 * 
-	 * @param button mouse button defining the shortcut
-	 * @param nc number of clicks defining the shortcut
+	 * @param button mouse button defining the binding
+	 * @param nc number of clicks defining the binding
 	 */
-	public Scene.ClickAction clickShortcut(Scene.Button button, Integer nc) {
-		return clickActions.binding(new ClickShortcut(button, nc));
+	public Scene.ClickAction clickBinding(Scene.Button button, Integer nc) {
+		return clickActions.binding(new ClickBinding(button, nc));
 	}
 
 	/**
-	 * Returns the action that is binded to the given camera mouse-click shortcut.
+	 * Returns the click-action associated to the given binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
-	 * @param button mouse button defining the shortcut
-	 * @param nc number of clicks defining the shortcut
+	 * @param mask modifier mask defining the binding
+	 * @param button mouse button defining the binding
+	 * @param nc number of clicks defining the binding
 	 */
-	public Scene.ClickAction clickShortcut(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.binding(new ClickShortcut(mask, button, nc));
+	public Scene.ClickAction clickBinding(Integer mask, Scene.Button button, Integer nc) {
+		return clickActions.binding(new ClickBinding(mask, button, nc));
 	}
 	
 	// wheel
 	//Camera Wheel
 	
 	/**
-	 * Removes all camera mouse-wheel shortcuts.
+	 * Removes all camera wheel-action bindings.
 	 */
-	public void removeAllCameraWheelShortcuts() {
+	public void removeAllCameraWheelBindings() {
 		cameraWheelActions.removeAllBindings();
 	}
 	
 	/**
-	 * Returns true if the given camera mouse-wheel shortcut binds an action.
+	 * Returns true if the given binding binds a camera wheel-action.
 	 * 
-	 * @param mask shortcut
+	 * @param mask binding
 	 */
-	public boolean isCameraWheelKeyInUse(Integer mask) {
+	public boolean isCameraWheelBindingInUse(Integer mask) {
 		return cameraWheelActions.isShortcutInUse(mask);
 	}
 
 	/**
-	 * Returns true if there is a camera mouse-wheel shortcut for the given action.
+	 * Returns true if the given camera wheel-action is binded.
 	 * 
 	 * @param action
 	 */
-	public boolean isWheelActionBindedToCamera(Scene.MouseAction action) {
+	public boolean isCameraWheelActionBinded(Scene.MouseAction action) {
 		return cameraWheelActions.isActionMapped(action);
 	}
 	
 	/**
 	 * Convenience function that simply calls {@code setCameraWheelShortcut(0, action)}
 	 * 
-	 * @see #setCameraWheelShortcut(Integer, Scene.MouseAction)
+	 * @see #setCameraWheelBinding(Integer, Scene.MouseAction)
 	 */
-	public void setCameraWheelShortcut(Scene.MouseAction action) {
-		setCameraWheelShortcut(0, action);
+	public void setCameraWheelBinding(Scene.MouseAction action) {
+		setCameraWheelBinding(0, action);
 	}
 
 	/**
-	 * Defines a camera mouse-wheel shortcut to bind the given action.
+	 * Binds the camera wheel-action to the given binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
+	 * @param mask modifier mask defining the binding
 	 * 
-	 * @see #setCameraWheelShortcut(Scene.MouseAction)
+	 * @see #setCameraWheelBinding(Scene.MouseAction)
 	 */
-	public void setCameraWheelShortcut(Integer mask, Scene.MouseAction action) {
-		if ( isCameraWheelKeyInUse(mask) ) {
-			MouseAction a = cameraWheelShortcut(mask);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setCameraWheelBinding(Integer mask, Scene.MouseAction action) {
+		if ( isCameraWheelBindingInUse(mask) ) {
+			MouseAction a = cameraWheelBinding(mask);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		cameraWheelActions.setBinding(mask, action);
 	}
@@ -965,90 +966,90 @@ public class CameraProfile {
 	/**
 	 * Convenience function that simply calls {@code removeCameraWheelShortcut(0)}.
 	 * 
-	 * @see #removeCameraWheelShortcut(Integer)
+	 * @see #removeCameraWheelBinding(Integer)
 	 */
-	public void removeCameraWheelShortcut() {
-		removeCameraWheelShortcut(0);
+	public void removeCameraWheelBinding() {
+		removeCameraWheelBinding(0);
 	}
 
 	/**
-	 * Removes the camera mouse-wheel shortcut.
+	 * Removes the camera wheel-action binding.
 	 * 
 	 * @param mask shortcut
 	 * 
-	 * @see #removeCameraWheelShortcut()
+	 * @see #removeCameraWheelBinding()
 	 */
-	public void removeCameraWheelShortcut(Integer mask) {
+	public void removeCameraWheelBinding(Integer mask) {
 		cameraWheelActions.removeBinding(mask);
 	}
 
 	/**
 	 * Convenience function that simply returns {@code cameraWheelActions.binding(0)}.
 	 * 
-	 * @see #cameraWheelShortcut(Integer)
+	 * @see #cameraWheelBinding(Integer)
 	 */
-	public Scene.MouseAction cameraWheelShortcut() {
+	public Scene.MouseAction cameraWheelBinding() {
 		return cameraWheelActions.binding(0);
 	}
 	
 	/**
-	 * Returns the action that is binded to the given camera mouse-wheel shortcut.
+	 * Returns the camera wheel-action associated to the given binding.
 	 * 
-	 * @param mask shortcut
+	 * @param mask binding
 	 * 
-	 * @see #cameraWheelShortcut()
+	 * @see #cameraWheelBinding()
 	 */
-	public Scene.MouseAction cameraWheelShortcut(Integer mask) {
+	public Scene.MouseAction cameraWheelBinding(Integer mask) {
 		return cameraWheelActions.binding(mask);
 	}
 	
   //Frame Wheel
 	
 	/**
-	 * Removes all interactive-frame mouse-wheel shortcuts.
+	 * Removes all frame wheel-action bindings.
 	 */
-	public void removeAllIFrameWheelShortcuts() {
+	public void removeAllFrameWheelBindings() {
 		iFrameWheelActions.removeAllBindings();
 	}
 
 	/**
-	 * Returns true if the given interactive-frame mouse-wheel shortcut binds an action.
+	 * Returns true if the given binding binds a frame wheel-action.
 	 * 
 	 * @param mask shortcut
 	 */
-	public boolean isIFrameWheelKeyInUse(Integer mask) {
+	public boolean isFrameWheelBindingInUse(Integer mask) {
 		return iFrameWheelActions.isShortcutInUse(mask);
 	}
 
 	/**
-	 * Returns true if there is an interactive-frame mouse-wheel shortcut for the given action.
+	 * Returns true if the given camera wheel-action is binded.
 	 * 
 	 * @param action
 	 */
-	public boolean isWheelActionBindedToIFrame(Scene.MouseAction action) {
+	public boolean isFrameWheelActionBinded(Scene.MouseAction action) {
 		return iFrameWheelActions.isActionMapped(action);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code setFrameWheelShortcut(0, action)}
 	 * 
-	 * @see #setCameraWheelShortcut(Integer, Scene.MouseAction)
+	 * @see #setCameraWheelBinding(Integer, Scene.MouseAction)
 	 */
-	public void setIFrameWheelShortcut(Scene.MouseAction action) {
-		setIFrameWheelShortcut(0, action);
+	public void setFrameWheelBinding(Scene.MouseAction action) {
+		setFrameWheelBinding(0, action);
 	}
 	
 	/**
-	 * Defines an interactive-frame mouse-wheel shortcut to bind the given action.
+	 * Binds the camera wheel-action to the given binding.
 	 * 
-	 * @param mask modifier mask defining the shortcut
+	 * @param mask modifier mask defining the binding
 	 * 
-	 * @see #setIFrameWheelShortcut(Scene.MouseAction)
+	 * @see #setFrameWheelBinding(Scene.MouseAction)
 	 */
-	public void setIFrameWheelShortcut(Integer mask, Scene.MouseAction action) {
-		if ( isIFrameWheelKeyInUse(mask) ) {
-			MouseAction a = iFrameWheelShortcut(mask);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+	public void setFrameWheelBinding(Integer mask, Scene.MouseAction action) {
+		if ( isFrameWheelBindingInUse(mask) ) {
+			MouseAction a = frameWheelBinding(mask);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		iFrameWheelActions.setBinding(mask, action);
 	}
@@ -1056,40 +1057,40 @@ public class CameraProfile {
 	/**
 	 * Convenience function that simply calls {@code removeFrameWheelShortcut(0)}.
 	 * 
-	 * @see #removeIFrameWheelShortcut(Integer)
+	 * @see #removeFrameWheelBinding(Integer)
 	 */
-	public void removeIFrameWheelShortcut() {
-		removeIFrameWheelShortcut(0);
+	public void removeFrameWheelBinding() {
+		removeFrameWheelBinding(0);
 	}
 
 	/**
-	 * Removes the interactive-frame mouse-wheel shortcut.
+	 * Removes the frame wheel-action binding.
 	 * 
-	 * @param mask shortcut
+	 * @param mask binding
 	 * 
-	 * @see #removeIFrameWheelShortcut()
+	 * @see #removeFrameWheelBinding()
 	 */
-	public void removeIFrameWheelShortcut(Integer mask) {
+	public void removeFrameWheelBinding(Integer mask) {
 		iFrameWheelActions.removeBinding(mask);
 	}
 	
 	/**
 	 * Convenience function that simply returns {@code cameraFrameActions.binding(0)}.
 	 * 
-	 * @see #iFrameWheelShortcut(Integer)
+	 * @see #frameWheelBinding(Integer)
 	 */
-	public Scene.MouseAction iFrameWheelShortcut() {
-		return iFrameWheelShortcut(0);
+	public Scene.MouseAction frameWheelBinding() {
+		return frameWheelBinding(0);
 	}
 	
 	/**
-	 * Returns the action that is binded to the given interactive-frame mouse-wheel shortcut.
+	 * Returns the frame wheel-action associated to the given binding.
 	 * 
-	 * @param mask shortcut
+	 * @param mask binding
 	 * 
-	 * @see #iFrameWheelShortcut()
+	 * @see #frameWheelBinding()
 	 */
-	public Scene.MouseAction iFrameWheelShortcut(Integer mask) {
+	public Scene.MouseAction frameWheelBinding(Integer mask) {
 		return iFrameWheelActions.binding(mask);
 	}
 }
