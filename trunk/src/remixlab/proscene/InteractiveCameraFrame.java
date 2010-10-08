@@ -45,6 +45,9 @@ import java.awt.Point;
  * <p>
  * An InteractiveCameraFrame rotates around its {@link #arcballReferencePoint()}
  * , which corresponds to the associated {@link Camera#arcballReferencePoint()}.
+ * <p>
+ * <b>Note:</b> The InteractiveCameraFrame is not added to the
+ * {@link remixlab.proscene.Scene#mouseGrabberPool()} upon creation.
  */
 public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	private PVector arcballRefPnt;

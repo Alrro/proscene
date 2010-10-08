@@ -345,8 +345,8 @@ public class Scene implements PConstants {
 	protected int startCoordCalls;
 
 	// M o u s e G r a b b e r
-	protected List<MouseGrabber> MouseGrabberPool;
-	MouseGrabber mouseGrbbr;
+	protected List<MouseGrabbable> MouseGrabberPool;
+	MouseGrabbable mouseGrbbr;
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsADrivableFrame;
 
@@ -397,7 +397,7 @@ public class Scene implements PConstants {
 		pathKeys = new Bindings<Integer, Integer>(this);		
 		setDefaultShortcuts();
 
-		MouseGrabberPool = new ArrayList<MouseGrabber>();
+		MouseGrabberPool = new ArrayList<MouseGrabbable>();
 		avatarIsInteractiveDrivableFrame = false;// also init in setAvatar, but we
 		// need it here to properly init
 		// the camera
@@ -491,10 +491,16 @@ public class Scene implements PConstants {
 
 	/**
 	 * Returns a list containing references to all the active MouseGrabbers.
-	 * 
-	 * @see remixlab.proscene.MouseGrabber#getMouseGrabberPool()
+	 * <p>
+	 * Used to parse all the MouseGrabbers and to check if any of them
+	 * {@link remixlab.proscene.MouseGrabbable#grabsMouse()} using
+	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}.
+	 * <p>
+	 * You should not have to directly use this list. Use
+	 * {@link #removeFromMouseGrabberPool(MouseGrabbable)} and
+	 * {@link #addInMouseGrabberPool(MouseGrabbable)} to modify this list.
 	 */
-	public List<MouseGrabber> mouseGrabberPool() {
+	public List<MouseGrabbable> mouseGrabberPool() {
 		return MouseGrabberPool;
 	}
 
@@ -607,11 +613,11 @@ public class Scene implements PConstants {
 	 * Returns the current MouseGrabber, or {@code null} if none currently grabs
 	 * mouse events.
 	 * <p>
-	 * When {@link remixlab.proscene.MouseGrabber#grabsMouse()}, the different
+	 * When {@link remixlab.proscene.MouseGrabbable#grabsMouse()}, the different
 	 * mouse events are sent to it instead of their usual targets (
 	 * {@link #camera()} or {@link #interactiveFrame()}).
 	 */
-	public MouseGrabber mouseGrabber() {
+	public MouseGrabbable mouseGrabber() {
 		return mouseGrbbr;
 	}
 
@@ -619,17 +625,69 @@ public class Scene implements PConstants {
 	 * Directly defines the {@link #mouseGrabber()}.
 	 * <p>
 	 * You should not call this method directly as it bypasses the
-	 * {@link remixlab.proscene.MouseGrabber#checkIfGrabsMouse(int, int, Camera)}
+	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
 	 * test performed by {@link #mouseMoved(MouseEvent)}.
 	 */
-	protected void setMouseGrabber(MouseGrabber mouseGrabber) {
+	protected void setMouseGrabber(MouseGrabbable mouseGrabber) {
 		mouseGrbbr = mouseGrabber;
 
 		mouseGrabberIsAnIFrame = mouseGrabber instanceof InteractiveFrame;
 		mouseGrabberIsADrivableFrame = ((mouseGrabber != camera().frame()) && (mouseGrabber instanceof InteractiveDrivableFrame));
 	}
+	
+	// 3. Mouse grabber handling
+	
+	/**
+	 * Returns true if the mouseGrabber is currently in the {@link #mouseGrabberPool()} list.
+	 * <p>
+	 * When set to false using {@link #removeFromMouseGrabberPool(MouseGrabbable)}, the Scene no longer
+	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)} on this mouseGrabber.
+	 * Use {@link #addInMouseGrabberPool(MouseGrabbable)} to insert it back.
+	 */
+	public boolean isInMouseGrabberPool(MouseGrabbable mouseGrabber) {
+		return mouseGrabberPool().contains(mouseGrabber);
+	}
+	
+	/**
+	 * Adds the mouseGrabber in the {@link #mouseGrabberPool()}.
+	 * <p>
+	 * All created InteractiveFrames (which are MouseGrabbers) are automatically added in the
+	 * {@link #mouseGrabberPool()} by their constructors. Trying to add a
+	 * mouseGrabber that already {@link #isInMouseGrabberPool(MouseGrabbable)} has no effect.
+	 * <p>
+	 * Use {@link #removeFromMouseGrabberPool(MouseGrabbable)} to remove the mouseGrabber from
+	 * the list, so that it is no longer tested with
+	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
+	 * by the Scene, and hence can no longer grab mouse focus. Use
+	 * {@link #isInMouseGrabberPool(MouseGrabbable)} to know the current state of the MouseGrabber.
+	 */
+	public void addInMouseGrabberPool(MouseGrabbable mouseGrabber) {
+		if (!isInMouseGrabberPool(mouseGrabber))
+			mouseGrabberPool().add(mouseGrabber);
+	}
 
-	// 3. State of the viewer
+	/**
+	 * Removes the mouseGrabber from the {@link #mouseGrabberPool()}.
+	 * <p>
+	 * See {@link #addInMouseGrabberPool(MouseGrabbable)} for details. Removing a mouseGrabber
+	 * that is not in {@link #mouseGrabberPool()} has no effect.
+	 */
+	public void removeFromMouseGrabberPool(MouseGrabbable mouseGrabber) {
+		mouseGrabberPool().remove(mouseGrabber);
+	}
+
+	/**
+	 * Clears the {@link #mouseGrabberPool()}.
+	 * <p>
+	 * Use this method only if it is faster to clear the
+	 * {@link #mouseGrabberPool()} and then to add back a few MouseGrabbers
+	 * than to remove each one independently.
+	 */
+	public void clearMouseGrabberPool() {
+		mouseGrabberPool().clear();
+	}
+
+	// 4. State of the viewer
 
 	/**
 	 * Enables background handling in the Scene (see the different {@code
@@ -1148,7 +1206,7 @@ public class Scene implements PConstants {
 		withConstraint = wConstraint;
 	}
 
-	// 4. Drawing methods
+	// 5. Drawing methods
 
 	/**
 	 * Internal use. Display various visual hints to be called from {@link #pre()}
@@ -1428,7 +1486,7 @@ public class Scene implements PConstants {
 		return (float) pg3d.width / (float) pg3d.height;
 	}
 
-	// 5. Display of visual hints and Display methods
+	// 6. Display of visual hints and Display methods
 
 	/**
 	 * Convenience wrapper function that simply calls {@code
@@ -1564,7 +1622,7 @@ public class Scene implements PConstants {
 	 * @see #drawCameraPathSelectionHints()
 	 */
 	protected void drawSelectionHints() {
-		for (MouseGrabber mg : MouseGrabberPool) {
+		for (MouseGrabbable mg : MouseGrabberPool) {
 			InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 			if (!iF.isInCameraPath()) {
 				PVector center = camera().projectedCoordinatesOf(iF.position());
@@ -1583,7 +1641,7 @@ public class Scene implements PConstants {
 	 * @see #drawSelectionHints()
 	 */
 	protected void drawCameraPathSelectionHints() {
-		for (MouseGrabber mg : MouseGrabberPool) {
+		for (MouseGrabbable mg : MouseGrabberPool) {
 			InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 			if (iF.isInCameraPath()) {
 				PVector center = camera().projectedCoordinatesOf(iF.position());
@@ -1880,7 +1938,7 @@ public class Scene implements PConstants {
 		pupFlag = false;
 	}
 
-	// 6. Camera profiles
+	// 7. Camera profiles
 
 	/**
 	 * Internal method that defines the default camera profiles: WHEELED_ARCBALL
@@ -2122,7 +2180,7 @@ public class Scene implements PConstants {
 		}
 	}
 
-	// 7. Keyboard customization
+	// 8. Keyboard customization
 
 	/**
 	 * Parses the sketch to find if any KeyXxxx method has been implemented. If
@@ -2895,7 +2953,7 @@ public class Scene implements PConstants {
 		return description;
 	}
 
-	// 8. Mouse customization
+	// 9. Mouse customization
 
 	/**
 	 * Parses the sketch to find if any mouseXxxx method has been implemented. If
@@ -3080,7 +3138,7 @@ public class Scene implements PConstants {
 		}
 	}	
 
-	// 9. Draw method registration
+	// 10. Draw method registration
 
 	/**
 	 * Attempt to add a 'draw' handler method to the Scene. The default event
@@ -3138,7 +3196,7 @@ public class Scene implements PConstants {
 		return true;
 	}
 
-	// 10. Processing objects
+	// 11. Processing objects
 
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}. Calls

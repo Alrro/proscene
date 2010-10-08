@@ -42,9 +42,12 @@ import javax.swing.Timer;
  * selection, its MouseGrabber properties and a dynamic update of the scene, the
  * InteractiveFrame introduces a great reactivity in your processing
  * applications.
+ * <p>
+ * <b>Note:</b> Once created, the InteractiveFrame is automatically added to
+ * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
  */
 
-public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
+public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable {
 
 	// static boolean horiz = true;//Two simultaneous InteractiveFrame require two
 	// mice!
@@ -105,6 +108,9 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * different sensitivities are set to their default values (see
 	 * {@link #rotationSensitivity()} , {@link #translationSensitivity()},
 	 * {@link #spinningSensitivity()} and {@link #wheelSensitivity()}).
+	 * <p>
+	 * <b>Note:</b> the InteractiveFrame is automatically added to
+	 * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
 	 */
 	public InteractiveFrame(Scene scn) {
 		scene = scn;
@@ -237,9 +243,11 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	}
 
 	/**
-	 * See {@link remixlab.proscene.MouseGrabber#getMouseGrabberPool()}.
+	 * Convenience wrapper function that simply returns {@code scene.mouseGrabberPool()}.
+	 * 
+	 * See {@link remixlab.proscene.Scene#mouseGrabberPool()}.
 	 */
-	public List<MouseGrabber> getMouseGrabberPool() {
+	public List<MouseGrabbable> getMouseGrabberPool() {
 		return scene.mouseGrabberPool();
 	}
 
@@ -278,56 +286,39 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	}
 
 	/**
-	 * Returns {@code true} if the MouseGrabber is currently in the
-	 * {@link #getMouseGrabberPool()} list.
-	 * <p>
-	 * Default value is {@code true}. When set to {@code false} using
-	 * {@link #removeFromMouseGrabberPool()}, the Scene no longer
-	 * {@link #checkIfGrabsMouse(int, int, Camera)} on this MouseGrabber. Use
-	 * {@link #addInMouseGrabberPool()} to insert it back.
+	 * Convenience wrapper function that simply returns {@code scene.isInMouseGrabberPool(this)}.
+	 * 
+	 * @see remixlab.proscene.Scene#isInMouseGrabberPool(MouseGrabbable)
 	 */
 	public boolean isInMouseGrabberPool() {
-		return scene.mouseGrabberPool().contains(this);
-	}
+		return scene.isInMouseGrabberPool(this);
+	}	
 
 	/**
-	 * Adds the MouseGrabber in the {@link #getMouseGrabberPool()}.
-	 * <p>
-	 * All created MouseGrabber are automatically added in the
-	 * {@link #getMouseGrabberPool()} by the constructor. Trying to add a
-	 * MouseGrabber that already {@link #isInMouseGrabberPool()} has no effect.
-	 * <p>
-	 * Use {@link #removeFromMouseGrabberPool()} to remove the MouseGrabber from
-	 * the list, so that it is no longer tested with
-	 * {@link #checkIfGrabsMouse(int, int, Camera)} by the Scene, and hence can no
-	 * longer grab mouse focus. Use {@link #isInMouseGrabberPool()} to know the
-	 * current state of the MouseGrabber.
+	 * Convenience wrapper function that simply calls {@code scene.addInMouseGrabberPool(this)}.
+	 * 
+	 * @see remixlab.proscene.Scene#addInMouseGrabberPool(MouseGrabbable)
 	 */
 	public void addInMouseGrabberPool() {
-		if (!isInMouseGrabberPool())
-			scene.mouseGrabberPool().add(this);
+		scene.addInMouseGrabberPool(this);
 	}
 
 	/**
-	 * Removes the MouseGrabber from the {@link #getMouseGrabberPool()}.
-	 * <p>
-	 * See {@link #addInMouseGrabberPool()} for details. Removing a MouseGrabber
-	 * that is not in {@link #getMouseGrabberPool()} has no effect.
+	 * Convenience wrapper function that simply calls {@code scene.removeFromMouseGrabberPool(this)}.
+	 * 
+	 * @see remixlab.proscene.Scene#removeFromMouseGrabberPool(MouseGrabbable)
 	 */
 	public void removeFromMouseGrabberPool() {
-		scene.mouseGrabberPool().remove(this);
+		scene.removeFromMouseGrabberPool(this);
 	}
 
 	/**
-	 * Clears the {@link #getMouseGrabberPool()}.
-	 * <p>
-	 * Use this method only if it is faster to clear the
-	 * {@link #getMouseGrabberPool()} and then to add back a few MouseGrabbers
-	 * than to remove each one independently. Use Scene.setMouseTracking(false)
-	 * instead if you want to disable mouse grabbing.
+	 * Convenience wrapper function that simply calls {@code scene.clearMouseGrabberPool()}.
+	 * 
+	 * @see remixlab.proscene.Scene#clearMouseGrabberPool()
 	 */
 	public void clearMouseGrabberPool() {
-		scene.mouseGrabberPool().clear();
+		scene.clearMouseGrabberPool();
 	}
 
 	/**
@@ -518,10 +509,28 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	public void spin() {
 		rotate(spinningQuaternion());
 	}
+	
+	/**
+	 * Overloading of
+	 * {@link remixlab.proscene.MouseGrabbable#mouseClicked(remixlab.proscene.Scene.Button, int, Camera)}.
+	 * <p>
+	 * Left button double click aligns the InteractiveFrame with the camera axis (see {@link #alignWithFrame(Frame)}
+	 * and {@link remixlab.proscene.Scene.ClickAction#ALIGN_FRAME}). Right button projects the InteractiveFrame on
+	 * the camera view direction.
+	 */
+	public void mouseClicked(/**Point eventPoint,*/ Scene.Button button, int numberOfClicks, Camera camera) {
+		if(numberOfClicks != 2)
+			return;
+		switch (button) {
+		case LEFT:  alignWithFrame(camera.frame()); break;
+    case RIGHT: projectOnLine(camera.position(), camera.viewDirection()); break;
+    default: break;
+    }
+	}
 
 	/**
 	 * Initiates the InteractiveFrame mouse manipulation. Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mousePressed(Point, Camera)}.
+	 * {@link remixlab.proscene.MouseGrabbable#mousePressed(Point, Camera)}.
 	 * 
 	 * The mouse behavior depends on which button is pressed.
 	 * 
@@ -691,7 +700,7 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 	 * Stops the InteractiveFrame mouse manipulation.
 	 * <p>
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseReleased(Point, Camera)}.
+	 * {@link remixlab.proscene.MouseGrabbable#mouseReleased(Point, Camera)}.
 	 * <p>
 	 * If the action was ROTATE MouseAction, a continuous spinning is possible if
 	 * the speed of the mouse cursor is larger than {@link #spinningSensitivity()}
@@ -716,7 +725,7 @@ public class InteractiveFrame extends Frame implements MouseGrabber, Cloneable {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabber#mouseWheelMoved(int, Camera)}.
+	 * {@link remixlab.proscene.MouseGrabbable#mouseWheelMoved(int, Camera)}.
 	 * <p>
 	 * Using the wheel is equivalent to a {@link remixlab.proscene.Scene.MouseAction#ZOOM}.
 	 * 

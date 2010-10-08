@@ -290,27 +290,31 @@ public class DesktopEvents implements MouseWheelListener {
 	}
 	
   /**
-   * Looks in the {@link remixlab.proscene.Scene#currentCameraProfile()} to see if there's
+   * The action generated when the user clicks the mouse is handled by the
+   * {@link remixlab.proscene.Scene#mouseGrabber()} (if any). Otherwise
+   * looks in the {@link remixlab.proscene.Scene#currentCameraProfile()} to see if there's
    * a binding for this click event, taking into account the button, the modifier mask, and
    * the number of clicks.
    */
-	protected void mouseClicked(MouseEvent event) {		
-		//1. get button
+	protected void mouseClicked(MouseEvent event) {
 		Button button = getButton(event);
-		ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiersEx(), button, event.getClickCount());		
-		if (ca == null) 
-			return;
-		else
-			scene.handleClickAction(ca);
+		int numberOfClicks = event.getClickCount();
+		if (scene.mouseGrabber() != null)
+			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ button, numberOfClicks, scene.camera());
+		else {
+			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiersEx(), button, numberOfClicks);
+			if (ca != null)
+				scene.handleClickAction(ca);
+		}		
 	}
 	
 	/**
-	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabber)} to the MouseGrabber that grabs the
+	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabbable)} to the MouseGrabber that grabs the
 	 * mouse (or to {@code null} if none of them grab it).
 	 */
 	public void mouseMoved(MouseEvent event) {		
 		scene.setMouseGrabber(null);
-		for (MouseGrabber mg : scene.MouseGrabberPool) {
+		for (MouseGrabbable mg : scene.MouseGrabberPool) {
 			mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 			if (mg.grabsMouse())
 				scene.setMouseGrabber(mg);
