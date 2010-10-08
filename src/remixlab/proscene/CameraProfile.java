@@ -195,9 +195,9 @@ public class CameraProfile {
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 		
-		setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
+		//setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
 		setClickBinding(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
-		setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
+		//setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 		//setClickShortcut((InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	

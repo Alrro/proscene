@@ -49,23 +49,10 @@ import java.util.*;
  * {@link #checkIfGrabsMouse(int, int, Camera)}) returns {@code true}.
  * <p>
  * If you want to (temporarily) disable a specific MouseGrabbers, you can remove
- * it from this pool using {@link #removeFromMouseGrabberPool()}.
+ * it from this pool using
+ * {@link remixlab.proscene.Scene#removeFromMouseGrabberPool(MouseGrabber)}.
  */
-public interface MouseGrabber {
-	/**
-	 * Returns a list containing references to all the active MouseGrabbers.
-	 * <p>
-	 * Used by the Scene to parse all the MouseGrabbers and to check if any of
-	 * them {@link #grabsMouse()} {@link #checkIfGrabsMouse(int, int, Camera)}.
-	 * <p>
-	 * You should not have to directly use this list. Use
-	 * {@link #removeFromMouseGrabberPool()} and {@link #addInMouseGrabberPool()}
-	 * to modify this list.
-	 * 
-	 * @see #getMouseGrabberPool()
-	 */
-	List<MouseGrabber> getMouseGrabberPool();
-
+public interface MouseGrabbable {
 	/**
 	 * Called by the Scene before it tests if the MouseGrabber
 	 * {@link #grabsMouse()}. Should {@link #setGrabsMouse(boolean)} according to
@@ -105,14 +92,11 @@ public interface MouseGrabber {
 	boolean grabsMouse();
 
 	void setGrabsMouse(boolean grabs);
-
-	boolean isInMouseGrabberPool();
-
-	void addInMouseGrabberPool();
-
-	void removeFromMouseGrabberPool();
-
-	void clearMouseGrabberPool();
+	
+	/**
+	 * Callback method called when the MouseGrabber {@link #grabsMouse()} and a mouse button is clicked.
+	 */
+	void mouseClicked(/**Point eventPoint,*/ Scene.Button button, int numberOfClicks, Camera camera);
 
 	/**
 	 * Callback method called when the MouseGrabber {@link #grabsMouse()} and a
