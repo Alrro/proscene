@@ -354,7 +354,7 @@ public class DesktopEvents implements MouseWheelListener {
 			scene.interactiveFrame().mousePressed(event.getPoint(), scene.camera());
 			return;
 		}
-		camMouseAction = scene.currentCameraProfile().cameraMouseAction(event);// updates camMouseAction
+		camMouseAction = scene.currentCameraProfile().cameraMouseAction(event);
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION) {
 			fCorner = event.getPoint();
 			lCorner = event.getPoint();

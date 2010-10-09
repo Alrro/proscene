@@ -1623,13 +1623,15 @@ public class Scene implements PConstants {
 	 */
 	protected void drawSelectionHints() {
 		for (MouseGrabbable mg : MouseGrabberPool) {
-			InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
-			if (!iF.isInCameraPath()) {
-				PVector center = camera().projectedCoordinatesOf(iF.position());
-				if (mg.grabsMouse())
-					drawShooterTarget(pg3d.color(0, 255, 0), center, 12, 2);
-				else
-					drawShooterTarget(pg3d.color(240, 240, 240), center, 10, 1);
+			if(mg instanceof InteractiveFrame) {
+				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
+				if (!iF.isInCameraPath()) {
+					PVector center = camera().projectedCoordinatesOf(iF.position());
+					if (mg.grabsMouse())
+						drawShooterTarget(pg3d.color(0, 255, 0), center, 12, 2);
+					else
+						drawShooterTarget(pg3d.color(240, 240, 240), center, 10, 1);
+				}
 			}
 		}
 	}
@@ -1642,13 +1644,15 @@ public class Scene implements PConstants {
 	 */
 	protected void drawCameraPathSelectionHints() {
 		for (MouseGrabbable mg : MouseGrabberPool) {
-			InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
-			if (iF.isInCameraPath()) {
-				PVector center = camera().projectedCoordinatesOf(iF.position());
-				if (mg.grabsMouse())
-					drawShooterTarget(pg3d.color(0, 255, 255), center, 12, 2);
-				else
-					drawShooterTarget(pg3d.color(255, 255, 0), center, 10, 1);
+			if(mg instanceof InteractiveFrame) {
+				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
+				if (iF.isInCameraPath()) {
+					PVector center = camera().projectedCoordinatesOf(iF.position());
+					if (mg.grabsMouse())
+						drawShooterTarget(pg3d.color(0, 255, 255), center, 12, 2);
+					else
+						drawShooterTarget(pg3d.color(255, 255, 0), center, 10, 1);
+				}
 			}
 		}
 	}

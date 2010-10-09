@@ -558,11 +558,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see remixlab.proscene.Camera#fieldOfView()
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
-		int deltaY;
-		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = prevPos.y - eventPoint.y;
-		else
-			deltaY = eventPoint.y - prevPos.y;
+		int deltaY = 0;
+		if(action != Scene.MouseAction.NO_MOUSE_ACTION)
+			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+				deltaY = prevPos.y - eventPoint.y;
+			else
+				deltaY = eventPoint.y - prevPos.y; 
 
 		switch (action) {
 		case TRANSLATE: {
