@@ -37,7 +37,7 @@ public class Button2D extends MouseGrabber {
     endShape(PApplet.CLOSE);
     popStyle();
     scene.endScreenDrawing();
-    text(myText, position.x, position.y, this.width, this.height);
+    text(myText, position.x, (position.y+4), this.width, this.height);
   }
 
   void checkIfGrabsMouse(int x, int y, Camera camera) {

@@ -24,11 +24,11 @@ void setup() {
   myFont = createFont("FFScala", 14);
   textFont(myFont);
   textMode(SCREEN);
-  //textAlign(CENTER);
+  textAlign(CENTER);
   scene = new Scene(this);
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-  button1 = new Button2D(scene, "add a box", new PVector(10,10), 120, 30, true);
-  button2 = new Button2D(scene, "remove a box", new PVector(10,(height-40)), 120, 30, false);
+  button1 = new Button2D(scene, "add a box", new PVector(10,10), 110, 20, true);
+  button2 = new Button2D(scene, "remove a box", new PVector(10,(height-40)), 110, 20, false);
   scene.setGridIsDrawn(true);		
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setRadius(150);		
