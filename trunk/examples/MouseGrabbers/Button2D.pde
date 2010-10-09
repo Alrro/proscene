@@ -1,21 +1,25 @@
+/**
+ * Button 2D.
+ * by Jean Pierre Charalambos.
+ * 
+ * Base class of "2d buttons". Feel free to copy paste it. 
+ */
+
 import remixlab.proscene.*;
 import remixlab.proscene.Scene.Button;
 
 public class Button2D extends MouseGrabber {
+  String myText;
   PFont myFont;
   int myWidth;
-  int myHeight;
-  String myText;
-  PVector position;
-  boolean addBox;
-  int myColor;
+  int myHeight;  
+  PVector position;  
 
-  Button2D(Scene scn, String t, PVector p, boolean addB) {
+  Button2D(Scene scn, PVector p, String t, int fontSize) {
     super(scn);
-    myText = t;
     position = p;
-    addBox = addB;
-    myFont = createFont("FFScala", 28);
+    myText = t;    
+    myFont = createFont("FFScala", fontSize);
     textFont(myFont);
     textMode(SCREEN);
     textAlign(CENTER);
@@ -23,13 +27,12 @@ public class Button2D extends MouseGrabber {
     myHeight = (int) (textAscent() + textDescent());
   }
 
-  void display() {    
-    if(grabsMouse())
-      myColor = color(255);
-    else
-      myColor = color(100);
+  void display() {
     pushStyle();
-    fill(myColor);
+    if(grabsMouse())
+      fill(255);
+    else
+      fill(100);
     text(myText, position.x, position.y, myWidth, myHeight);
     popStyle();
   }
@@ -37,14 +40,5 @@ public class Button2D extends MouseGrabber {
   void checkIfGrabsMouse(int x, int y, Camera camera) {
     // Rectangular activation area
     setGrabsMouse( (position.x <= x ) && ( x <= position.x + myWidth ) && (position.y <= y ) && ( y <= position.y + myHeight ) );
-  }
-
-  void mouseClicked(Button button, int numberOfClicks, Camera camera) {
-    if(numberOfClicks == 1) {
-      if(addBox)
-        ((MouseGrabbers)scene.parent).addBox();
-      else
-        ((MouseGrabbers)scene.parent).removeBox();
-    }
   }
 }

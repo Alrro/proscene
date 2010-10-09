@@ -22,8 +22,8 @@ void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-  button1 = new Button2D(scene, "+", new PVector(10,10), true);
-  button2 = new Button2D(scene, "-", new PVector((10 + button1.myWidth + 5), 10), false);
+  button1 = new ClickButton(scene, new PVector(10,10), "+", 32, true);
+  button2 = new ClickButton(scene, new PVector((10 + button1.myWidth + 5), 10), "-", 32, false);
   scene.setGridIsDrawn(true);		
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setRadius(150);		
