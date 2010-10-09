@@ -44,6 +44,7 @@ public class Box {
 
   public void draw(boolean drawAxis) {
     pushMatrix();
+    pushStyle();
     // Multiply matrix to get in the frame coordinate system.
     // scene.parent.applyMatrix(iFrame.matrix()) is handy but inefficient
     iFrame.applyTransformation(); //optimum
@@ -55,7 +56,7 @@ public class Box {
       fill(getColor());
     //Draw a box
     box(w,h,d);
-
+    popStyle();
     popMatrix();
   }
   
