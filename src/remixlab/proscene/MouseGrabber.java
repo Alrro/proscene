@@ -8,7 +8,7 @@ import remixlab.proscene.Scene.Button;
  * Base class for mouse grabbers objects that implements the MouseGrabbable interface.
  * <p>
  * If you want to implement your own MouseGrabber objects you should derive from this
- * class (instead of implementing the MouseGrabbable interface) and implement the
+ * class (instead of implementing the MouseGrabbable interface), and implement the
  * {@link #checkIfGrabsMouse(int, int, Camera)} method and some of the provided
  * callback methods, such {@link #mouseClicked(Scene.Button, int, Camera)} and/or
  * {@link #mouseWheelMoved(int, Camera)}. 
