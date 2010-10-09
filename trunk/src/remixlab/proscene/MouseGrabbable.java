@@ -27,7 +27,6 @@
 package remixlab.proscene;
 
 import java.awt.Point;
-import java.util.*;
 
 /**
  * Interface for objects that grab mouse focus in a Scene.
@@ -50,7 +49,7 @@ import java.util.*;
  * <p>
  * If you want to (temporarily) disable a specific MouseGrabbers, you can remove
  * it from this pool using
- * {@link remixlab.proscene.Scene#removeFromMouseGrabberPool(MouseGrabber)}.
+ * {@link remixlab.proscene.Scene#removeFromMouseGrabberPool(MouseGrabbable)}.
  */
 public interface MouseGrabbable {
 	/**
@@ -89,8 +88,17 @@ public interface MouseGrabbable {
 	 */
 	void checkIfGrabsMouse(int x, int y, Camera camera);
 
+	/**
+	 * Should return true when the MouseGrabbable grabs the Scene mouse events.
+	 */
 	boolean grabsMouse();
-
+	
+	/**
+	 * Should sets the {@link #grabsMouse()} flag. Normally used by
+	 * {@link #checkIfGrabsMouse(int, int, Camera)}.
+	 *  
+	 * @param grabs flag
+	 */
 	void setGrabsMouse(boolean grabs);
 	
 	/**

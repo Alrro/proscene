@@ -122,12 +122,6 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * inverted from those of an InteractiveFrame.
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
-		int deltaY;
-		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = eventPoint.y - prevPos.y;
-		else
-			deltaY = prevPos.y - eventPoint.y;
-
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)
@@ -136,7 +130,12 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				|| (action == Scene.MouseAction.ZOOM_ON_REGION)
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
-		else
+		else {
+			int deltaY;
+			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+				deltaY = eventPoint.y - prevPos.y;
+			else
+				deltaY = prevPos.y - eventPoint.y;
 			switch (action) {
 			case TRANSLATE: {
 				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
@@ -239,6 +238,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				prevPos = eventPoint;
 				break;
 			}
+		}
 	}
 
 	/**

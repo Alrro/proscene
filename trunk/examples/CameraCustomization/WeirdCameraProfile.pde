@@ -9,26 +9,26 @@ public class WeirdCameraProfile extends CameraProfile {
    setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
    // 2. Describe how to control the camera:
    // SHIFT + mouse left button = zoom on region
-   setCameraShortcut((Scene.Modifier.SHIFT.ID | Scene.Button.LEFT.ID), Scene.MouseAction.ZOOM_ON_REGION);
+   setCameraMouseBinding((Scene.Modifier.SHIFT.ID | Scene.Button.LEFT.ID), Scene.MouseAction.ZOOM_ON_REGION);
    // CTRL + mouse left button = rotate camera
-   setCameraShortcut((Scene.Button.LEFT.ID | Scene.Modifier.CTRL.ID), Scene.MouseAction.ROTATE);
+   setCameraMouseBinding((Scene.Button.LEFT.ID | Scene.Modifier.CTRL.ID), Scene.MouseAction.ROTATE);
    // Right button = translate camera
-   setCameraShortcut(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
+   setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
    // Middle button = zoom
-   setCameraShortcut(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
+   setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
    // 3. Describe how to control the interactive frame:
    // Left button = rotate interactive frame
-   setIFrameShortcut(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+   setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
    // Left button = translate interactive frame
-   setIFrameShortcut(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
+   setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
    // Right button + SHIFT = screen translate interactive frame
-   setIFrameShortcut((Scene.Button.RIGHT.ID | Scene.Modifier.SHIFT.ID), Scene.MouseAction.SCREEN_TRANSLATE);
+   setFrameMouseBinding((Scene.Button.RIGHT.ID | Scene.Modifier.SHIFT.ID), Scene.MouseAction.SCREEN_TRANSLATE);
    // 4. Configure some click actions:
    // double click + button left = align frame with world
-   setClickShortcut(Scene.Button.LEFT, 2, ClickAction.ALIGN_FRAME);
+   setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_FRAME);
    // single click + middle button + SHIFT + ALT = interpolate to show all the scene
-   setClickShortcut((Scene.Modifier.SHIFT.ID | Scene.Modifier.ALT.ID), Scene.Button.MIDDLE, ClickAction.ZOOM_TO_FIT);
+   setClickBinding((Scene.Modifier.SHIFT.ID | Scene.Modifier.ALT.ID), Scene.Button.MIDDLE, ClickAction.ZOOM_TO_FIT);
    // double click + button right = align camera with world
-   setClickShortcut(Scene.Button.RIGHT, 2, ClickAction.ALIGN_CAMERA);
+   setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ALIGN_CAMERA);
   }
 }

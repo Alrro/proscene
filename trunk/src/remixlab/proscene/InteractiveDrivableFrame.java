@@ -211,12 +211,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * Non-overloaded version of {@link #mouseDragged(Point, Camera)}.
 	 */	
 	protected final void iDrivableMouseDragged(Point eventPoint, Camera camera) {
-		int deltaY;
-		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = eventPoint.y - prevPos.y;
-		else
-			deltaY = prevPos.y - eventPoint.y;
-
 		if ((action == Scene.MouseAction.TRANSLATE)
 				|| (action == Scene.MouseAction.ZOOM)
 				|| (action == Scene.MouseAction.SCREEN_ROTATE)
@@ -224,7 +218,12 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				|| (action == Scene.MouseAction.ROTATE)
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
-		else
+		else {
+			int deltaY;
+			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+				deltaY = eventPoint.y - prevPos.y;
+			else
+				deltaY = prevPos.y - eventPoint.y;
 			switch (action) {
 			case MOVE_FORWARD: {
 				Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
@@ -282,6 +281,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				prevPos = eventPoint;
 				break;
 			}
+		}
 	}
 	
 	/**
