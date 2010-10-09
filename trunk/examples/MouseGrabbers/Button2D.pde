@@ -2,47 +2,41 @@ import remixlab.proscene.*;
 import remixlab.proscene.Scene.Button;
 
 public class Button2D extends MouseGrabber {
-  int width;
-  int height;
+  PFont myFont;
+  int myWidth;
+  int myHeight;
   String myText;
   PVector position;
   boolean addBox;
   int myColor;
-  
-  Button2D(Scene scn, String t, PVector p, int w, int h, boolean addB) {
+
+  Button2D(Scene scn, String t, PVector p, boolean addB) {
     super(scn);
     myText = t;
     position = p;
-    width = w;
-    height = h;
     addBox = addB;
-    myColor = 125;
+    myFont = createFont("FFScala", 28);
+    textFont(myFont);
+    textMode(SCREEN);
+    textAlign(CENTER);
+    myWidth = (int) textWidth(myText);
+    myHeight = (int) (textAscent() + textDescent());
   }
-  
-  void setColor(int aColor) {
-    myColor = aColor;
-  }
-  
-  void display() {
-    scene.beginScreenDrawing();
+
+  void display() {    
+    if(grabsMouse())
+      myColor = color(255);
+    else
+      myColor = color(100);
     pushStyle();
-    strokeWeight(2);
-    stroke(0,255,255);
     fill(myColor);
-    beginShape();
-    vertex(scene.xCoord( position.x ), scene.yCoord( position.y ), scene.zCoord());
-    vertex(scene.xCoord( (position.x + this.width) ), scene.yCoord( position.y ), scene.zCoord());
-    vertex(scene.xCoord( (position.x + this.width) ), scene.yCoord( (position.y + this.height) ), scene.zCoord());
-    vertex(scene.xCoord( position.x ), scene.yCoord( (position.y + this.height) ), scene.zCoord());
-    endShape(PApplet.CLOSE);
+    text(myText, position.x, position.y, myWidth, myHeight);
     popStyle();
-    scene.endScreenDrawing();
-    text(myText, position.x, (position.y+4), this.width, this.height);
   }
 
   void checkIfGrabsMouse(int x, int y, Camera camera) {
     // Rectangular activation area
-    setGrabsMouse( (position.x <= x ) && ( x <= position.x + this.width ) && (position.y <= y ) && ( y <= position.y + this.height ) );
+    setGrabsMouse( (position.x <= x ) && ( x <= position.x + myWidth ) && (position.y <= y ) && ( y <= position.y + myHeight ) );
   }
 
   void mouseClicked(Button button, int numberOfClicks, Camera camera) {
