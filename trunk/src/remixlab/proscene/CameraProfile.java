@@ -120,14 +120,14 @@ public class CameraProfile {
 			
 			setCameraWheelBinding( MouseAction.ZOOM );
 			/**
-			setCameraWheelShortcut( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
-			setCameraWheelShortcut( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
+			setCameraWheelBinding( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
+			setCameraWheelBinding( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
 			*/
 			//should work only iFrame is an instance of drivable
 			setFrameWheelBinding( MouseAction.ZOOM );
 			/**
-			setIFrameWheelShortcut( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
-			setIFrameWheelShortcut( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
+			setFrameWheelBinding( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
+			setFrameWheelBinding( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
 			*/
 			
 			//scene.parent.addMouseWheelListener( scene.dE );
@@ -198,7 +198,7 @@ public class CameraProfile {
 		//setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
 		setClickBinding(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
 		//setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
-		//setClickShortcut((InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
+		//setClickBinding((InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	
   // 1. General stuff

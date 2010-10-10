@@ -105,8 +105,8 @@ public class DesktopEvents implements MouseWheelListener {
 	}
 	
 	/**
-	 * Implementation of the key typed event used to handle character combination
-	 * (i.e., keycode + modifier mask) shortcuts.
+	 * Implementation of the key released event used to handle complex shortcuts, i.e.,
+	 * shortcuts involving a keycode plus a modifier mask.
 	 * <p>
 	 * The handler looks for a possible binding in the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} first.
