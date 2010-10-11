@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta1)      
+ *                     ProScene (version 1.0.0-beta2)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -34,9 +34,28 @@ import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
 
 /**
- * //TODO update description
- * This class encapsulates a set of camera (and frame) bindings and keyboard shortcuts which together
- * represent a "camera mode".
+ * This class encapsulates a set of camera keyboard shortcuts, and camera and
+ * frame mouse bindings which together represent a "camera mode".
+ * <p>
+ * Proscene handle the following kind of actions:
+ * <ol>
+ * <li><b>Keyboard actions</b> which can be general such as draw the world axis
+ * (see {@link remixlab.proscene.Scene#setShortcut(Character, remixlab.proscene.Scene.KeyboardAction)})
+ * or can be associated to a camera profile to affect the camera behavior, such as
+ * move the camera to the left. Different versions of {@code setShortcut()} are provided
+ * to set camera keyboard shortcuts.
+ * <li><b>Click actions</b> such as selecting an object. Different versions of
+ * {@code setClickBinding()} are provided to bind click actions.
+ * <li><b>Mouse actions (i.e., the mouse is clicked and then dragged)</b> which can be handle by
+ * the camera or an interactive frame (such as rotating the camera or an interactive frame).
+ * Different versions of {@code setCameraMouseBinding()}, {@code setFrameMouseBinding()}
+ * {@code setCameraWheelBinding()} and {@code setFrameWheelBinding()} are provided to bind
+ * mouse actions. 
+ * </ol>
+ * <p>
+ * <b>Note:</b> Click and mouse actions can also be handled by MouseGrabbable objects, but their
+ * implementation is entirely customizable and thus it depends on your application. The InteractiveFrame
+ * class is actually a MouseGrabbable object and hence it provides one such implementation.
  * <p>
  * Once instantiated, to use a camera profile you need to {@link #register()} it
  * ({@link #unregister()} performs the inverse operation).

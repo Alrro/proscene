@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beat1)      
+ *                     ProScene (version 1.0.0-beta2)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           

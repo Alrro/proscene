@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta1)      
+ *                     ProScene (version 1.0.0-beta2)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -243,15 +243,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 
 	/**
-	 * Convenience wrapper function that simply returns {@code scene.mouseGrabberPool()}.
-	 * 
-	 * See {@link remixlab.proscene.Scene#mouseGrabberPool()}.
-	 */
-	public List<MouseGrabbable> getMouseGrabberPool() {
-		return scene.mouseGrabberPool();
-	}
-
-	/**
 	 * Implementation of the MouseGrabber main method.
 	 * <p>
 	 * The InteractiveFrame {@link #grabsMouse()} when the mouse is within a 10
@@ -310,15 +301,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public void removeFromMouseGrabberPool() {
 		scene.removeFromMouseGrabberPool(this);
-	}
-
-	/**
-	 * Convenience wrapper function that simply calls {@code scene.clearMouseGrabberPool()}.
-	 * 
-	 * @see remixlab.proscene.Scene#clearMouseGrabberPool()
-	 */
-	public void clearMouseGrabberPool() {
-		scene.clearMouseGrabberPool();
 	}
 
 	/**
