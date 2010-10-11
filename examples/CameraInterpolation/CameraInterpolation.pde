@@ -67,7 +67,7 @@ void setup() {
   for (int i=0; i<5; ++i)
     buttons.add(null);
   
-  Button2D button = new ClickButton(scene, new PVector(10,5), "edit camera path", fSize, 0);
+  Button2D button = new ClickButton(scene, new PVector(10,5), fSize, 0);
   h = button.myHeight;
   buttons.set(0, button);
 }
@@ -88,11 +88,8 @@ void updateButtons() {
     if ((buttons.get(i) != null) && (scene.camera().keyFrameInterpolator(i) == null ) )
       buttons.set(i, null);
     // Or add it if needed
-    if ((scene.camera().keyFrameInterpolator(i) != null) && (buttons.get(i) == null)) {
-      String label = "path ";
-      label += ((Integer)(i)).toString();
-      buttons.set(i, new ClickButton(scene, new PVector(10, + ( i ) * ( h + 7 )), label, fSize, i));
-    }
+    if ((scene.camera().keyFrameInterpolator(i) != null) && (buttons.get(i) == null))
+      buttons.set(i, new ClickButton(scene, new PVector(10, + ( i ) * ( h + 7 )), fSize, i));
   }
 }
 

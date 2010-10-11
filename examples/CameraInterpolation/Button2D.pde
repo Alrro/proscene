@@ -13,7 +13,11 @@ public class Button2D extends MouseGrabber {
   PFont myFont;
   int myWidth;
   int myHeight;  
-  PVector position;  
+  PVector position;
+  
+  Button2D(Scene scn, PVector p, int fontSize) {
+    this(scn, p, "", fontSize);
+  }
 
   Button2D(Scene scn, PVector p, String t, int fontSize) {
     super(scn);
