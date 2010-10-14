@@ -29,6 +29,8 @@ package remixlab.proscene;
 import java.awt.event.*;
 import java.util.Map.Entry;
 
+import processing.core.PApplet;
+
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
@@ -88,7 +90,7 @@ public class CameraProfile {
 	// C L I C K A C T I O N S
 	protected Bindings<ClickBinding, ClickAction> clickActions;
 	protected Bindings<Integer, Scene.MouseAction> cameraWheelActions;
-	protected Bindings<Integer, Scene.MouseAction> iFrameWheelActions;
+	protected Bindings<Integer, Scene.MouseAction> frameWheelActions;
 	
 	/**
 	 * Convenience constructor that simply calls {@code this(scn, n, Mode.CUSTOM)}.
@@ -127,7 +129,7 @@ public class CameraProfile {
 		clickActions = new Bindings<ClickBinding, Scene.ClickAction>(scene);
 		
 		cameraWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
-		iFrameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);		
+		frameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);		
 		scene.parent.addMouseWheelListener( scene.dE );
 		
 		switch (mode) {
@@ -283,8 +285,13 @@ public class CameraProfile {
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
 		MouseAction camMouseAction = cameraMouseBinding( e.getModifiersEx() );
-		if (camMouseAction == null)
+		//debug
+		PApplet.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
+		PApplet.println( "getMouseModifiersText: " + MouseEvent.getMouseModifiersText(e.getModifiersEx()) );
+		if (camMouseAction == null) {
+			PApplet.println("no mouse action!");
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
+		}
 		return camMouseAction;
 	}
 	
@@ -386,7 +393,7 @@ public class CameraProfile {
 	 */
 	public String frameWheelBindingsDescription() {
 		String description = new String();
-		for (Entry<Integer, Scene.MouseAction> entry : iFrameWheelActions.map.entrySet())
+		for (Entry<Integer, Scene.MouseAction> entry : frameWheelActions.map.entrySet())
 			if (KeyEvent.getModifiersExText(entry.getKey()).length() != 0 )
 				description += "Wheel " + KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 			else
@@ -1028,7 +1035,7 @@ public class CameraProfile {
 	 * Removes all frame wheel-action bindings.
 	 */
 	public void removeAllFrameWheelBindings() {
-		iFrameWheelActions.removeAllBindings();
+		frameWheelActions.removeAllBindings();
 	}
 
 	/**
@@ -1037,7 +1044,7 @@ public class CameraProfile {
 	 * @param mask shortcut
 	 */
 	public boolean isFrameWheelBindingInUse(Integer mask) {
-		return iFrameWheelActions.isShortcutInUse(mask);
+		return frameWheelActions.isShortcutInUse(mask);
 	}
 
 	/**
@@ -1046,7 +1053,7 @@ public class CameraProfile {
 	 * @param action
 	 */
 	public boolean isFrameWheelActionBinded(Scene.MouseAction action) {
-		return iFrameWheelActions.isActionMapped(action);
+		return frameWheelActions.isActionMapped(action);
 	}
 
 	/**
@@ -1070,7 +1077,7 @@ public class CameraProfile {
 			MouseAction a = frameWheelBinding(mask);
 			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		iFrameWheelActions.setBinding(mask, action);
+		frameWheelActions.setBinding(mask, action);
 	}
 	
 	/**
@@ -1090,7 +1097,7 @@ public class CameraProfile {
 	 * @see #removeFrameWheelBinding()
 	 */
 	public void removeFrameWheelBinding(Integer mask) {
-		iFrameWheelActions.removeBinding(mask);
+		frameWheelActions.removeBinding(mask);
 	}
 	
 	/**
@@ -1110,6 +1117,6 @@ public class CameraProfile {
 	 * @see #frameWheelBinding()
 	 */
 	public Scene.MouseAction frameWheelBinding(Integer mask) {
-		return iFrameWheelActions.binding(mask);
+		return frameWheelActions.binding(mask);
 	}
 }
