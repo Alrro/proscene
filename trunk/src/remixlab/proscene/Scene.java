@@ -28,7 +28,6 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-import java.awt.Point;
 import java.awt.event.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -36,7 +35,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import javax.swing.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A 3D interactive Processing scene.
@@ -81,7 +81,48 @@ import javax.swing.Timer;
  * PApplet.background()} ones. The background is set to black by default.
  */
 public class Scene implements PConstants {
-	//TODO add descriptions in the enums themselves!
+	// proscene version
+	public static final String version = "1.0.0";
+	/**
+	 * Returns the major release version number of proscene as an integer.
+	 * <p>
+	 * {@code Scene.version} will return the complete version (major+minor)
+	 * number as a string. 
+	 */
+	public static int majorVersionNumber() {
+		return Integer.parseInt(majorVersion());
+	}
+	
+	/**
+	 * Returns the major release version number of proscene as a string.
+	 * <p>
+	 * {@code Scene.version} will return the complete version (major+minor)
+	 * number as a string.
+	 */
+	public static String majorVersion() {
+		return version.substring(0, version.indexOf("."));
+	}
+	
+	/**
+	 * Returns the minor release version number of proscene as a float.
+	 * <p>
+	 * {@code Scene.version} will return the complete version (major+minor)
+	 * number as a string.
+	 */
+	public static float minorVersionNumber() {
+		return Float.parseFloat(minorVersion());
+	}
+	
+	/**
+	 * Returns the minor release version number of proscene as a string.
+	 * <p>
+	 * {@code Scene.version} will return the complete version (major+minor)
+	 * number as a string.
+	 */
+	public static String minorVersion() {
+		return version.substring(version.indexOf(".") + 1);
+	}
+	
 	/**
 	 * Defines the different actions that can be associated with a specific
 	 * keyboard key.
@@ -339,7 +380,8 @@ public class Scene implements PConstants {
 
 	// R E V O L V E A R O U N D P O I N T
 	private Timer utilityTimer;
-	private ActionListener taskTimerPerformer;
+	//private ActionListener taskTimerPerformer;
+  private TimerTask timerTask;
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
@@ -424,13 +466,19 @@ public class Scene implements PConstants {
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
 
-		taskTimerPerformer = new ActionListener() {
+		/*taskTimerPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				unSetTimerFlag();
 			}
 		};
 		utilityTimer = new Timer(1000, taskTimerPerformer);
-		utilityTimer.setRepeats(false);
+		utilityTimer.setRepeats(false);*/
+                utilityTimer = new Timer();
+                timerTask = new TimerTask() {
+                       public void run() {
+                           unSetTimerFlag();
+                       }
+                   };
 
 		disableFrustumEquationsUpdate();
 
@@ -2683,13 +2731,31 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				utilityTimer.start();
+				//utilityTimer.start();
+                                utilityTimer=new Timer();
+                                utilityTimer.purge();
+                                timerTask.cancel();
+                                timerTask = new TimerTask() {
+                                    public void run() {
+                                       unSetTimerFlag();
+                                    }
+                                };
+                                utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			utilityTimer.start();
+			//utilityTimer.start();
+                        utilityTimer=new Timer();
+                        utilityTimer.purge();
+                        timerTask.cancel();
+                        timerTask = new TimerTask() {
+                                    public void run() {
+                                       unSetTimerFlag();
+                                    }
+                        };
+                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
 			break;
 		case GLOBAL_HELP:
 			displayGlobalHelp();
@@ -2727,7 +2793,16 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					utilityTimer.start();
+					//utilityTimer.start();
+                                        utilityTimer=new Timer();
+                                        utilityTimer.purge();
+                                        timerTask.cancel();
+                                        timerTask = new TimerTask() {
+                                            public void run() {
+                                               unSetTimerFlag();
+                                            }
+                                        };
+                                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
 				}
 			}
 			break;
@@ -3100,7 +3175,16 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					utilityTimer.start();
+					//utilityTimer.start();
+                                        utilityTimer=new Timer();
+                                        utilityTimer.purge();
+                                        timerTask.cancel();
+                                        timerTask = new TimerTask() {
+                                            public void run() {
+                                               unSetTimerFlag();
+                                            }
+                                        };
+                                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
 				}
 			}
 			break;
@@ -3113,13 +3197,31 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				utilityTimer.start();
+				//utilityTimer.start();
+                                utilityTimer=new Timer();
+                                utilityTimer.purge();
+                                timerTask.cancel();
+                                timerTask = new TimerTask() {
+                                    public void run() {
+                                       unSetTimerFlag();
+                                    }
+                                };
+                                utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			utilityTimer.start();
+			//utilityTimer.start();
+                        utilityTimer=new Timer();
+                        utilityTimer.purge();
+                        timerTask.cancel();
+                        timerTask = new TimerTask() {
+                            public void run() {
+                                 unSetTimerFlag();
+                            }
+                        };
+                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
 			break;
 		case CENTER_FRAME:
 			if (interactiveFrame() != null)

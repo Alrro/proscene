@@ -17,8 +17,6 @@
 
 import remixlab.proscene.*;
 
-import java.awt.Point;
-
 Scene scene;
 Box [] boxes;
 ArrayList points;
@@ -57,8 +55,8 @@ void draw() {
   noFill();
   beginShape();
   for (int i = 0; i < points.size(); i++)
-    vertex(scene.xCoord( ((Point) points.get(i)).x ),
-           scene.yCoord( ((Point) points.get(i)).y ), scene.zCoord());
+    vertex(scene.xCoord((float) ((Point) points.get(i)).x ),
+           scene.yCoord((float) ((Point) points.get(i)).y ), scene.zCoord());
   endShape();
   popStyle();
   scene.endScreenDrawing();

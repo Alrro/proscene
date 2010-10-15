@@ -26,7 +26,6 @@
 
 package remixlab.proscene;
 
-import java.awt.Point;
 
 /**
  * Interface for objects that grab mouse focus in a Scene.

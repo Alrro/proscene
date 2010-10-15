@@ -26,10 +26,10 @@
 
 package remixlab.proscene;
 
+import java.util.Timer;
+import java.util.TimerTask;
 import processing.core.*;
 
-import java.awt.Rectangle;
-import java.awt.Point;
 
 /**
  * The InteractiveCameraFrame class represents an InteractiveFrame with Camera
@@ -133,13 +133,13 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		else {
 			int deltaY;
 			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				deltaY = eventPoint.y - prevPos.y;
+				deltaY = (int) (eventPoint.y - prevPos.y);
 			else
-				deltaY = prevPos.y - eventPoint.y;
+				deltaY = (int) (prevPos.y - eventPoint.y);
 			switch (action) {
 			case TRANSLATE: {
 				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
-				PVector trans = new PVector((float) delta.x, (float) -delta.y, 0.0f);
+				PVector trans = new PVector((int) delta.x, (int) -delta.y, 0.0f);
 				// Scale to fit the screen mouse displacement
 				switch (camera.type()) {
 				case PERSPECTIVE:
@@ -176,7 +176,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 			case ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				Quaternion rot = deformedBallQuaternion(eventPoint.x, eventPoint.y,
+				Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,
 						trans.x, trans.y, camera);
 				// #CONNECTION# These two methods should go together (spinning detection
 				// and activation)
@@ -189,9 +189,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 			case SCREEN_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				float angle = PApplet.atan2(eventPoint.y - trans.y, eventPoint.x
+				float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
 						- trans.x)
-						- PApplet.atan2(prevPos.y - trans.y, prevPos.x - trans.x);
+						- PApplet.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
 				if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 					angle = -angle;
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
@@ -209,7 +209,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				PVector trans = new PVector();
 				int dir = mouseOriginalDirection(eventPoint);
 				if (dir == 1)
-					trans.set((prevPos.x - eventPoint.x), 0.0f, 0.0f);
+					trans.set(((int)prevPos.x - (int)eventPoint.x), 0.0f, 0.0f);
 				else if (dir == -1)
 					trans.set(0.0f, -deltaY, 0.0f);
 				switch (camera.type()) {
@@ -250,10 +250,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		// called before :)
 		if (action == Scene.MouseAction.ZOOM_ON_REGION) {
 			// the rectangle needs to be normalized!
-			int w = PApplet.abs(eventPoint.x - pressPos.x);
-			int tlX = pressPos.x < eventPoint.x ? pressPos.x : eventPoint.x;
-			int h = PApplet.abs(eventPoint.y - pressPos.y);
-			int tlY = pressPos.y < eventPoint.y ? pressPos.y : eventPoint.y;
+			int w = PApplet.abs((int)eventPoint.x - (int)pressPos.x);
+			int tlX = (int)pressPos.x < (int)eventPoint.x ? (int)pressPos.x : (int)eventPoint.x;
+			int h = PApplet.abs((int)eventPoint.y - (int)pressPos.y);
+			int tlY = (int)pressPos.y < (int)eventPoint.y ? (int)pressPos.y : (int)eventPoint.y;
 
 			// overkill:
 			// if (event.getButton() == MouseEvent.BUTTON3)//right button
@@ -305,9 +305,19 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		int finalDrawAfterWheelEventDelay = 400;
 
 		// Starts (or prolungates) the timer.
-		flyTimer.setRepeats(false);
+		/*flyTimer.setRepeats(false);
 		flyTimer.setDelay(finalDrawAfterWheelEventDelay);
-		flyTimer.start();
+		flyTimer.start();*/
+                flyTimer=new Timer();
+                flyTimer.purge();
+                timerTask.cancel();
+                timerTask = new TimerTask() {
+                        public void run() {
+                               flyUpdate();
+                        }
+                };
+                flyTimer.scheduleAtFixedRate(timerTask, 0, finalDrawAfterWheelEventDelay);
+                flyTimer.cancel();
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}

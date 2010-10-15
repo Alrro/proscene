@@ -286,12 +286,16 @@ public class CameraProfile {
 	protected MouseAction cameraMouseAction(MouseEvent e) {
 		MouseAction camMouseAction = cameraMouseBinding( e.getModifiersEx() );
 		//debug
+		/**
 		PApplet.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
 		PApplet.println( "getMouseModifiersText: " + MouseEvent.getMouseModifiersText(e.getModifiersEx()) );
 		if (camMouseAction == null) {
 			PApplet.println("no mouse action!");
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		}
+		*/
+		if (camMouseAction == null)
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return camMouseAction;
 	}
 	

@@ -26,10 +26,7 @@
 
 package remixlab.proscene;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.*;
-import javax.swing.Timer;
 
 import processing.core.*;
 
@@ -105,6 +102,7 @@ import processing.core.*;
  * (computed as if there was no constraint) will probably be erroneous.
  */
 public class KeyFrameInterpolator implements Cloneable {
+
 	private class KeyFrame implements Cloneable {
 		private PVector p, tgPVec;
 		private Quaternion q, tgQuat;
@@ -196,7 +194,8 @@ public class KeyFrameInterpolator implements Cloneable {
 
 	// R h y t h m
 	private Timer timer;
-	private ActionListener taskPerformer;
+	//private ActionListener taskPerformer;
+  private TimerTask timerTask;
 	private int period;
 	private float interpolationTm;
 	private float interpolationSpd;
@@ -260,13 +259,19 @@ public class KeyFrameInterpolator implements Cloneable {
 		currentFrame2 = keyFr.listIterator();
 		currentFrame3 = keyFr.listIterator();
 
-		taskPerformer = new ActionListener() {
+		/*taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				update();
 			}
 		};
 		timer = new Timer(interpolationPeriod(), taskPerformer);
-		timer.setRepeats(true);
+		timer.setRepeats(true);*/
+                timer = new Timer();
+                timerTask = new TimerTask() {
+                       public void run() {
+                           update();
+                       }
+                };
 	}
 
 	/**
@@ -527,8 +532,18 @@ public class KeyFrameInterpolator implements Cloneable {
 			if ((interpolationSpeed() < 0.0)
 					&& (interpolationTime() <= keyFr.get(0).time()))
 				setInterpolationTime(keyFr.get(keyFr.size() - 1).time());
-			timer.setDelay(interpolationPeriod());
-			timer.start();
+			/*timer.setDelay(interpolationPeriod());
+			timer.start();*/
+                        timer=new Timer();
+                        timer.purge();
+                        timerTask.cancel();
+                        timerTask = new TimerTask() {
+                            public void run() {
+                               update();
+                            }
+                        };
+                        timer.scheduleAtFixedRate(timerTask, 0, interpolationPeriod());
+
 			interpolationStrt = true;
 			update();
 		}
@@ -539,7 +554,8 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@link #interpolationIsStarted()} and {@link #toggleInterpolation()}.
 	 */
 	public void stopInterpolation() {
-		timer.stop();
+		//timer.stop();
+                timer.cancel();
 		interpolationStrt = false;
 	}
 

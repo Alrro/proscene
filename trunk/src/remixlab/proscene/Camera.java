@@ -28,8 +28,6 @@ package remixlab.proscene;
 
 import processing.core.*;
 import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
-import java.awt.Point;
-import java.awt.Rectangle;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -2117,15 +2115,15 @@ public class Camera implements Cloneable {
 	 */
 	public void convertClickToLine(final Point pixelInput, PVector orig,
 			PVector dir) {
-		Point pixel = new Point(pixelInput);
+		Point pixel = new Point(pixelInput.getX(), pixelInput.getY());
 		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 			pixel.y = screenHeight() - pixelInput.y;
 		switch (type()) {
 		case PERSPECTIVE:
 			orig.set(position());
-			dir.set(new PVector(((2.0f * pixel.x / screenWidth()) - 1.0f)
+			dir.set(new PVector(((2.0f * (int)pixel.x / screenWidth()) - 1.0f)
 					* PApplet.tan(fieldOfView() / 2.0f) * aspectRatio(),
-					((2.0f * (screenHeight() - pixel.y) / screenHeight()) - 1.0f)
+					((2.0f * (screenHeight() - (int)pixel.y) / screenHeight()) - 1.0f)
 							* PApplet.tan(fieldOfView() / 2.0f), -1.0f));
 			dir.set(PVector.sub(worldCoordinatesOf(dir), orig));
 			dir.normalize();
@@ -2133,8 +2131,8 @@ public class Camera implements Cloneable {
 
 		case ORTHOGRAPHIC: {
 			float[] wh = getOrthoWidthHeight();
-			orig.set(new PVector((2.0f * pixel.x / screenWidth() - 1.0f) * wh[0],
-					-(2.0f * pixel.y / screenHeight() - 1.0f) * wh[1], 0.0f));
+			orig.set(new PVector((2.0f * (int)pixel.x / screenWidth() - 1.0f) * wh[0],
+					-(2.0f * (int)pixel.y / screenHeight() - 1.0f) * wh[1], 0.0f));
 			orig.set(worldCoordinatesOf(orig));
 			dir.set(viewDirection());
 			break;

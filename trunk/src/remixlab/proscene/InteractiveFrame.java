@@ -29,9 +29,7 @@ package remixlab.proscene;
 import processing.core.*;
 
 import java.util.*;
-import java.awt.event.*;
-import java.awt.Point;
-import javax.swing.Timer;
+import java.util.Timer;
 
 /**
  * A InteractiveFrame is a Frame that can be rotated and translated using the
@@ -52,6 +50,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	// static boolean horiz = true;//Two simultaneous InteractiveFrame require two
 	// mice!
 	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
+
 
 	/**
 	 * This enum defines the coordinate system convention which is defined as
@@ -75,7 +74,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private Timer spngTimer;
 	private int startedTime;
 	private int delay;
-	private ActionListener taskPerformer;
+	//private ActionListener taskPerformer;
+  private TimerTask timerTask;
 
 	private Quaternion spngQuat;
 
@@ -134,12 +134,18 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		startedTime = 0;
 		// delay = 10;
 
-		taskPerformer = new ActionListener() {
+		/*taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				spin();
 			}
 		};
-		spngTimer = new Timer(10, taskPerformer);
+		spngTimer = new Timer(10, taskPerformer);*/
+                spngTimer = new Timer();
+                timerTask = new TimerTask() {
+                       public void run() {
+                           spin();
+                       }
+                };
 	}
 
 	/**
@@ -177,12 +183,19 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isSpng = false;
 		prevConstraint = null;
 		startedTime = 0;
-		taskPerformer = new ActionListener() {
+		/*taskPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				spin();
 			}
 		};
-		spngTimer = new Timer(10, taskPerformer);
+		spngTimer = new Timer(10, taskPerformer);*/
+                 spngTimer = new Timer();
+                timerTask = new TimerTask() {
+                       public void run() {
+                           spin();
+                       }
+                };
+
 		list = new ArrayList<KeyFrameInterpolator>();
 		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
 		while (it.hasNext())
@@ -219,7 +232,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public InteractiveFrame clone() {
 		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
-		clonedIFrame.spngTimer = new Timer(10, taskPerformer);
+		//clonedIFrame.spngTimer = new Timer(10, taskPerformer);
+                clonedIFrame.spngTimer = new Timer();
 		return clonedIFrame;
 	}
 
@@ -467,7 +481,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 */
 	public final void stopSpinning() {
-		spngTimer.stop();
+		//spngTimer.stop();
+                spngTimer.cancel();
 		isSpng = false;
 	}
 
@@ -480,8 +495,19 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public void startSpinning(int updateInterval) {
 		isSpng = true;
-		spngTimer.setDelay(updateInterval);
-		spngTimer.start();
+		/*spngTimer.setDelay(updateInterval);
+		spngTimer.start();*/
+                if(updateInterval>0){
+                        spngTimer=new Timer();
+                        spngTimer.purge();
+                        timerTask.cancel();
+                        timerTask = new TimerTask() {
+                            public void run() {
+                               spin();
+                            }
+                        };
+                        spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
+                }
 	}
 
 	/**
@@ -543,14 +569,14 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		int deltaY = 0;
 		if(action != Scene.MouseAction.NO_MOUSE_ACTION)
 			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				deltaY = prevPos.y - eventPoint.y;
+				deltaY = (int) (prevPos.y - eventPoint.y);
 			else
-				deltaY = eventPoint.y - prevPos.y; 
+				deltaY = (int) (eventPoint.y - prevPos.y);
 
 		switch (action) {
 		case TRANSLATE: {
 			Point delta = new Point((eventPoint.x - prevPos.x), deltaY);
-			PVector trans = new PVector((float) delta.getX(), (float) -delta.getY(),
+			PVector trans = new PVector((int) delta.getX(), (int) -delta.getY(),
 					0.0f);
 			// Scale to fit the screen mouse displacement
 			switch (camera.type()) {
@@ -595,8 +621,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			// set
 			PVector trans = camera.projectedCoordinatesOf(position());
 			float prev_angle = PApplet
-					.atan2(prevPos.y - trans.y, prevPos.x - trans.x);
-			float angle = PApplet.atan2(eventPoint.y - trans.y, eventPoint.x
+					.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
+			float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
 					- trans.x);
 			PVector axis = transformOf(camera.frame().inverseTransformOf(
 					new PVector(0.0f, 0.0f, -1.0f)));
@@ -620,7 +646,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			PVector trans = new PVector();
 			int dir = mouseOriginalDirection(eventPoint);
 			if (dir == 1)
-				trans.set((eventPoint.x - prevPos.x), 0.0f, 0.0f);
+				trans.set(((int)eventPoint.x - (int)prevPos.x), 0.0f, 0.0f);
 			else if (dir == -1)
 				trans.set(0.0f, -deltaY, 0.0f);
 			switch (camera.type()) {
@@ -650,7 +676,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(position());
-			Quaternion rot = deformedBallQuaternion(eventPoint.x, eventPoint.y,
+			Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,
 					trans.x, trans.y, camera);
 			trans.set(-rot.x, -rot.y, -rot.z);
 			trans = camera.frame().orientation().rotate(trans);
@@ -808,8 +834,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		if (!dirIsFixed) {
 			Point delta = new Point((eventPoint.x - pressPos.x),
 					(eventPoint.y - pressPos.y));
-			dirIsFixed = PApplet.abs(delta.x) != PApplet.abs(delta.y);
-			horiz = PApplet.abs(delta.x) > PApplet.abs(delta.y);
+			dirIsFixed = PApplet.abs((int)delta.x) != PApplet.abs((int)delta.y);
+			horiz = PApplet.abs((int)delta.x) > PApplet.abs((int)delta.y);
 		}
 
 		if (dirIsFixed)
@@ -829,8 +855,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,
 			Camera camera) {
 		// Points on the deformed ball
-		float px = rotationSensitivity() * (prevPos.x - cx) / camera.screenWidth();
-		float py = rotationSensitivity() * (cy - prevPos.y) / camera.screenHeight();
+		float px = rotationSensitivity() * ((int)prevPos.x - cx) / camera.screenWidth();
+		float py = rotationSensitivity() * (cy - (int)prevPos.y) / camera.screenHeight();
 		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
 		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
 
