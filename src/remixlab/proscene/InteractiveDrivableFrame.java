@@ -29,8 +29,8 @@ package remixlab.proscene;
 import processing.core.*;
 
 import java.awt.event.*;
-import java.awt.Point;
-import javax.swing.Timer;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * The InteractiveDrivableFrame represents an InteractiveFrame that can "fly" in
@@ -49,6 +49,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected ActionListener taskFlyPerformer;
 	protected PVector flyUpVec;
 	protected PVector flyDisp;
+        protected TimerTask timerTask;
 
 	/**
 	 * Default constructor.
@@ -64,12 +65,18 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 		setFlySpeed(0.0f);
 
-		taskFlyPerformer = new ActionListener() {
+		/*taskFlyPerformer = new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				flyUpdate();
 			}
 		};
-		flyTimer = new Timer(10, taskFlyPerformer);
+		flyTimer = new Timer(10, taskFlyPerformer);*/
+                flyTimer = new Timer();
+                timerTask = new TimerTask() {
+                    public void run() {
+                        flyUpdate();
+                    }
+                };
 	}
 
 	/**
@@ -85,7 +92,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
-		clonedIAvtrFrame.flyTimer = new Timer(10, taskFlyPerformer);
+		//clonedIAvtrFrame.flyTimer = new Timer(10, taskFlyPerformer);
+                clonedIAvtrFrame.flyTimer = new Timer();
 		return clonedIAvtrFrame;
 	}
 
@@ -198,9 +206,18 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
-			flyTimer.setRepeats(true);
+			/*flyTimer.setRepeats(true);
 			flyTimer.setDelay(10);
-			flyTimer.start();
+			flyTimer.start();*/
+                        flyTimer=new Timer();
+                        flyTimer.purge();
+                        timerTask.cancel();
+                        timerTask = new TimerTask() {
+                            public void run() {
+                               flyUpdate();
+                            }
+                        };
+                        flyTimer.scheduleAtFixedRate(timerTask, 0, 10);
 			break;
 		default:
 			break;
@@ -221,12 +238,12 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		else {
 			int deltaY;
 			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				deltaY = eventPoint.y - prevPos.y;
+				deltaY = (int) (eventPoint.y - prevPos.y);
 			else
-				deltaY = prevPos.y - eventPoint.y;
+				deltaY = (int) (prevPos.y - eventPoint.y);
 			switch (action) {
 			case MOVE_FORWARD: {
-				Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
+				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
 				rotate(rot);
 				// #CONNECTION# wheelEvent MOVE_FORWARD case
 				// actual translation is made in flyUpdate().
@@ -236,7 +253,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			}
 
 			case MOVE_BACKWARD: {
-				Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
+				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				// translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
@@ -246,7 +263,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case DRIVE: {
 				// TODO: perhaps needs more testing
-				Quaternion rot = turnQuaternion(eventPoint.x, camera);
+				Quaternion rot = turnQuaternion((int)eventPoint.x, camera);
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				drvSpd = 0.01f * -deltaY;
@@ -255,14 +272,14 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			}
 
 			case LOOK_AROUND: {
-				Quaternion rot = pitchYawQuaternion(eventPoint.x, eventPoint.y, camera);
+				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
 				rotate(rot);
 				prevPos = eventPoint;
 				break;
 			}
 
 			case ROLL: {
-				float angle = Quaternion.PI * (eventPoint.x - prevPos.x)
+				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x)
 						/ camera.screenWidth();
 				if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
 					angle = -angle;
@@ -311,7 +328,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE))
-			flyTimer.stop();
+			//flyTimer.stop();
+                        flyTimer.cancel();
 
 		super.mouseReleased(eventPoint, camera);
 	}
@@ -368,9 +386,19 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		int finalDrawAfterWheelEventDelay = 400;
 
 		// Starts (or prolungates) the timer.
-		flyTimer.setRepeats(false);
+		/*flyTimer.setRepeats(false);
 		flyTimer.setDelay(finalDrawAfterWheelEventDelay);
-		flyTimer.start();
+		flyTimer.start();*/
+                flyTimer=new Timer();
+                flyTimer.purge();
+                timerTask.cancel();
+                timerTask = new TimerTask() {
+                        public void run() {
+                               flyUpdate();
+                        }
+                };
+                flyTimer.scheduleAtFixedRate(timerTask, 0, finalDrawAfterWheelEventDelay);
+                flyTimer.cancel();
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
@@ -390,7 +418,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 */
 	protected final Quaternion turnQuaternion(int x, Camera camera) {
 		return new Quaternion(new PVector(0.0f, 1.0f, 0.0f), rotationSensitivity()
-				* (prevPos.x - x) / camera.screenWidth());
+				* ((int)prevPos.x - x) / camera.screenWidth());
 	}
 
 	/**
@@ -400,14 +428,14 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected final Quaternion pitchYawQuaternion(int x, int y, Camera camera) {
 		int deltaY;
 		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			deltaY = y - prevPos.y;
+			deltaY = (int) (y - prevPos.y);
 		else
-			deltaY = prevPos.y - y;
+			deltaY = (int) (prevPos.y - y);
 
 		Quaternion rotX = new Quaternion(new PVector(1.0f, 0.0f, 0.0f),
 				rotationSensitivity() * deltaY / camera.screenHeight());
 		Quaternion rotY = new Quaternion(transformOf(flyUpVector()),
-				rotationSensitivity() * (prevPos.x - x) / camera.screenWidth());
+				rotationSensitivity() * ((int)prevPos.x - x) / camera.screenWidth());
 		return Quaternion.multiply(rotY, rotX);
 	}
 }

@@ -21,7 +21,6 @@
  * (otherwise the help text can interfere).
  */
 
-import java.awt.Point;
 import java.nio.FloatBuffer;
 import javax.media.opengl.GL;
 import javax.media.opengl.glu.GLU;
@@ -83,9 +82,9 @@ class GLCamera extends Camera {
   protected WorldPoint pointUnderPixel(Point pixel) {
     float []depth = new float[1];
     pgl.beginGL();
-    gl.glReadPixels(pixel.x, (screenHeight() - pixel.y), 1, 1, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap(depth));
+    gl.glReadPixels((int)pixel.x, (screenHeight() - (int)pixel.y), 1, 1, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap(depth));
     pgl.endGL();
-    PVector point = new PVector(pixel.x, pixel.y, depth[0]);
+    PVector point = new PVector((int)pixel.x, (int)pixel.y, depth[0]);
     point = unprojectedCoordinatesOf(point);
     return new WorldPoint(point, (depth[0] < 1.0f));
   }
