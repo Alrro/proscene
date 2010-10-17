@@ -28,9 +28,7 @@ package remixlab.proscene;
 
 import java.awt.event.*;
 import java.util.Map.Entry;
-
-import processing.core.PApplet;
-
+//import processing.core.PApplet;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
@@ -435,7 +433,7 @@ public class CameraProfile {
 	 * @see #setShortcut(Integer, Integer, Scene.CameraKeyboardAction)
 	 */
 	public void setShortcut(Integer mask, Character key, CameraKeyboardAction action) {
-		setShortcut(mask, KeyboardShortcut.getVKey(key), action);
+		setShortcut(mask, DesktopEvents.getVKey(key), action);
 	}
 	
 	/**
@@ -499,7 +497,7 @@ public class CameraProfile {
 	 * @see #removeShortcut(Integer, Integer)
 	 */
 	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, KeyboardShortcut.getVKey(key));
+		removeShortcut(mask, DesktopEvents.getVKey(key));
 	}
 	
 	/**
@@ -548,7 +546,7 @@ public class CameraProfile {
    * @see #shortcut(Integer, Integer)
    */
 	public CameraKeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, KeyboardShortcut.getVKey(key));
+		return shortcut(mask, DesktopEvents.getVKey(key));
 	}
 
 	/**
@@ -597,7 +595,7 @@ public class CameraProfile {
 	 * @see #isKeyInUse(Integer, Integer)
 	 */
 	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, KeyboardShortcut.getVKey(key));
+		return isKeyInUse(mask, DesktopEvents.getVKey(key));
 	}
 	
 	/**

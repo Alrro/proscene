@@ -28,7 +28,6 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-import java.awt.event.*;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -82,7 +81,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.0.0";
+	public static final String version = "0.9.96";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -303,9 +302,9 @@ public class Scene implements PConstants {
 	 * Constants associated to the different modifier keys which follow java conventions.
 	 */
 	public enum Modifier {
-		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, ALT_GRAPH_DOWN_MASK
+		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, META_DOWN_MASK, ALT_GRAPH_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		ALT(512), SHIFT(64), CTRL(128), ALT_GRAPH(8192);
+		ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);
 		public final int ID;
 		Modifier(int code) {
       this.ID = code;
@@ -377,11 +376,6 @@ public class Scene implements PConstants {
 	float halfWidthSpace;
 	float halfHeightSpace;
 	float zC;
-
-	// R E V O L V E A R O U N D P O I N T
-	private Timer utilityTimer;
-	//private ActionListener taskTimerPerformer;
-  private TimerTask timerTask;
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
@@ -465,21 +459,7 @@ public class Scene implements PConstants {
 		setGridIsDrawn(true);
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
-
-		/*taskTimerPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				unSetTimerFlag();
-			}
-		};
-		utilityTimer = new Timer(1000, taskTimerPerformer);
-		utilityTimer.setRepeats(false);*/
-                utilityTimer = new Timer();
-                timerTask = new TimerTask() {
-                       public void run() {
-                           unSetTimerFlag();
-                       }
-                   };
-
+		
 		disableFrustumEquationsUpdate();
 
 		// E X C E P T I O N H A N D L I N G
@@ -2389,7 +2369,7 @@ public class Scene implements PConstants {
 	 * @see #setPathKey(Integer, Integer)
 	 */
 	public void setPathKey(Character key, Integer path) {
-		setPathKey(KeyboardShortcut.getVKey(key), path);
+		setPathKey(DesktopEvents.getVKey(key), path);
 	}
 	
 	/**
@@ -2418,7 +2398,7 @@ public class Scene implements PConstants {
 	 * @see #path(Integer)
 	 */
 	public Integer path(Character key) {
-		return path(KeyboardShortcut.getVKey(key));
+		return path(DesktopEvents.getVKey(key));
 	}
 	
 	/**
@@ -2442,7 +2422,7 @@ public class Scene implements PConstants {
 	 * @see #removePathKey(Integer)
 	 */
 	public void removePathKey(Character key) {
-		removePathKey(KeyboardShortcut.getVKey(key));
+		removePathKey(DesktopEvents.getVKey(key));
 	}
 	
 	/**
@@ -2466,7 +2446,7 @@ public class Scene implements PConstants {
 	 * @see #isPathKeyInUse(Integer)
 	 */
 	public boolean isPathKeyInUse(Character key) {
-		return isPathKeyInUse(KeyboardShortcut.getVKey(key));
+		return isPathKeyInUse(DesktopEvents.getVKey(key));
 	}
 	
 	/**
@@ -2524,7 +2504,7 @@ public class Scene implements PConstants {
    * @see #setShortcut(Integer, Integer, KeyboardAction)
    */
 	public void setShortcut(Integer mask, Character key, KeyboardAction action) {
-		setShortcut(mask, KeyboardShortcut.getVKey(key), action);
+		setShortcut(mask, DesktopEvents.getVKey(key), action);
 	}
 	
   /**
@@ -2585,7 +2565,7 @@ public class Scene implements PConstants {
    * @see #removeShortcut(Integer, Integer)
    */
 	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, KeyboardShortcut.getVKey(key));
+		removeShortcut(mask, DesktopEvents.getVKey(key));
 	}
 
 	/**
@@ -2629,7 +2609,7 @@ public class Scene implements PConstants {
    * @see #shortcut(Integer, Integer)
    */
 	public KeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, KeyboardShortcut.getVKey(key));
+		return shortcut(mask, DesktopEvents.getVKey(key));
 	}
 
 	/**
@@ -2673,7 +2653,7 @@ public class Scene implements PConstants {
    * @see #isKeyInUse(Integer, Integer)
    */
 	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, KeyboardShortcut.getVKey(key));
+		return isKeyInUse(mask, DesktopEvents.getVKey(key));
 	}
 	
 	/**
@@ -2731,31 +2711,25 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				//utilityTimer.start();
-                                utilityTimer=new Timer();
-                                utilityTimer.purge();
-                                timerTask.cancel();
-                                timerTask = new TimerTask() {
-                                    public void run() {
-                                       unSetTimerFlag();
-                                    }
-                                };
-                                utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
+				Timer timer=new Timer();
+				TimerTask timerTask = new TimerTask() {
+					public void run() {
+						unSetTimerFlag();
+					}
+				};
+				timer.schedule(timerTask, 1000);
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			//utilityTimer.start();
-                        utilityTimer=new Timer();
-                        utilityTimer.purge();
-                        timerTask.cancel();
-                        timerTask = new TimerTask() {
-                                    public void run() {
-                                       unSetTimerFlag();
-                                    }
-                        };
-                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
+			Timer timer=new Timer();
+			TimerTask timerTask = new TimerTask() {
+				public void run() {
+					unSetTimerFlag();
+				}
+			};
+			timer.schedule(timerTask, 1000);
 			break;
 		case GLOBAL_HELP:
 			displayGlobalHelp();
@@ -2793,16 +2767,13 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					//utilityTimer.start();
-                                        utilityTimer=new Timer();
-                                        utilityTimer.purge();
-                                        timerTask.cancel();
-                                        timerTask = new TimerTask() {
-                                            public void run() {
-                                               unSetTimerFlag();
-                                            }
-                                        };
-                                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
+					Timer timer=new Timer();
+					TimerTask timerTask = new TimerTask() {
+						public void run() {
+							unSetTimerFlag();
+						}
+					};
+					timer.schedule(timerTask, 1000);
 				}
 			}
 			break;
@@ -2949,9 +2920,9 @@ public class Scene implements PConstants {
 		}
 		
 		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
-			description += KeyEvent.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
-		description += KeyEvent.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
-		description += KeyEvent.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
+		description += DesktopEvents.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
+		description += DesktopEvents.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
 		
 		return description;		
 	}
@@ -3175,16 +3146,13 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					//utilityTimer.start();
-                                        utilityTimer=new Timer();
-                                        utilityTimer.purge();
-                                        timerTask.cancel();
-                                        timerTask = new TimerTask() {
-                                            public void run() {
-                                               unSetTimerFlag();
-                                            }
-                                        };
-                                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
+					Timer timer=new Timer();
+					TimerTask timerTask = new TimerTask() {
+						public void run() {
+							unSetTimerFlag();
+						}
+					};
+					timer.schedule(timerTask, 1000);
 				}
 			}
 			break;
@@ -3197,31 +3165,25 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				//utilityTimer.start();
-                                utilityTimer=new Timer();
-                                utilityTimer.purge();
-                                timerTask.cancel();
-                                timerTask = new TimerTask() {
-                                    public void run() {
-                                       unSetTimerFlag();
-                                    }
-                                };
-                                utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
+				Timer timer=new Timer();
+				TimerTask timerTask = new TimerTask() {
+					public void run() {
+						unSetTimerFlag();
+					}
+				};
+				timer.schedule(timerTask, 1000);
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			//utilityTimer.start();
-                        utilityTimer=new Timer();
-                        utilityTimer.purge();
-                        timerTask.cancel();
-                        timerTask = new TimerTask() {
-                            public void run() {
-                                 unSetTimerFlag();
-                            }
-                        };
-                        utilityTimer.scheduleAtFixedRate(timerTask, 1000, 1000);
+			Timer timer=new Timer();
+			TimerTask timerTask = new TimerTask() {
+				public void run() {
+					unSetTimerFlag();
+				}
+			};
+			timer.schedule(timerTask, 1000);
 			break;
 		case CENTER_FRAME:
 			if (interactiveFrame() != null)

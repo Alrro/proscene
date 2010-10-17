@@ -11,6 +11,15 @@ public class MainViewer extends NApplet {
     scene.setGridIsDrawn(false);
     // register the drawing method which was defined externally
     scene.addDrawHandler(parentPApplet, "mainDrawing");
+    // hack to make middle and right buttons work under napplet
+    // see issue report: http://forum.processing.org/#Topic/25080000000041027
+    CameraProfile [] camProfiles = scene.getCameraProfiles();
+    for (int i=0; i<camProfiles.length; i++) {      
+      camProfiles[i].setCameraMouseBinding( (Scene.Button.MIDDLE.ID | Scene.Modifier.ALT.ID), Scene.MouseAction.ZOOM );
+      camProfiles[i].setCameraMouseBinding( (Scene.Button.RIGHT.ID | Scene.Modifier.META.ID), Scene.MouseAction.TRANSLATE );
+      camProfiles[i].setFrameMouseBinding( (Scene.Button.MIDDLE.ID | Scene.Modifier.ALT.ID), Scene.MouseAction.ZOOM );
+      camProfiles[i].setFrameMouseBinding( (Scene.Button.RIGHT.ID | Scene.Modifier.META.ID), Scene.MouseAction.TRANSLATE );      
+    }
   }  
   
   void keyPressed() {

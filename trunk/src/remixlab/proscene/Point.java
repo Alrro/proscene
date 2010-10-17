@@ -100,7 +100,7 @@ public class Point {
 	 * @see #distance(Point, Point)
 	 */
 	public static float distance(int x1, int y1, int x2, int y2) {
-		return Point.distance(new Point(x1, y1), new Point(x2, y2));
+		return Point.distance((float)x1, (float)y1, (float)x2, (float)y2);
 	}
 
 	/**
@@ -110,18 +110,13 @@ public class Point {
 	 * @see #distance(Point, Point)
 	 */
 	public static float distance(float x1, float y1, float x2, float y2) {
-		return Point.distance(new Point(x1, y1), new Point(x2, y2));
+		return (float) Math.sqrt((float) Math.pow((x2 - x1), 2.0)	+ (float) Math.pow((y2 - y1), 2.0));
 	}
 
 	/**
 	 * Returns the Euclidean distance between points p1 and p2.
 	 */
 	public static float distance(Point p1, Point p2) {
-		float x1 = (float) p1.getX();
-		float y1 = (float) p1.getY();
-		float x2 = (float) p2.getX();
-		float y2 = (float) p2.getY();
-		return (float) Math.sqrt((float) Math.pow((x2 - x1), 2.0)
-				+ (float) Math.pow((y2 - y1), 2.0));
+		return Point.distance(p1.getX(), p1.getY(), p2.getX(), p2.getY());
 	}
 }
