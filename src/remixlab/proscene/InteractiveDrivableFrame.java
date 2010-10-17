@@ -28,7 +28,6 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-import java.awt.event.*;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -46,10 +45,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected float flySpd;
 	protected float drvSpd;
 	protected Timer flyTimer;
-	protected ActionListener taskFlyPerformer;
 	protected PVector flyUpVec;
 	protected PVector flyDisp;
-        protected TimerTask timerTask;
 
 	/**
 	 * Default constructor.
@@ -65,18 +62,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 		setFlySpeed(0.0f);
 
-		/*taskFlyPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				flyUpdate();
-			}
-		};
-		flyTimer = new Timer(10, taskFlyPerformer);*/
-                flyTimer = new Timer();
-                timerTask = new TimerTask() {
-                    public void run() {
-                        flyUpdate();
-                    }
-                };
+    flyTimer = new Timer();
 	}
 
 	/**
@@ -92,8 +78,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
-		//clonedIAvtrFrame.flyTimer = new Timer(10, taskFlyPerformer);
-                clonedIAvtrFrame.flyTimer = new Timer();
+    clonedIAvtrFrame.flyTimer = new Timer();
 		return clonedIAvtrFrame;
 	}
 
@@ -206,18 +191,15 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
-			/*flyTimer.setRepeats(true);
-			flyTimer.setDelay(10);
-			flyTimer.start();*/
-                        flyTimer=new Timer();
-                        flyTimer.purge();
-                        timerTask.cancel();
-                        timerTask = new TimerTask() {
-                            public void run() {
-                               flyUpdate();
-                            }
-                        };
-                        flyTimer.scheduleAtFixedRate(timerTask, 0, 10);
+			flyTimer.cancel();
+			flyTimer.purge();
+			flyTimer=new Timer();
+			TimerTask timerTask = new TimerTask() {
+				public void run() {
+					flyUpdate();
+				}
+			};
+			flyTimer.scheduleAtFixedRate(timerTask, 0, 10);
 			break;
 		default:
 			break;
@@ -327,9 +309,10 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected final void iDrivableMouseReleased(Point eventPoint, Camera camera) {
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
-				|| (action == Scene.MouseAction.DRIVE))
-			//flyTimer.stop();
-                        flyTimer.cancel();
+				|| (action == Scene.MouseAction.DRIVE)) {
+				flyTimer.cancel();
+				flyTimer.purge();
+		}
 
 		super.mouseReleased(eventPoint, camera);
 	}
@@ -384,21 +367,17 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			setConstraint(prevConstraint);
 
 		int finalDrawAfterWheelEventDelay = 400;
-
-		// Starts (or prolungates) the timer.
-		/*flyTimer.setRepeats(false);
-		flyTimer.setDelay(finalDrawAfterWheelEventDelay);
-		flyTimer.start();*/
-                flyTimer=new Timer();
-                flyTimer.purge();
-                timerTask.cancel();
-                timerTask = new TimerTask() {
-                        public void run() {
-                               flyUpdate();
-                        }
-                };
-                flyTimer.scheduleAtFixedRate(timerTask, 0, finalDrawAfterWheelEventDelay);
-                flyTimer.cancel();
+		
+	  // Starts (or prolungates) the timer.
+		flyTimer.cancel();
+		flyTimer.purge();
+		flyTimer=new Timer();
+		TimerTask timerTask = new TimerTask() {
+			public void run() {
+				flyUpdate();
+			}
+		};
+		flyTimer.schedule(timerTask, finalDrawAfterWheelEventDelay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}

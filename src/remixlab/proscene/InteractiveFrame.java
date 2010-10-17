@@ -46,11 +46,7 @@ import java.util.Timer;
  */
 
 public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable {
-
-	// static boolean horiz = true;//Two simultaneous InteractiveFrame require two
-	// mice!
 	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
-
 
 	/**
 	 * This enum defines the coordinate system convention which is defined as
@@ -74,8 +70,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private Timer spngTimer;
 	private int startedTime;
 	private int delay;
-	//private ActionListener taskPerformer;
-  private TimerTask timerTask;
 
 	private Quaternion spngQuat;
 
@@ -133,19 +127,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		prevConstraint = null;
 		startedTime = 0;
 		// delay = 10;
-
-		/*taskPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				spin();
-			}
-		};
-		spngTimer = new Timer(10, taskPerformer);*/
-                spngTimer = new Timer();
-                timerTask = new TimerTask() {
-                       public void run() {
-                           spin();
-                       }
-                };
+		spngTimer = new Timer();
 	}
 
 	/**
@@ -183,18 +165,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isSpng = false;
 		prevConstraint = null;
 		startedTime = 0;
-		/*taskPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				spin();
-			}
-		};
-		spngTimer = new Timer(10, taskPerformer);*/
-                 spngTimer = new Timer();
-                timerTask = new TimerTask() {
-                       public void run() {
-                           spin();
-                       }
-                };
 
 		list = new ArrayList<KeyFrameInterpolator>();
 		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
@@ -232,8 +202,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public InteractiveFrame clone() {
 		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
-		//clonedIFrame.spngTimer = new Timer(10, taskPerformer);
-                clonedIFrame.spngTimer = new Timer();
+		clonedIFrame.spngTimer = new Timer();
 		return clonedIFrame;
 	}
 
@@ -481,8 +450,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 */
 	public final void stopSpinning() {
-		//spngTimer.stop();
-                spngTimer.cancel();
+		spngTimer.cancel();
+		spngTimer.purge();
 		isSpng = false;
 	}
 
@@ -495,19 +464,17 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public void startSpinning(int updateInterval) {
 		isSpng = true;
-		/*spngTimer.setDelay(updateInterval);
-		spngTimer.start();*/
-                if(updateInterval>0){
-                        spngTimer=new Timer();
-                        spngTimer.purge();
-                        timerTask.cancel();
-                        timerTask = new TimerTask() {
-                            public void run() {
-                               spin();
-                            }
-                        };
-                        spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
-                }
+		if(updateInterval>0) {
+			spngTimer.cancel();
+			spngTimer.purge();
+			spngTimer=new Timer();
+			TimerTask timerTask = new TimerTask() {
+				public void run() {
+					spin();
+				}
+			};
+			spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
+		}
 	}
 
 	/**

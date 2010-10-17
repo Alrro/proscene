@@ -26,8 +26,6 @@
 
 package remixlab.proscene;
 
-import java.awt.event.KeyEvent;
-
 /**
  * This class represents mouse click shortcuts.
  * <p>
@@ -127,7 +125,7 @@ public class ClickBinding {
 	public String description() {
 		String description = new String();
 		if(mask != 0)
-			description += KeyEvent.getModifiersExText(mask) + " + ";
+			description += DesktopEvents.getModifiersExText(mask) + " + ";
 		switch (button) {
 		case LEFT :
 			description += "Button1";

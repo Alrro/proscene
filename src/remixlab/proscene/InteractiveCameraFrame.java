@@ -305,19 +305,15 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		int finalDrawAfterWheelEventDelay = 400;
 
 		// Starts (or prolungates) the timer.
-		/*flyTimer.setRepeats(false);
-		flyTimer.setDelay(finalDrawAfterWheelEventDelay);
-		flyTimer.start();*/
-                flyTimer=new Timer();
-                flyTimer.purge();
-                timerTask.cancel();
-                timerTask = new TimerTask() {
-                        public void run() {
-                               flyUpdate();
-                        }
-                };
-                flyTimer.scheduleAtFixedRate(timerTask, 0, finalDrawAfterWheelEventDelay);
-                flyTimer.cancel();
+		flyTimer.cancel();
+		flyTimer.purge();
+		flyTimer=new Timer();
+		TimerTask timerTask = new TimerTask() {
+			public void run() {
+				flyUpdate();
+			}
+		};
+		flyTimer.schedule(timerTask, finalDrawAfterWheelEventDelay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}

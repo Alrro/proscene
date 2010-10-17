@@ -32,8 +32,6 @@ import java.util.List;
 
 import processing.core.*;
 
-//import remixlab.proscene.KeyFrameInterpolator.KeyFrame;
-
 /**
  * A Frame is a 3D coordinate system, represented by a {@link #position()} and
  * an {@link #orientation()}. The order of these transformations is important:

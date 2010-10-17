@@ -194,8 +194,7 @@ public class KeyFrameInterpolator implements Cloneable {
 
 	// R h y t h m
 	private Timer timer;
-	//private ActionListener taskPerformer;
-  private TimerTask timerTask;
+  //private TimerTask timerTask;
 	private int period;
 	private float interpolationTm;
 	private float interpolationSpd;
@@ -258,20 +257,8 @@ public class KeyFrameInterpolator implements Cloneable {
 		currentFrame1 = keyFr.listIterator();
 		currentFrame2 = keyFr.listIterator();
 		currentFrame3 = keyFr.listIterator();
-
-		/*taskPerformer = new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				update();
-			}
-		};
-		timer = new Timer(interpolationPeriod(), taskPerformer);
-		timer.setRepeats(true);*/
-                timer = new Timer();
-                timerTask = new TimerTask() {
-                       public void run() {
-                           update();
-                       }
-                };
+		
+		timer = new Timer();
 	}
 
 	/**
@@ -292,6 +279,8 @@ public class KeyFrameInterpolator implements Cloneable {
 			clonedKfi.currentFrame1 = keyFr.listIterator(currentFrame1.nextIndex());
 			clonedKfi.currentFrame2 = keyFr.listIterator(currentFrame2.nextIndex());
 			clonedKfi.currentFrame3 = keyFr.listIterator(currentFrame3.nextIndex());
+			//next line added when migrating to java.util.Timer
+			clonedKfi.timer = new Timer();
 			return clonedKfi;
 		} catch (CloneNotSupportedException e) {
 			throw new Error(
@@ -532,17 +521,15 @@ public class KeyFrameInterpolator implements Cloneable {
 			if ((interpolationSpeed() < 0.0)
 					&& (interpolationTime() <= keyFr.get(0).time()))
 				setInterpolationTime(keyFr.get(keyFr.size() - 1).time());
-			/*timer.setDelay(interpolationPeriod());
-			timer.start();*/
-                        timer=new Timer();
-                        timer.purge();
-                        timerTask.cancel();
-                        timerTask = new TimerTask() {
-                            public void run() {
-                               update();
-                            }
-                        };
-                        timer.scheduleAtFixedRate(timerTask, 0, interpolationPeriod());
+			timer.cancel();
+			timer.purge();
+			timer=new Timer();
+			TimerTask timerTask = new TimerTask() {
+				public void run() {
+					update();
+				}
+			};
+			timer.scheduleAtFixedRate(timerTask, 0, interpolationPeriod());
 
 			interpolationStrt = true;
 			update();
@@ -554,8 +541,8 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@link #interpolationIsStarted()} and {@link #toggleInterpolation()}.
 	 */
 	public void stopInterpolation() {
-		//timer.stop();
-                timer.cancel();
+		timer.cancel();
+		timer.purge();
 		interpolationStrt = false;
 	}
 
