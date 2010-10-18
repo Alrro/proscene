@@ -17,8 +17,6 @@
  *
  * Override InteractiveFrame.checkIfGrabsMouse if you need a more
  * sophisticated picking mechanism.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 public class Sphere {
@@ -35,8 +33,10 @@ public class Sphere {
     draw(true);
   }
   
-  public void draw(boolean drawAxis) {
+  public void draw(boolean drawAxis) {    
     pushMatrix();
+    pushStyle();
+    noStroke();
     // Multiply matrix to get in the frame coordinate system.
     // scene.parent.applyMatrix(iFrame.matrix()) is handy but inefficient
     iFrame.applyTransformation(); //optimum
@@ -49,6 +49,7 @@ public class Sphere {
       fill(getColor());
       sphere(radius());
     }
+    popStyle();
     popMatrix();
   }
 

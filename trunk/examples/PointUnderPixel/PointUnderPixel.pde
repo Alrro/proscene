@@ -4,21 +4,14 @@
  * 
  * This example illustrates 3D world point picking.
  * 
- * Press 'o' to select the camera arcball reference point, or press 'p' to select
- * a point for the camera to zoom in. Note that in both cases the point is defined
- * in 3D world coordinates, but it will be set from the mouse position (which is a
- * point defined in 2D screen coordinates) at the time the key press takes place.
- * Nothing happens if there's no scene point under the mouse.
- * 
- * Press 'O' to reset the arcball reference point position (it will be set to its
- * default value: (0,0,0)).
+ * The click bindings defined below defined different picking user
+ * interactions.
  * 
  * This example requires OpenGL to read the pixel depth. 
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
- * 
- * Note that the point picking mechanism is disable when the help is display
- * (otherwise the help text can interfere).
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import java.nio.FloatBuffer;

@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta2)      
+ *                     ProScene (version 0.9.96)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -450,8 +450,10 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 */
 	public final void stopSpinning() {
-		spngTimer.cancel();
-		spngTimer.purge();
+		if(spngTimer!=null) {
+			spngTimer.cancel();
+			spngTimer.purge();
+		}
 		isSpng = false;
 	}
 
@@ -465,8 +467,10 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void startSpinning(int updateInterval) {
 		isSpng = true;
 		if(updateInterval>0) {
-			spngTimer.cancel();
-			spngTimer.purge();
+			if(spngTimer!=null) {
+				spngTimer.cancel();
+				spngTimer.purge();
+			}
 			spngTimer=new Timer();
 			TimerTask timerTask = new TimerTask() {
 				public void run() {

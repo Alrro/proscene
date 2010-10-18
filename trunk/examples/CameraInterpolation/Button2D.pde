@@ -2,7 +2,8 @@
  * Button 2D.
  * by Jean Pierre Charalambos.
  * 
- * Base class of "2d buttons". Feel free to copy paste it. 
+ * Base class of "2d buttons" that shows how simple is to implement
+ * a MouseGrabber which can enable complex mouse interactions.
  */
 
 import remixlab.proscene.*;

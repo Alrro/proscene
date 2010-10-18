@@ -17,7 +17,9 @@
  * Click the space bar to change between the camera modes: ARCBALL, WALKTHROUGH,
  * and THIRD_PERSON.
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -37,7 +39,7 @@ void setup() {
   avatar = new InteractiveAvatarFrame(scene);
   avatar.setTrackingDistance(300);
   avatar.setAzimuth(PI/12);
-  avatar.setInclination(avatar.inclination() + PI/6);
+  avatar.setInclination(avatar.inclination() - PI/16);
   
   WorldConstraint baseConstraint = new WorldConstraint();
   baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,1.0f,0.0f));

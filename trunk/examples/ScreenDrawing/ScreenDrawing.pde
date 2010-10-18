@@ -12,7 +12,9 @@
  * 
  * Press 'x' to toggle the screen drawing.
  * Press 'y' to clean your screen drawing.
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -24,6 +26,7 @@ ArrayList points;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
+  // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.setRadius(150);
   scene.showAll();
