@@ -176,7 +176,7 @@ public class Camera implements Cloneable {
 	public Camera(Scene scn, boolean attachedToScene) {
 		scene = scn;
 		parent = scene.parent;
-		pg3d = (PGraphics3D) parent.g; // g may change
+		pg3d = scene.pg3d;
 		attachedToPCam = attachedToScene;
 
 		for (int i = 0; i < normal.length; i++)
@@ -187,7 +187,7 @@ public class Camera implements Cloneable {
 		fpCoefficients = new float[6][4];
 
 		// KeyFrames
-		interpolationKfi = new KeyFrameInterpolator(frame(), parent);
+		interpolationKfi = new KeyFrameInterpolator(frame(), parent, pg3d);
 		kfi = new HashMap<Integer, KeyFrameInterpolator>();
 
 		setFrame(new InteractiveCameraFrame(scene));
@@ -1762,7 +1762,7 @@ public class Camera implements Cloneable {
 	public void addKeyFrameToPath(int key, boolean editablePath) {
 		boolean info = true;
 		if (!kfi.containsKey(key)) {
-			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), parent));
+			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), parent, pg3d));
 			System.out.println("Position " + key + " saved");
 			info = false;
 		}

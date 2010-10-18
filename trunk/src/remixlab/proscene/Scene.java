@@ -1278,6 +1278,9 @@ public class Scene implements PConstants {
 		// handle possible resize events
 		// weird: we need to bypass the handling of a resize event when running the
 		// applet from eclipse
+		
+		pg3d.background(0);
+		
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
 			if (backgroundIsHandled() && (backgroundMode == BackgroundMode.PIMAGE))
 				this.background(this.image);
@@ -1521,7 +1524,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.DrawingUtils#drawAxis(PApplet)
 	 */
 	public void drawAxis() {
-		DrawingUtils.drawAxis(parent);
+		DrawingUtils.drawAxis(pg3d);
 	}
 
 	/**
@@ -1531,7 +1534,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.DrawingUtils#drawAxis(PApplet, float)
 	 */
 	public void drawAxis(float length) {
-		DrawingUtils.drawAxis(parent, length);
+		DrawingUtils.drawAxis(pg3d, length);
 	}
 
 	/**
@@ -1541,7 +1544,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet)
 	 */
 	public void drawGrid() {
-		DrawingUtils.drawGrid(parent, 100, 10);
+		DrawingUtils.drawGrid(pg3d, 100, 10);
 	}
 
 	/**
@@ -1551,7 +1554,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float)
 	 */
 	public void drawGrid(float size) {
-		DrawingUtils.drawGrid(parent, size, 10);
+		DrawingUtils.drawGrid(pg3d, size, 10);
 	}
 
 	/**
@@ -1561,7 +1564,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
 	 */
 	public void drawGrid(int nbSubdivisions) {
-		DrawingUtils.drawGrid(parent, 100, nbSubdivisions);
+		DrawingUtils.drawGrid(pg3d, 100, nbSubdivisions);
 	}
 
 	/**
@@ -1571,7 +1574,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
 	 */
 	public void drawGrid(float size, int nbSubdivisions) {
-		DrawingUtils.drawGrid(parent, size, nbSubdivisions);
+		DrawingUtils.drawGrid(pg3d, size, nbSubdivisions);
 	}
 
 	/**
