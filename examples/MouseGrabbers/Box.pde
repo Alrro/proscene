@@ -21,8 +21,6 @@
  * Observe that this class is used among many examples, such as MouseGrabber
  * CajasOrientadas, PointUnderPixel and ScreenDrawing. Hence, it's quite
  * complete, but its functionality is not totally exploited by this example.
- *
- * Press 'h' to toggle the mouse and keyboard navigation help.
  */
 
 public class Box {

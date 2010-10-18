@@ -6,6 +6,10 @@
  * can be customized and how to do it.
  * 
  * Read the commented lines of the sketch code for details.
+ *
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;

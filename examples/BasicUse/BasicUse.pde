@@ -5,7 +5,9 @@
  * This example illustrates a direct approach to using proscene by Scene proper
  * instantiation.
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;

@@ -7,8 +7,12 @@
  * proscene (camera and interactive frame, being the other two).
  * Once you select a box it will be highlighted and you can manipulate
  * it with the mouse. Try the different mouse buttons to see what happens.
+ *
+ * The displayed texts are interactive. Click on them to see what happens.
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help. 
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console. 
  */
 
 import remixlab.proscene.*;

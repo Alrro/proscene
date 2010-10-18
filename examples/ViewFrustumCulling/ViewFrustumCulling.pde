@@ -12,7 +12,9 @@
  * This example requires the napplet library (http://github.com/acsmith/napplet)
  * (download it here: http://github.com/acsmith/napplet/downloads).
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;

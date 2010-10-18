@@ -2,9 +2,11 @@
  * Alternative Use.
  * by Jean Pierre Charalambos.
  * 
- * This example illustrates an alternative approach to using proscene through inheritance.
+ * This example illustrates how to using proscene through inheritance.
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;

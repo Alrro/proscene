@@ -11,9 +11,9 @@
  * Click on a frame visual hint to select a part of the lamp, and then move it with
  * the mouse.
  * 
- * Press 'f' to toggle the drawing of the frames' visual hints.
- * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -27,6 +27,7 @@ void setup() {
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
   scene.setFrameSelectionHintIsDrawn(true);
+  // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   lamp = new Lamp();
 }

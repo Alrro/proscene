@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta2)      
+ *                     ProScene (version 0.9.96)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -191,8 +191,10 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
-			flyTimer.cancel();
-			flyTimer.purge();
+			if(flyTimer != null) {
+				flyTimer.cancel();
+				flyTimer.purge();
+			}
 			flyTimer=new Timer();
 			TimerTask timerTask = new TimerTask() {
 				public void run() {
@@ -310,8 +312,10 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)) {
+			if(flyTimer != null) {
 				flyTimer.cancel();
 				flyTimer.purge();
+			}
 		}
 
 		super.mouseReleased(eventPoint, camera);
@@ -369,8 +373,10 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		int finalDrawAfterWheelEventDelay = 400;
 		
 	  // Starts (or prolungates) the timer.
-		flyTimer.cancel();
-		flyTimer.purge();
+		if(flyTimer != null) {
+			flyTimer.cancel();
+			flyTimer.purge();
+		}
 		flyTimer=new Timer();
 		TimerTask timerTask = new TimerTask() {
 			public void run() {

@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta2)      
+ *                     ProScene (version 0.9.96)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -29,7 +29,6 @@ package remixlab.proscene;
 import java.util.Timer;
 import java.util.TimerTask;
 import processing.core.*;
-
 
 /**
  * The InteractiveCameraFrame class represents an InteractiveFrame with Camera
@@ -305,8 +304,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		int finalDrawAfterWheelEventDelay = 400;
 
 		// Starts (or prolungates) the timer.
-		flyTimer.cancel();
-		flyTimer.purge();
+		if(flyTimer != null) {
+			flyTimer.cancel();
+			flyTimer.purge();
+		}
 		flyTimer=new Timer();
 		TimerTask timerTask = new TimerTask() {
 			public void run() {

@@ -14,9 +14,9 @@
  * Click the space bar to switch between the different camera modes: ARCBALL,
  * WALKTHROUGH, and THIRD_PERSON.
  * 
- * Press 'f' to toggle the drawing of the frames' visual hints.
- * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -34,6 +34,7 @@ boolean avoidWalls = true;
 void setup() {
   size(640, 360, P3D);  
   scene = new Scene(this);
+  // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
   scene.setAxisIsDrawn(false);

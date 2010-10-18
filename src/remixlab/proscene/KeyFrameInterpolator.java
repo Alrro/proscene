@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta2)      
+ *                     ProScene (version 0.9.96)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -521,8 +521,10 @@ public class KeyFrameInterpolator implements Cloneable {
 			if ((interpolationSpeed() < 0.0)
 					&& (interpolationTime() <= keyFr.get(0).time()))
 				setInterpolationTime(keyFr.get(keyFr.size() - 1).time());
-			timer.cancel();
-			timer.purge();
+			if(timer != null) {
+				timer.cancel();
+				timer.purge();
+			}
 			timer=new Timer();
 			TimerTask timerTask = new TimerTask() {
 				public void run() {
@@ -541,8 +543,10 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@link #interpolationIsStarted()} and {@link #toggleInterpolation()}.
 	 */
 	public void stopInterpolation() {
-		timer.cancel();
-		timer.purge();
+		if(timer != null) {
+			timer.cancel();
+			timer.purge();
+		}
 		interpolationStrt = false;
 	}
 

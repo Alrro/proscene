@@ -7,10 +7,9 @@
  * and they can be defined respect to the local, world or camera frames. Try all the
  * possibilities following the on screen helping text.
  * 
- * Press 'i' to switch the interaction between the camera frame and
- * the interactive frame.
- * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -30,7 +29,9 @@ void setup() {
   textMode(SCREEN);
 
   scene = new Scene(this);
+  // press 'i' to switch the interaction between the camera frame and the interactive frame
   scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+  // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setGridIsDrawn(false);

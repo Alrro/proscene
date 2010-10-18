@@ -5,11 +5,13 @@
  * This example illustrates the three interactive frame mechanisms built-in proscene:
  * Camera, InteractiveFrame and MouseGrabber.
  * 
- * Press 'i' to switch the interaction between the camera frame and the interactive
- * frame. You can also manipulate the interactive frame by picking the blue box passing
- * the mouse next to its axis origin (press 'f' to display a visual hint for that).
+ * Press 'i' (which is a shortcut defined below) to switch the interaction between the
+ * camera frame and the interactive frame. You can also manipulate the interactive
+ * frame by picking the blue box passing the mouse next to its axis origin.
  * 
- * Press 'h' to toggle the mouse and keyboard navigation help.
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -22,7 +24,9 @@ void setup() {
   // A Scene has a single InteractiveFrame (null by default). We set it here.
   scene.setInteractiveFrame(new InteractiveFrame(scene));
   scene.interactiveFrame().translate(new PVector(30, 30, 0));
+  // press 'i' to switch the interaction between the camera frame and the interactive frame
   scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+  // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 }
 

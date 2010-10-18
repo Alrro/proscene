@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta2)      
+ *                     ProScene (version 0.9.96)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -204,7 +204,6 @@ public class CameraProfile {
 		setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
 		setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
 
-		//setCameraShortcut( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK | InputEvent.BUTTON2_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
 		setCameraMouseBinding( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
 		setCameraMouseBinding( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), Scene.MouseAction.SCREEN_ROTATE);
 
@@ -214,10 +213,9 @@ public class CameraProfile {
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 		
-		//setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
+		setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
 		setClickBinding(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
-		//setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
-		//setClickBinding((InputEvent.ALT_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
+		setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	
   // 1. General stuff

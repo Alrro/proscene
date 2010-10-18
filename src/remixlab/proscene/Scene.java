@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.0-beta2)      
+ *                     ProScene (version 0.9.96)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -435,11 +435,9 @@ public class Scene implements PConstants {
 
 		MouseGrabberPool = new ArrayList<MouseGrabbable>();
 		avatarIsInteractiveDrivableFrame = false;// also init in setAvatar, but we
-		// need it here to properly init
-		// the camera
+		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
-		// need it here to properly init the
-		// camera
+		// need it here to properly init the camera
 		cam = new Camera(this);
 		setCamera(camera());// showAll();It is set in setCamera()
 		setInteractiveFrame(null);
@@ -2257,7 +2255,7 @@ public class Scene implements PConstants {
 		if (foundKP || foundKR || foundKT) {
 			// if( (foundKP || foundKR || foundKT) &&
 			// (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
-			System.out.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene" +
+			System.out.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene " +
 					"keyboard handling with Scene.disableKeyboardHandling() (you can re-enable it later with Scene.enableKeyboardHandling()).");
 		}
 	}
@@ -3066,7 +3064,7 @@ public class Scene implements PConstants {
 		}
 
 		if (foundMD || foundMM || foundMR || foundMP || foundMC) {			
-			System.out.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene" +
+			System.out.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene " +
 			"mouse handling with Scene.disableMouseHandling() (you can re-enable it later with Scene.enableMouseHandling()).");
 		}
 	}
