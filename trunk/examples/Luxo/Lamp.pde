@@ -126,7 +126,7 @@ public class Lamp {
   
   public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
     translate(0.0f, 0.0f, zMin);
-    DrawingUtils.cone(scene.parent, nbSub, 0, 0, r1, r2, zMax-zMin);
+    DrawingUtils.cone((PGraphics3D) scene.parent.g, nbSub, 0, 0, r1, r2, zMax-zMin);
     translate(0.0f, 0.0f, -zMin);
   }
 
