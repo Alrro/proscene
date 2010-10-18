@@ -45,53 +45,53 @@ public class DrawingUtils implements PConstants {
 	 * <p>
 	 * Code adapted from http://www.processingblogs.org/category/processing-java/
 	 */
-	public static void cylinder(PApplet parent, float w, float h) {
+	public static void cylinder(PGraphics3D p3d, float w, float h) {
 		float px, py;
 
-		parent.beginShape(QUAD_STRIP);
+		p3d.beginShape(QUAD_STRIP);
 		for (float i = 0; i < 13; i++) {
 			px = PApplet.cos(PApplet.radians(i * 30)) * w;
 			py = PApplet.sin(PApplet.radians(i * 30)) * w;
-			parent.vertex(px, py, 0);
-			parent.vertex(px, py, h);
+			p3d.vertex(px, py, 0);
+			p3d.vertex(px, py, h);
 		}
-		parent.endShape();
+		p3d.endShape();
 
-		parent.beginShape(TRIANGLE_FAN);
-		parent.vertex(0, 0, 0);
+		p3d.beginShape(TRIANGLE_FAN);
+		p3d.vertex(0, 0, 0);
 		for (float i = 12; i > -1; i--) {
 			px = PApplet.cos(PApplet.radians(i * 30)) * w;
 			py = PApplet.sin(PApplet.radians(i * 30)) * w;
-			parent.vertex(px, py, 0);
+			p3d.vertex(px, py, 0);
 		}
-		parent.endShape();
+		p3d.endShape();
 
-		parent.beginShape(TRIANGLE_FAN);
-		parent.vertex(0, 0, h);
+		p3d.beginShape(TRIANGLE_FAN);
+		p3d.vertex(0, 0, h);
 		for (float i = 0; i < 13; i++) {
 			px = PApplet.cos(PApplet.radians(i * 30)) * w;
 			py = PApplet.sin(PApplet.radians(i * 30)) * w;
-			parent.vertex(px, py, h);
+			p3d.vertex(px, py, h);
 		}
-		parent.endShape();
+		p3d.endShape();
 	}
 
 	/**
-	 * Same as {@code cone(parent, det, 0, 0, r, h);}
+	 * Same as {@code cone(p3d, det, 0, 0, r, h);}
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float)
 	 */
-	public static void cone(PApplet parent, int det, float r, float h) {
-		cone(parent, det, 0, 0, r, h);
+	public static void cone(PGraphics3D p3d, int det, float r, float h) {
+		cone(p3d, det, 0, 0, r, h);
 	}
 
 	/**
-	 * Same as {@code cone(parent, 12, 0, 0, r, h);}
+	 * Same as {@code cone(p3d, 12, 0, 0, r, h);}
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float)
 	 */
-	public static void cone(PApplet parent, float r, float h) {
-		cone(parent, 12, 0, 0, r, h);
+	public static void cone(PGraphics3D p3d, float r, float h) {
+		cone(p3d, 12, 0, 0, r, h);
 	}
 
 	/**
@@ -103,7 +103,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float, float)
 	 */
-	public static void cone(PApplet parent, int detail, float x, float y,
+	public static void cone(PGraphics3D p3d, int detail, float x, float y,
 			float r, float h) {
 		float unitConeX[] = new float[detail + 1];
 		float unitConeY[] = new float[detail + 1];
@@ -114,33 +114,33 @@ public class DrawingUtils implements PConstants {
 			unitConeY[i] = r * (float) Math.sin(a1);
 		}
 
-		parent.pushMatrix();
-		parent.translate(x, y);
-		parent.beginShape(TRIANGLE_FAN);
-		parent.vertex(0, 0, h);
+		p3d.pushMatrix();
+		p3d.translate(x, y);
+		p3d.beginShape(TRIANGLE_FAN);
+		p3d.vertex(0, 0, h);
 		for (int i = 0; i <= detail; i++) {
-			parent.vertex(unitConeX[i], unitConeY[i], 0.0f);
+			p3d.vertex(unitConeX[i], unitConeY[i], 0.0f);
 		}
-		parent.endShape();
-		parent.popMatrix();
+		p3d.endShape();
+		p3d.popMatrix();
 	}
 
 	/**
-	 * Same as {@code cone(parent, det, 0, 0, r1, r2, h);}
+	 * Same as {@code cone(p3d, det, 0, 0, r1, r2, h);}
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float, float)
 	 */
-	public static void cone(PApplet parent, int det, float r1, float r2, float h) {
-		cone(parent, det, 0, 0, r1, r2, h);
+	public static void cone(PGraphics3D p3d, int det, float r1, float r2, float h) {
+		cone(p3d, det, 0, 0, r1, r2, h);
 	}
 
 	/**
-	 * Same as {@code cone(parent, 18, 0, 0, r1, r2, h);}
+	 * Same as {@code cone(p3d, 18, 0, 0, r1, r2, h);}
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float, float)
 	 */
-	public static void cone(PApplet parent, float r1, float r2, float h) {
-		cone(parent, 18, 0, 0, r1, r2, h);
+	public static void cone(PGraphics3D p3d, float r1, float r2, float h) {
+		cone(p3d, 18, 0, 0, r1, r2, h);
 	}
 
 	/**
@@ -150,7 +150,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float)
 	 */
-	public static void cone(PApplet parent, int detail, float x, float y,
+	public static void cone(PGraphics3D p3d, int detail, float x, float y,
 			float r1, float r2, float h) {
 		float firstCircleX[] = new float[detail + 1];
 		float firstCircleY[] = new float[detail + 1];
@@ -165,22 +165,22 @@ public class DrawingUtils implements PConstants {
 			secondCircleY[i] = r2 * (float) Math.sin(a1);
 		}
 
-		parent.pushMatrix();
-		parent.translate(x, y);
-		parent.beginShape(QUAD_STRIP);
+		p3d.pushMatrix();
+		p3d.translate(x, y);
+		p3d.beginShape(QUAD_STRIP);
 		for (int i = 0; i <= detail; i++) {
-			parent.vertex(firstCircleX[i], firstCircleY[i], 0);
-			parent.vertex(secondCircleX[i], secondCircleY[i], h);
+			p3d.vertex(firstCircleX[i], firstCircleY[i], 0);
+			p3d.vertex(secondCircleX[i], secondCircleY[i], h);
 		}
-		parent.endShape();
-		parent.popMatrix();
+		p3d.endShape();
+		p3d.popMatrix();
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawAxis(parent, 100)}
+	 * Convenience function that simply calls {@code drawAxis(p3d, 100)}
 	 */
-	public static void drawAxis(PApplet parent) {
-		drawAxis(parent, 100);
+	public static void drawAxis(PGraphics3D p3d) {
+		drawAxis(p3d, 100);
 	}
 
 	/**
@@ -189,79 +189,79 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawAxis(PApplet parent, float length) {
+	public static void drawAxis(PGraphics3D p3d, float length) {
 		final float charWidth = length / 40.0f;
 		final float charHeight = length / 30.0f;
 		final float charShift = 1.04f * length;
 
-		// parent.noLights();
+		// p3d.noLights();
 
-		parent.beginShape(LINES);
-		parent.pushStyle();
-		parent.strokeWeight(2);
+		p3d.beginShape(LINES);
+		p3d.pushStyle();
+		p3d.strokeWeight(2);
 		// The X
-		parent.stroke(255, 178, 178);
-		parent.vertex(charShift, charWidth, -charHeight);
-		parent.vertex(charShift, -charWidth, charHeight);
-		parent.vertex(charShift, -charWidth, -charHeight);
-		parent.vertex(charShift, charWidth, charHeight);
+		p3d.stroke(255, 178, 178);
+		p3d.vertex(charShift, charWidth, -charHeight);
+		p3d.vertex(charShift, -charWidth, charHeight);
+		p3d.vertex(charShift, -charWidth, -charHeight);
+		p3d.vertex(charShift, charWidth, charHeight);
 		// The Y
-		parent.stroke(178, 255, 178);
-		parent.vertex(charWidth, charShift, charHeight);
-		parent.vertex(0.0f, charShift, 0.0f);
-		parent.vertex(-charWidth, charShift, charHeight);
-		parent.vertex(0.0f, charShift, 0.0f);
-		parent.vertex(0.0f, charShift, 0.0f);
-		parent.vertex(0.0f, charShift, -charHeight);
+		p3d.stroke(178, 255, 178);
+		p3d.vertex(charWidth, charShift, charHeight);
+		p3d.vertex(0.0f, charShift, 0.0f);
+		p3d.vertex(-charWidth, charShift, charHeight);
+		p3d.vertex(0.0f, charShift, 0.0f);
+		p3d.vertex(0.0f, charShift, 0.0f);
+		p3d.vertex(0.0f, charShift, -charHeight);
 		// The Z
-		parent.stroke(178, 178, 255);
+		p3d.stroke(178, 178, 255);
 		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			parent.vertex(-charWidth, -charHeight, charShift);
-			parent.vertex(charWidth, -charHeight, charShift);
-			parent.vertex(charWidth, -charHeight, charShift);
-			parent.vertex(-charWidth, charHeight, charShift);
-			parent.vertex(-charWidth, charHeight, charShift);
-			parent.vertex(charWidth, charHeight, charShift);
+			p3d.vertex(-charWidth, -charHeight, charShift);
+			p3d.vertex(charWidth, -charHeight, charShift);
+			p3d.vertex(charWidth, -charHeight, charShift);
+			p3d.vertex(-charWidth, charHeight, charShift);
+			p3d.vertex(-charWidth, charHeight, charShift);
+			p3d.vertex(charWidth, charHeight, charShift);
 		} else {
-			parent.vertex(-charWidth, charHeight, charShift);
-			parent.vertex(charWidth, charHeight, charShift);
-			parent.vertex(charWidth, charHeight, charShift);
-			parent.vertex(-charWidth, -charHeight, charShift);
-			parent.vertex(-charWidth, -charHeight, charShift);
-			parent.vertex(charWidth, -charHeight, charShift);
+			p3d.vertex(-charWidth, charHeight, charShift);
+			p3d.vertex(charWidth, charHeight, charShift);
+			p3d.vertex(charWidth, charHeight, charShift);
+			p3d.vertex(-charWidth, -charHeight, charShift);
+			p3d.vertex(-charWidth, -charHeight, charShift);
+			p3d.vertex(charWidth, -charHeight, charShift);
 		}
-		parent.endShape();
+		p3d.endShape();
 
 		// Z axis
-		parent.noStroke();
-		parent.fill(178, 178, 255);
-		drawArrow(parent, length, 0.01f * length);
+		p3d.noStroke();
+		p3d.fill(178, 178, 255);
+		drawArrow(p3d, length, 0.01f * length);
 
 		// X Axis
-		parent.fill(255, 178, 178);
-		parent.pushMatrix();
-		parent.rotateY(HALF_PI);
-		drawArrow(parent, length, 0.01f * length);
-		parent.popMatrix();
+		p3d.fill(255, 178, 178);
+		p3d.pushMatrix();
+		p3d.rotateY(HALF_PI);
+		drawArrow(p3d, length, 0.01f * length);
+		p3d.popMatrix();
 
 		// Y Axis
-		parent.fill(178, 255, 178);
-		parent.pushMatrix();
-		parent.rotateX(-HALF_PI);
-		drawArrow(parent, length, 0.01f * length);
-		parent.popMatrix();
+		p3d.fill(178, 255, 178);
+		p3d.pushMatrix();
+		p3d.rotateX(-HALF_PI);
+		drawArrow(p3d, length, 0.01f * length);
+		p3d.popMatrix();
 
-		parent.popStyle();
+		p3d.popStyle();
 	}
 
 	/**
-	 * Simply calls {@code drawArrow(parent, length, 0.05f * length)}
+	 * Simply calls {@code drawArrow(p3d, length, 0.05f * length)}
 	 * 
 	 * @see #drawArrow(PApplet, float, float)
 	 */
-	public static void drawArrow(PApplet parent, float length) {
+	public static void drawArrow(PGraphics3D p3d, float length) {
 		float radius = 0.05f * length;
-		drawArrow(parent, length, radius);
+		drawArrow(p3d, length, radius);
 	}
 
 	/**
@@ -272,15 +272,15 @@ public class DrawingUtils implements PConstants {
 	 * Use {@link #drawArrow(PApplet, PVector, PVector, float)} to place the arrow
 	 * in 3D.
 	 */
-	public static void drawArrow(PApplet parent, float length, float radius) {
+	public static void drawArrow(PGraphics3D p3d, float length, float radius) {
 		float head = 2.5f * (radius / length) + 0.1f;
 		float coneRadiusCoef = 4.0f - 5.0f * head;
 
-		DrawingUtils.cylinder(parent, radius, length
+		DrawingUtils.cylinder(p3d, radius, length
 				* (1.0f - head / coneRadiusCoef));
-		parent.translate(0.0f, 0.0f, length * (1.0f - head));
-		DrawingUtils.cone(parent, coneRadiusCoef * radius, head * length);
-		parent.translate(0.0f, 0.0f, -length * (1.0f - head));
+		p3d.translate(0.0f, 0.0f, length * (1.0f - head));
+		DrawingUtils.cone(p3d, coneRadiusCoef * radius, head * length);
+		p3d.translate(0.0f, 0.0f, -length * (1.0f - head));
 	}
 
 	/**
@@ -290,42 +290,42 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawArrow(PApplet, float, float)
 	 */
-	public static void drawArrow(PApplet parent, PVector from, PVector to,
+	public static void drawArrow(PGraphics3D p3d, PVector from, PVector to,
 			float radius) {
-		parent.pushMatrix();
-		parent.translate(from.x, from.y, from.z);
-		parent.applyMatrix(new Quaternion(new PVector(0, 0, 1), PVector.sub(to,
+		p3d.pushMatrix();
+		p3d.translate(from.x, from.y, from.z);
+		p3d.applyMatrix(new Quaternion(new PVector(0, 0, 1), PVector.sub(to,
 				from)).matrix());
-		drawArrow(parent, PVector.sub(to, from).mag(), radius);
-		parent.popMatrix();
+		drawArrow(p3d, PVector.sub(to, from).mag(), radius);
+		p3d.popMatrix();
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawGrid(parent, 100, 10)}
+	 * Convenience function that simply calls {@code drawGrid(p3d, 100, 10)}
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawGrid(PApplet parent) {
-		drawGrid(parent, 100, 10);
+	public static void drawGrid(PGraphics3D p3d) {
+		drawGrid(p3d, 100, 10);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawGrid(parent, size, 10)}
+	 * Convenience function that simply calls {@code drawGrid(p3d, size, 10)}
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawGrid(PApplet parent, float size) {
-		drawGrid(parent, size, 10);
+	public static void drawGrid(PGraphics3D p3d, float size) {
+		drawGrid(p3d, size, 10);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawGrid(parent, 100,
+	 * Convenience function that simply calls {@code drawGrid(p3d, 100,
 	 * nbSubdivisions)}
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawGrid(PApplet parent, int nbSubdivisions) {
-		drawGrid(parent, 100, nbSubdivisions);
+	public static void drawGrid(PGraphics3D p3d, int nbSubdivisions) {
+		drawGrid(p3d, 100, nbSubdivisions);
 	}
 
 	/**
@@ -337,96 +337,96 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawAxis(PApplet, float)
 	 */
-	public static void drawGrid(PApplet parent, float size, int nbSubdivisions) {
-		parent.pushStyle();
-		parent.stroke(170, 170, 170);
-		parent.strokeWeight(1);
-		parent.beginShape(LINES);
+	public static void drawGrid(PGraphics3D p3d, float size, int nbSubdivisions) {		
+		p3d.pushStyle();
+		p3d.stroke(170, 170, 170);
+		p3d.strokeWeight(1);
+		p3d.beginShape(LINES);
 		for (int i = 0; i <= nbSubdivisions; ++i) {
 			final float pos = size * (2.0f * i / nbSubdivisions - 1.0f);
-			parent.vertex(pos, -size);
-			parent.vertex(pos, +size);
-			parent.vertex(-size, pos);
-			parent.vertex(size, pos);
+			p3d.vertex(pos, -size);
+			p3d.vertex(pos, +size);
+			p3d.vertex(-size, pos);
+			p3d.vertex(size, pos);
 		}
-		parent.endShape();
-		parent.popStyle();
+		p3d.endShape();
+		p3d.popStyle();
 	}
 
 	// 2. CAMERA
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, true, 1.0f)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera) {
-		drawCamera(parent, camera, 170, true, 1.0f);
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera) {
+		drawCamera(parent, p3d, camera, 170, true, 1.0f);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, true, scale)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera, float scale) {
-		drawCamera(parent, camera, 170, true, scale);
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, float scale) {
+		drawCamera(parent, p3d, camera, 170, true, scale);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * color, true, 1.0f)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera, int color) {
-		drawCamera(parent, camera, color, true, 1.0f);
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color) {
+		drawCamera(parent, p3d, camera, color, true, 1.0f);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, drawFarPlane, 1.0f)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera,
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera,
 			boolean drawFarPlane) {
-		drawCamera(parent, camera, 170, drawFarPlane, 1.0f);
+		drawCamera(parent, p3d, camera, 170, drawFarPlane, 1.0f);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, drawFarPlane, scale)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera,
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera,
 			boolean drawFarPlane, float scale) {
-		drawCamera(parent, camera, 170, drawFarPlane, scale);
+		drawCamera(parent, p3d, camera, 170, drawFarPlane, scale);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * color, true, scale)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera, int color,
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color,
 			float scale) {
-		drawCamera(parent, camera, color, true, scale);
+		drawCamera(parent, p3d, camera, color, true, scale);
 	}
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, camera,
+	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * color, drawFarPlane, 1.0f)}
 	 * 
 	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, Camera camera, int color,
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color,
 			boolean drawFarPlane) {
-		drawCamera(parent, camera, color, drawFarPlane, 1.0f);
+		drawCamera(parent, p3d, camera, color, drawFarPlane, 1.0f);
 	}
 
 	/**
@@ -444,11 +444,11 @@ public class DrawingUtils implements PConstants {
 	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be
 	 * visible, but may create artifacts due to numerical imprecisions.
 	 */
-	public static void drawCamera(PApplet parent, Camera camera, int color,
+	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color,
 			boolean drawFarPlane, float scale) {
-		parent.pushMatrix();
+		p3d.pushMatrix();
 
-		// parent.applyMatrix(camera.frame().worldMatrix());
+		// p3d.applyMatrix(camera.frame().worldMatrix());
 		// same as the previous line, but maybe more efficient
 		tmpFrame.fromMatrix(camera.frame().worldMatrix());
 		tmpFrame.applyTransformation(parent);
@@ -481,18 +481,18 @@ public class DrawingUtils implements PConstants {
 		int farIndex = drawFarPlane ? 1 : 0;
 
 		// Near and (optionally) far plane(s)
-		parent.pushStyle();
-		parent.noStroke();
-		parent.fill(color);
-		parent.beginShape(PApplet.QUADS);
+		p3d.pushStyle();
+		p3d.noStroke();
+		p3d.fill(color);
+		p3d.beginShape(PApplet.QUADS);
 		for (int i = farIndex; i >= 0; --i) {
-			parent.normal(0.0f, 0.0f, (i == 0) ? 1.0f : -1.0f);
-			parent.vertex(points[i].x, points[i].y, -points[i].z);
-			parent.vertex(-points[i].x, points[i].y, -points[i].z);
-			parent.vertex(-points[i].x, -points[i].y, -points[i].z);
-			parent.vertex(points[i].x, -points[i].y, -points[i].z);
+			p3d.normal(0.0f, 0.0f, (i == 0) ? 1.0f : -1.0f);
+			p3d.vertex(points[i].x, points[i].y, -points[i].z);
+			p3d.vertex(-points[i].x, points[i].y, -points[i].z);
+			p3d.vertex(-points[i].x, -points[i].y, -points[i].z);
+			p3d.vertex(points[i].x, -points[i].y, -points[i].z);
 		}
-		parent.endShape();
+		p3d.endShape();
 
 		// Up arrow
 		float arrowHeight = 1.5f * points[0].y;
@@ -500,84 +500,84 @@ public class DrawingUtils implements PConstants {
 		float arrowHalfWidth = 0.5f * points[0].x;
 		float baseHalfWidth = 0.3f * points[0].x;
 
-		// parent.noStroke();
-		parent.fill(color);
+		// p3d.noStroke();
+		p3d.fill(color);
 		// Base
-		parent.beginShape(PApplet.QUADS);
+		p3d.beginShape(PApplet.QUADS);
 		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			parent.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
-			parent.vertex(baseHalfWidth, -points[0].y, -points[0].z);
-			parent.vertex(baseHalfWidth, -baseHeight, -points[0].z);
-			parent.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
+			p3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
+			p3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
+			p3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
+			p3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
 		} else {
-			parent.vertex(-baseHalfWidth, points[0].y, -points[0].z);
-			parent.vertex(baseHalfWidth, points[0].y, -points[0].z);
-			parent.vertex(baseHalfWidth, baseHeight, -points[0].z);
-			parent.vertex(-baseHalfWidth, baseHeight, -points[0].z);
+			p3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
+			p3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
+			p3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
+			p3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
 		}
-		parent.endShape();
+		p3d.endShape();
 
 		// Arrow
-		parent.fill(color);
-		parent.beginShape(PApplet.TRIANGLES);
+		p3d.fill(color);
+		p3d.beginShape(PApplet.TRIANGLES);
 		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			parent.vertex(0.0f, -arrowHeight, -points[0].z);
-			parent.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
-			parent.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
+			p3d.vertex(0.0f, -arrowHeight, -points[0].z);
+			p3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
+			p3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
 		} else {
-			parent.vertex(0.0f, arrowHeight, -points[0].z);
-			parent.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
-			parent.vertex(arrowHalfWidth, baseHeight, -points[0].z);
+			p3d.vertex(0.0f, arrowHeight, -points[0].z);
+			p3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
+			p3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
 		}
-		parent.endShape();
+		p3d.endShape();
 
 		// Frustum lines
-		parent.stroke(color);
-		parent.strokeWeight(2);
+		p3d.stroke(color);
+		p3d.strokeWeight(2);
 		switch (camera.type()) {
 		case PERSPECTIVE:
-			parent.beginShape(PApplet.LINES);
-			parent.vertex(0.0f, 0.0f, 0.0f);
+			p3d.beginShape(PApplet.LINES);
+			p3d.vertex(0.0f, 0.0f, 0.0f);
 			parent
 					.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex(-points[farIndex].x, points[farIndex].y,
+			p3d.vertex(0.0f, 0.0f, 0.0f);
+			p3d.vertex(-points[farIndex].x, points[farIndex].y,
 					-points[farIndex].z);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex(-points[farIndex].x, -points[farIndex].y,
+			p3d.vertex(0.0f, 0.0f, 0.0f);
+			p3d.vertex(-points[farIndex].x, -points[farIndex].y,
 					-points[farIndex].z);
-			parent.vertex(0.0f, 0.0f, 0.0f);
-			parent.vertex(points[farIndex].x, -points[farIndex].y,
+			p3d.vertex(0.0f, 0.0f, 0.0f);
+			p3d.vertex(points[farIndex].x, -points[farIndex].y,
 					-points[farIndex].z);
-			parent.endShape();
+			p3d.endShape();
 			break;
 		case ORTHOGRAPHIC:
 			if (drawFarPlane) {
-				parent.beginShape(PApplet.LINES);
-				parent.vertex(points[0].x, points[0].y, -points[0].z);
-				parent.vertex(points[1].x, points[1].y, -points[1].z);
-				parent.vertex(-points[0].x, points[0].y, -points[0].z);
-				parent.vertex(-points[1].x, points[1].y, -points[1].z);
-				parent.vertex(-points[0].x, -points[0].y, -points[0].z);
-				parent.vertex(-points[1].x, -points[1].y, -points[1].z);
-				parent.vertex(points[0].x, -points[0].y, -points[0].z);
-				parent.vertex(points[1].x, -points[1].y, -points[1].z);
-				parent.endShape();
+				p3d.beginShape(PApplet.LINES);
+				p3d.vertex(points[0].x, points[0].y, -points[0].z);
+				p3d.vertex(points[1].x, points[1].y, -points[1].z);
+				p3d.vertex(-points[0].x, points[0].y, -points[0].z);
+				p3d.vertex(-points[1].x, points[1].y, -points[1].z);
+				p3d.vertex(-points[0].x, -points[0].y, -points[0].z);
+				p3d.vertex(-points[1].x, -points[1].y, -points[1].z);
+				p3d.vertex(points[0].x, -points[0].y, -points[0].z);
+				p3d.vertex(points[1].x, -points[1].y, -points[1].z);
+				p3d.endShape();
 			}
 		}
 
-		parent.popStyle();
+		p3d.popStyle();
 
-		parent.popMatrix();
+		p3d.popMatrix();
 	}
 
 	// 3. CAMERA
 
-	public static void drawKFICamera(PApplet parent, float scale) {
-		drawKFICamera(parent, 170, scale);
+	public static void drawKFICamera(PGraphics3D p3d, float scale) {
+		drawKFICamera(p3d, 170, scale);
 	}
 
-	public static void drawKFICamera(PApplet parent, int color, float scale) {
+	public static void drawKFICamera(PGraphics3D p3d, int color, float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;
 		float dist = halfHeight / PApplet.tan(PApplet.PI / 8.0f);
@@ -588,56 +588,56 @@ public class DrawingUtils implements PConstants {
 		float baseHalfWidth = 0.3f * halfWidth;
 
 		// Frustum outline
-		parent.pushStyle();
+		p3d.pushStyle();
 
-		parent.noFill();
-		parent.stroke(color);
-		parent.beginShape();
-		parent.vertex(-halfWidth, halfHeight, -dist);
-		parent.vertex(-halfWidth, -halfHeight, -dist);
-		parent.vertex(0.0f, 0.0f, 0.0f);
-		parent.vertex(halfWidth, -halfHeight, -dist);
-		parent.vertex(-halfWidth, -halfHeight, -dist);
-		parent.endShape();
-		parent.noFill();
-		parent.beginShape();
-		parent.vertex(halfWidth, -halfHeight, -dist);
-		parent.vertex(halfWidth, halfHeight, -dist);
-		parent.vertex(0.0f, 0.0f, 0.0f);
-		parent.vertex(-halfWidth, halfHeight, -dist);
-		parent.vertex(halfWidth, halfHeight, -dist);
-		parent.endShape();
+		p3d.noFill();
+		p3d.stroke(color);
+		p3d.beginShape();
+		p3d.vertex(-halfWidth, halfHeight, -dist);
+		p3d.vertex(-halfWidth, -halfHeight, -dist);
+		p3d.vertex(0.0f, 0.0f, 0.0f);
+		p3d.vertex(halfWidth, -halfHeight, -dist);
+		p3d.vertex(-halfWidth, -halfHeight, -dist);
+		p3d.endShape();
+		p3d.noFill();
+		p3d.beginShape();
+		p3d.vertex(halfWidth, -halfHeight, -dist);
+		p3d.vertex(halfWidth, halfHeight, -dist);
+		p3d.vertex(0.0f, 0.0f, 0.0f);
+		p3d.vertex(-halfWidth, halfHeight, -dist);
+		p3d.vertex(halfWidth, halfHeight, -dist);
+		p3d.endShape();
 
 		// Up arrow
-		parent.noStroke();
-		parent.fill(color);
+		p3d.noStroke();
+		p3d.fill(color);
 		// Base
-		parent.beginShape(PApplet.QUADS);
+		p3d.beginShape(PApplet.QUADS);
 		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			parent.vertex(baseHalfWidth, -halfHeight, -dist);
-			parent.vertex(-baseHalfWidth, -halfHeight, -dist);
-			parent.vertex(-baseHalfWidth, -baseHeight, -dist);
-			parent.vertex(baseHalfWidth, -baseHeight, -dist);
+			p3d.vertex(baseHalfWidth, -halfHeight, -dist);
+			p3d.vertex(-baseHalfWidth, -halfHeight, -dist);
+			p3d.vertex(-baseHalfWidth, -baseHeight, -dist);
+			p3d.vertex(baseHalfWidth, -baseHeight, -dist);
 		} else {
-			parent.vertex(-baseHalfWidth, halfHeight, -dist);
-			parent.vertex(baseHalfWidth, halfHeight, -dist);
-			parent.vertex(baseHalfWidth, baseHeight, -dist);
-			parent.vertex(-baseHalfWidth, baseHeight, -dist);
+			p3d.vertex(-baseHalfWidth, halfHeight, -dist);
+			p3d.vertex(baseHalfWidth, halfHeight, -dist);
+			p3d.vertex(baseHalfWidth, baseHeight, -dist);
+			p3d.vertex(-baseHalfWidth, baseHeight, -dist);
 		}
-		parent.endShape();
+		p3d.endShape();
 		// Arrow
-		parent.beginShape(PApplet.TRIANGLES);
+		p3d.beginShape(PApplet.TRIANGLES);
 		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			parent.vertex(0.0f, -arrowHeight, -dist);
-			parent.vertex(arrowHalfWidth, -baseHeight, -dist);
-			parent.vertex(-arrowHalfWidth, -baseHeight, -dist);
+			p3d.vertex(0.0f, -arrowHeight, -dist);
+			p3d.vertex(arrowHalfWidth, -baseHeight, -dist);
+			p3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
 		} else {
-			parent.vertex(0.0f, arrowHeight, -dist);
-			parent.vertex(-arrowHalfWidth, baseHeight, -dist);
-			parent.vertex(arrowHalfWidth, baseHeight, -dist);
+			p3d.vertex(0.0f, arrowHeight, -dist);
+			p3d.vertex(-arrowHalfWidth, baseHeight, -dist);
+			p3d.vertex(arrowHalfWidth, baseHeight, -dist);
 		}
-		parent.endShape();
+		p3d.endShape();
 
-		parent.popStyle();
+		p3d.popStyle();
 	}
 }

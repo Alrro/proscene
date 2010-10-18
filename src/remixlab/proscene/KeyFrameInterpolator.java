@@ -212,17 +212,30 @@ public class KeyFrameInterpolator implements Cloneable {
 
 	// P R O C E S S I N G A P P L E T
 	public PApplet parent;
+	public PGraphics3D pg3d;
 
 	/**
-	 * Convenience constructor that simply calls {@code this(new Frame(), p)}.
+	 * Convenience constructor that simply calls {@code this(new Frame(), p, p.g)}.
+	 * <p>
+	 * Creates an anonymous {@link #frame()} to be interpolated by this
+	 * KeyFrameInterpolator.
+	 * 
+	 * @see #KeyFrameInterpolator(Frame, PApplet)
+	 */	
+	public KeyFrameInterpolator(PApplet p) {
+		this(new Frame(), p, (PGraphics3D) p.g);
+	}	
+	
+	/**
+	 * Convenience constructor that simply calls {@code this(new Frame(), p, p3d)}.
 	 * <p>
 	 * Creates an anonymous {@link #frame()} to be interpolated by this
 	 * KeyFrameInterpolator.
 	 * 
 	 * @see #KeyFrameInterpolator(Frame, PApplet)
 	 */
-	public KeyFrameInterpolator(PApplet p) {
-		this(new Frame(), p);
+	public KeyFrameInterpolator(PApplet p, PGraphics3D p3d) {
+		this(new Frame(), p, p3d);
 	}
 
 	/**
@@ -237,8 +250,9 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * 
 	 * @see #KeyFrameInterpolator(PApplet)
 	 */
-	public KeyFrameInterpolator(Frame frame, PApplet p) {
+	public KeyFrameInterpolator(Frame frame, PApplet p, PGraphics3D p3d) {
 		parent = p;
+		pg3d = p3d;
 		myFrame = new Frame();
 		keyFr = new ArrayList<KeyFrame>();
 		path = new ArrayList<Frame>();
@@ -838,9 +852,9 @@ public class KeyFrameInterpolator implements Cloneable {
 						myFr.applyTransformation(parent);
 
 						if ((mask & 2) != 0)
-							DrawingUtils.drawKFICamera(parent, scale);
+							DrawingUtils.drawKFICamera(pg3d, scale);
 						if ((mask & 4) != 0)
-							DrawingUtils.drawAxis(parent, scale / 10.0f);
+							DrawingUtils.drawAxis(pg3d, scale / 10.0f);
 
 						parent.popMatrix();
 					}
