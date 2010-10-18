@@ -2911,7 +2911,7 @@ public class Scene implements PConstants {
 	 */
 	public String globalHelp() {
 		String description = new String();
-		description += "GLOBAL keyboard shortcut bindings\n";
+		description += "GLOBAL keyboard shortcuts\n";
 		for (Entry<KeyboardShortcut, Scene.KeyboardAction> entry : gProfile.map.entrySet()) {			
 			Character space = ' ';
 			if (!entry.getKey().description().equals(space.toString())) 
@@ -2969,35 +2969,35 @@ public class Scene implements PConstants {
 	 */
 	public String currentCameraProfileHelp() {
 		String description = new String();
-		description += currentCameraProfile().name() + " camera profile shortcut bindings\n";
+		description += currentCameraProfile().name() + " camera profile keyboard shortcuts and mouse bindings\n";
 		int index = 1;
 		if( currentCameraProfile().keyboardShortcutsDescription().length() != 0 ) {
-			description += index + ". " + "Keyboard shortcut bindings\n";
+			description += index + ". " + "Keyboard shortcuts\n";
 			description += currentCameraProfile().keyboardShortcutsDescription();
 			index++;
 		}
 		if( currentCameraProfile().cameraMouseBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Camera mouse shortcut bindings\n";
+			description += index + ". " + "Camera mouse bindings\n";
 			description += currentCameraProfile().cameraMouseBindingsDescription();
 			index++;
 		}
 		if( currentCameraProfile().mouseClickBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Mouse click shortcut bindings\n";
+			description += index + ". " + "Mouse click bindings\n";
 			description += currentCameraProfile().mouseClickBindingsDescription();
 			index++;
 		}
 		if( currentCameraProfile().frameMouseBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Interactive frame mouse shortcut bindings\n";
+			description += index + ". " + "Interactive frame mouse bindings\n";
 			description += currentCameraProfile().frameMouseBindingsDescription();
 			index++;
 		}
 		if( currentCameraProfile().cameraWheelBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Camera mouse wheel shortcut bindings\n";
+			description += index + ". " + "Camera mouse wheel bindings\n";
 			description += currentCameraProfile().cameraWheelBindingsDescription();
 			index++;
 		}
 		if( currentCameraProfile().frameWheelBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Interactive frame mouse wheel shortcut bindings\n";
+			description += index + ". " + "Interactive frame mouse wheel bindings\n";
 			description += currentCameraProfile().frameWheelBindingsDescription();
 			index++;
 		}
