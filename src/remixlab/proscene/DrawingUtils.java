@@ -39,6 +39,10 @@ public class DrawingUtils implements PConstants {
 
 	// 1. SCENE
 
+	public static void cylinder(PApplet parent, float w, float h) {
+		cylinder((PGraphics3D) parent.g, w, h);
+	}
+	
 	/**
 	 * Draws a cylinder of width {@code w} and height {@code h}, along the {@code
 	 * parent} positive {@code z} axis.
@@ -76,6 +80,10 @@ public class DrawingUtils implements PConstants {
 		p3d.endShape();
 	}
 
+	public static void cone(PApplet parent, int det, float r, float h) {
+		cone((PGraphics3D) parent.g, det, r, h);
+	}	
+	
 	/**
 	 * Same as {@code cone(p3d, det, 0, 0, r, h);}
 	 * 
@@ -85,6 +93,10 @@ public class DrawingUtils implements PConstants {
 		cone(p3d, det, 0, 0, r, h);
 	}
 
+	public static void cone(PApplet parent, float r, float h) {
+		cone((PGraphics3D) parent.g, r, h);
+	}		
+	
 	/**
 	 * Same as {@code cone(p3d, 12, 0, 0, r, h);}
 	 * 
@@ -94,6 +106,11 @@ public class DrawingUtils implements PConstants {
 		cone(p3d, 12, 0, 0, r, h);
 	}
 
+	public static void cone(PApplet parent, int detail, float x, float y,
+			float r, float h) {
+		cone((PGraphics3D) parent.g, detail, x, y, r, h);
+	}			
+	
 	/**
 	 * Draws a cone along the {@code parent} positive {@code z} axis, with its
 	 * base centered at {@code (x,y)}, height {@code h}, and radius {@code r}.
@@ -125,6 +142,10 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
+	public static void cone(PApplet parent, int det, float r1, float r2, float h) {
+		cone((PGraphics3D) parent.g, det, r1, r2, h);
+	}
+	
 	/**
 	 * Same as {@code cone(p3d, det, 0, 0, r1, r2, h);}
 	 * 
@@ -134,6 +155,10 @@ public class DrawingUtils implements PConstants {
 		cone(p3d, det, 0, 0, r1, r2, h);
 	}
 
+	public static void cone(PApplet parent, float r1, float r2, float h) {
+		cone((PGraphics3D) parent.g, r1, r2, h);
+	}	
+	
 	/**
 	 * Same as {@code cone(p3d, 18, 0, 0, r1, r2, h);}
 	 * 
@@ -143,6 +168,11 @@ public class DrawingUtils implements PConstants {
 		cone(p3d, 18, 0, 0, r1, r2, h);
 	}
 
+	public static void cone(PApplet parent, int detail, float x, float y,
+			float r1, float r2, float h) {
+		cone((PGraphics3D) parent.g, detail, x, y, r1, r2, h);
+	}		
+	
 	/**
 	 * Draws a truncated cone along the {@code parent} positive {@code z} axis,
 	 * with its base centered at {@code (x,y)}, height {@code h}, and radii
@@ -176,6 +206,10 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
+	public static void drawAxis(PApplet parent) {
+		drawAxis((PGraphics3D) parent.g, 100);
+	}	
+	
 	/**
 	 * Convenience function that simply calls {@code drawAxis(p3d, 100)}
 	 */
@@ -183,6 +217,10 @@ public class DrawingUtils implements PConstants {
 		drawAxis(p3d, 100);
 	}
 
+	public static void drawAxis(PApplet parent, float length) {
+		drawAxis((PGraphics3D) parent.g, length);
+	}		
+	
 	/**
 	 * Draws an axis of length {@code length} which origin correspond to the
 	 * {@code parent}'s world coordinate system origin.
@@ -254,6 +292,10 @@ public class DrawingUtils implements PConstants {
 		p3d.popStyle();
 	}
 
+	public static void drawArrow(PApplet parent, float length) {
+		drawArrow((PGraphics3D) parent.g, length);
+	}			
+	
 	/**
 	 * Simply calls {@code drawArrow(p3d, length, 0.05f * length)}
 	 * 
@@ -264,6 +306,10 @@ public class DrawingUtils implements PConstants {
 		drawArrow(p3d, length, radius);
 	}
 
+	public static void drawArrow(PApplet parent, float length, float radius) {
+		drawArrow((PGraphics3D) parent.g, length, radius);
+	}		
+	
 	/**
 	 * Draws a 3D arrow along the {@code parent} positive Z axis.
 	 * <p>
@@ -283,6 +329,11 @@ public class DrawingUtils implements PConstants {
 		p3d.translate(0.0f, 0.0f, -length * (1.0f - head));
 	}
 
+	public static void drawArrow(PApplet parent, PVector from, PVector to,
+			float radius) {
+		drawArrow((PGraphics3D) parent.g, from, to, radius);
+	}		
+	
 	/**
 	 * Draws a 3D arrow between the 3D point {@code from} and the 3D point {@code
 	 * to}, both defined in the current {@code parent} ModelView coordinates
@@ -300,6 +351,10 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
+	public static void drawGrid(PApplet parent) {
+		drawGrid((PGraphics3D) parent.g);
+	}			
+	
 	/**
 	 * Convenience function that simply calls {@code drawGrid(p3d, 100, 10)}
 	 * 
@@ -309,6 +364,10 @@ public class DrawingUtils implements PConstants {
 		drawGrid(p3d, 100, 10);
 	}
 
+	public static void drawGrid(PApplet parent, float size) {
+		drawGrid((PGraphics3D) parent.g, size);
+	}	
+	
 	/**
 	 * Convenience function that simply calls {@code drawGrid(p3d, size, 10)}
 	 * 
@@ -318,6 +377,10 @@ public class DrawingUtils implements PConstants {
 		drawGrid(p3d, size, 10);
 	}
 
+	public static void drawGrid(PApplet parent, int nbSubdivisions) {
+		drawGrid((PGraphics3D) parent.g, nbSubdivisions);
+	}
+	
 	/**
 	 * Convenience function that simply calls {@code drawGrid(p3d, 100,
 	 * nbSubdivisions)}
@@ -328,6 +391,10 @@ public class DrawingUtils implements PConstants {
 		drawGrid(p3d, 100, nbSubdivisions);
 	}
 
+	public static void drawGrid(PApplet parent, float size, int nbSubdivisions) {
+		drawGrid((PGraphics3D) parent.g, size, nbSubdivisions);
+	}	
+	
 	/**
 	 * Draws a grid in the XY plane, centered on (0,0,0) (defined in the current
 	 * coordinate system).
@@ -355,6 +422,10 @@ public class DrawingUtils implements PConstants {
 
 	// 2. CAMERA
 
+	public static void drawCamera(PApplet parent, Camera camera) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera);
+	}	
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, true, 1.0f)}
@@ -365,6 +436,10 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, 170, true, 1.0f);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera, float scale) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, scale);
+	}		
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, true, scale)}
@@ -375,6 +450,10 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, 170, true, scale);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera, int color) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, color);
+	}			
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * color, true, 1.0f)}
@@ -385,6 +464,11 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, color, true, 1.0f);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera,
+			boolean drawFarPlane) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, drawFarPlane);
+	}			
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, drawFarPlane, 1.0f)}
@@ -396,6 +480,11 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, 170, drawFarPlane, 1.0f);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera,
+			boolean drawFarPlane, float scale) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, drawFarPlane, scale);
+	}		
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * 170, drawFarPlane, scale)}
@@ -407,6 +496,11 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, 170, drawFarPlane, scale);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera, int color,
+			float scale) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, scale);
+	}			
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * color, true, scale)}
@@ -418,6 +512,11 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, color, true, scale);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera, int color,
+			boolean drawFarPlane) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, color, drawFarPlane);
+	}		
+	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
 	 * color, drawFarPlane, 1.0f)}
@@ -429,6 +528,11 @@ public class DrawingUtils implements PConstants {
 		drawCamera(parent, p3d, camera, color, drawFarPlane, 1.0f);
 	}
 
+	public static void drawCamera(PApplet parent, Camera camera, int color,
+			boolean drawFarPlane, float scale) {
+		drawCamera(parent, (PGraphics3D) parent.g, camera, color, drawFarPlane, scale);
+	}		
+	
 	/**
 	 * Draws a representation of the {@code camera} in the {@code parent} 3D
 	 * virtual world using {@code color}.
@@ -573,10 +677,18 @@ public class DrawingUtils implements PConstants {
 
 	// 3. CAMERA
 
+	public static void drawKFICamera(PApplet parent, float scale) {
+		drawKFICamera((PGraphics3D) parent.g, 170, scale);
+	}	
+		
 	public static void drawKFICamera(PGraphics3D p3d, float scale) {
 		drawKFICamera(p3d, 170, scale);
 	}
 
+	public static void drawKFICamera(PApplet parent, int color, float scale) {
+		drawKFICamera((PGraphics3D) parent.g, color, scale);
+	}		
+	
 	public static void drawKFICamera(PGraphics3D p3d, int color, float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;
