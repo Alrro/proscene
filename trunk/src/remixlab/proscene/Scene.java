@@ -360,6 +360,7 @@ public class Scene implements PConstants {
 	public PApplet parent;
 	public PGraphics3D pg3d;
 	int width, height;// size
+	boolean offscreen;
 
 	// O B J E C T S
 	protected DesktopEvents dE;
@@ -412,6 +413,12 @@ public class Scene implements PConstants {
 	/** the name of the method to handle the event */
 	protected String drawHandlerMethodName;
 
+	/**
+	 * All viewer parameters (display flags, scene parameters, associated
+	 * objects...) are set to their default values. The PApplet background is set
+	 * to black. See the associated documentation.
+	 */
+	
 	public Scene(PApplet p) {
 		this(p, (PGraphics3D) p.g);
 	}
@@ -419,7 +426,9 @@ public class Scene implements PConstants {
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
 	 * objects...) are set to their default values. The PApplet background is set
-	 * to black. See the associated documentation.
+	 * to black. See the associated documentation. A custom renderer can be
+	 * specified as well, and if it is different from the PApplet's renderer,
+	 * this will result in an offscreen Scene.
 	 */
 	public Scene(PApplet p, PGraphics3D renderer) {
 		parent = p;
@@ -427,6 +436,10 @@ public class Scene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 
+		// This scene is offscreen if the provided renderer is
+		// different from the main PApplet renderer.
+		offscreen = renderer != p.g;
+		
 		dE = new DesktopEvents(this);
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
@@ -749,6 +762,17 @@ public class Scene implements PConstants {
 		return enableBackground;
 	}
 
+	/**
+	 * Returns {@code true} if this Scene is associated to an offscreen 
+	 * renderer and {@code false} otherwise.
+	 * 
+	 * @see #Scene()
+	 */
+	
+	public boolean isOffscreen() {
+		return offscreen;
+	}
+	
 	/**
 	 * Toggles the state of the {@link #backgroundIsHandled()}.
 	 * 
@@ -1275,12 +1299,11 @@ public class Scene implements PConstants {
 	 * user flags.
 	 */
 	public void pre() {
+		if (isOffscreen()) return;
+		
 		// handle possible resize events
 		// weird: we need to bypass the handling of a resize event when running the
-		// applet from eclipse
-		
-		pg3d.background(0);
-		
+		// applet from eclipse		
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
 			if (backgroundIsHandled() && (backgroundMode == BackgroundMode.PIMAGE))
 				this.background(this.image);
@@ -1328,7 +1351,7 @@ public class Scene implements PConstants {
 		if (frustumEquationsUpdateIsEnable())
 			camera().updateFrustumEquations();
 
-		if (backgroundIsHandled()) {
+		if (backgroundIsHandled() && !isOffscreen()) {
 			setBackground();
 			displayVisualHints();
 		}
@@ -1352,6 +1375,8 @@ public class Scene implements PConstants {
 	 * @see #addDrawHandler(Object, String)
 	 */
 	public void draw() {
+		if (isOffscreen()) return;
+		
 		// 1. Alternative use only
 		proscenium();
 
@@ -1374,6 +1399,40 @@ public class Scene implements PConstants {
 			displayVisualHints();
 	}
 
+	/**
+	 * This method should be called when using offscreen rendering 
+	 * right after renderer.beginDraw(), and it sets the background 
+	 * and display selected visual hints. 
+   */	
+	public void beginDraw() {
+		if (isOffscreen()) {
+			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
+					&& (!camera().anyInterpolationIsStarted())) {
+				camera().setPosition(avatar().cameraPosition());
+				camera().setUpVector(avatar().upVector());
+				camera().lookAt(avatar().target());
+			}
+			// We set the processing camera matrices from our remixlab.proscene.Camera
+			setPProjectionMatrix();
+			setPModelViewMatrix();
+
+			if (frustumEquationsUpdateIsEnable())
+				camera().updateFrustumEquations();
+
+			setBackground();
+			displayVisualHints();			
+		}
+	}
+
+	/**
+	 * This method should be called when using offscreen rendering 
+	 * right before renderer.endDraw(). It currently does nothing though,
+	 * just for code consistency. 
+   */		
+	public void endDraw() {
+		
+	}
+	
 	// 4. Scene dimensions
 
 	/**
