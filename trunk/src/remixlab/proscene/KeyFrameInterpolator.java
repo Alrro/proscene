@@ -220,7 +220,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * Creates an anonymous {@link #frame()} to be interpolated by this
 	 * KeyFrameInterpolator.
 	 * 
-	 * @see #KeyFrameInterpolator(Frame, PApplet)
+	 * @see #KeyFrameInterpolator(PApplet, PGraphics3D)
 	 */	
 	public KeyFrameInterpolator(PApplet p) {
 		this(new Frame(), p, (PGraphics3D) p.g);
@@ -232,7 +232,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * Creates an anonymous {@link #frame()} to be interpolated by this
 	 * KeyFrameInterpolator.
 	 * 
-	 * @see #KeyFrameInterpolator(Frame, PApplet)
+	 * @see #KeyFrameInterpolator(PApplet)
 	 */
 	public KeyFrameInterpolator(PApplet p, PGraphics3D p3d) {
 		this(new Frame(), p, p3d);

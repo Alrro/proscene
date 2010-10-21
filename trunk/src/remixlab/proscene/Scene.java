@@ -417,8 +417,7 @@ public class Scene implements PConstants {
 	 * All viewer parameters (display flags, scene parameters, associated
 	 * objects...) are set to their default values. The PApplet background is set
 	 * to black. See the associated documentation.
-	 */
-	
+	 */	
 	public Scene(PApplet p) {
 		this(p, (PGraphics3D) p.g);
 	}
@@ -766,7 +765,7 @@ public class Scene implements PConstants {
 	 * Returns {@code true} if this Scene is associated to an offscreen 
 	 * renderer and {@code false} otherwise.
 	 * 
-	 * @see #Scene()
+	 * @see #Scene(PApplet, PGraphics3D)
 	 */
 	
 	public boolean isOffscreen() {

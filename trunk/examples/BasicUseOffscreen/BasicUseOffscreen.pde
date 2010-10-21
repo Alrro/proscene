@@ -1,6 +1,6 @@
 /**
  * Basic Use (Offscreen version).
- * by Jean Pierre Charalambos.
+ * by Andres Colubri.
  * 
  * This example illustrates a direct approach to using proscene by Scene proper
  * instantiation, plus integration with offscreen rendering in GLGraphics.
