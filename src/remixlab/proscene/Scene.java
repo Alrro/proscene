@@ -1597,7 +1597,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(parent, 100, 10)}
+	 * DrawingUtils.drawGrid(pg3d, 100, 10)}
 	 * 
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet)
 	 */
@@ -1607,7 +1607,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(parent, size, 10)}
+	 * DrawingUtils.drawGrid(pg3d, size, 10)}
 	 * 
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float)
 	 */
@@ -1617,7 +1617,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(parent, 100, nbSubdivisions)}
+	 * DrawingUtils.drawGrid(pg3d, 100, nbSubdivisions)}
 	 * 
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
 	 */
@@ -1627,7 +1627,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(parent, size, nbSubdivisions)}
+	 * DrawingUtils.drawGrid(pg3d, size, nbSubdivisions)}
 	 * 
 	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
 	 */
@@ -1700,8 +1700,8 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Draws all InteractiveFrames' selection regions (a 10x10 shooter target
-	 * visual hint).
+	 * Draws all InteractiveFrames' selection regions: a shooter target
+	 * visual hint of {@link remixlab.proscene.InteractiveFrame#grabsMouseThreshold()} pixels size.
 	 * 
 	 * <b>Attention:</b> If the InteractiveFrame is part of a Camera path draws
 	 * nothing.
@@ -1715,16 +1715,17 @@ public class Scene implements PConstants {
 				if (!iF.isInCameraPath()) {
 					PVector center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse())
-						drawShooterTarget(pg3d.color(0, 255, 0), center, 12, 2);
+						drawShooterTarget(pg3d.color(0, 255, 0), center, (iF.grabsMouseThreshold() + 1), 2);
 					else
-						drawShooterTarget(pg3d.color(240, 240, 240), center, 10, 1);
+						drawShooterTarget(pg3d.color(240, 240, 240), center, iF.grabsMouseThreshold(), 1);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Draws the selection regions (a 10x10 shooter target visual hint) of all
+	 * Draws the selection regions (a shooter target visual hint of
+	 * {@link remixlab.proscene.InteractiveFrame#grabsMouseThreshold()} pixels size) of all
 	 * InteractiveFrames forming part of the Camera paths.
 	 * 
 	 * @see #drawSelectionHints()
@@ -1736,9 +1737,9 @@ public class Scene implements PConstants {
 				if (iF.isInCameraPath()) {
 					PVector center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse())
-						drawShooterTarget(pg3d.color(0, 255, 255), center, 12, 2);
+						drawShooterTarget(pg3d.color(0, 255, 255), center, (iF.grabsMouseThreshold() + 1), 2);
 					else
-						drawShooterTarget(pg3d.color(255, 255, 0), center, 10, 1);
+						drawShooterTarget(pg3d.color(255, 255, 0), center, iF.grabsMouseThreshold(), 1);
 				}
 			}
 		}
@@ -1746,7 +1747,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Convenience function that simply calls {@code
-	 * drawPointUnderPixelHint(parent.color(255,255,255),px,py,15,3)}.
+	 * drawPointUnderPixelHint(pg3d.color(255,255,255),px,py,15,3)}.
 	 */
 	public void drawCross(float px, float py) {
 		drawCross(pg3d.color(255, 255, 255), px, py, 15, 3);
@@ -1920,8 +1921,7 @@ public class Scene implements PConstants {
 	 * @see #zCoord()
 	 */
 	public void beginScreenDrawing() {
-		if (parent.g != pg3d)
-			pg3d.beginDraw(); // Offscreen rendering.
+		if (parent.g != pg3d)	pg3d.beginDraw(); // Offscreen rendering.
 		if (startCoordCalls != 0)
 			throw new RuntimeException(
 					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
@@ -1941,7 +1941,7 @@ public class Scene implements PConstants {
 
 		pg3d.pushMatrix();
 		if (camera().frame() != null)
-			camera().frame().applyTransformation(parent);
+			camera().frame().applyTransformation(pg3d);
 	}
 
 	/**
@@ -2954,11 +2954,11 @@ public class Scene implements PConstants {
 		if (onConsole)
 			System.out.println(globalHelp());
 		else { //on applet
-			parent.textFont(parent.createFont("Arial", 12));
-			parent.textMode(SCREEN);
-			parent.fill(0,255,0);
-			parent.textLeading(20);
-			parent.text(globalHelp(), 10, 10, (parent.width-20), (parent.height-20));
+			pg3d.textFont(parent.createFont("Arial", 12));
+			pg3d.textMode(SCREEN);
+			pg3d.fill(0,255,0);
+			pg3d.textLeading(20);
+			pg3d.text(globalHelp(), 10, 10, (pg3d.width-20), (pg3d.height-20));
 		}
 	}
 	
@@ -3007,11 +3007,11 @@ public class Scene implements PConstants {
 		if (onConsole)
 			System.out.println(currentCameraProfileHelp());
 		else { //on applet
-			parent.textFont(parent.createFont("Arial", 12));
-			parent.textMode(SCREEN);
-			parent.fill(0,255,0);
-			parent.textLeading(20);
-			parent.text(currentCameraProfileHelp(), 10, 10, (parent.width-20), (parent.height-20));			
+			pg3d.textFont(parent.createFont("Arial", 12));
+			pg3d.textMode(SCREEN);
+			pg3d.fill(0,255,0);
+			pg3d.textLeading(20);
+			pg3d.text(currentCameraProfileHelp(), 10, 10, (pg3d.width-20), (pg3d.height-20));			
 		}
 	}
 	

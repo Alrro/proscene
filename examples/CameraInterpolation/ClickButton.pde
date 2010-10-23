@@ -1,6 +1,6 @@
 public class ClickButton extends Button2D {
   int path;
-  
+
   public ClickButton(Scene scn, PVector p, int fontSize, int index) {
     this(scn, p, "", fontSize, index);
   }
@@ -27,8 +27,11 @@ public class ClickButton extends Button2D {
         text = "edit camera paths";
     else {
       if(grabsMouse()) {
-        if (scene.camera().keyFrameInterpolator(path).numberOfKeyFrames() > 1)
-          text = "play path ";
+        if (scene.camera().keyFrameInterpolator(path).numberOfKeyFrames() > 1) 
+          if (scene.camera().keyFrameInterpolator(path).interpolationIsStarted())
+            text = "stop path ";
+          else
+            text = "play path ";        
         else
           text = "restore position ";
       }

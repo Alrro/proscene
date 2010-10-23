@@ -175,10 +175,8 @@ public class KeyFrameInterpolator implements Cloneable {
 		}
 
 		void computeTangent(KeyFrame prev, KeyFrame next) {
-			tgPVec = PVector
-					.mult(PVector.sub(next.position(), prev.position()), 0.5f);
-			tgQuat = Quaternion.squadTangent(prev.orientation(), q, next
-					.orientation());
+			tgPVec = PVector.mult(PVector.sub(next.position(), prev.position()), 0.5f);
+			tgQuat = Quaternion.squadTangent(prev.orientation(), q, next.orientation());
 		}
 	}
 
@@ -211,36 +209,44 @@ public class KeyFrameInterpolator implements Cloneable {
 	private PVector v1, v2;
 
 	// P R O C E S S I N G A P P L E T
-	public PApplet parent;
 	public PGraphics3D pg3d;
 
 	/**
-	 * Convenience constructor that simply calls {@code this(new Frame(), p, p.g)}.
+	 * Convenience constructor that simply calls {@code this(new Frame(), p)}.
 	 * <p>
 	 * Creates an anonymous {@link #frame()} to be interpolated by this
 	 * KeyFrameInterpolator.
 	 * 
-	 * @see #KeyFrameInterpolator(PApplet, PGraphics3D)
+	 * @see #KeyFrameInterpolator(Frame, PApplet)
 	 */	
 	public KeyFrameInterpolator(PApplet p) {
-		this(new Frame(), p, (PGraphics3D) p.g);
-	}	
+		this(new Frame(), p);
+	}
 	
 	/**
-	 * Convenience constructor that simply calls {@code this(new Frame(), p, p3d)}.
+	 * Convenience constructor that simply calls {@code this(new Frame(), p3d)}.
 	 * <p>
 	 * Creates an anonymous {@link #frame()} to be interpolated by this
 	 * KeyFrameInterpolator.
 	 * 
-	 * @see #KeyFrameInterpolator(PApplet)
+	 * @see #KeyFrameInterpolator(Frame, PGraphics3D)
 	 */
-	public KeyFrameInterpolator(PApplet p, PGraphics3D p3d) {
-		this(new Frame(), p, p3d);
+	public KeyFrameInterpolator(PGraphics3D p3d) {
+		this(new Frame(), p3d);
+	}
+	
+	/**
+	 * Convenience constructor that simply calls {this(frame, (PGraphics3D) parent.g)}.
+	 * 
+	 * @see #KeyFrameInterpolator(Frame, PGraphics3D)
+	 */
+	public KeyFrameInterpolator(Frame frame, PApplet parent) {
+		this(frame, (PGraphics3D) parent.g);
 	}
 
 	/**
 	 * Creates a KeyFrameInterpolator, with {@code frame} as associated
-	 * {@link #frame()}. {@code p} will be used if
+	 * {@link #frame()}. The {@code p3d} object will be used if
 	 * {@link #drawPath(int, int, float)} is called.
 	 * <p>
 	 * The {@link #frame()} can be set or changed using {@link #setFrame(Frame)}.
@@ -250,8 +256,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * 
 	 * @see #KeyFrameInterpolator(PApplet)
 	 */
-	public KeyFrameInterpolator(Frame frame, PApplet p, PGraphics3D p3d) {
-		parent = p;
+	public KeyFrameInterpolator(Frame frame, PGraphics3D p3d) {
 		pg3d = p3d;
 		myFrame = new Frame();
 		keyFr = new ArrayList<KeyFrame>();
@@ -485,7 +490,7 @@ public class KeyFrameInterpolator implements Cloneable {
 		}
 	}
 
-	public void invalidateValues() {
+	protected void invalidateValues() {
 		valuesAreValid = false;
 		pathIsValid = false;
 		splineCacheIsValid = false;
@@ -780,8 +785,7 @@ public class KeyFrameInterpolator implements Cloneable {
 				updateModifiedFrameValues();
 
 			if (keyFr.get(0) == keyFr.get(keyFr.size() - 1))
-				path
-						.add(new Frame(keyFr.get(0).position(), keyFr.get(0).orientation()));
+				path.add(new Frame(keyFr.get(0).position(), keyFr.get(0).orientation()));
 			else {
 				KeyFrame[] kf = new KeyFrame[4];
 				kf[0] = keyFr.get(0);
@@ -825,17 +829,16 @@ public class KeyFrameInterpolator implements Cloneable {
 		}
 
 		if (mask != 0) {
-			parent.pushStyle();
-			parent.strokeWeight(2);
+			pg3d.pushStyle();
+			pg3d.strokeWeight(2);
 
 			if ((mask & 1) != 0) {
-				parent.noFill();
-				parent.stroke(170);
-				parent.beginShape();
+				pg3d.noFill();
+				pg3d.stroke(170);
+				pg3d.beginShape();
 				for (Frame myFr : path)
-					parent
-							.vertex(myFr.position().x, myFr.position().y, myFr.position().z);
-				parent.endShape();
+					pg3d.vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+				pg3d.endShape();
 			}
 			if ((mask & 6) != 0) {
 				int count = 0;
@@ -846,20 +849,20 @@ public class KeyFrameInterpolator implements Cloneable {
 				for (Frame myFr : path)
 					if ((count++) >= goal) {
 						goal += nbSteps / (float) nbFrames;
-						parent.pushMatrix();
+						pg3d.pushMatrix();
 
-						// parent.applyMatrix(myFr.matrix());
-						myFr.applyTransformation(parent);
+						// pg3d.applyMatrix(myFr.matrix());
+						myFr.applyTransformation(pg3d);
 
 						if ((mask & 2) != 0)
 							DrawingUtils.drawKFICamera(pg3d, scale);
 						if ((mask & 4) != 0)
 							DrawingUtils.drawAxis(pg3d, scale / 10.0f);
 
-						parent.popMatrix();
+						pg3d.popMatrix();
 					}
 			}
-			parent.popStyle();
+			pg3d.popStyle();
 		}
 	}
 

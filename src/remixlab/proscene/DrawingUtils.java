@@ -38,14 +38,19 @@ public class DrawingUtils implements PConstants {
 	static protected Frame tmpFrame = new Frame();
 
 	// 1. SCENE
-
+	
+	/**
+	 * Convenience wrapper function that simply calls {@code cylinder((PGraphics3D) parent.g, w, h)}.
+	 * 
+	 * @see #cylinder(PGraphics3D, float, float) 
+	 */
 	public static void cylinder(PApplet parent, float w, float h) {
 		cylinder((PGraphics3D) parent.g, w, h);
 	}
 	
 	/**
 	 * Draws a cylinder of width {@code w} and height {@code h}, along the {@code
-	 * parent} positive {@code z} axis.
+	 * p3d} positive {@code z} axis.
 	 * <p>
 	 * Code adapted from http://www.processingblogs.org/category/processing-java/
 	 */
@@ -80,6 +85,11 @@ public class DrawingUtils implements PConstants {
 		p3d.endShape();
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, det, r, h)}.
+	 * 
+	 * @see #cone(PGraphics3D, int, float, float)
+	 */
 	public static void cone(PApplet parent, int det, float r, float h) {
 		cone((PGraphics3D) parent.g, det, r, h);
 	}	
@@ -87,12 +97,17 @@ public class DrawingUtils implements PConstants {
 	/**
 	 * Same as {@code cone(p3d, det, 0, 0, r, h);}
 	 * 
-	 * @see #cone(PApplet, int, float, float, float, float)
+	 * @see #cone(PGraphics3D, int, float, float, float, float)
 	 */
 	public static void cone(PGraphics3D p3d, int det, float r, float h) {
 		cone(p3d, det, 0, 0, r, h);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, r, h)}.
+	 * 
+	 * @see #cone(PGraphics3D, float, float)
+	 */
 	public static void cone(PApplet parent, float r, float h) {
 		cone((PGraphics3D) parent.g, r, h);
 	}		
@@ -100,28 +115,31 @@ public class DrawingUtils implements PConstants {
 	/**
 	 * Same as {@code cone(p3d, 12, 0, 0, r, h);}
 	 * 
-	 * @see #cone(PApplet, int, float, float, float, float)
+	 * @see #cone(PGraphics3D, int, float, float, float, float)
 	 */
 	public static void cone(PGraphics3D p3d, float r, float h) {
 		cone(p3d, 12, 0, 0, r, h);
 	}
 
-	public static void cone(PApplet parent, int detail, float x, float y,
-			float r, float h) {
+	/**
+	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, detail, x, y, r, h)}.
+	 * 
+	 * @see #cone(PGraphics3D, int, float, float, float, float)
+	 */
+	public static void cone(PApplet parent, int detail, float x, float y,	float r, float h) {
 		cone((PGraphics3D) parent.g, detail, x, y, r, h);
 	}			
 	
 	/**
-	 * Draws a cone along the {@code parent} positive {@code z} axis, with its
+	 * Draws a cone along the {@code p3d} positive {@code z} axis, with its
 	 * base centered at {@code (x,y)}, height {@code h}, and radius {@code r}.
 	 * <p>
 	 * The code of this function was adapted from
 	 * http://processinghacks.com/hacks:cone Thanks to Tom Carden.
 	 * 
-	 * @see #cone(PApplet, int, float, float, float, float, float)
+	 * @see #cone(PGraphics3D, int, float, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, int detail, float x, float y,
-			float r, float h) {
+	public static void cone(PGraphics3D p3d, int detail, float x, float y, float r, float h) {
 		float unitConeX[] = new float[detail + 1];
 		float unitConeY[] = new float[detail + 1];
 
@@ -142,6 +160,12 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls
+	 * {@code cone((PGraphics3D) parent.g, det, r1, r2, h)}.
+	 * 
+	 * @see #cone(PGraphics3D, int, float, float, float)
+	 */
 	public static void cone(PApplet parent, int det, float r1, float r2, float h) {
 		cone((PGraphics3D) parent.g, det, r1, r2, h);
 	}
@@ -155,6 +179,11 @@ public class DrawingUtils implements PConstants {
 		cone(p3d, det, 0, 0, r1, r2, h);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, r1, r2, h)}.
+	 * 
+	 * @see #cone(PGraphics3D, float, float, float)
+	 */
 	public static void cone(PApplet parent, float r1, float r2, float h) {
 		cone((PGraphics3D) parent.g, r1, r2, h);
 	}	
@@ -168,8 +197,12 @@ public class DrawingUtils implements PConstants {
 		cone(p3d, 18, 0, 0, r1, r2, h);
 	}
 
-	public static void cone(PApplet parent, int detail, float x, float y,
-			float r1, float r2, float h) {
+	/**
+	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, detail, x, y, r, h)}.
+	 * 
+	 * @see #cone(PGraphics3D, int, float, float, float, float)
+	 */
+	public static void cone(PApplet parent, int detail, float x, float y,	float r1, float r2, float h) {
 		cone((PGraphics3D) parent.g, detail, x, y, r1, r2, h);
 	}		
 	
@@ -206,6 +239,11 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawAxis((PGraphics3D) parent.g, 100)}.
+	 * 
+	 * @see #drawAxis(PGraphics3D, float)
+	 */
 	public static void drawAxis(PApplet parent) {
 		drawAxis((PGraphics3D) parent.g, 100);
 	}	
@@ -217,6 +255,11 @@ public class DrawingUtils implements PConstants {
 		drawAxis(p3d, 100);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawAxis((PGraphics3D) parent.g, length)}.
+	 * 
+	 * @see #drawAxis(PGraphics3D, float)
+	 */
 	public static void drawAxis(PApplet parent, float length) {
 		drawAxis((PGraphics3D) parent.g, length);
 	}		
@@ -292,6 +335,11 @@ public class DrawingUtils implements PConstants {
 		p3d.popStyle();
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphics3D) parent.g, length)}.
+	 * 
+	 * @see #drawArrow(PGraphics3D, float)
+	 */
 	public static void drawArrow(PApplet parent, float length) {
 		drawArrow((PGraphics3D) parent.g, length);
 	}			
@@ -306,6 +354,11 @@ public class DrawingUtils implements PConstants {
 		drawArrow(p3d, length, radius);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphics3D) parent.g, length, radius)}.
+	 * 
+	 * @see #drawArrow(PGraphics3D, float, float)
+	 */
 	public static void drawArrow(PApplet parent, float length, float radius) {
 		drawArrow((PGraphics3D) parent.g, length, radius);
 	}		
@@ -329,8 +382,12 @@ public class DrawingUtils implements PConstants {
 		p3d.translate(0.0f, 0.0f, -length * (1.0f - head));
 	}
 
-	public static void drawArrow(PApplet parent, PVector from, PVector to,
-			float radius) {
+	/**
+	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphics3D) parent.g, from, to, radius)}.
+	 * 
+	 * @see #drawArrow(PGraphics3D, PVector, PVector, float)
+	 */
+	public static void drawArrow(PApplet parent, PVector from, PVector to, float radius) {
 		drawArrow((PGraphics3D) parent.g, from, to, radius);
 	}		
 	
@@ -351,6 +408,11 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g)}.
+	 * 
+	 * @see #drawGrid(PGraphics3D)
+	 */
 	public static void drawGrid(PApplet parent) {
 		drawGrid((PGraphics3D) parent.g);
 	}			
@@ -364,6 +426,11 @@ public class DrawingUtils implements PConstants {
 		drawGrid(p3d, 100, 10);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g, size)}.
+	 * 
+	 * @see #drawGrid(PGraphics3D, float)
+	 */
 	public static void drawGrid(PApplet parent, float size) {
 		drawGrid((PGraphics3D) parent.g, size);
 	}	
@@ -377,6 +444,11 @@ public class DrawingUtils implements PConstants {
 		drawGrid(p3d, size, 10);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g, nbSubdivisions)}.
+	 * 
+	 * @see #drawGrid(PGraphics3D, int)
+	 */
 	public static void drawGrid(PApplet parent, int nbSubdivisions) {
 		drawGrid((PGraphics3D) parent.g, nbSubdivisions);
 	}
@@ -391,6 +463,11 @@ public class DrawingUtils implements PConstants {
 		drawGrid(p3d, 100, nbSubdivisions);
 	}
 
+	/**
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g, size, nbSubdivisions)}.
+	 * 
+	 * @see #drawGrid(PGraphics3D, float, int)
+	 */
 	public static void drawGrid(PApplet parent, float size, int nbSubdivisions) {
 		drawGrid((PGraphics3D) parent.g, size, nbSubdivisions);
 	}	
@@ -404,7 +481,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawAxis(PApplet, float)
 	 */
-	public static void drawGrid(PGraphics3D p3d, float size, int nbSubdivisions) {		
+	public static void drawGrid(PGraphics3D p3d, float size, int nbSubdivisions) {
 		p3d.pushStyle();
 		p3d.stroke(170, 170, 170);
 		p3d.strokeWeight(1);
@@ -419,122 +496,151 @@ public class DrawingUtils implements PConstants {
 		p3d.endShape();
 		p3d.popStyle();
 	}
-
+	
 	// 2. CAMERA
-
-	public static void drawCamera(PApplet parent, Camera camera) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera);
-	}	
 	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, true, 1.0f)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera) {
+		drawCamera((PGraphics3D) parent.g, camera, 170, true, 1.0f);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * 170, true, 1.0f)}
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D p3d, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera) {
-		drawCamera(parent, p3d, camera, 170, true, 1.0f);
+	public static void drawCamera(PGraphics3D p3d, Camera camera) {
+		drawCamera(p3d, camera, 170, true, 1.0f);
 	}
-
-	public static void drawCamera(PApplet parent, Camera camera, float scale) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, scale);
-	}		
 	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, true, scale)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera, float scale) {
+		drawCamera((PGraphics3D) parent.g, camera, 170, true, scale);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * 170, true, scale)}
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, float scale) {
-		drawCamera(parent, p3d, camera, 170, true, scale);
+	public static void drawCamera(PGraphics3D p3d, Camera camera, float scale) {
+		drawCamera(p3d, camera, 170, true, scale);
 	}
-
-	public static void drawCamera(PApplet parent, Camera camera, int color) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, color);
-	}			
 	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, true, 1.0f)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera, int color) {
+		drawCamera((PGraphics3D) parent.g, camera, color, true, 1.0f);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * color, true, 1.0f)}
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color) {
-		drawCamera(parent, p3d, camera, color, true, 1.0f);
+	public static void drawCamera(PGraphics3D p3d, Camera camera, int color) {
+		drawCamera(p3d, camera, color, true, 1.0f);
 	}
-
-	public static void drawCamera(PApplet parent, Camera camera,
-			boolean drawFarPlane) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, drawFarPlane);
-	}			
 	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, 1.0f)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera,	boolean drawFarPlane) {
+		drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, 1.0f);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * 170, drawFarPlane, 1.0f)}
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera,
-			boolean drawFarPlane) {
-		drawCamera(parent, p3d, camera, 170, drawFarPlane, 1.0f);
+	public static void drawCamera(PGraphics3D p3d, Camera camera,	boolean drawFarPlane) {
+		drawCamera(p3d, camera, 170, drawFarPlane, 1.0f);
 	}
-
-	public static void drawCamera(PApplet parent, Camera camera,
-			boolean drawFarPlane, float scale) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, drawFarPlane, scale);
-	}		
 	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
-	 * 170, drawFarPlane, scale)}
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, scale)}.
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera,
-			boolean drawFarPlane, float scale) {
-		drawCamera(parent, p3d, camera, 170, drawFarPlane, scale);
+	public static void drawCamera(PApplet parent, Camera camera,	boolean drawFarPlane, float scale) {
+		drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, scale);
 	}
 
-	public static void drawCamera(PApplet parent, Camera camera, int color,
-			float scale) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, scale);
-	}			
-	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
-	 * color, true, scale)}
+	 * Convenience function that simply calls {@code drawCamera(p3d, camera, 170, drawFarPlane, scale)}
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color,
-			float scale) {
-		drawCamera(parent, p3d, camera, color, true, scale);
+	public static void drawCamera(PGraphics3D p3d, Camera camera,	boolean drawFarPlane, float scale) {
+		drawCamera(p3d, camera, 170, drawFarPlane, scale);
 	}
-
-	public static void drawCamera(PApplet parent, Camera camera, int color,
-			boolean drawFarPlane) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, color, drawFarPlane);
-	}		
 	
 	/**
-	 * Convenience function that simply calls {@code drawCamera(parent, p3d, camera,
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, true, scale)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera, int color,	float scale) {
+		drawCamera((PGraphics3D) parent.g, camera, color, true, scale);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(p3d, camera, color, true, scale)}
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PGraphics3D p3d, Camera camera, int color,	float scale) {
+		drawCamera(p3d, camera, color, true, scale);
+	}
+
+	/**
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, 1.0f)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera, int color,	boolean drawFarPlane) {
+		drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, 1.0f);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawCamera(parent, camera,
 	 * color, drawFarPlane, 1.0f)}
 	 * 
-	 * @see #drawCamera(PApplet, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color,
-			boolean drawFarPlane) {
-		drawCamera(parent, p3d, camera, color, drawFarPlane, 1.0f);
+	public static void drawCamera(PGraphics3D p3d, Camera camera, int color,	boolean drawFarPlane) {
+		drawCamera(p3d, camera, color, drawFarPlane, 1.0f);
 	}
-
-	public static void drawCamera(PApplet parent, Camera camera, int color,
-			boolean drawFarPlane, float scale) {
-		drawCamera(parent, (PGraphics3D) parent.g, camera, color, drawFarPlane, scale);
-	}		
 	
 	/**
-	 * Draws a representation of the {@code camera} in the {@code parent} 3D
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, scale)}.
+	 * 
+	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 */
+	public static void drawCamera(PApplet parent, Camera camera, int color, boolean drawFarPlane, float scale) {
+		drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, scale);
+	}
+
+	/**
+	 * Draws a representation of the {@code camera} in the {@code p3d} 3D
 	 * virtual world using {@code color}.
 	 * <p>
 	 * The near and far planes are drawn as quads, the frustum is drawn using
@@ -548,14 +654,13 @@ public class DrawingUtils implements PConstants {
 	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be
 	 * visible, but may create artifacts due to numerical imprecisions.
 	 */
-	public static void drawCamera(PApplet parent, PGraphics3D p3d, Camera camera, int color,
-			boolean drawFarPlane, float scale) {
+	public static void drawCamera(PGraphics3D p3d, Camera camera, int color, boolean drawFarPlane, float scale) {
 		p3d.pushMatrix();
 
 		// p3d.applyMatrix(camera.frame().worldMatrix());
 		// same as the previous line, but maybe more efficient
 		tmpFrame.fromMatrix(camera.frame().worldMatrix());
-		tmpFrame.applyTransformation(parent);
+		tmpFrame.applyTransformation(p3d);
 
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
 		PVector[] points = new PVector[2];
@@ -642,7 +747,7 @@ public class DrawingUtils implements PConstants {
 		case PERSPECTIVE:
 			p3d.beginShape(PApplet.LINES);
 			p3d.vertex(0.0f, 0.0f, 0.0f);
-			parent
+			p3d
 					.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
 			p3d.vertex(0.0f, 0.0f, 0.0f);
 			p3d.vertex(-points[farIndex].x, points[farIndex].y,
@@ -675,20 +780,20 @@ public class DrawingUtils implements PConstants {
 		p3d.popMatrix();
 	}
 
-	// 3. CAMERA
-
+	// 3. KEYFRAMEINTERPOLATOR CAMERA
+	
 	public static void drawKFICamera(PApplet parent, float scale) {
-		drawKFICamera((PGraphics3D) parent.g, 170, scale);
-	}	
-		
+		drawKFICamera(parent, 170, scale);
+	}
+
 	public static void drawKFICamera(PGraphics3D p3d, float scale) {
 		drawKFICamera(p3d, 170, scale);
 	}
-
+	
 	public static void drawKFICamera(PApplet parent, int color, float scale) {
 		drawKFICamera((PGraphics3D) parent.g, color, scale);
-	}		
-	
+	}
+
 	public static void drawKFICamera(PGraphics3D p3d, int color, float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;

@@ -47,6 +47,7 @@ import java.util.Timer;
 
 public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable {
 	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
+	private int grabsMouseThreshold;
 
 	/**
 	 * This enum defines the coordinate system convention which is defined as
@@ -117,6 +118,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isInCamPath = false;
 		grbsMouse = false;
 
+		setGrabsMouseThreshold(10);
 		setRotationSensitivity(1.0f);
 		setTranslationSensitivity(1.0f);
 		setSpinningSensitivity(0.3f);
@@ -140,7 +142,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * <p>
 	 * A call on {@link #isInCameraPath()} on this Frame will return {@code true}.
 	 * 
-	 * <b>Attention:</b> Internal use. You should call this constructor in your
+	 * <b>Attention:</b> Internal use. You should not call this constructor in your
 	 * own applications.
 	 * 
 	 * @see remixlab.proscene.Camera#addKeyFrameToPath(int)
@@ -156,6 +158,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isInCamPath = true;
 		grbsMouse = false;
 
+		setGrabsMouseThreshold(10);
 		setRotationSensitivity(1.0f);
 		setTranslationSensitivity(1.0f);
 		setSpinningSensitivity(0.3f);
@@ -174,12 +177,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 	/**
 	 * Convenience function that simply calls {@code applyTransformation(
-	 * scene.parent )}
+	 * scene.pg3d)}
 	 * 
 	 * @see remixlab.proscene.Frame#applyTransformation(PApplet)
 	 */
 	public void applyTransformation() {
-		applyTransformation(scene.parent);
+		applyTransformation(scene.pg3d);
 	}
 
 	/**
@@ -226,19 +229,42 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 
 	/**
+	 * Returns the grabs mouse threshold which is used by this interactive frame to
+	 * {@link #checkIfGrabsMouse(int, int, Camera)}.
+	 * 
+	 * @see #setGrabsMouseThreshold(int)
+	 */
+	public int grabsMouseThreshold() {
+		return grabsMouseThreshold;
+	}
+	
+	/**
+	 * Sets the number of pixels that defined the {@link #checkIfGrabsMouse(int, int, Camera)}
+	 * condition.
+	 * 
+	 * @param threshold number of pixels that defined the {@link #checkIfGrabsMouse(int, int, Camera)}
+	 * condition. Default value is 10 pixels (which is set in the constructor). Negative values are
+	 * silently ignored.
+	 * 
+	 * @see #grabsMouseThreshold()
+	 * @see #checkIfGrabsMouse(int, int, Camera)
+	 */
+	public void setGrabsMouseThreshold( int threshold ) {
+		if(threshold >= 0)
+			grabsMouseThreshold = threshold; 
+	}
+
+	/**
 	 * Implementation of the MouseGrabber main method.
 	 * <p>
-	 * The InteractiveFrame {@link #grabsMouse()} when the mouse is within a 10
+	 * The InteractiveFrame {@link #grabsMouse()} when the mouse is within a {@link #grabsMouseThreshold()}
 	 * pixels region around its
 	 * {@link remixlab.proscene.Camera#projectedCoordinatesOf(PVector)}
 	 * {@link #position()}.
 	 */
 	public void checkIfGrabsMouse(int x, int y, Camera camera) {
-		int threshold = 10;
 		PVector proj = camera.projectedCoordinatesOf(position());
-
-		setGrabsMouse(keepsGrabbingMouse
-				|| ((PApplet.abs(x - proj.x) < threshold) && (PApplet.abs(y - proj.y) < threshold)));
+		setGrabsMouse(keepsGrabbingMouse || ((PApplet.abs(x - proj.x) < grabsMouseThreshold()) && (PApplet.abs(y - proj.y) < grabsMouseThreshold())));
 	}
 
 	/**
