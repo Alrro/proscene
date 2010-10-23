@@ -143,7 +143,6 @@ public class Camera implements Cloneable {
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
-	public PApplet parent;
 	public PGraphics3D pg3d;
 
 	/**
@@ -175,7 +174,6 @@ public class Camera implements Cloneable {
 	 */
 	public Camera(Scene scn, boolean attachedToScene) {
 		scene = scn;
-		parent = scene.parent;
 		pg3d = scene.pg3d;
 		attachedToPCam = attachedToScene;
 
@@ -187,7 +185,7 @@ public class Camera implements Cloneable {
 		fpCoefficients = new float[6][4];
 
 		// KeyFrames
-		interpolationKfi = new KeyFrameInterpolator(frame(), parent, pg3d);
+		interpolationKfi = new KeyFrameInterpolator(frame(), pg3d);
 		kfi = new HashMap<Integer, KeyFrameInterpolator>();
 
 		setFrame(new InteractiveCameraFrame(scene));
@@ -1546,8 +1544,7 @@ public class Camera implements Cloneable {
 	 * world coordinate system).
 	 */
 	public void setArcballReferencePoint(PVector rap) {
-		float prevDist = PApplet
-				.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
+		float prevDist = PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 
 		frame().setArcballReferencePoint(rap);
 
@@ -1762,7 +1759,7 @@ public class Camera implements Cloneable {
 	public void addKeyFrameToPath(int key, boolean editablePath) {
 		boolean info = true;
 		if (!kfi.containsKey(key)) {
-			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), parent, pg3d));
+			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), pg3d));
 			System.out.println("Position " + key + " saved");
 			info = false;
 		}
