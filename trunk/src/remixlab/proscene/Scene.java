@@ -56,9 +56,9 @@ import java.util.TimerTask;
  * <li><b>External draw handler registration</b>. You can even declare an
  * external drawing method and then register it at the Scene with
  * {@link #addDrawHandler(Object, String)}. That method should return {@code
- * void} and have one single {@code Scene} or {@code PApplet} parameter. This
- * strategy may be useful when there are multiple viewers sharing the same
- * drawing code. See the example <i>StandardCamera</i>.
+ * void} and have one single {@code Scene} parameter. This strategy may be useful
+ * when there are multiple viewers sharing the same drawing code. See the
+ * example <i>StandardCamera</i>.
  * </ol>
  * <p>
  * Proscene provides two interactivity mechanisms to manage your scene: global
@@ -409,15 +409,21 @@ public class Scene implements PConstants {
 	int animationPeriod;
 	private Timer animationTimer;
 
-	// R E G I S T E R D R A W M E T H O D
-	/** Draw handler is called on this or on the papplet */
-	protected Boolean drawHandlerParamIsThis;
+	// R E G I S T E R   D R A W   A N D   A N I M A T I O N   M E T H O D S
+	// Draw
 	/** The object to handle the draw event */
 	protected Object drawHandlerObject;
 	/** The method in drawHandlerObject to execute */
 	protected Method drawHandlerMethod;
 	/** the name of the method to handle the event */
 	protected String drawHandlerMethodName;
+	// Animation
+	/** The object to handle the animation */
+	protected Object animateHandlerObject;
+	/** The method in animateHandlerObject to execute */
+	protected Method animateHandlerMethod;
+	/** the name of the method to handle the animation */
+	protected String animateHandlerMethodName;	
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -498,10 +504,9 @@ public class Scene implements PConstants {
 		parseMouseXxxxMethods();
 
 		// register draw method
-		drawHandlerParamIsThis = null;
-		drawHandlerObject = null;
-		drawHandlerMethod = null;
-		drawHandlerMethodName = null;
+		removeDrawHandler();
+	  // register animation method
+		removeAnimationHandler();
 
 		// called only once
 		init();
@@ -1393,13 +1398,9 @@ public class Scene implements PConstants {
 		// 2. Draw external registered method
 		if (drawHandlerObject != null) {
 			try {
-				if (drawHandlerParamIsThis)
-					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
-				else
-					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { parent });
+				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
 			} catch (Exception e) {
-				System.out.println("Something went wrong when invoking your "
-						+ drawHandlerMethodName + " method");
+				System.out.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
 				e.printStackTrace();
 			}
 		}
@@ -3283,8 +3284,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Attempt to add a 'draw' handler method to the Scene. The default event
-	 * handler is a method that returns void and has one single Scene or PApplet
-	 * parameter.
+	 * handler is a method that returns void and has one single Scene parameter.
 	 * 
 	 * @param obj
 	 *          the object to handle the event
@@ -3292,25 +3292,13 @@ public class Scene implements PConstants {
 	 *          the method to execute in the object handler class
 	 */
 	public void addDrawHandler(Object obj, String methodName) {
-		drawHandlerParamIsThis = true;
 		try {
-			drawHandlerMethod = obj.getClass().getMethod(methodName,
-					new Class[] { Scene.class });
+			drawHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { Scene.class });
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
-		} catch (NoSuchMethodException mE) {
-			drawHandlerParamIsThis = false;
-			try {
-				drawHandlerMethod = obj.getClass().getMethod(methodName,
-						new Class[] { PApplet.class });
-				drawHandlerObject = obj;
-				drawHandlerMethodName = methodName;
-			} catch (Exception e) {
-				drawHandlerParamIsThis = null;
-				System.out.println("Something went wrong when registering your "
-						+ methodName + " method");
-				e.printStackTrace();
-			}
+		} catch (Exception e) {
+			  System.out.println("Something went wrong when registering your " + methodName + " method");
+			  e.printStackTrace();
 		}
 	}
 
@@ -3321,7 +3309,6 @@ public class Scene implements PConstants {
 	 * @see #addDrawHandler(Object, String)
 	 */
 	public void removeDrawHandler() {
-		drawHandlerParamIsThis = null;
 		drawHandlerMethod = null;
 		drawHandlerObject = null;
 		drawHandlerMethodName = null;
@@ -3331,7 +3318,7 @@ public class Scene implements PConstants {
 	 * Returns {@code true} if the user has registered a 'draw' handler method to
 	 * the Scene and {@code false} otherwise.
 	 */
-	public boolean hasRegisteredDraw() {
+	public boolean hasRegisteredDrawHandler() {
 		if (drawHandlerMethodName == null)
 			return false;
 		return true;
@@ -3367,22 +3354,37 @@ public class Scene implements PConstants {
 	 * (provided that your {@link #animate()} and {@code draw()} methods are fast enough).
 	 * <p>
 	 * If you want to know the maximum possible frame rate of your machine on a given scene,
-	 * {@link #setAnimationPeriod(int)} to {@code 0}, and {@link #startAnimation()}. The display
+	 * {@link #setAnimationPeriod(int)} to {@code 1}, and {@link #startAnimation()}. The display
 	 * will then be updated as often as possible, and the frame rate will be meaningful.
 	 * <p>
 	 * <b>Note:</b> This value is taken into account only the next time you call
 	 * {@link #startAnimation()}. If {@link #animationIsStarted()}, you should
-	 * {@link #stopAnimation()} first.
+	 * {@link #stopAnimation()} first. See {@link #restartAnimation()} and
+	 * {@link #setAnimationPeriod(int, boolean)}.
 	 */
 	public int animationPeriod() {
 		return animationPeriod;
 	}
 	
 	/**
-	 * Sets the {@link #animationPeriod()}, in milliseconds.
+	 * Convenience function that simply calls {@code setAnimationPeriod(period, true)}.
+	 * 
+	 * @see #setAnimationPeriod(int, boolean)
 	 */
 	public void setAnimationPeriod(int period) {
-		animationPeriod = period;
+		setAnimationPeriod(period, true);
+	}
+	
+	/**
+	 * Sets the {@link #animationPeriod()}, in milliseconds. If restart is {@code true}
+	 * {@link #restartAnimation()}.
+	 */
+	public void setAnimationPeriod(int period, boolean restart) {
+		if(period>0) {
+			animationPeriod = period;
+			if(restart)
+				restartAnimation();
+		}	
 	}
 	
 	/**
@@ -3398,12 +3400,30 @@ public class Scene implements PConstants {
 		animationTimer = new Timer();
 		TimerTask timerTask = new TimerTask() {
 			public void run() {
-				animate();
-				parent.redraw();
+				performAnimation();
 			}
 		};
 		animationTimer.scheduleAtFixedRate(timerTask, 0, animationPeriod());
 		animationStarted = true;
+	}
+	
+	/**
+	 * Internal use.
+	 * <p>
+	 * Calls the animation handler. Calls {@link #animate()} if there's no such a handler.
+	 */
+	protected void performAnimation() {
+		if (animateHandlerObject != null) {
+			try {
+				animateHandlerMethod.invoke(animateHandlerObject, new Object[] { this });
+			} catch (Exception e) {
+				System.out.println("Something went wrong when invoking your "	+ animateHandlerMethodName + " method");
+				e.printStackTrace();
+			}
+		}
+		else
+			animate();
+		parent.redraw();
 	}
 
 	/**
@@ -3417,6 +3437,16 @@ public class Scene implements PConstants {
 			animationTimer.cancel();
 			animationTimer.purge();
 		}
+	}
+	
+	/**
+	 * Restart the animation.
+	 * <p>
+	 * Simply calls {@link #stopAnimation()} and then {@link #startAnimation()}.
+	 */
+  public void restartAnimation() {
+  	stopAnimation();
+  	startAnimation();
 	}
 	
 	/**
@@ -3439,7 +3469,49 @@ public class Scene implements PConstants {
 	 */
 	public void toggleAnimation() {
 		if (animationIsStarted()) stopAnimation(); else startAnimation();
-	}	
+	}
+	
+	/**
+	 * Attempt to add an 'animation' handler method to the Scene. The default event
+	 * handler is a method that returns void and has one single Scene parameter.
+	 * 
+	 * @param obj
+	 *          the object to handle the event
+	 * @param methodName
+	 *          the method to execute in the object handler class
+	 */
+	public void addAnimationHandler(Object obj, String methodName) {
+		try {
+			animateHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { Scene.class });
+			animateHandlerObject = obj;
+			animateHandlerMethodName = methodName;
+		} catch (Exception e) {
+			  System.out.println("Something went wrong when registering your " + methodName + " method");
+			  e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Unregisters the 'animation' handler method (if any has previously been added to
+	 * the Scene).
+	 * 
+	 * @see #addAnimationHandler(Object, String)
+	 */
+	public void removeAnimationHandler() {
+		animateHandlerMethod = null;
+		animateHandlerObject = null;
+		animateHandlerMethodName = null;
+	}
+
+	/**
+	 * Returns {@code true} if the user has registered an 'animation' handler method to
+	 * the Scene and {@code false} otherwise.
+	 */
+	public boolean hasRegisteredAnimationHandler() {
+		if (animateHandlerMethodName == null)
+			return false;
+		return true;
+	}
 
 	// 12. Processing objects
 
