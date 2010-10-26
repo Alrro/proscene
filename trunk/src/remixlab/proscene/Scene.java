@@ -133,6 +133,7 @@ public class Scene implements PConstants {
 		CAMERA_TYPE("Toggles camera type (orthographic or perspective)"),
 		CAMERA_KIND("Toggles camera kind (proscene or standard)"),
 		/** STEREO, */
+		ANIMATION("Toggles animation"),
 		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
 		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
 		GLOBAL_HELP("Displays the global help"),
@@ -402,6 +403,11 @@ public class Scene implements PConstants {
 	// K E Y B O A R D A N D M O U S E
 	protected boolean mouseHandling;
 	protected boolean keyboardHandling;
+	
+	// A N I M A T I O N
+	boolean animationStarted;
+	int animationPeriod;
+	private Timer animationTimer;
 
 	// R E G I S T E R D R A W M E T H O D
 	/** Draw handler is called on this or on the papplet */
@@ -460,6 +466,11 @@ public class Scene implements PConstants {
 
 		initDefaultCameraProfiles();
 
+		//animation
+		animationTimer = new Timer();
+		stopAnimation();
+		setAnimationPeriod(40); // 25Hz
+		
 		arpFlag = false;
 		pupFlag = false;
 
@@ -2764,6 +2775,9 @@ public class Scene implements PConstants {
 		case CAMERA_KIND:
 			toggleCameraKind();
 			break;
+		case ANIMATION:
+			toggleAnimation();
+			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
 				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
@@ -3322,8 +3336,112 @@ public class Scene implements PConstants {
 			return false;
 		return true;
 	}
+	
+	// 11. Animation
+	
+	/**
+	 * Return {@code true} when the animation loop is started.
+	 * <p>
+	 * During animation, an infinite loop calls {@link #animate()} {@code parent.redraw()}
+	 * (which in turn calls {@code PApplet.draw()}) and then waits for
+	 * {@link #animationPeriod} milliseconds before calling
+	 * {@link #animate()} {@code parent.redraw()}. And again.
+	 * <p>
+	 * Use {@link #startAnimation()}, {@link #stopAnimation()} or {@link #toggleAnimation()}
+	 * to change this value.
+	 */
+	public boolean animationIsStarted() {
+		return animationStarted;
+	}
+	
+	/**
+	 * The animation loop period, in milliseconds.
+	 * <p>
+	 * When {@link #animationIsStarted()}, this is delay waited after {@code parent.redraw()}
+	 * to call {@link #animate()} and {@code parent.redraw()} (which in turn calls
+	 * {@code PApplet.draw()}) again.
+	 * <p>
+	 * Default value is 40 milliseconds (25 Hz).
+	 * <p>
+	 * This value will define the current {@code frameRate} when {@link #animationIsStarted()}
+	 * (provided that your {@link #animate()} and {@code draw()} methods are fast enough).
+	 * <p>
+	 * If you want to know the maximum possible frame rate of your machine on a given scene,
+	 * {@link #setAnimationPeriod(int)} to {@code 0}, and {@link #startAnimation()}. The display
+	 * will then be updated as often as possible, and the frame rate will be meaningful.
+	 * <p>
+	 * <b>Note:</b> This value is taken into account only the next time you call
+	 * {@link #startAnimation()}. If {@link #animationIsStarted()}, you should
+	 * {@link #stopAnimation()} first.
+	 */
+	public int animationPeriod() {
+		return animationPeriod;
+	}
+	
+	/**
+	 * Sets the {@link #animationPeriod()}, in milliseconds.
+	 */
+	public void setAnimationPeriod(int period) {
+		animationPeriod = period;
+	}
+	
+	/**
+	 * Starts the animation loop.
+	 * 
+	 * @see #animationIsStarted()
+	 */
+	public void startAnimation() {
+		if(animationTimer != null) {
+			animationTimer.cancel();
+			animationTimer.purge();
+		}
+		animationTimer = new Timer();
+		TimerTask timerTask = new TimerTask() {
+			public void run() {
+				animate();
+				parent.redraw();
+			}
+		};
+		animationTimer.scheduleAtFixedRate(timerTask, 0, animationPeriod());
+		animationStarted = true;
+	}
 
-	// 11. Processing objects
+	/**
+	 * Stops animation.
+	 * 
+	 * @see #animationIsStarted()
+	 */
+	public void stopAnimation()	{
+		animationStarted = false;
+		if(animationTimer != null) {
+			animationTimer.cancel();
+			animationTimer.purge();
+		}
+	}
+	
+	/**
+	 * Scene animation method.
+	 * <p>
+	 * When {@link #animationIsStarted()}, this method is in charge of the scene update before each
+	 * {@code draw()}.
+	 * <p>
+	 * Overload it to define how your scene evolves over time. Default implementation is empty.
+	 * <p>
+	 * <b>Note</b> that remixlab.proscene.KeyFrameInterpolator (which regularly updates a Frame)
+	 * do not use this method.
+	 */
+	public void animate() {
+	}
+	
+	/**
+	 * Calls {@link #startAnimation()} or {@link #stopAnimation()}, depending on
+	 * {@link #animationIsStarted()}.
+	 */
+	public void toggleAnimation() {
+		if (animationIsStarted()) stopAnimation(); else startAnimation();
+	}	
+
+	// 12. Processing objects
 
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}. Calls
