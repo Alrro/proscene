@@ -45,14 +45,14 @@ class MyScene extends Scene {
   // Initialization stuff could have also been performed at
   // setup(), once after the Scene object have been instantiated
   public void init() {
-    setShortcut('m', Scene.KeyboardAction.ANIMATION);
-    smooth();			
     nbPart = 2000;
     particle = new Particle[nbPart];
+    setShortcut('m', Scene.KeyboardAction.ANIMATION);    
     for (int i = 0; i < particle.length; i++)
       particle[i] = new Particle();
     setAxisIsDrawn(false);
     startAnimation();
+    smooth();
   }
 
   // Define here what is actually going to be drawn.
@@ -70,6 +70,7 @@ class MyScene extends Scene {
   // Define here your animation.
   public void animate() {
     for (int i = 0; i < nbPart; i++)
-      particle[i].animate();
+      if(particle[i] != null)
+        particle[i].animate();
   }
 }

@@ -39,7 +39,8 @@ void setup() {
   nappletManager.createNApplet("AuxiliarViewer", 0, 360);
 }
 
-void mainDrawing(PApplet p) {
+void mainDrawing(Scene s) {
+  PApplet p = s.parent;
   p.noStroke();
   // the main viewer camera is used to cull the sphere object against its frustum
   Scene scn = ((MainViewer)(mainNApplet)).scene;
@@ -58,9 +59,9 @@ void mainDrawing(PApplet p) {
 }
 
 // same as the main drawing, but we also draw a representation of the main camera
-void auxiliarDrawing(PApplet p) {
-  mainDrawing(p);
-  DrawingUtils.drawCamera(p, ((MainViewer)(mainNApplet)).scene.camera());
+void auxiliarDrawing(Scene s) {  
+  mainDrawing(s);
+  DrawingUtils.drawCamera(s.parent, ((MainViewer)(mainNApplet)).scene.camera());
 }
 
 void draw() {  
