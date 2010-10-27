@@ -17,33 +17,51 @@ public void setup() {
   scene = new Scene(this);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
-  board = new Board(scene, null);
-  board.scramble();
+  board = new Board(3, null);
+  scene.camera().setPosition(new PVector(-20, 100, 230));
+  scene.camera().lookAt(new PVector(0, 0, 0));
 }
 
 public void draw() {
+  lights();
+  directionalLight(50, 50, 50, scene.camera().orientation().x - scene.camera().position().x, scene.camera().orientation().y - scene.camera().position().y, scene.camera().orientation().z - scene.camera().position().z);
+  spotLight(150, 150, 150, scene.camera().position().x, scene.camera().position().y, scene.camera().position().z, 0, 0, -1, 1, 20);
+  spotLight(100, 100, 100, scene.camera().position().x, scene.camera().position().y, scene.camera().position().z, 0, 0, 1, 1, 20);
   board.draw();
+  drawText();
+}
+
+public void drawText() {
   textMode(SCREEN);
   fill(#BBBBBB);
   textFont(createFont("FFScala", 14));
-  text("Moves: " + board.getMoves(), 5, height - 20);
-  text("Press 'S' to scramble, 'O' to order, 'M' to change mode", 5, height - 5);
-  textFont(createFont("FFScala", 20));
-  text(board.isOrdered() && board.getMoves() > 0 ? "COMPLETED!" : "", 5, 20);
+  text("" + board.getMoves() + " moves.", 5, height - 20);
+  text("Press 'i' to scramble, 'o' to order, 'p' to change mode, 'q' to increase size, 'w' to decrease size.", 5, height - 5);
+  textFont(createFont("FFScala", 30));
+  fill(#EEEEEE);
+  text(board.isOrdered() && board.getMoves() > 0 ? "COMPLETED!" : "", 5, 28);
   textMode(MODEL);
 }
 
 public void keyTyped() {
-  if(key == 's' || key == 'S') {
+  if(key == 'i' || key == 'I') {
     board.scramble();
   } else if(key == 'o' || key == 'O') {
     board.order();
-  } else if(key == 'm' || key == 'M') {
+  } else if(key == 'p' || key == 'P') {
     if(board.getImage() == null) {
       board.setImage(loadImage("image.png"));
     } else {
       board.setImage(null);
     }
     board.order();
+  } else if(key == 'q') {
+    if(board.getSize() < 5) {
+      board.setSize(board.getSize() + 1);
+    }
+  } else if(key == 'w') {
+    if(board.getSize() > 3) {
+      board.setSize(board.getSize() - 1);
+    }
   }
 }
