@@ -5,13 +5,16 @@
  * The animate() function illustrated by a water particle simulation.
  *
  * When animation is activated, the animate() and then the parent.redraw()
- * (which in turn calls {@code PApplet.draw()}) functions are called in an infinite loop.
+ * (which in turn calls {@code PApplet.draw()}) functions are called in an
+ * infinite loop.
  * 
  * You can tune the frequency of your animation (default is 25Hz) using
  * setAnimationPeriod(). The frame rate will then be fixed, provided that
  * your animation loop function is fast enough.
  *
- * Press 'm' to start/stop the animation.
+ * Press 'm' to toggle (start/stop) animation.
+ * Press 'x' to decrease the animation period (animation speeds up).
+ * Press 'y' to decrease the animation period (animation speeds down).
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
  * and mouse bindings in the console.
@@ -31,6 +34,13 @@ void setup() {
 void draw() {
   //Proscene sets the background to black by default. If you need to change
   //it, don't call background() directly but use scene.background() instead.
+}
+
+void keyPressed() {
+  if((key == 'x') || (key == 'X'))
+    scene.setAnimationPeriod(scene.animationPeriod()-2);
+  if((key == 'y') || (key == 'Y'))
+    scene.setAnimationPeriod(scene.animationPeriod()+2);
 }
 
 class MyScene extends Scene {

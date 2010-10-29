@@ -13,13 +13,21 @@
  * 
  * Click the space bar to switch between the different camera modes: ARCBALL,
  * WALKTHROUGH, and THIRD_PERSON.
- * 
+ *
+ * Press 'm' to toggle (start/stop) animation.
+ * Press 'x' to decrease the animation period (animation speeds up).
+ * Press 'y' to increase the animation period (animation speeds down).
+ * Press 'u' to toggle smoothing.
+ * Press 'v' to toggle boids' wall skipping.
+ * Press 'f' to toggle the drawing of the frame selection hits.
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
  * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
+import processing.opengl.*;
+import codeanticode.glgraphics.*;
 
 Scene scene;
 //flock bounding box
@@ -27,24 +35,41 @@ int flockWidth = 1280;
 int flockHeight = 720;
 int flockDepth = 600;
 int initBoidNum = 300; // amount of boids to start the program with
-BoidList flock1;// ,flock2,flock3;
+ArrayList flock;
 boolean smoothEdges = false;
 boolean avoidWalls = true;
+float hue = 255;
+
+void runFlock(Scene s) {
+  for (int i = 0; i < flock.size(); i++) {
+    // create a temporary boid to process and make it the current boid in the list
+    Boid tempBoid = (Boid) flock.get(i); 
+    tempBoid.run(flock); // tell the temporary boid to execute its run method
+  }
+}
 
 void setup() {
-  size(640, 360, P3D);  
+  size(640, 360, P3D);
+  //size(640, 360, GLConstants.GLGRAPHICS);
+  //size(640, 360, OPENGL);
   scene = new Scene(this);
-  // press 'f' to display frame selection hints
-  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
   scene.setBoundingBox(new PVector(0,0,0), new PVector(flockWidth,flockHeight,flockDepth));
   scene.showAll();
   // create and fill the list of boids
-  flock1 = new BoidList(initBoidNum, 255);
-  // flock2 = new BoidList(100,255);
-  // flock3 = new BoidList(100,128);
+  flock = new ArrayList();
+  for (int i = 0; i < initBoidNum; i++)
+    flock.add(new Boid(new PVector(flockWidth/2, flockHeight/2, flockDepth/2 )));
+
+  // press 'f' to display frame selection hints
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+  scene.addAnimationHandler(this, "runFlock");
+  // press 'm' to start/stop animation
+  scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);  
+
+  scene.startAnimation();
 }
 
 void draw() {
@@ -70,10 +95,14 @@ void draw() {
   line(0, flockHeight, 0, 0, flockHeight, flockDepth);
   line(flockWidth, 0, 0, flockWidth, 0, flockDepth);
   line(flockWidth, flockHeight, 0, flockWidth, flockHeight, flockDepth);				
+  
+  for (int i = 0; i < flock.size(); i++) {
+    // create a temporary boid to process and make it the current boid in the list
+    Boid tempBoid = (Boid) flock.get(i); 
+    //tempBoid.run(flock); // tell the temporary boid to execute its run method
+    tempBoid.render(); // tell the temporary boid to execute its render method
+  }
 
-  flock1.run(avoidWalls);
-  // flock2.run();
-  // flock3.run();
   if (smoothEdges)
     smooth();
   else
@@ -87,6 +116,12 @@ void keyPressed() {
     break;
   case 'v':
     avoidWalls = !avoidWalls;
+    break;
+  case 'x':
+    scene.setAnimationPeriod(scene.animationPeriod()-2);
+    break;
+  case 'y':
+    scene.setAnimationPeriod(scene.animationPeriod()+2);
     break;
   }
 }

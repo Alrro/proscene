@@ -10,11 +10,9 @@ class Boid {
   float neighborhoodRadius; // radius in which it looks for fellow boids
   float maxSpeed = 4; // maximum magnitude for the velocity vector
   float maxSteerForce = .1f; // maximum magnitude of the steering vector
-  float hue; // hue
   float sc = 3; // scale factor for the render of the boid
   float flap = 0;
   float t = 0;
-  boolean avoidWalls = false;
 
   // constructors
   Boid(PVector inPos) {
@@ -63,7 +61,7 @@ class Boid {
     flock(bl);
     move();
     checkBounds();
-    render();
+    //render();
   }
 
   // ///-----------behaviors---------------

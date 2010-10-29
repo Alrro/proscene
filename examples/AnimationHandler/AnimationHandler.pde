@@ -5,13 +5,16 @@
  * The animate() function illustrated by a water particle simulation.
  *
  * When animation is activated, the animate() and then the parent.redraw()
- * (which in turn calls {@code PApplet.draw()}) functions are called in an infinite loop.
+ * (which in turn calls {@code PApplet.draw()}) functions are called in an
+ * infinite loop.
  * 
  * You can tune the frequency of your animation (default is 25Hz) using
  * setAnimationPeriod(). The frame rate will then be fixed, provided that
  * your animation loop function is fast enough.
  *
- * Press 'm' to start/stop the animation.
+ * Press 'm' to toggle (start/stop) animation.
+ * Press 'x' to decrease the animation period (animation speeds up).
+ * Press 'y' to decrease the animation period (animation speeds down).
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
  * and mouse bindings in the console.
@@ -23,24 +26,25 @@ int nbPart;
 Particle[] particle;
 Scene scene;
 
-void setup() {
-  size(640, 360, P3D);
-  scene = new Scene(this);
-  nbPart = 2000;
-  particle = new Particle[nbPart];
-  scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);    
-  for (int i = 0; i < particle.length; i++)
-    particle[i] = new Particle();
-  scene.addAnimationHandler(this, "animateScene");
-  scene.setAxisIsDrawn(false);
-  scene.startAnimation();
-  smooth();
-}
-
 void animateScene(Scene s) {  
   for (int i = 0; i < nbPart; i++)
     if(particle[i] != null)
       particle[i].animate();
+}
+
+void setup() {
+  size(640, 360, P3D);
+  scene = new Scene(this);  
+  nbPart = 2000;
+  particle = new Particle[nbPart];     
+  for (int i = 0; i < particle.length; i++)
+    particle[i] = new Particle();
+  scene.addAnimationHandler(this, "animateScene");
+  // press 'm' to start/stop animation
+  scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);
+  scene.setAxisIsDrawn(false);
+  scene.startAnimation();
+  smooth();
 }
 
 // Make sure to define the draw() method, even if it's empty.
@@ -55,4 +59,11 @@ void draw() {
   }
   endShape();
   popStyle();
+}
+
+void keyPressed() {
+  if((key == 'x') || (key == 'X'))
+    scene.setAnimationPeriod(scene.animationPeriod()-2);
+  if((key == 'y') || (key == 'Y'))
+    scene.setAnimationPeriod(scene.animationPeriod()+2);
 }
