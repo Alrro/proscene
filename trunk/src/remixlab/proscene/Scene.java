@@ -475,7 +475,7 @@ public class Scene implements PConstants {
 		//animation
 		animationTimer = new Timer();
 		stopAnimation();
-		setAnimationPeriod(1000/60); // 60Hz
+		setAnimationPeriod(1000/60, false); // 60Hz
 		
 		arpFlag = false;
 		pupFlag = false;
@@ -3460,10 +3460,9 @@ public class Scene implements PConstants {
 	/**
 	 * Scene animation method.
 	 * <p>
-	 * When {@link #animationIsStarted()}, this method is in charge of the scene update before each
-	 * {@code draw()}.
+	 * When {@link #animationIsStarted()}, this method defines how your scene evolves over time.
 	 * <p>
-	 * Overload it to define how your scene evolves over time. Default implementation is empty.
+	 * Overload it as needed. Default implementation is empty.
 	 * <p>
 	 * <b>Note</b> that remixlab.proscene.KeyFrameInterpolator (which regularly updates a Frame)
 	 * do not use this method.
