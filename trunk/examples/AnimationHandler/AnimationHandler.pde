@@ -34,7 +34,8 @@ void animateScene(Scene s) {
 
 void setup() {
   size(640, 360, P3D);
-  scene = new Scene(this);  
+  scene = new Scene(this); 
+  scene.setAxisIsDrawn(false);
   nbPart = 2000;
   particle = new Particle[nbPart];     
   for (int i = 0; i < particle.length; i++)
@@ -42,7 +43,7 @@ void setup() {
   scene.addAnimationHandler(this, "animateScene");
   // press 'm' to start/stop animation
   scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);
-  scene.setAxisIsDrawn(false);
+  scene.setAnimationPeriod(40); // 25Hz
   scene.startAnimation();
   smooth();
 }

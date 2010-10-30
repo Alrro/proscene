@@ -26,8 +26,6 @@
  */
 
 import remixlab.proscene.*;
-import processing.opengl.*;
-import codeanticode.glgraphics.*;
 
 Scene scene;
 //flock bounding box
@@ -40,18 +38,8 @@ boolean smoothEdges = false;
 boolean avoidWalls = true;
 float hue = 255;
 
-void runFlock(Scene s) {
-  for (int i = 0; i < flock.size(); i++) {
-    // create a temporary boid to process and make it the current boid in the list
-    Boid tempBoid = (Boid) flock.get(i); 
-    tempBoid.run(flock); // tell the temporary boid to execute its run method
-  }
-}
-
 void setup() {
   size(640, 360, P3D);
-  //size(640, 360, GLConstants.GLGRAPHICS);
-  //size(640, 360, OPENGL);
   scene = new Scene(this);
   scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
   scene.setAxisIsDrawn(false);
@@ -65,11 +53,10 @@ void setup() {
 
   // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-  scene.addAnimationHandler(this, "runFlock");
   // press 'm' to start/stop animation
   scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);  
 
-  scene.startAnimation();
+  scene.startAnimation();  
 }
 
 void draw() {
@@ -98,8 +85,9 @@ void draw() {
   
   for (int i = 0; i < flock.size(); i++) {
     // create a temporary boid to process and make it the current boid in the list
-    Boid tempBoid = (Boid) flock.get(i); 
-    //tempBoid.run(flock); // tell the temporary boid to execute its run method
+    Boid tempBoid = (Boid) flock.get(i);
+    if(scene.animationIsStarted())
+      tempBoid.run(flock); // tell the temporary boid to execute its run method
     tempBoid.render(); // tell the temporary boid to execute its render method
   }
 
