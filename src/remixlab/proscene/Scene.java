@@ -475,7 +475,7 @@ public class Scene implements PConstants {
 		//animation
 		animationTimer = new Timer();
 		stopAnimation();
-		setAnimationPeriod(40); // 25Hz
+		setAnimationPeriod(1000/60); // 60Hz
 		
 		arpFlag = false;
 		pupFlag = false;
@@ -3329,10 +3329,12 @@ public class Scene implements PConstants {
 	/**
 	 * Return {@code true} when the animation loop is started.
 	 * <p>
-	 * During animation, an infinite loop calls {@link #animate()} {@code parent.redraw()}
-	 * (which in turn calls {@code PApplet.draw()}) and then waits for
-	 * {@link #animationPeriod} milliseconds before calling
-	 * {@link #animate()} {@code parent.redraw()}. And again.
+	 * During animation, an infinite loop calls {@link #animate()}, or an user defined
+	 * animation handler method (set with {@link #addAnimationHandler(Object, String)}), every
+	 * {@link #animationPeriod()} milliseconds.
+	 * <p>
+	 * <b>Note: </b> When {@link #startAnimation()} is called, the {@code parent.frameRate()} is synced
+	 * accordingly, i.e., it is set to match {@link #animationPeriod()}.
 	 * <p>
 	 * Use {@link #startAnimation()}, {@link #stopAnimation()} or {@link #toggleAnimation()}
 	 * to change this value.
@@ -3342,13 +3344,11 @@ public class Scene implements PConstants {
 	}
 	
 	/**
-	 * The animation loop period, in milliseconds.
+	 * The animation loop period, in milliseconds. When {@link #animationIsStarted()}, this is
+	 * the delay that takes place between two consecutive iterations of the animation loop.
 	 * <p>
-	 * When {@link #animationIsStarted()}, this is delay waited after {@code parent.redraw()}
-	 * to call {@link #animate()} and {@code parent.redraw()} (which in turn calls
-	 * {@code PApplet.draw()}) again.
-	 * <p>
-	 * Default value is 40 milliseconds (25 Hz).
+	 * Default value is 16.6666 milliseconds (60 Hz) which matches <b>processing</b> default
+	 * frame rate.
 	 * <p>
 	 * This value will define the current {@code frameRate} when {@link #animationIsStarted()}
 	 * (provided that your {@link #animate()} and {@code draw()} methods are fast enough).
@@ -3377,11 +3377,11 @@ public class Scene implements PConstants {
 	
 	/**
 	 * Sets the {@link #animationPeriod()}, in milliseconds. If restart is {@code true}
-	 * {@link #restartAnimation()}.
+	 * {@link #restartAnimation()} is automatically called.
 	 */
 	public void setAnimationPeriod(int period, boolean restart) {
 		if(period>0) {
-			animationPeriod = period;
+			animationPeriod = period;			
 			if(restart)
 				restartAnimation();
 		}	
@@ -3389,6 +3389,9 @@ public class Scene implements PConstants {
 	
 	/**
 	 * Starts the animation loop.
+	 * <p>
+	 * The animation loop will attemp to sync the {@code PApplet} frame rate to
+	 * match {@link #animationPeriod()}, by calling {@code parent.frameRate(1000/animationPeriod())}.
 	 * 
 	 * @see #animationIsStarted()
 	 */
@@ -3402,9 +3405,11 @@ public class Scene implements PConstants {
 			public void run() {
 				performAnimation();
 			}
-		};
+		};		
 		animationTimer.scheduleAtFixedRate(timerTask, 0, animationPeriod());
 		animationStarted = true;
+		//sync with processing drawing method:
+		parent.frameRate(1000/animationPeriod());
 	}
 	
 	/**
@@ -3423,11 +3428,13 @@ public class Scene implements PConstants {
 		}
 		else
 			animate();
-		parent.redraw();
 	}
 
 	/**
 	 * Stops animation.
+	 * <p>
+	 * <b>Warning:</b> Restores the {@code PApplet} frame rate to its default value,
+	 * i.e., calls {@code parent.frameRate(60)}. 
 	 * 
 	 * @see #animationIsStarted()
 	 */
@@ -3437,6 +3444,7 @@ public class Scene implements PConstants {
 			animationTimer.cancel();
 			animationTimer.purge();
 		}
+		parent.frameRate(60);
 	}
 	
 	/**
