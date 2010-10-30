@@ -43,8 +43,7 @@ void setup() {
   scene.addAnimationHandler(this, "animateScene");
   // press 'm' to start/stop animation
   scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);
-  scene.setAnimationPeriod(40); // 25Hz
-  scene.startAnimation();
+  scene.setAnimationPeriod(40); // 25Hz, calls startAnimation()
   smooth();
 }
 
