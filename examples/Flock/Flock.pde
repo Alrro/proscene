@@ -56,7 +56,7 @@ void setup() {
   // press 'm' to start/stop animation
   scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);  
 
-  scene.startAnimation();  
+  scene.startAnimation();
 }
 
 void draw() {
@@ -82,11 +82,11 @@ void draw() {
   line(0, flockHeight, 0, 0, flockHeight, flockDepth);
   line(flockWidth, 0, 0, flockWidth, 0, flockDepth);
   line(flockWidth, flockHeight, 0, flockWidth, flockHeight, flockDepth);				
-  
+
   for (int i = 0; i < flock.size(); i++) {
     // create a temporary boid to process and make it the current boid in the list
     Boid tempBoid = (Boid) flock.get(i);
-    if(scene.animationIsStarted())
+    if(scene.animationIsStarted() && scene.animatedFrameWasTriggered)
       tempBoid.run(flock); // tell the temporary boid to execute its run method
     tempBoid.render(); // tell the temporary boid to execute its render method
   }
@@ -109,7 +109,13 @@ void keyPressed() {
     scene.setAnimationPeriod(scene.animationPeriod()-2);
     break;
   case 'y':
-    scene.setAnimationPeriod(scene.animationPeriod()+2);
+    scene.setAnimationPeriod(scene.animationPeriod()+2);    
     break;
+  case 'z':
+    // smooth animation
+    if(scene.currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
+      scene.setFrameRate(1000/scene.animationPeriod());
+    else
+      scene.setFrameRate(60);
   }
 }
