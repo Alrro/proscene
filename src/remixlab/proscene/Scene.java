@@ -3359,20 +3359,6 @@ public class Scene implements PConstants {
 			restartAnimation();
 	}
 	
-	protected void adaptFrameRate() {
-		animationFrameRate = 1000f/animationPeriod();
-		currentAnimationFrame = -1;
-		//animatedFrameWasTriggered = false;//pend
-		if( (animationFrameRate > targetFrameRate) )
-			parent.frameRate( animationFrameRate ); //bypass setFrameRate()
-		else {
-			parent.frameRate( targetFrameRate ); //same as setFrameRate(targetFrameRate, false)
-			initialDrawingFrameWhenAnimationStarted = parent.frameCount;
-			currentAnimationFrame = 0;
-			animationToFrameRateRatio = animationFrameRate/targetFrameRate;
-		}
-	}
-	
 	/**
 	 * Return {@code true} when the animation loop is started.
 	 * <p>
@@ -3429,6 +3415,7 @@ public class Scene implements PConstants {
 	public void setAnimationPeriod(float period, boolean restart) {
 		if(period>0) {
 			animationPeriod = period;
+			animationFrameRate = 1000f/animationPeriod;
 			if(animationIsStarted() && restart)				
 				restartAnimation();
 		}
@@ -3454,8 +3441,17 @@ public class Scene implements PConstants {
 	 */
 	public void startAnimation() {
 		animationStarted = true;		
-		//sync with processing drawing method:
-		adaptFrameRate();
+		//sync with processing drawing method:		
+		currentAnimationFrame = -1;
+		animatedFrameWasTriggered = false;
+		if( (animationFrameRate > targetFrameRate) )
+			parent.frameRate( animationFrameRate ); //bypass setFrameRate()
+		else {
+			parent.frameRate( targetFrameRate ); //same as setFrameRate(targetFrameRate, false)
+			initialDrawingFrameWhenAnimationStarted = parent.frameCount;
+			currentAnimationFrame = 0;
+			animationToFrameRateRatio = animationFrameRate/targetFrameRate;
+		}
 	}
 	
 	/**
@@ -3474,21 +3470,15 @@ public class Scene implements PConstants {
 	 * Calls the animation handler. Calls {@link #animate()} if there's no such a handler.
 	 */
 	protected void performAnimation() {		
-		animatedFrameWasTriggered = true;
 		if( currentAnimationFrame >= 0 ) {
 			long previousAnimationFrame = currentAnimationFrame;
 			currentAnimationFrame = PApplet.round( (parent.frameCount - initialDrawingFrameWhenAnimationStarted) * animationToFrameRateRatio );
 			if(currentAnimationFrame == previousAnimationFrame) {
-			  /**
-				PApplet.println("gotta return, animationToFrameRateRatio: " + animationToFrameRateRatio +
-						" currentAnimationFrame: " + currentAnimationFrame + " initialDrawingFrameWhenAnimationStarted: " + initialDrawingFrameWhenAnimationStarted);
-				PApplet.println("animationFrameRate: " + animationFrameRate + " targetFrameRate: " + targetFrameRate);
-				// */
 				animatedFrameWasTriggered = false;
 				return;
-			}
-		}			
-		
+			}				
+		}		
+		animatedFrameWasTriggered = true;		
 		if (animateHandlerObject != null) {
 			try {
 				animateHandlerMethod.invoke(animateHandlerObject, new Object[] { this });

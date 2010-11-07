@@ -28,6 +28,7 @@
 import remixlab.proscene.*;
 
 Scene scene;
+CameraProfile thirdPersonCP, currentCP;
 //flock bounding box
 int flockWidth = 1280;
 int flockHeight = 720;
@@ -41,7 +42,9 @@ float hue = 255;
 void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
-  scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
+  thirdPersonCP =  new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON );
+  scene.registerCameraProfile( thirdPersonCP );
+  currentCP = scene.currentCameraProfile();
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
   scene.setBoundingBox(new PVector(0,0,0), new PVector(flockWidth,flockHeight,flockDepth));
@@ -81,7 +84,12 @@ void draw() {
   line(0, 0, 0, 0, 0, flockDepth);
   line(0, flockHeight, 0, 0, flockHeight, flockDepth);
   line(flockWidth, 0, 0, flockWidth, 0, flockDepth);
-  line(flockWidth, flockHeight, 0, flockWidth, flockHeight, flockDepth);				
+  line(flockWidth, flockHeight, 0, flockWidth, flockHeight, flockDepth);
+
+  if(!currentCP.equals(scene.currentCameraProfile())) { // cameraProfile changed
+    adjustFrameRate();
+    currentCP = scene.currentCameraProfile();
+  }
 
   for (int i = 0; i < flock.size(); i++) {
     // create a temporary boid to process and make it the current boid in the list
@@ -97,6 +105,13 @@ void draw() {
     noSmooth();
 }
 
+void adjustFrameRate() {
+  if(scene.currentCameraProfile().equals(thirdPersonCP))
+    scene.setFrameRate(1000/scene.animationPeriod());//restarts animation
+  else
+    scene.setFrameRate(60);//restarts animation
+}
+
 void keyPressed() {
   switch (key) {
   case 'u':
@@ -106,16 +121,12 @@ void keyPressed() {
     avoidWalls = !avoidWalls;
     break;
   case 'x':
-    scene.setAnimationPeriod(scene.animationPeriod()-2);
+    scene.setAnimationPeriod(scene.animationPeriod()-2, false);
+    adjustFrameRate();
     break;
   case 'y':
-    scene.setAnimationPeriod(scene.animationPeriod()+2);    
+    scene.setAnimationPeriod(scene.animationPeriod()+2, false);
+    adjustFrameRate();
     break;
-  case 'z':
-    // smooth animation
-    if(scene.currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-      scene.setFrameRate(1000/scene.animationPeriod());
-    else
-      scene.setFrameRate(60);
   }
 }
