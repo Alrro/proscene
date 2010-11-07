@@ -61,7 +61,8 @@ class MyScene extends Scene {
     for (int i = 0; i < particle.length; i++)
       particle[i] = new Particle();
     setAxisIsDrawn(false);
-    setAnimationPeriod(40); // 25Hz, calls startAnimation()
+    setAnimationPeriod(40); // 25Hz
+    startAnimation();
     smooth();
   }
 

@@ -405,9 +405,15 @@ public class Scene implements PConstants {
 	protected boolean keyboardHandling;
 	
 	// A N I M A T I O N
-	boolean animationStarted;
-	int animationPeriod;
-	private Timer animationTimer;
+	protected float targetFrameRate;
+	protected float animationFrameRate;
+	private long initialDrawingFrameWhenAnimationStarted;
+	private long currentAnimationFrame;
+	private float animationToFrameRateRatio;
+	//private int framesInBetween;
+	private boolean animationStarted;
+	public boolean animatedFrameWasTriggered;
+	private float animationPeriod;
 
 	// R E G I S T E R   D R A W   A N D   A N I M A T I O N   M E T H O D S
 	// Draw
@@ -473,8 +479,8 @@ public class Scene implements PConstants {
 		initDefaultCameraProfiles();
 
 		//animation
-		animationTimer = new Timer();
-		stopAnimation();
+		animationStarted = false;
+		setFrameRate(60, false);
 		setAnimationPeriod(1000/60, false); // 60Hz
 		
 		arpFlag = false;
@@ -1392,6 +1398,9 @@ public class Scene implements PConstants {
 	public void draw() {
 		if (isOffscreen()) return;
 		
+		if( animationIsStarted() )
+			performAnimation();
+		
 		// 1. Alternative use only
 		proscenium();
 
@@ -1405,7 +1414,7 @@ public class Scene implements PConstants {
 			}
 		}
 
-		// 3. Try to draw what should have been draw in the pre()
+		// 3. Try to draw what should have been drawn in the pre()
 		if (!backgroundIsHandled())
 			displayVisualHints();
 	}
@@ -3326,6 +3335,44 @@ public class Scene implements PConstants {
 	
 	// 11. Animation
 	
+	public float frameRate() {
+		return targetFrameRate;
+	}
+	
+	public void setFrameRate(float fRate) {
+		setFrameRate(fRate, true);
+	}
+	
+	/**
+	 * Specifies the number of frames to be displayed every second. If the processor
+	 * is not fast enough to maintain the specified rate, it will not be achieved.
+	 * For example, the function call setFrameRate(30) will attempt to refresh 30 times
+	 * a second. It is recommended to set the frame rate within setup(). If restart is {@code true}
+	 * and {@link #animationIsStarted()} then {@link #restartAnimation()} is called.
+	 * <p>
+	 * The default rate is 60 frames per second.
+	 */
+	public void setFrameRate(float fRate, boolean restart) {
+		targetFrameRate = fRate;
+		parent.frameRate(targetFrameRate);
+		if(animationIsStarted() && restart)
+			restartAnimation();
+	}
+	
+	protected void adaptFrameRate() {
+		animationFrameRate = 1000f/animationPeriod();
+		currentAnimationFrame = -1;
+		//animatedFrameWasTriggered = false;//pend
+		if( (animationFrameRate > targetFrameRate) )
+			parent.frameRate( animationFrameRate ); //bypass setFrameRate()
+		else {
+			parent.frameRate( targetFrameRate ); //same as setFrameRate(targetFrameRate, false)
+			initialDrawingFrameWhenAnimationStarted = parent.frameCount;
+			currentAnimationFrame = 0;
+			animationToFrameRateRatio = animationFrameRate/targetFrameRate;
+		}
+	}
+	
 	/**
 	 * Return {@code true} when the animation loop is started.
 	 * <p>
@@ -3354,82 +3401,39 @@ public class Scene implements PConstants {
 	 * (provided that your {@link #animate()} and {@code draw()} methods are fast enough).
 	 * <p>
 	 * If you want to know the maximum possible frame rate of your machine on a given scene,
-	 * {@link #setAnimationPeriod(int)} to {@code 1}, and {@link #startAnimation()}. The display
+	 * {@link #setAnimationPeriod(float)} to {@code 1}, and {@link #startAnimation()}. The display
 	 * will then be updated as often as possible, and the frame rate will be meaningful.
 	 * <p>
 	 * <b>Note:</b> This value is taken into account only the next time you call
 	 * {@link #startAnimation()}. If {@link #animationIsStarted()}, you should
 	 * {@link #stopAnimation()} first. See {@link #restartAnimation()} and
-	 * {@link #setAnimationPeriod(int, boolean)}.
+	 * {@link #setAnimationPeriod(float, boolean)}.
 	 */
-	public int animationPeriod() {
+	public float animationPeriod() {
 		return animationPeriod;
 	}
 	
 	/**
 	 * Convenience function that simply calls {@code setAnimationPeriod(period, true)}.
 	 * 
-	 * @see #setAnimationPeriod(int, boolean)
+	 * @see #setAnimationPeriod(float, boolean)
 	 */
-	public void setAnimationPeriod(int period) {
+	public void setAnimationPeriod(float period) {
 		setAnimationPeriod(period, true);
 	}
 	
 	/**
 	 * Sets the {@link #animationPeriod()}, in milliseconds. If restart is {@code true}
-	 * {@link #restartAnimation()} is automatically called.
+	 * and {@link #animationIsStarted()} then {@link #restartAnimation()} is called.
 	 */
-	public void setAnimationPeriod(int period, boolean restart) {
+	public void setAnimationPeriod(float period, boolean restart) {
 		if(period>0) {
-			animationPeriod = period;			
-			if(restart)
+			animationPeriod = period;
+			if(animationIsStarted() && restart)				
 				restartAnimation();
-		}	
+		}
 	}
 	
-	/**
-	 * Starts the animation loop.
-	 * <p>
-	 * The animation loop will attemp to sync the {@code PApplet} frame rate to
-	 * match {@link #animationPeriod()}, by calling {@code parent.frameRate(1000/animationPeriod())}.
-	 * 
-	 * @see #animationIsStarted()
-	 */
-	public void startAnimation() {
-		if(animationTimer != null) {
-			animationTimer.cancel();
-			animationTimer.purge();
-		}
-		animationTimer = new Timer();
-		TimerTask timerTask = new TimerTask() {
-			public void run() {
-				performAnimation();
-			}
-		};		
-		animationTimer.scheduleAtFixedRate(timerTask, 0, animationPeriod());
-		animationStarted = true;
-		//sync with processing drawing method:
-		parent.frameRate(1000/animationPeriod());
-	}
-	
-	/**
-	 * Internal use.
-	 * <p>
-	 * Calls the animation handler. Calls {@link #animate()} if there's no such a handler.
-	 */
-	protected void performAnimation() {
-		if (animateHandlerObject != null) {
-			try {
-				animateHandlerMethod.invoke(animateHandlerObject, new Object[] { this });
-			} catch (Exception e) {
-				System.out.println("Something went wrong when invoking your "	+ animateHandlerMethodName + " method");
-				e.printStackTrace();
-			}
-		}
-		else
-			animate();
-	}
-
 	/**
 	 * Stops animation.
 	 * <p>
@@ -3440,11 +3444,18 @@ public class Scene implements PConstants {
 	 */
 	public void stopAnimation()	{
 		animationStarted = false;
-		if(animationTimer != null) {
-			animationTimer.cancel();
-			animationTimer.purge();
-		}
-		parent.frameRate(60);
+		setFrameRate(targetFrameRate, false);
+	}
+	
+	/**
+	 * Starts the animation loop.
+	 * 
+	 * @see #animationIsStarted()
+	 */
+	public void startAnimation() {
+		animationStarted = true;		
+		//sync with processing drawing method:
+		adaptFrameRate();
 	}
 	
 	/**
@@ -3455,6 +3466,39 @@ public class Scene implements PConstants {
   public void restartAnimation() {
   	stopAnimation();
   	startAnimation();
+	}
+  
+  /**
+	 * Internal use.
+	 * <p>
+	 * Calls the animation handler. Calls {@link #animate()} if there's no such a handler.
+	 */
+	protected void performAnimation() {		
+		animatedFrameWasTriggered = true;
+		if( currentAnimationFrame >= 0 ) {
+			long previousAnimationFrame = currentAnimationFrame;
+			currentAnimationFrame = PApplet.round( (parent.frameCount - initialDrawingFrameWhenAnimationStarted) * animationToFrameRateRatio );
+			if(currentAnimationFrame == previousAnimationFrame) {
+			  /**
+				PApplet.println("gotta return, animationToFrameRateRatio: " + animationToFrameRateRatio +
+						" currentAnimationFrame: " + currentAnimationFrame + " initialDrawingFrameWhenAnimationStarted: " + initialDrawingFrameWhenAnimationStarted);
+				PApplet.println("animationFrameRate: " + animationFrameRate + " targetFrameRate: " + targetFrameRate);
+				// */
+				animatedFrameWasTriggered = false;
+				return;
+			}
+		}			
+		
+		if (animateHandlerObject != null) {
+			try {
+				animateHandlerMethod.invoke(animateHandlerObject, new Object[] { this });
+			} catch (Exception e) {
+				System.out.println("Something went wrong when invoking your "	+ animateHandlerMethodName + " method");
+				e.printStackTrace();
+			}
+		}
+		else
+			animate();
 	}
 	
 	/**
