@@ -94,7 +94,7 @@ void draw() {
   for (int i = 0; i < flock.size(); i++) {
     // create a temporary boid to process and make it the current boid in the list
     Boid tempBoid = (Boid) flock.get(i);
-    if(scene.animationIsStarted() && scene.animatedFrameWasTriggered)
+    if(scene.animatedFrameWasTriggered)
       tempBoid.run(flock); // tell the temporary boid to execute its run method
     tempBoid.render(); // tell the temporary boid to execute its render method
   }
