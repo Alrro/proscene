@@ -43,8 +43,8 @@ import java.util.TimerTask;
  * A Scene has a full reach Camera, an two means to manipulate objects: an
  * {@link #interactiveFrame()} single instance (which by default is null) and a
  * {@link #mouseGrabber()} pool.
- * <p>
- * To use a Scene, you have three choices:
+ * <h3>Usage</h3>
+ * To use a Scene you have three choices:
  * <ol>
  * <li><b>Direct instantiation</b>. In this case you should instantiate your own
  * Scene object at the {@code PApplet.setup()} function.
@@ -60,7 +60,7 @@ import java.util.TimerTask;
  * when there are multiple viewers sharing the same drawing code. See the
  * example <i>StandardCamera</i>.
  * </ol>
- * <p>
+ * <h3>Interactivity mechanisms</h3>
  * Proscene provides two interactivity mechanisms to manage your scene: global
  * keyboard shortcuts and camera profiles.
  * <ol>
@@ -74,6 +74,24 @@ import java.util.TimerTask;
  * {@link #unregisterCameraProfile(CameraProfile)} or {@link #currentCameraProfile()}
  * among others. To perform the configuration of a camera profile see the
  * CameraProfile class documentation.
+ * </ol>
+ * <h3>Animation mechanisms</h3>
+ * Proscene provides three animation mechanisms to define how your scene evolves
+ * over time:
+ * <ol>
+ * <li><b>Overriding the {@link #animate()} method.</b>  In this case, once you
+ * declare a Scene derived class, you should implement {@link #animate()} which
+ * defines how your scene objects evolve over time. See the example <i>Animation</i>.
+ * <li><b>External animation handler registration.</b> You can also declare an
+ * external animation method and then register it at the Scene with
+ * {@link #addAnimationHandler(Object, String)}. That method should return {@code
+ * void} and have one single {@code Scene} parameter. See the example
+ * <i>AnimationHandler</i>.
+ * <li><b>By querying the state of the {@link #animatedFrameWasTriggered} variable.</b>
+ * During the drawing loop, the variable {@link #animatedFrameWasTriggered} is set
+ * to {@code true} each time an animated frame is triggered (and {@code false} otherwise),
+ * which is useful to notify to the outside world when an animation event occurs.
+ * See the example <i>Flock</i>.
  * </ol>
  * <b>Attention:</b> To set the PApplet's background you should call one of the
  * {@code Scene.background()} versions instead of any of the {@code
@@ -3430,13 +3448,14 @@ public class Scene implements PConstants {
 	 * Proscene animation loop relies on processing drawing loop. The {@link #draw()} function will
 	 * check when {@link #animationIsStarted()} and then called the animation handler method
 	 * (set with {@link #addAnimationHandler(Object, String)}) or {@link #animate()} (if no handler
-	 * has been added to the scene) every {@link #animationPeriod()} milliseconds. In addtion, each drawing
-	 * frame will set the variable {@link #animatedFrameWasTriggered} to {@code true} each frame an
-	 * animated frame is trigered (useful to notify the outside world when an animation event occurs). 
+	 * has been added to the scene) every {@link #animationPeriod()} milliseconds. In addition,
+	 * During the drawing loop, the variable {@link #animatedFrameWasTriggered} is set
+   * to {@code true} each time an animated frame is triggered (and {@code false} otherwise),
+   * which is useful to notify to the outside world when an animation event occurs. 
 	 * <p>
 	 * Be sure to call {@code loop()} before an animation is started.
 	 * <p>
-	 * <b>Note:</b> The drawing frame rate could be modified when {@link #startAnimation()} is called
+	 * <b>Note:</b> The drawing frame rate may be modified when {@link #startAnimation()} is called,
 	 * depending on the {@link #animationPeriod()}.   
 	 * <p>
 	 * Use {@link #startAnimation()}, {@link #stopAnimation()} or {@link #toggleAnimation()}
