@@ -3427,15 +3427,24 @@ public class Scene implements PConstants {
 	/**
 	 * Return {@code true} when the animation loop is started.
 	 * <p>
-	 * During animation, an infinite loop calls {@link #animate()}, or an user defined
-	 * animation handler method (set with {@link #addAnimationHandler(Object, String)}), every
-	 * {@link #animationPeriod()} milliseconds.
+	 * Proscene animation loop relies on processing drawing loop. The {@link #draw()} function will
+	 * check when {@link #animationIsStarted()} and then called the animation handler method
+	 * (set with {@link #addAnimationHandler(Object, String)}) or {@link #animate()} (if no handler
+	 * has been added to the scene) every {@link #animationPeriod()} milliseconds. In addtion, each drawing
+	 * frame will set the variable {@link #animatedFrameWasTriggered} to {@code true} each frame an
+	 * animated frame is trigered (useful to notify the outside world when an animation event occurs). 
 	 * <p>
-	 * <b>Note: </b> When {@link #startAnimation()} is called, the {@code parent.frameRate()} is synced
-	 * accordingly, i.e., it is set to match {@link #animationPeriod()}.
+	 * Be sure to call {@code loop()} before an animation is started.
+	 * <p>
+	 * <b>Note:</b> The drawing frame rate could be modified when {@link #startAnimation()} is called
+	 * depending on the {@link #animationPeriod()}.   
 	 * <p>
 	 * Use {@link #startAnimation()}, {@link #stopAnimation()} or {@link #toggleAnimation()}
 	 * to change this value.
+	 * 
+	 * @see #startAnimation()
+	 * @see #addAnimationHandler(Object, String)
+	 * @see #animate()
 	 */
 	public boolean animationIsStarted() {
 		return animationStarted;
@@ -3445,20 +3454,21 @@ public class Scene implements PConstants {
 	 * The animation loop period, in milliseconds. When {@link #animationIsStarted()}, this is
 	 * the delay that takes place between two consecutive iterations of the animation loop.
 	 * <p>
+	 * This delay defines a target frame rate that will only be achieved if your
+	 * {@link #animate()} and {@link #draw()} methods are fast enough. If you want to know
+	 * the maximum possible frame rate of your machine on a given scene,
+	 * {@link #setAnimationPeriod(float)} to {@code 1}, and {@link #startAnimation()}. The display
+	 * will then be updated as often as possible, and the frame rate will be meaningful.  
+	 * <p>
 	 * Default value is 16.6666 milliseconds (60 Hz) which matches <b>processing</b> default
 	 * frame rate.
-	 * <p>
-	 * This value will define the current {@code frameRate} when {@link #animationIsStarted()}
-	 * (provided that your {@link #animate()} and {@code draw()} methods are fast enough).
-	 * <p>
-	 * If you want to know the maximum possible frame rate of your machine on a given scene,
-	 * {@link #setAnimationPeriod(float)} to {@code 1}, and {@link #startAnimation()}. The display
-	 * will then be updated as often as possible, and the frame rate will be meaningful.
 	 * <p>
 	 * <b>Note:</b> This value is taken into account only the next time you call
 	 * {@link #startAnimation()}. If {@link #animationIsStarted()}, you should
 	 * {@link #stopAnimation()} first. See {@link #restartAnimation()} and
 	 * {@link #setAnimationPeriod(float, boolean)}.
+	 * 
+	 * @see #setAnimationPeriod(float, boolean)
 	 */
 	public float animationPeriod() {
 		return animationPeriod;
@@ -3476,6 +3486,11 @@ public class Scene implements PConstants {
 	/**
 	 * Sets the {@link #animationPeriod()}, in milliseconds. If restart is {@code true}
 	 * and {@link #animationIsStarted()} then {@link #restartAnimation()} is called.
+	 * <p>
+	 * <b>Note:</b> The drawing frame rate could be modified when {@link #startAnimation()} is called
+	 * depending on the {@link #animationPeriod()}.
+	 * 
+	 * @see #startAnimation()
 	 */
 	public void setAnimationPeriod(float period, boolean restart) {
 		if(period>0) {
@@ -3502,6 +3517,15 @@ public class Scene implements PConstants {
 	
 	/**
 	 * Starts the animation loop.
+	 * <p>
+	 * Syncs the drawing frame rate according to {@link #animationPeriod()}: If the animation
+	 * frame rate (which value depends on the {@link #animationPeriod()})
+	 * is higher than the current {@link #frameRate()}, the frame rate is modified to match it,
+	 * i.e., each drawing frame will trigger exactly one animation event. If the animation
+	 * frame rate is lower than the {@link #frameRate()}, the frame rate is left unmodified,
+	 * and the animation frames will be interleaved among the drawing frames in intervals
+	 * needed to achieve the target {@link #animationPeriod()} (provided that your
+	 * {@link #animate()} and {@link #draw()} methods are fast enough).
 	 * 
 	 * @see #animationIsStarted()
 	 */
@@ -3533,7 +3557,13 @@ public class Scene implements PConstants {
   /**
 	 * Internal use.
 	 * <p>
-	 * Calls the animation handler. Calls {@link #animate()} if there's no such a handler.
+	 * Calls the animation handler. Calls {@link #animate()} if there's no such a handler. Sets
+	 * the value of {@link #animatedFrameWasTriggered} to {@code true} or {@code false}
+	 * depending on whether or not an animation event was triggered during this drawing frame
+	 * (useful to notify the outside world when an animation event occurs). 
+	 * 
+	 * @see #animationPeriod()
+	 * @see #startAnimation()
 	 */
 	protected void performAnimation() {		
 		if( currentAnimationFrame >= 0 ) {
@@ -3562,10 +3592,13 @@ public class Scene implements PConstants {
 	 * <p>
 	 * When {@link #animationIsStarted()}, this method defines how your scene evolves over time.
 	 * <p>
-	 * Overload it as needed. Default implementation is empty.
+	 * Overload it as needed. Default implementation is empty. You may
+	 * {@link #addAnimationHandler(Object, String)} instead.
 	 * <p>
 	 * <b>Note</b> that remixlab.proscene.KeyFrameInterpolator (which regularly updates a Frame)
 	 * do not use this method.
+	 * 
+	 * @see #addAnimationHandler(Object, String).
 	 */
 	public void animate() {
 	}
@@ -3586,6 +3619,8 @@ public class Scene implements PConstants {
 	 *          the object to handle the event
 	 * @param methodName
 	 *          the method to execute in the object handler class
+	 * 
+	 * @see #animate()
 	 */
 	public void addAnimationHandler(Object obj, String methodName) {
 		try {
