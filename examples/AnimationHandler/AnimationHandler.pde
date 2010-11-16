@@ -1,16 +1,20 @@
 /**
- * Animation.
- * by Jean Pierre Charalambos.
+ * Animation Handler (originally SwarmingSprites by Andres Colubri)
+ * Ported to proscene by Jean Pierre Charalambos.
  * 
- * The animate() function illustrated by a water particle simulation.
+ * Swarming points are animated with an animation function which is
+ * registered at the scene using addAnimationHandler().
  *
- * When animation is activated, the animate() and then the parent.redraw()
- * (which in turn calls {@code PApplet.draw()}) functions are called in an
- * infinite loop.
+ * When an animation is activated (scene.startAnimation()), your animate
+ * function is called in an infinite loop which is synced with the drawing
+ * loop by proscene according to scene.animationPeriod().
  * 
  * You can tune the frequency of your animation (default is 25Hz) using
  * setAnimationPeriod(). The frame rate will then be fixed, provided that
  * your animation loop function is fast enough.
+ *
+ * This example requires the GLGraphics library:
+ * http://glgraphics.sourceforge.net/
  *
  * Press 'm' to toggle (start/stop) animation.
  * Press 'x' to decrease the animation period (animation speeds up).
@@ -20,46 +24,70 @@
  * and mouse bindings in the console.
  */
 
+import processing.opengl.*;
+import codeanticode.glgraphics.*;
 import remixlab.proscene.*;
 
-int nbPart;
-Particle[] particle;
 Scene scene;
+GLModel model;
+GLTexture tex;
+float[] coords;
+float[] colors;
 
-void animateScene(Scene s) {  
-  for (int i = 0; i < nbPart; i++)
-    if(particle[i] != null)
-      particle[i].animate();
+int numPoints = 10000;
+
+void animateScene(Scene s) {
+  for (int i = 0; i < numPoints; i++)
+    for (int j = 0; j < 3; j++)
+      coords[4 * i + j] += random(-0.5, 0.5);
+
+  model.updateVertices(coords);
 }
 
 void setup() {
-  size(640, 360, P3D);
+  size(640, 480, GLConstants.GLGRAPHICS);
+
   scene = new Scene(this); 
   scene.setAxisIsDrawn(false);
-  nbPart = 2000;
-  particle = new Particle[nbPart];     
-  for (int i = 0; i < particle.length; i++)
-    particle[i] = new Particle();
-  scene.addAnimationHandler(this, "animateScene");
-  // press 'm' to start/stop animation
+  scene.addAnimationHandler(this, "animateScene");  
   scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);
-  scene.setAnimationPeriod(40); // 25Hz
+
+  model = new GLModel(this, numPoints, GLModel.POINT_SPRITES, GLModel.DYNAMIC);
+  model.initColors();
+  tex = new GLTexture(this, "particle.bmp");    
+
+  coords = new float[4 * numPoints];
+  colors = new float[4 * numPoints];
+
+  for (int i = 0; i < numPoints; i++) {
+    for (int j = 0; j < 3; j++) coords[4 * i + j] = 100.0 * random(-1, 1);
+    coords[4 * i + 3] = 1.0; // The W coordinate of each point must be 1.
+    for (int j = 0; j < 3; j++) colors[4 * i + j] = random(0, 1);
+    colors[4 * i + 3] = 0.9;
+  }
+
+  model.updateVertices(coords);
+  model.updateColors(colors);
+
   scene.startAnimation();
-  smooth();
+
+  println("Maximum sprite size supported by the video card: " + model.getMaxPointSize() + " pixels.");   
+  model.initTextures(1);
+  model.setTexture(0, tex);   
+  model.setPointSize(60);
+  model.setSpriteFadeSize(40);
+  model.setBlendMode(ADD);
 }
 
-// Make sure to define the draw() method, even if it's empty.
-void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
-  pushStyle();
-  strokeWeight(3); // Default
-  beginShape(POINTS);
-  for (int i = 0; i < nbPart; i++) {
-    particle[i].draw();
-  }
-  endShape();
-  popStyle();
+void draw() {    
+  GLGraphics renderer = (GLGraphics)g;
+  renderer.beginGL();  
+
+  scene.background(0);
+
+  model.render();
+
+  renderer.endGL();
 }
 
 void keyPressed() {

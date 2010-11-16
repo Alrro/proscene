@@ -7,6 +7,14 @@
  * 
  * This example displays the famous artificial life program "Boids", developed by
  * Craig Reynolds in 1986.
+ *
+ * When an animation is activated (scene.startAnimation()), the
+ * scene.animatedFrameWasTriggered boolean variable is updated each frame of your
+ * drawing loop by proscene according to scene.animationPeriod().
+ * 
+ * You can tune the frequency of your animation (default is 25Hz) using
+ * setAnimationPeriod(). The frame rate will then be fixed, provided that
+ * your animation loop function is fast enough.
  * 
  * Boids under the mouse will be colored blue. If you click on a boid it will be
  * selected as the avatar, useful for the THIRD_PERSON proscene camera mode.

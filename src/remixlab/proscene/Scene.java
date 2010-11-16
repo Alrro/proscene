@@ -42,7 +42,7 @@ import java.util.TimerTask;
  * <p>
  * A Scene has a full reach Camera, an two means to manipulate objects: an
  * {@link #interactiveFrame()} single instance (which by default is null) and a
- * {@link #mouseGrabber()} pool.
+ * {@link #mouseGrabber()} pool. Explain here how mouse moves are interpreted...
  * <h3>Usage</h3>
  * To use a Scene you have three choices:
  * <ol>
@@ -90,7 +90,7 @@ import java.util.TimerTask;
  * <li><b>By querying the state of the {@link #animatedFrameWasTriggered} variable.</b>
  * During the drawing loop, the variable {@link #animatedFrameWasTriggered} is set
  * to {@code true} each time an animated frame is triggered (and {@code false} otherwise),
- * which is useful to notify to the outside world when an animation event occurs.
+ * which is useful to notify the outside world when an animation event occurs.
  * See the example <i>Flock</i>.
  * </ol>
  * <b>Attention:</b> To set the PApplet's background you should call one of the
