@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 0.9.96)      
+ *                     ProScene (version 0.9.97)      
  *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -89,9 +89,9 @@ import java.util.TimerTask;
  * <i>AnimationHandler</i>.
  * <li><b>By querying the state of the {@link #animatedFrameWasTriggered} variable.</b>
  * During the drawing loop, the variable {@link #animatedFrameWasTriggered} is set
- * to {@code true} each time an animated frame is triggered (and {@code false} otherwise),
- * which is useful to notify the outside world when an animation event occurs.
- * See the example <i>Flock</i>.
+ * to {@code true} each time an animated frame is triggered (and to {@code false}
+ * otherwise), which is useful to notify the outside world when an animation event
+ * occurs. See the example <i>Flock</i>.
  * </ol>
  * <b>Attention:</b> To set the PApplet's background you should call one of the
  * {@code Scene.background()} versions instead of any of the {@code
@@ -99,7 +99,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "0.9.96";
+	public static final String version = "0.9.97";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
