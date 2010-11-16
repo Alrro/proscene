@@ -4,9 +4,9 @@
  * 
  * The animate() function illustrated by a water particle simulation.
  *
- * When animation is activated, the animate() and then the parent.redraw()
- * (which in turn calls {@code PApplet.draw()}) functions are called in an
- * infinite loop.
+ * When an animation is activated (scene.startAnimation()), the
+ * scene.animate() function is called in an infinite loop which is synced
+ * with the drawing loop by proscene according to scene.animationPeriod().
  * 
  * You can tune the frequency of your animation (default is 25Hz) using
  * setAnimationPeriod(). The frame rate will then be fixed, provided that
