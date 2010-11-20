@@ -40,12 +40,12 @@ public class DrawingUtils implements PConstants {
 	// 1. SCENE
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code cylinder((PGraphics3D) parent.g, w, h)}.
+	 * Convenience wrapper function that simply calls {@code cylinder((PGraphicsAndroid3D) parent.g, w, h)}.
 	 * 
-	 * @see #cylinder(PGraphics3D, float, float) 
+	 * @see #cylinder(PGraphicsAndroid3D, float, float) 
 	 */
 	public static void cylinder(PApplet parent, float w, float h) {
-		cylinder((PGraphics3D) parent.g, w, h);
+		cylinder((PGraphicsAndroid3D) parent.g, w, h);
 	}
 	
 	/**
@@ -54,7 +54,7 @@ public class DrawingUtils implements PConstants {
 	 * <p>
 	 * Code adapted from http://www.processingblogs.org/category/processing-java/
 	 */
-	public static void cylinder(PGraphics3D p3d, float w, float h) {
+	public static void cylinder(PGraphicsAndroid3D p3d, float w, float h) {
 		float px, py;
 
 		p3d.beginShape(QUAD_STRIP);
@@ -86,48 +86,48 @@ public class DrawingUtils implements PConstants {
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, det, r, h)}.
+	 * Convenience wrapper function that simply calls {@code cone((PGraphicsAndroid3D) parent.g, det, r, h)}.
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float)
 	 */
 	public static void cone(PApplet parent, int det, float r, float h) {
-		cone((PGraphics3D) parent.g, det, r, h);
+		cone((PGraphicsAndroid3D) parent.g, det, r, h);
 	}	
 	
 	/**
 	 * Same as {@code cone(p3d, det, 0, 0, r, h);}
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, int det, float r, float h) {
+	public static void cone(PGraphicsAndroid3D p3d, int det, float r, float h) {
 		cone(p3d, det, 0, 0, r, h);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, r, h)}.
+	 * Convenience wrapper function that simply calls {@code cone((PGraphicsAndroid3D) parent.g, r, h)}.
 	 * 
-	 * @see #cone(PGraphics3D, float, float)
+	 * @see #cone(PGraphicsAndroid3D, float, float)
 	 */
 	public static void cone(PApplet parent, float r, float h) {
-		cone((PGraphics3D) parent.g, r, h);
+		cone((PGraphicsAndroid3D) parent.g, r, h);
 	}		
 	
 	/**
 	 * Same as {@code cone(p3d, 12, 0, 0, r, h);}
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, float r, float h) {
+	public static void cone(PGraphicsAndroid3D p3d, float r, float h) {
 		cone(p3d, 12, 0, 0, r, h);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, detail, x, y, r, h)}.
+	 * Convenience wrapper function that simply calls {@code cone((PGraphicsAndroid3D) parent.g, detail, x, y, r, h)}.
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float, float, float)
 	 */
 	public static void cone(PApplet parent, int detail, float x, float y,	float r, float h) {
-		cone((PGraphics3D) parent.g, detail, x, y, r, h);
+		cone((PGraphicsAndroid3D) parent.g, detail, x, y, r, h);
 	}			
 	
 	/**
@@ -137,9 +137,9 @@ public class DrawingUtils implements PConstants {
 	 * The code of this function was adapted from
 	 * http://processinghacks.com/hacks:cone Thanks to Tom Carden.
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, int detail, float x, float y, float r, float h) {
+	public static void cone(PGraphicsAndroid3D p3d, int detail, float x, float y, float r, float h) {
 		float unitConeX[] = new float[detail + 1];
 		float unitConeY[] = new float[detail + 1];
 
@@ -162,12 +162,12 @@ public class DrawingUtils implements PConstants {
 
 	/**
 	 * Convenience wrapper function that simply calls
-	 * {@code cone((PGraphics3D) parent.g, det, r1, r2, h)}.
+	 * {@code cone((PGraphicsAndroid3D) parent.g, det, r1, r2, h)}.
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float, float)
 	 */
 	public static void cone(PApplet parent, int det, float r1, float r2, float h) {
-		cone((PGraphics3D) parent.g, det, r1, r2, h);
+		cone((PGraphicsAndroid3D) parent.g, det, r1, r2, h);
 	}
 	
 	/**
@@ -175,17 +175,17 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, int det, float r1, float r2, float h) {
+	public static void cone(PGraphicsAndroid3D p3d, int det, float r1, float r2, float h) {
 		cone(p3d, det, 0, 0, r1, r2, h);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, r1, r2, h)}.
+	 * Convenience wrapper function that simply calls {@code cone((PGraphicsAndroid3D) parent.g, r1, r2, h)}.
 	 * 
-	 * @see #cone(PGraphics3D, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, float, float, float)
 	 */
 	public static void cone(PApplet parent, float r1, float r2, float h) {
-		cone((PGraphics3D) parent.g, r1, r2, h);
+		cone((PGraphicsAndroid3D) parent.g, r1, r2, h);
 	}	
 	
 	/**
@@ -193,17 +193,17 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, float r1, float r2, float h) {
+	public static void cone(PGraphicsAndroid3D p3d, float r1, float r2, float h) {
 		cone(p3d, 18, 0, 0, r1, r2, h);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code cone((PGraphics3D) parent.g, detail, x, y, r, h)}.
+	 * Convenience wrapper function that simply calls {@code cone((PGraphicsAndroid3D) parent.g, detail, x, y, r, h)}.
 	 * 
-	 * @see #cone(PGraphics3D, int, float, float, float, float)
+	 * @see #cone(PGraphicsAndroid3D, int, float, float, float, float)
 	 */
 	public static void cone(PApplet parent, int detail, float x, float y,	float r1, float r2, float h) {
-		cone((PGraphics3D) parent.g, detail, x, y, r1, r2, h);
+		cone((PGraphicsAndroid3D) parent.g, detail, x, y, r1, r2, h);
 	}		
 	
 	/**
@@ -213,7 +213,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #cone(PApplet, int, float, float, float, float)
 	 */
-	public static void cone(PGraphics3D p3d, int detail, float x, float y,
+	public static void cone(PGraphicsAndroid3D p3d, int detail, float x, float y,
 			float r1, float r2, float h) {
 		float firstCircleX[] = new float[detail + 1];
 		float firstCircleY[] = new float[detail + 1];
@@ -240,28 +240,28 @@ public class DrawingUtils implements PConstants {
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawAxis((PGraphics3D) parent.g, 100)}.
+	 * Convenience wrapper function that simply calls {@code drawAxis((PGraphicsAndroid3D) parent.g, 100)}.
 	 * 
-	 * @see #drawAxis(PGraphics3D, float)
+	 * @see #drawAxis(PGraphicsAndroid3D, float)
 	 */
 	public static void drawAxis(PApplet parent) {
-		drawAxis((PGraphics3D) parent.g, 100);
+		drawAxis((PGraphicsAndroid3D) parent.g, 100);
 	}	
 	
 	/**
 	 * Convenience function that simply calls {@code drawAxis(p3d, 100)}
 	 */
-	public static void drawAxis(PGraphics3D p3d) {
+	public static void drawAxis(PGraphicsAndroid3D p3d) {
 		drawAxis(p3d, 100);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawAxis((PGraphics3D) parent.g, length)}.
+	 * Convenience wrapper function that simply calls {@code drawAxis((PGraphicsAndroid3D) parent.g, length)}.
 	 * 
-	 * @see #drawAxis(PGraphics3D, float)
+	 * @see #drawAxis(PGraphicsAndroid3D, float)
 	 */
 	public static void drawAxis(PApplet parent, float length) {
-		drawAxis((PGraphics3D) parent.g, length);
+		drawAxis((PGraphicsAndroid3D) parent.g, length);
 	}		
 	
 	/**
@@ -270,7 +270,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawAxis(PGraphics3D p3d, float length) {
+	public static void drawAxis(PGraphicsAndroid3D p3d, float length) {
 		final float charWidth = length / 40.0f;
 		final float charHeight = length / 30.0f;
 		final float charShift = 1.04f * length;
@@ -336,12 +336,12 @@ public class DrawingUtils implements PConstants {
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphics3D) parent.g, length)}.
+	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphicsAndroid3D) parent.g, length)}.
 	 * 
-	 * @see #drawArrow(PGraphics3D, float)
+	 * @see #drawArrow(PGraphicsAndroid3D, float)
 	 */
 	public static void drawArrow(PApplet parent, float length) {
-		drawArrow((PGraphics3D) parent.g, length);
+		drawArrow((PGraphicsAndroid3D) parent.g, length);
 	}			
 	
 	/**
@@ -349,18 +349,18 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawArrow(PApplet, float, float)
 	 */
-	public static void drawArrow(PGraphics3D p3d, float length) {
+	public static void drawArrow(PGraphicsAndroid3D p3d, float length) {
 		float radius = 0.05f * length;
 		drawArrow(p3d, length, radius);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphics3D) parent.g, length, radius)}.
+	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphicsAndroid3D) parent.g, length, radius)}.
 	 * 
-	 * @see #drawArrow(PGraphics3D, float, float)
+	 * @see #drawArrow(PGraphicsAndroid3D, float, float)
 	 */
 	public static void drawArrow(PApplet parent, float length, float radius) {
-		drawArrow((PGraphics3D) parent.g, length, radius);
+		drawArrow((PGraphicsAndroid3D) parent.g, length, radius);
 	}		
 	
 	/**
@@ -371,7 +371,7 @@ public class DrawingUtils implements PConstants {
 	 * Use {@link #drawArrow(PApplet, PVector, PVector, float)} to place the arrow
 	 * in 3D.
 	 */
-	public static void drawArrow(PGraphics3D p3d, float length, float radius) {
+	public static void drawArrow(PGraphicsAndroid3D p3d, float length, float radius) {
 		float head = 2.5f * (radius / length) + 0.1f;
 		float coneRadiusCoef = 4.0f - 5.0f * head;
 
@@ -383,12 +383,12 @@ public class DrawingUtils implements PConstants {
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphics3D) parent.g, from, to, radius)}.
+	 * Convenience wrapper function that simply calls {@code drawArrow((PGraphicsAndroid3D) parent.g, from, to, radius)}.
 	 * 
-	 * @see #drawArrow(PGraphics3D, PVector, PVector, float)
+	 * @see #drawArrow(PGraphicsAndroid3D, PVector, PVector, float)
 	 */
 	public static void drawArrow(PApplet parent, PVector from, PVector to, float radius) {
-		drawArrow((PGraphics3D) parent.g, from, to, radius);
+		drawArrow((PGraphicsAndroid3D) parent.g, from, to, radius);
 	}		
 	
 	/**
@@ -398,7 +398,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawArrow(PApplet, float, float)
 	 */
-	public static void drawArrow(PGraphics3D p3d, PVector from, PVector to,
+	public static void drawArrow(PGraphicsAndroid3D p3d, PVector from, PVector to,
 			float radius) {
 		p3d.pushMatrix();
 		p3d.translate(from.x, from.y, from.z);
@@ -409,12 +409,12 @@ public class DrawingUtils implements PConstants {
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g)}.
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphicsAndroid3D) parent.g)}.
 	 * 
-	 * @see #drawGrid(PGraphics3D)
+	 * @see #drawGrid(PGraphicsAndroid3D)
 	 */
 	public static void drawGrid(PApplet parent) {
-		drawGrid((PGraphics3D) parent.g);
+		drawGrid((PGraphicsAndroid3D) parent.g);
 	}			
 	
 	/**
@@ -422,17 +422,17 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawGrid(PGraphics3D p3d) {
+	public static void drawGrid(PGraphicsAndroid3D p3d) {
 		drawGrid(p3d, 100, 10);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g, size)}.
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphicsAndroid3D) parent.g, size)}.
 	 * 
-	 * @see #drawGrid(PGraphics3D, float)
+	 * @see #drawGrid(PGraphicsAndroid3D, float)
 	 */
 	public static void drawGrid(PApplet parent, float size) {
-		drawGrid((PGraphics3D) parent.g, size);
+		drawGrid((PGraphicsAndroid3D) parent.g, size);
 	}	
 	
 	/**
@@ -440,17 +440,17 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawGrid(PGraphics3D p3d, float size) {
+	public static void drawGrid(PGraphicsAndroid3D p3d, float size) {
 		drawGrid(p3d, size, 10);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g, nbSubdivisions)}.
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphicsAndroid3D) parent.g, nbSubdivisions)}.
 	 * 
-	 * @see #drawGrid(PGraphics3D, int)
+	 * @see #drawGrid(PGraphicsAndroid3D, int)
 	 */
 	public static void drawGrid(PApplet parent, int nbSubdivisions) {
-		drawGrid((PGraphics3D) parent.g, nbSubdivisions);
+		drawGrid((PGraphicsAndroid3D) parent.g, nbSubdivisions);
 	}
 	
 	/**
@@ -459,17 +459,17 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawGrid(PApplet, float, int)
 	 */
-	public static void drawGrid(PGraphics3D p3d, int nbSubdivisions) {
+	public static void drawGrid(PGraphicsAndroid3D p3d, int nbSubdivisions) {
 		drawGrid(p3d, 100, nbSubdivisions);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphics3D) parent.g, size, nbSubdivisions)}.
+	 * Convenience wrapper function that simply calls {@code drawGrid((PGraphicsAndroid3D) parent.g, size, nbSubdivisions)}.
 	 * 
-	 * @see #drawGrid(PGraphics3D, float, int)
+	 * @see #drawGrid(PGraphicsAndroid3D, float, int)
 	 */
 	public static void drawGrid(PApplet parent, float size, int nbSubdivisions) {
-		drawGrid((PGraphics3D) parent.g, size, nbSubdivisions);
+		drawGrid((PGraphicsAndroid3D) parent.g, size, nbSubdivisions);
 	}	
 	
 	/**
@@ -481,7 +481,7 @@ public class DrawingUtils implements PConstants {
 	 * 
 	 * @see #drawAxis(PApplet, float)
 	 */
-	public static void drawGrid(PGraphics3D p3d, float size, int nbSubdivisions) {
+	public static void drawGrid(PGraphicsAndroid3D p3d, float size, int nbSubdivisions) {
 		p3d.pushStyle();
 		p3d.stroke(170, 170, 170);
 		p3d.strokeWeight(1);
@@ -500,143 +500,143 @@ public class DrawingUtils implements PConstants {
 	// 2. CAMERA
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, true, 1.0f)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, true, 1.0f)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera) {
-		drawCamera((PGraphics3D) parent.g, camera, 170, true, 1.0f);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, true, 1.0f);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * 170, true, 1.0f)}
 	 * 
-	 * @see #drawCamera(PGraphics3D p3d, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D p3d, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera) {
 		drawCamera(p3d, camera, 170, true, 1.0f);
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, true, scale)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, true, scale)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera, float scale) {
-		drawCamera((PGraphics3D) parent.g, camera, 170, true, scale);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, true, scale);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * 170, true, scale)}
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera, float scale) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera, float scale) {
 		drawCamera(p3d, camera, 170, true, scale);
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, true, 1.0f)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, color, true, 1.0f)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera, int color) {
-		drawCamera((PGraphics3D) parent.g, camera, color, true, 1.0f);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, color, true, 1.0f);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * color, true, 1.0f)}
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera, int color) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera, int color) {
 		drawCamera(p3d, camera, color, true, 1.0f);
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, 1.0f)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, drawFarPlane, 1.0f)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera,	boolean drawFarPlane) {
-		drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, 1.0f);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, drawFarPlane, 1.0f);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code drawCamera(p3d, camera,
 	 * 170, drawFarPlane, 1.0f)}
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera,	boolean drawFarPlane) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera,	boolean drawFarPlane) {
 		drawCamera(p3d, camera, 170, drawFarPlane, 1.0f);
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, scale)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, drawFarPlane, scale)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera,	boolean drawFarPlane, float scale) {
-		drawCamera((PGraphics3D) parent.g, camera, 170, drawFarPlane, scale);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, 170, drawFarPlane, scale);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code drawCamera(p3d, camera, 170, drawFarPlane, scale)}
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera,	boolean drawFarPlane, float scale) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera,	boolean drawFarPlane, float scale) {
 		drawCamera(p3d, camera, 170, drawFarPlane, scale);
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, true, scale)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, color, true, scale)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera, int color,	float scale) {
-		drawCamera((PGraphics3D) parent.g, camera, color, true, scale);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, color, true, scale);
 	}
 
 	/**
 	 * Convenience function that simply calls {@code drawCamera(p3d, camera, color, true, scale)}
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera, int color,	float scale) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera, int color,	float scale) {
 		drawCamera(p3d, camera, color, true, scale);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, 1.0f)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, color, drawFarPlane, 1.0f)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera, int color,	boolean drawFarPlane) {
-		drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, 1.0f);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, color, drawFarPlane, 1.0f);
 	}
 	
 	/**
 	 * Convenience function that simply calls {@code drawCamera(parent, camera,
 	 * color, drawFarPlane, 1.0f)}
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera, int color,	boolean drawFarPlane) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera, int color,	boolean drawFarPlane) {
 		drawCamera(p3d, camera, color, drawFarPlane, 1.0f);
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, scale)}.
+	 * Convenience wrapper function that simply calls {@code drawCamera((PGraphicsAndroid3D) parent.g, camera, color, drawFarPlane, scale)}.
 	 * 
-	 * @see #drawCamera(PGraphics3D, Camera, int, boolean, float)
+	 * @see #drawCamera(PGraphicsAndroid3D, Camera, int, boolean, float)
 	 */
 	public static void drawCamera(PApplet parent, Camera camera, int color, boolean drawFarPlane, float scale) {
-		drawCamera((PGraphics3D) parent.g, camera, color, drawFarPlane, scale);
+		drawCamera((PGraphicsAndroid3D) parent.g, camera, color, drawFarPlane, scale);
 	}
 
 	/**
@@ -654,7 +654,7 @@ public class DrawingUtils implements PConstants {
 	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be
 	 * visible, but may create artifacts due to numerical imprecisions.
 	 */
-	public static void drawCamera(PGraphics3D p3d, Camera camera, int color, boolean drawFarPlane, float scale) {
+	public static void drawCamera(PGraphicsAndroid3D p3d, Camera camera, int color, boolean drawFarPlane, float scale) {
 		p3d.pushMatrix();
 
 		// p3d.applyMatrix(camera.frame().worldMatrix());
@@ -786,15 +786,15 @@ public class DrawingUtils implements PConstants {
 		drawKFICamera(parent, 170, scale);
 	}
 
-	public static void drawKFICamera(PGraphics3D p3d, float scale) {
+	public static void drawKFICamera(PGraphicsAndroid3D p3d, float scale) {
 		drawKFICamera(p3d, 170, scale);
 	}
 	
 	public static void drawKFICamera(PApplet parent, int color, float scale) {
-		drawKFICamera((PGraphics3D) parent.g, color, scale);
+		drawKFICamera((PGraphicsAndroid3D) parent.g, color, scale);
 	}
 
-	public static void drawKFICamera(PGraphics3D p3d, int color, float scale) {
+	public static void drawKFICamera(PGraphicsAndroid3D p3d, int color, float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;
 		float dist = halfHeight / PApplet.tan(PApplet.PI / 8.0f);

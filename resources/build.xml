@@ -1,4 +1,4 @@
-<project name="ProsceneLib" default="clean" basedir="../">
+<project name="ProsceneAndroidLib" default="clean" basedir="../">
 
     
 <!--	

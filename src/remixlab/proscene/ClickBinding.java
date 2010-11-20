@@ -125,7 +125,7 @@ public class ClickBinding {
 	public String description() {
 		String description = new String();
 		if(mask != 0)
-			description += DesktopEvents.getModifiersExText(mask) + " + ";
+//			description += DesktopEvents.getModifiersExText(mask) + " + ";
 		switch (button) {
 		case LEFT :
 			description += "Button1";

@@ -143,7 +143,7 @@ public class Camera implements Cloneable {
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
-	public PGraphics3D pg3d;
+	public PGraphicsAndroid3D pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}.
