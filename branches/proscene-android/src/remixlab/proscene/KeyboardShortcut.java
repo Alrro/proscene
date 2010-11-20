@@ -112,10 +112,12 @@ public final class KeyboardShortcut {
 		if(key != null)
 			description = key.toString();
 		else {
+			/*
 			if(mask == 0)
 				description = DesktopEvents.getKeyText(vKey);
 			else
 				description = DesktopEvents.getModifiersExText(mask) + "+" + DesktopEvents.getKeyText(vKey);
+		  */		
 		}			
 		return description;
 	}

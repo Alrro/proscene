@@ -209,7 +209,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	private PVector v1, v2;
 
 	// P R O C E S S I N G A P P L E T
-	public PGraphics3D pg3d;
+	public PGraphicsAndroid3D pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(new Frame(), p)}.
@@ -229,19 +229,19 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * Creates an anonymous {@link #frame()} to be interpolated by this
 	 * KeyFrameInterpolator.
 	 * 
-	 * @see #KeyFrameInterpolator(Frame, PGraphics3D)
+	 * @see #KeyFrameInterpolator(Frame, PGraphicsAndroid3D)
 	 */
-	public KeyFrameInterpolator(PGraphics3D p3d) {
+	public KeyFrameInterpolator(PGraphicsAndroid3D p3d) {
 		this(new Frame(), p3d);
 	}
 	
 	/**
-	 * Convenience constructor that simply calls {this(frame, (PGraphics3D) parent.g)}.
+	 * Convenience constructor that simply calls {this(frame, (PGraphicsAndroid3D) parent.g)}.
 	 * 
-	 * @see #KeyFrameInterpolator(Frame, PGraphics3D)
+	 * @see #KeyFrameInterpolator(Frame, PGraphicsAndroid3D)
 	 */
 	public KeyFrameInterpolator(Frame frame, PApplet parent) {
-		this(frame, (PGraphics3D) parent.g);
+		this(frame, (PGraphicsAndroid3D) parent.g);
 	}
 
 	/**
@@ -256,7 +256,7 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * 
 	 * @see #KeyFrameInterpolator(PApplet)
 	 */
-	public KeyFrameInterpolator(Frame frame, PGraphics3D p3d) {
+	public KeyFrameInterpolator(Frame frame, PGraphicsAndroid3D p3d) {
 		pg3d = p3d;
 		myFrame = new Frame();
 		keyFr = new ArrayList<KeyFrame>();

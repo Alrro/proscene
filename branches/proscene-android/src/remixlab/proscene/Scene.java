@@ -430,7 +430,7 @@ public class Scene implements PConstants {
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	public PGraphics3D pg3d;
+	public PGraphicsAndroid3D pg3d;
 	int width, height;// size
 	boolean offscreen;
 
@@ -508,7 +508,7 @@ public class Scene implements PConstants {
 	 * to black. See the associated documentation.
 	 */	
 	public Scene(PApplet p) {
-		this(p, (PGraphics3D) p.g);
+		this(p, (PGraphicsAndroid3D) p.g);
 	}
 
 	/**
@@ -518,7 +518,7 @@ public class Scene implements PConstants {
 	 * specified as well, and if it is different from the PApplet's renderer,
 	 * this will result in an offscreen Scene.
 	 */
-	public Scene(PApplet p, PGraphics3D renderer) {
+	public Scene(PApplet p, PGraphicsAndroid3D renderer) {
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
@@ -573,13 +573,16 @@ public class Scene implements PConstants {
 		enableBackgroundHanddling();
 		image = null;
 		background(0);
-		parent.registerPre(this);
-		parent.registerDraw(this);
+		
+		//parent.registerPre(this);
+		//parent.registerDraw(this);
+		
 		// parent.registerPost(this);
-		enableKeyboardHandling();
-		enableMouseHandling();
-		parseKeyXxxxMethods();
-		parseMouseXxxxMethods();
+		
+		//enableKeyboardHandling();
+		//enableMouseHandling();
+		//parseKeyXxxxMethods();
+		//parseMouseXxxxMethods();
 
 		// register draw method
 		removeDrawHandler();
@@ -859,7 +862,7 @@ public class Scene implements PConstants {
 	 * Returns {@code true} if this Scene is associated to an offscreen 
 	 * renderer and {@code false} otherwise.
 	 * 
-	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphicsAndroid3D)
 	 */
 	
 	public boolean isOffscreen() {
@@ -1397,7 +1400,7 @@ public class Scene implements PConstants {
 		// handle possible resize events
 		// weird: we need to bypass the handling of a resize event when running the
 		// applet from eclipse		
-		if ((parent.frame != null) && (parent.frame.isResizable())) {
+		if (false /*(parent.frame != null) && (parent.frame.isResizable())*/) {
 			if (backgroundIsHandled() && (backgroundMode == BackgroundMode.PIMAGE))
 				this.background(this.image);
 			if ((width != pg3d.width) || (height != pg3d.height)) {
@@ -3074,10 +3077,12 @@ public class Scene implements PConstants {
 				description += "space_bar" + " -> " + entry.getValue().description() + "\n";
 		}
 		
+		/*
 		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
 			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
 		description += DesktopEvents.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
 		description += DesktopEvents.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+		*/
 		
 		return description;		
 	}
@@ -3699,7 +3704,7 @@ public class Scene implements PConstants {
 		// matrices,
 		// we cache the processing camera projection matrix into our camera()
 		camera().setProjectionMatrix(pg3d.projection);
-		// camera().setProjectionMatrix(((PGraphics3D) parent.g).projection);
+		// camera().setProjectionMatrix(((PGraphicsAndroid3D) parent.g).projection);
 	}
 
 	/**
@@ -3716,6 +3721,6 @@ public class Scene implements PConstants {
 		// matrices,
 		// we cache the processing camera modelview matrix into our camera()
 		camera().setModelViewMatrix(pg3d.modelview);
-		// camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
+		// camera().setProjectionMatrix(((PGraphicsAndroid3D) parent.g).modelview);
 	}
 }

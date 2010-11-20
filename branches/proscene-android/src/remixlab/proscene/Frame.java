@@ -1233,10 +1233,10 @@ public class Frame implements Cloneable {
 	 * @see #matrix()
 	 */
 	public void applyTransformation(PApplet p) {
-		applyTransformation( (PGraphics3D) p.g );
+		applyTransformation( (PGraphicsAndroid3D) p.g );
 	}
 	
-	public void applyTransformation(PGraphics3D p3d) {
+	public void applyTransformation(PGraphicsAndroid3D p3d) {
 		p3d.translate(translation().x, translation().y, translation().z);
 		p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
 	}
