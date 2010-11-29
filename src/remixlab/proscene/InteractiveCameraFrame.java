@@ -130,11 +130,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
 		else {
-			int deltaY;
-			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				deltaY = (int) (eventPoint.y - prevPos.y);
-			else
-				deltaY = (int) (prevPos.y - eventPoint.y);
+			int deltaY = (int) (eventPoint.y - prevPos.y);
+  		//right_handed coordinate system should go like this:
+			//int deltaY = (int) (prevPos.y - eventPoint.y);
 			switch (action) {
 			case TRANSLATE: {
 				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
@@ -185,8 +183,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
 						- trans.x)
 						- PApplet.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
-				if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-					angle = -angle;
+				
+  			//lef-handed coordinate system correction
+				angle = -angle;
+				
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 				// #CONNECTION# These two methods should go together (spinning detection
 				// and activation)
@@ -275,11 +275,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
 			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
-			PVector trans;
-			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				trans = new PVector(0.0f, 0.0f, coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
-			else
-				trans = new PVector(0.0f, 0.0f, coef * rotation * wheelSensitivity() * wheelSensitivityCoef);
+			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
+  		//right_handed coordinate system should go like this:
+			//PVector trans = new PVector(0.0f, 0.0f, coef * rotation * wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
 			break;
 		}

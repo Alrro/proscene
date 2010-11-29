@@ -9,7 +9,7 @@
  * function is called in an infinite loop which is synced with the drawing
  * loop by proscene according to scene.animationPeriod().
  * 
- * You can tune the frequency of your animation (default is 25Hz) using
+ * You can tune the frequency of your animation (default is 60Hz) using
  * setAnimationPeriod(). The frame rate will then be fixed, provided that
  * your animation loop function is fast enough.
  *
