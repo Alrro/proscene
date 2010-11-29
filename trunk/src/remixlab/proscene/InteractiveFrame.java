@@ -29,7 +29,6 @@ package remixlab.proscene;
 import processing.core.*;
 
 import java.util.*;
-import java.util.Timer;
 
 /**
  * A InteractiveFrame is a Frame that can be rotated and translated using the
@@ -602,9 +601,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 		case ZOOM: {
 			// #CONNECTION# wheelEvent ZOOM case
-			PVector trans = new PVector(0.0f, 0.0f, (PVector.sub(camera.position(),
-					position())).mag()
-					* deltaY / camera.screenHeight());
+		  //Warning: same for left and right CoordinateSystemConvention:
+			PVector trans = new PVector(0.0f, 0.0f, (PVector.sub(camera.position(), position())).mag() * ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
@@ -742,10 +740,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			float wheelSensitivityCoef = 8E-4f;
 			// PVector trans(0.0, 0.0,
 			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
-			PVector trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity()
-					* wheelSensitivityCoef
-					* (PVector.sub(camera.position(), position())).mag());
-
+			PVector trans;
+			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+				trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+			else
+				trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+			
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)

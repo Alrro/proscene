@@ -33,7 +33,7 @@ package remixlab.proscene;
  * and can be of one out of two forms: 1. A mouse button; and, 2. A mouse
  * button plus a key-modifier (such as the CTRL key).
  */
-public class ClickBinding {
+public class ClickBinding {	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -44,6 +44,7 @@ public class ClickBinding {
 				+ ((numberOfClicks == null) ? 0 : numberOfClicks.hashCode());
 		return result;
 	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -70,7 +71,7 @@ public class ClickBinding {
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * Defines a mouse single click shortcut from the given mouse button. 
 	 * 
@@ -111,10 +112,12 @@ public class ClickBinding {
 	 * @param c bumber of clicks
 	 */
 	public ClickBinding(Integer m, Scene.Button b, Integer c) {
-		// TODO 0 < numberOfClicks < 3(?)
 		this.mask = m;
-		this.button = b;		
-		this.numberOfClicks = c;
+		this.button = b;
+		if(c <= 0)
+			this.numberOfClicks = 1;
+		else
+			this.numberOfClicks = c;
 	}
 	
 	/**

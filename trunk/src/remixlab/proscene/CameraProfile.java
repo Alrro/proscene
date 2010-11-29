@@ -28,7 +28,8 @@ package remixlab.proscene;
 
 import java.awt.event.*;
 import java.util.Map.Entry;
-//import processing.core.PApplet;
+
+import processing.core.PApplet;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
@@ -44,13 +45,12 @@ import remixlab.proscene.Scene.MouseAction;
  * or can be associated to a camera profile to affect the camera behavior, such as
  * move the camera to the left. Different versions of {@code setShortcut()} are provided
  * to set camera keyboard shortcuts.
- * <li><b>Click actions</b> such as selecting an object. Different versions of
- * {@code setClickBinding()} are provided to bind click actions.
+ * <li><b>Click actions</b> such as selecting an object. This class provide different versions of
+ * {@code setClickBinding()} to bind click actions.
  * <li><b>Mouse actions (i.e., the mouse is clicked and then dragged)</b> which can be handle by
  * the camera or an interactive frame (such as rotating the camera or an interactive frame).
- * Different versions of {@code setCameraMouseBinding()}, {@code setFrameMouseBinding()}
- * {@code setCameraWheelBinding()} and {@code setFrameWheelBinding()} are provided to bind
- * mouse actions. 
+ * This class provide different versions of {@code setCameraMouseBinding()}, {@code setFrameMouseBinding()}
+ * {@code setCameraWheelBinding()} and {@code setFrameWheelBinding()} to bind the mouse actions. 
  * </ol>
  * <p>
  * <b>Note:</b> Click and mouse actions can also be handled by MouseGrabbable objects, but their
@@ -64,7 +64,134 @@ import remixlab.proscene.Scene.MouseAction;
  * "camera modes": ARCBALL, WHEELED_ARCBALL, FIRST_PERSON, THIRD_PERSON, and CUSTOM
  * (see {@link #mode()}). A custom camera profiles represents an empty set of camera and
  * keyboard shortcuts. Most of the methods of this class provide means to define
- * (or overwrite) custom (or preset bindings). 
+ * (or overwrite) custom (or preset bindings). Default keyboard shortcuts and mouse bindings
+ * for each CameraProfile preset are defined as follows:
+ * <p>
+ * <h3>ARCBALL</h3>
+ * <ol>
+ * <li><b>Keyboard shortcuts</b></li>
+ * <ul>
+ * <li>Up -> Move camera up</li>
+ * <li>Down -> Move camera down</li>
+ * <li>Left -> Move camera to the left</li>
+ * <li>Right -> Move camera to the right</li>
+ * <li>S -> Show the whole scene</li>
+ * <li>s -> Interpolate the camera to fit the whole scene</li>
+ * <li>+ -> Increase camera rotation sensitivity</li>
+ * <li>- -> Decrease camera rotation sensitivity</li>
+ * </ul>
+ * <li><b>Camera mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Rotate frame</li>
+ * <li>Shift+Button1 -> Screen rotate</li>
+ * <li>Ctrl+Button1 -> Zoom on region (camera or interactive drivable frame)</li>
+ * <li>Button2 -> Zoom</li>
+ * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * </ul>
+ * <li><b>Mouse click bindings</b></li>
+ * <ul>
+ * <li>Button1 + 2 clicks -> Align camera with world</li>
+ * <li>Button2 + 2 clicks -> Show the whole scene</li>
+ * <li>Button3 + 2 clicks -> Zoom to fit the scene</li>
+ * </ul>
+ * <li><b>Interactive frame mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Rotate frame (camera or interactive frame)</li>
+ * <li>Button2 -> Zoom</li>
+ * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * </ul>
+ * </ol>
+ * <p>
+ * <h3>WHEELED_ARCBALL</h3>
+ * <ol>
+ * <li><b>Keyboard shortcuts</b></li>
+ * <ul>
+ * <li>Right -> Move camera to the right</li>
+ * <li>Left -> Move camera to the left</li>
+ * <li>Up -> Move camera up</li>
+ * <li>Down -> Move camera down</li>
+ * <li>S -> Show the whole scene</li>
+ * <li>s -> Interpolate the camera to fit the whole scene</li>
+ * <li>+ -> Increase camera rotation sensitivity</li>
+ * <li>- -> Decrease camera rotation sensitivity</li>
+ * </ul>
+ * <li><b>Camera mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Rotate frame (camera or interactive frame)</li>
+ * <li>Shift+Button1 -> Screen rotate (camera or interactive frame)</li>
+ * <li>Ctrl+Button1 -> Zoom on region (camera or interactive drivable frame)</li>
+ * <li>Button2 -> Zoom</li>
+ * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * </ul>
+ * <li><b>Mouse click bindings</b></li>
+ * <ul>
+ * <li>Button1 + 2 clicks -> Align camera with world</li>
+ * <li>Button2 + 2 clicks -> Show the whole scene</li>
+ * <li>Button3 + 2 clicks -> Zoom to fit the scene</li>
+ * </ul>
+ * <li><b>Interactive frame mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Rotate frame (camera or interactive frame)</li>
+ * <li>Button2 -> Zoom</li>
+ * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * </ul>
+ * <li><b>Camera mouse wheel bindings</b></li>
+ * <ul>
+ * <li>Wheel -> Zoom</li>
+ * </ul>
+ * <li><b>Interactive frame mouse wheel bindings</b></li>
+ * <ul>
+ * <li>Wheel -> Zoom</li>
+ * </ul>
+ * </ol>
+ * <p>
+ * <h3>FIRST_PERSON</h3>
+ * <ol>
+ * <li><b>Keyboard shortcuts</b></li>
+ * <ul>
+ * <li>S -> Show the whole scene</li>
+ * <li>s -> Interpolate the camera to fit the whole scene</li>
+ * <li>+ -> Increase camera fly speed</li>
+ * <li>- -> Decrease camera fly speed</li>
+ * </ul>
+ * <li><b>Camera mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Move forward frame (camera or interactive frame)</li>
+ * <li>Shift+Button1 -> Roll frame (camera or interactive drivable frame)</li>
+ * <li>Button2 -> Look around with frame (camera or interactive drivable frame)</li>
+ * <li>Button3 -> move backward frame (camera or interactive frame)</li>
+ * <li>Shift+Button3 -> Drive (camera or interactive drivable frame)</li>
+ * </ul>
+ * <li><b>Interactive frame mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Rotate frame (camera or interactive frame)</li>
+ * <li>Button2 -> Zoom</li>
+ * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * </ul>
+ * </ol>
+ * <p>
+ * <h3>THIRD_PERSON</h3>
+ * <ol>
+ * <li><b>Keyboard shortcuts</b></li>
+ * <ul>
+ * <li>A -> Decrease camera azymuth respect to the avatar</li>
+ * <li>a -> Increase camera azymuth respect to the avatar</li>
+ * <li>I -> Decrease camera inclination respect to the avatar</li>
+ * <li>i -> Increase camera inclination respect to the avatar</li>
+ * <li>t -> Increase camera tracking distance respect to the avatar</li>
+ * <li>T -> Decrease camera tracking distance respect to the avatar</li>
+ * <li>+ -> Increase avatar fly speed</li>
+ * <li>- -> Decrease avatar fly speed</li>
+ * </ul>
+ * <li><b>Interactive frame mouse bindings</b></li>
+ * <ul>
+ * <li>Button1 -> Move forward frame (camera or interactive frame)</li>
+ * <li>Shift+Button1 -> Roll frame (camera or interactive drivable frame)</li>
+ * <li>Button2 -> Look around with frame (camera or interactive drivable frame)</li>
+ * <li>Button3 -> move backward frame (camera or interactive frame)</li>
+ * <li>Shift+Button3 -> Drive (camera or interactive drivable frame)</li>
+ * </ul>
+ * </ol>
  * <p>
  * The Scene provides proper methods to manage (and also register and unregister)
  * camera profiles, such as {@link remixlab.proscene.Scene#cameraProfile(String)},
@@ -117,7 +244,6 @@ public class CameraProfile {
 	 * @param m the camera profile mode
 	 */
 	public CameraProfile(Scene scn, String n, Mode m) {
-	  //TODO: add descriptions for each preset mode!
 		scene = scn;		
 		name = n;
 		mode = m;
@@ -138,18 +264,8 @@ public class CameraProfile {
 			arcballDefaultShortcuts();
 			
 			setCameraWheelBinding( MouseAction.ZOOM );
-			/**
-			setCameraWheelBinding( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
-			setCameraWheelBinding( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
-			*/
 			//should work only iFrame is an instance of drivable
-			setFrameWheelBinding( MouseAction.ZOOM );
-			/**
-			setFrameWheelBinding( InputEvent.CTRL_DOWN_MASK, MouseAction.MOVE_FORWARD );
-			setFrameWheelBinding( InputEvent.ALT_DOWN_MASK, MouseAction.MOVE_BACKWARD );
-			*/
-			
-			//scene.parent.addMouseWheelListener( scene.dE );
+			setFrameWheelBinding( MouseAction.ZOOM );			
 			break;
 		case FIRST_PERSON:
 			setCameraMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
@@ -414,7 +530,7 @@ public class CameraProfile {
 	public void setShortcut(Character key, CameraKeyboardAction action) {
 		if ( isKeyInUse(key) ) {
 			CameraKeyboardAction a = shortcut(key);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		keyboard.setBinding(new KeyboardShortcut(key), action);
 	}
@@ -448,7 +564,7 @@ public class CameraProfile {
 	public void setShortcut(Integer mask, Integer vKey, CameraKeyboardAction action) {
 		if ( isKeyInUse(mask, vKey) ) {
 			CameraKeyboardAction a = shortcut(mask, vKey);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		keyboard.setBinding(new KeyboardShortcut(mask, vKey), action);
 	}
@@ -463,7 +579,7 @@ public class CameraProfile {
 	public void setShortcut(Integer vKey, CameraKeyboardAction action) {
 		if ( isKeyInUse(vKey) ) {
 			CameraKeyboardAction a = shortcut(vKey);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		keyboard.setBinding(new KeyboardShortcut(vKey), action);
 	}
@@ -661,7 +777,7 @@ public class CameraProfile {
 	public void setCameraMouseBinding(Integer mask,	Scene.MouseAction action) {
 		if ( isCameraMouseBindingInUse(mask) ) {
 			MouseAction a = cameraMouseBinding(mask);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		cameraActions.setBinding(mask, action);
 	}
@@ -718,7 +834,7 @@ public class CameraProfile {
 	public void setFrameMouseBinding(Integer mask, Scene.MouseAction action) {
 		if ( isFrameMouseBindingInUse(mask) ) {
 			MouseAction a = frameMouseBinding(mask);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		frameActions.setBinding(mask, action);
 	}
@@ -806,7 +922,7 @@ public class CameraProfile {
 	public void setClickBinding(Scene.Button button, Scene.ClickAction action) {
 		if ( isClickBindingInUse(button) ) {
 			ClickAction a = clickBinding(button);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(button), action);
 	}
@@ -821,7 +937,7 @@ public class CameraProfile {
 	public void setClickBinding(Integer mask, Scene.Button button, Scene.ClickAction action) {
 		if ( isClickBindingInUse(mask, button) ) {
 			ClickAction a = clickBinding(mask, button);
-			System.out.println("Warning: overwritting bindings which was previously associated to " + a);
+			PApplet.println("Warning: overwritting bindings which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(mask, button), action);
 	}
@@ -836,7 +952,7 @@ public class CameraProfile {
 	public void setClickBinding(Scene.Button button, Integer nc, Scene.ClickAction action) {
 		if ( isClickBindingInUse(button, nc) ) {
 			ClickAction a = clickBinding(button, nc);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(button, nc), action);
 	}
@@ -852,7 +968,7 @@ public class CameraProfile {
 	public void setClickBinding(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
 		if ( isClickBindingInUse(mask, button, nc) ) {
 			ClickAction a = clickBinding(mask, button, nc);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(mask, button, nc), action);
 	}
@@ -984,7 +1100,7 @@ public class CameraProfile {
 	public void setCameraWheelBinding(Integer mask, Scene.MouseAction action) {
 		if ( isCameraWheelBindingInUse(mask) ) {
 			MouseAction a = cameraWheelBinding(mask);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		cameraWheelActions.setBinding(mask, action);
 	}
@@ -1075,7 +1191,7 @@ public class CameraProfile {
 	public void setFrameWheelBinding(Integer mask, Scene.MouseAction action) {
 		if ( isFrameWheelBindingInUse(mask) ) {
 			MouseAction a = frameWheelBinding(mask);
-			System.out.println("Warning: overwritting binding which was previously associated to " + a);
+			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		frameWheelActions.setBinding(mask, action);
 	}
