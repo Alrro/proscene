@@ -42,7 +42,7 @@ import java.util.TimerTask;
  * <p>
  * A Scene has a full reach Camera, an two means to manipulate objects: an
  * {@link #interactiveFrame()} single instance (which by default is null) and a
- * {@link #mouseGrabber()} pool. Explain here how mouse moves are interpreted...
+ * {@link #mouseGrabber()} pool.
  * <h3>Usage</h3>
  * To use a Scene you have three choices:
  * <ol>
@@ -66,14 +66,16 @@ import java.util.TimerTask;
  * <ol>
  * <li><b>Global keyboard shortcuts</b> provide global configuration options
  * such as {@link #drawGrid()} or {@link #drawAxis()} that are common among
- * the different registered camera profiles.
- * {@link #setShortcut(Character, KeyboardAction)} or one of its different forms. 
- * <li><b>Camera profiles</b> represent a set of camera and keyboard bindings
- * which together represent a "camera mode". The scene provide high-level methods
- * to manage camera profiles such as {@link #registerCameraProfile(CameraProfile)},
+ * the different registered camera profiles. To define a global keyboard shortcut use
+ * {@link #setShortcut(Character, KeyboardAction)} or one of its different forms.
+ * Check {@link #setDefaultShortcuts()} to see the default global keyboard shortcuts.
+ * <li><b>Camera profiles</b> represent a set of camera keyboard shortcuts, and camera and
+ * frame mouse bindings which together represent a "camera mode". The scene provide
+ * high-level methods to manage camera profiles such as
+ * {@link #registerCameraProfile(CameraProfile)},
  * {@link #unregisterCameraProfile(CameraProfile)} or {@link #currentCameraProfile()}
- * among others. To perform the configuration of a camera profile see the
- * CameraProfile class documentation.
+ * among others. To perform the configuration of a camera profile see the CameraProfile
+ * class documentation.
  * </ol>
  * <h3>Animation mechanisms</h3>
  * Proscene provides three animation mechanisms to define how your scene evolves
@@ -692,14 +694,6 @@ public class Scene implements PConstants {
 		if (avatar() instanceof InteractiveAvatarFrame) {
 			avatarIsInteractiveAvatarFrame = true;
 			avatarIsInteractiveDrivableFrame = true;
-			/**
-			 * //TODO !!! really necessary? I think no :) <b>Attention: </b> If
-			 * {@code t} is an instance of the InteractiveAvatarFrame class, the
-			 * {@link remixlab.proscene.InteractiveAvatarFrame#trackingDistance()} is
-			 * set to {@link #radius()}/3. if (
-			 * ((InteractiveAvatarFrame)avatar()).trackingDistance() == 0 )
-			 * ((InteractiveAvatarFrame)avatar()).setTrackingDistance(radius()/3);
-			 */
 			if (interactiveFrame() != null)
 				((InteractiveDrivableFrame) interactiveFrame())
 						.setFlySpeed(0.01f * radius());
@@ -1223,9 +1217,9 @@ public class Scene implements PConstants {
 		if (kind != camera().kind()) {
 			camera().setKind(kind);
 			if (kind == Camera.Kind.PROSCENE)
-				System.out.println("Changing camera kind to Proscene");
+				PApplet.println("Changing camera kind to Proscene");
 			else
-				System.out.println("Changing camera kind to Standard");
+				PApplet.println("Changing camera kind to Standard");
 		}
 	}
 	
@@ -1481,7 +1475,7 @@ public class Scene implements PConstants {
 			try {
 				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
 			} catch (Exception e) {
-				System.out.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
+				PApplet.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
 				e.printStackTrace();
 			}
 		}
@@ -2298,9 +2292,7 @@ public class Scene implements PConstants {
 		else {
 			if (camProfile.mode() == CameraProfile.Mode.THIRD_PERSON) {
 				setDrawInteractiveFrame();
-				setCameraType(Camera.Type.PERSPECTIVE);// TODO can use
-				// camera.kind.standard and
-				// ortho?
+				setCameraType(Camera.Type.PERSPECTIVE);
 				if (avatarIsInteractiveDrivableFrame)
 					((InteractiveDrivableFrame) avatar()).removeFromMouseGrabberPool();
 				camera().frame().updateFlyUpVector();// ?
@@ -2359,7 +2351,7 @@ public class Scene implements PConstants {
 				nextCameraProfile(++index);
 			// debug:
 			else
-				System.out.println("Camera profile changed to: "
+				PApplet.println("Camera profile changed to: "
 						+ cameraProfileNames.get(index));
 		}
 	}
@@ -2409,7 +2401,7 @@ public class Scene implements PConstants {
 		if (foundKP || foundKR || foundKT) {
 			// if( (foundKP || foundKR || foundKT) &&
 			// (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
-			System.out.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene " +
+			PApplet.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene " +
 					"keyboard handling with Scene.disableKeyboardHandling() (you can re-enable it later with Scene.enableKeyboardHandling()).");
 		}
 	}
@@ -2469,7 +2461,7 @@ public class Scene implements PConstants {
 	/**
 	 * Sets global default keyboard shortcuts and the default key-frame shortcut keys.
 	 * <p>
-	 * Default keyboard shortcuts are:
+	 * Default global keyboard shortcuts are:
 	 * <p>
 	 * <ul>
 	 * <li><b>'a'</b>: {@link remixlab.proscene.Scene.KeyboardAction#DRAW_AXIS}.
@@ -2481,7 +2473,7 @@ public class Scene implements PConstants {
 	 * <li><b>space bar</b>: {@link remixlab.proscene.Scene.KeyboardAction#CAMERA_PROFILE}.
 	 * </ul> 
 	 * <p>
-	 * Default key-frame shortcuts keys:
+	 * Default key-frame shortcuts keys are:
 	 * <ul>
 	 * <li><b>'[1..5]'</b>: Play path [1..5]. 
 	 * <li><b>'CTRL'+'[1..5]'</b>: Add key-frame to path [1..5].   
@@ -2489,9 +2481,6 @@ public class Scene implements PConstants {
 	 * </ul> 
 	 */
 	public void setDefaultShortcuts() {
-		/**
-		 * ARP_FROM_PIXEL, RESET_ARP,
-		 */
 		// D e f a u l t s h o r t c u t s		
 		setShortcut('a', KeyboardAction.DRAW_AXIS);
 		setShortcut('g', KeyboardAction.DRAW_GRID);
@@ -2536,7 +2525,7 @@ public class Scene implements PConstants {
 	public void setPathKey(Integer vKey, Integer path) {
 		if ( isPathKeyInUse(vKey) ) {
 			Integer p = path(vKey);
-			System.out.println("Warning: overwritting path key which was previously binded to path " + p);
+			PApplet.println("Warning: overwritting path key which was previously binded to path " + p);
 		}
 		pathKeys.setBinding(vKey, path);
 	}
@@ -2640,7 +2629,7 @@ public class Scene implements PConstants {
 	public void setShortcut(Character key, KeyboardAction action) {
 		if ( isKeyInUse(key) ) {
 			KeyboardAction a = shortcut(key);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		gProfile.setBinding(new KeyboardShortcut(key), action);
 	}
@@ -2672,7 +2661,7 @@ public class Scene implements PConstants {
 	public void setShortcut(Integer mask, Integer vKey, KeyboardAction action) {
 		if ( isKeyInUse(mask, vKey) ) {
 			KeyboardAction a = shortcut(mask, vKey);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		gProfile.setBinding(new KeyboardShortcut(mask, vKey), action);
 	}
@@ -2686,7 +2675,7 @@ public class Scene implements PConstants {
 	public void setShortcut(Integer vKey, KeyboardAction action) {
 		if ( isKeyInUse(vKey) ) {
 			KeyboardAction a = shortcut(vKey);
-			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
+			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		gProfile.setBinding(new KeyboardShortcut(vKey), action);
 	}
@@ -2862,7 +2851,7 @@ public class Scene implements PConstants {
 			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
-				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
@@ -2914,7 +2903,7 @@ public class Scene implements PConstants {
 		switch (id) {
 		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
 			if (Camera.class == camera().getClass())
-				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else {
 				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(
@@ -3048,7 +3037,7 @@ public class Scene implements PConstants {
 	 */
 	public void displayGlobalHelp(boolean onConsole) {
 		if (onConsole)
-			System.out.println(globalHelp());
+			PApplet.println(globalHelp());
 		else { //on applet
 			pg3d.textFont(parent.createFont("Arial", 12));
 			pg3d.textMode(SCREEN);
@@ -3101,7 +3090,7 @@ public class Scene implements PConstants {
 	 */
 	public void displayCurrentCameraProfileHelp(boolean onConsole) {
 		if (onConsole)
-			System.out.println(currentCameraProfileHelp());
+			PApplet.println(currentCameraProfileHelp());
 		else { //on applet
 			pg3d.textFont(parent.createFont("Arial", 12));
 			pg3d.textMode(SCREEN);
@@ -3221,7 +3210,7 @@ public class Scene implements PConstants {
 		}
 
 		if (foundMD || foundMM || foundMR || foundMP || foundMC) {			
-			System.out.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene " +
+			PApplet.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene " +
 			"mouse handling with Scene.disableMouseHandling() (you can re-enable it later with Scene.enableMouseHandling()).");
 		}
 	}
@@ -3316,7 +3305,7 @@ public class Scene implements PConstants {
 			break;
 		case ARP_FROM_PIXEL:
 			if (Camera.class == camera().getClass())
-				System.out.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
+				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
@@ -3378,7 +3367,7 @@ public class Scene implements PConstants {
 			drawHandlerObject = obj;
 			drawHandlerMethodName = methodName;
 		} catch (Exception e) {
-			  System.out.println("Something went wrong when registering your " + methodName + " method");
+			  PApplet.println("Something went wrong when registering your " + methodName + " method");
 			  e.printStackTrace();
 		}
 	}
@@ -3598,7 +3587,7 @@ public class Scene implements PConstants {
 			try {
 				animateHandlerMethod.invoke(animateHandlerObject, new Object[] { this });
 			} catch (Exception e) {
-				System.out.println("Something went wrong when invoking your "	+ animateHandlerMethodName + " method");
+				PApplet.println("Something went wrong when invoking your "	+ animateHandlerMethodName + " method");
 				e.printStackTrace();
 			}
 		}
@@ -3647,7 +3636,7 @@ public class Scene implements PConstants {
 			animateHandlerObject = obj;
 			animateHandlerMethodName = methodName;
 		} catch (Exception e) {
-			  System.out.println("Something went wrong when registering your " + methodName + " method");
+			  PApplet.println("Something went wrong when registering your " + methodName + " method");
 			  e.printStackTrace();
 		}
 	}

@@ -335,10 +335,6 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mouseWheelMoved(MouseWheelEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-	  /**
-		String text = InputEvent.getModifiersExText(event.getModifiersEx());		
-		System.out.println("modifiers in mouse press: " + text);
-		// */
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
@@ -380,7 +376,6 @@ public class DesktopEvents implements MouseWheelListener {
 		if (scene.mouseGrabber() != null) {
 			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 			if (scene.mouseGrabber().grabsMouse())
-				// TODO: the following case needs testing
 				if (scene.mouseGrabberIsADrivableFrame)
 					((InteractiveDrivableFrame) scene.mouseGrabber()).iDrivableMouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 				else
@@ -390,7 +385,6 @@ public class DesktopEvents implements MouseWheelListener {
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-			// TODO: the following case needs testing
 			if (scene.interactiveFrameIsDrivable)
 				((InteractiveDrivableFrame)scene.interactiveFrame()).iDrivableMouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 			else
@@ -421,7 +415,6 @@ public class DesktopEvents implements MouseWheelListener {
 	 */
 	public void mouseReleased(MouseEvent event) {
 		if (scene.mouseGrabber() != null) {
-			// TODO: the following case needs testing
 			if (scene.mouseGrabberIsADrivableFrame)
 				((InteractiveDrivableFrame) scene.mouseGrabber()).iDrivableMouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 			else
@@ -433,7 +426,6 @@ public class DesktopEvents implements MouseWheelListener {
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-			// TODO: the following case needs testing
 			if (scene.interactiveFrameIsDrivable)
 				((InteractiveDrivableFrame)scene.interactiveFrame()).iDrivableMouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 			else

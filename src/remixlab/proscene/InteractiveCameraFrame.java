@@ -142,11 +142,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				// Scale to fit the screen mouse displacement
 				switch (camera.type()) {
 				case PERSPECTIVE:
-					trans.mult(2.0f
-							* PApplet.tan(camera.fieldOfView() / 2.0f)
-							* PApplet.abs((camera.frame()
-									.coordinatesOf(arcballReferencePoint())).z)
-							/ camera.screenHeight());
+					trans.mult(2.0f	* PApplet.tan(camera.fieldOfView() / 2.0f) * PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z)	/ camera.screenHeight());
 					break;
 				case ORTHOGRAPHIC: {
 					float[] wh = camera.getOrthoWidthHeight();
@@ -163,11 +159,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 			case ZOOM: {
 				// #CONNECTION# wheelEvent() ZOOM case
-				float coef = PApplet.max(PApplet.abs((camera.frame()
-						.coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera
-						.sceneRadius());
-				PVector trans = new PVector(0.0f, 0.0f, -coef * -deltaY
-						/ camera.screenHeight());
+				float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
+				//Warning: same for left and right CoordinateSystemConvention:
+				PVector trans = new PVector(0.0f, 0.0f, -coef * ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
 				translate(inverseTransformOf(trans));
 				prevPos = eventPoint;
 				break;
@@ -280,10 +274,12 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
-			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera
-					.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
-			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation)
-					* wheelSensitivity() * wheelSensitivityCoef);
+			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
+			PVector trans;
+			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
+				trans = new PVector(0.0f, 0.0f, coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
+			else
+				trans = new PVector(0.0f, 0.0f, coef * rotation * wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
 			break;
 		}

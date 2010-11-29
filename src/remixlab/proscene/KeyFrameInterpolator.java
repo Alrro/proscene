@@ -642,7 +642,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			interpolationTm = time;
 
 		if ((!keyFr.isEmpty()) && (keyFr.get(keyFr.size() - 1).time() > time))
-			System.out.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
+			PApplet.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
 		else
 			keyFr.add(new KeyFrame(frame, time, setRef));
 
@@ -1047,12 +1047,5 @@ public class KeyFrameInterpolator implements Cloneable {
 
 		frame().setPositionWithConstraint(pos);
 		frame().setRotationWithConstraint(q);
-
-		// debug
-		// System.out.println( frame().position().x + " " + frame().position().y + " "
-		// + frame().position().z + " " + frame().orientation().x + " " +
-		// frame().orientation().y + " " + frame().orientation().z + " " +
-		// frame().orientation().w );
-		// emit interpolated();
 	}
 }

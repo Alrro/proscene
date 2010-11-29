@@ -359,7 +359,7 @@ public class Frame implements Cloneable {
 	 */
 	public final void setReferenceFrame(Frame rFrame) {
 		if (settingAsReferenceFrameWillCreateALoop(rFrame))
-			System.out.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
+			PApplet.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
 		else {
 			boolean identical = (this.refFrame == rFrame);
 			this.refFrame = rFrame;
@@ -972,14 +972,12 @@ public class Frame implements Cloneable {
 		return res;
 	}
 
-	// TODO test the following three function when applying in sequence.
 	/**
 	 * Rotates the frame so that its {@link #xAxis()} becomes {@code axis} defined
 	 * in the world coordinate system.
 	 * <p>
 	 * <b>Attention:</b> this rotation is not uniquely defined. See
 	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
-	 * 
 	 * 
 	 * @see #xAxis()
 	 * @see #setYAxis(PVector)
@@ -996,7 +994,6 @@ public class Frame implements Cloneable {
 	 * <b>Attention:</b> this rotation is not uniquely defined. See
 	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
 	 * 
-	 * 
 	 * @see #yAxis()
 	 * @see #setYAxis(PVector)
 	 * @see #setZAxis(PVector)
@@ -1011,7 +1008,6 @@ public class Frame implements Cloneable {
 	 * <p>
 	 * <b>Attention:</b> this rotation is not uniquely defined. See
 	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
-	 * 
 	 * 
 	 * @see #zAxis()
 	 * @see #setYAxis(PVector)
@@ -1305,7 +1301,7 @@ public class Frame implements Cloneable {
 	public final void fromMatrix(PMatrix3D pM) {
 		// m should be of size [4][4]
 		if (PApplet.abs(pM.m33) < 1E-8) {
-			// TODO pending: catch the exception
+			PApplet.println("Doing nothing: pM.m33 should be non-zero!");
 			return;
 		}
 

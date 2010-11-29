@@ -1110,7 +1110,7 @@ public class Camera implements Cloneable {
 	 */
 	public float distanceToFrustumPlane(int index, PVector pos) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			System.out.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
+			PApplet.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		PVector myVec = new PVector(fpCoefficients[index][0],
@@ -1138,7 +1138,7 @@ public class Camera implements Cloneable {
 	 */
 	public boolean pointIsVisible(PVector point) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			System.out.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
+			PApplet.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		for (int i = 0; i < 6; ++i)
@@ -1170,7 +1170,7 @@ public class Camera implements Cloneable {
 	 */
 	public Visibility sphereIsVisible(PVector center, float radius) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			System.out.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
+			PApplet.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		for (int i = 0; i < 6; ++i) {
@@ -1206,7 +1206,7 @@ public class Camera implements Cloneable {
 	 */
 	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			System.out.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
+			PApplet.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		boolean allInForAllPlanes = true;
@@ -1283,7 +1283,7 @@ public class Camera implements Cloneable {
 	 */
 	public float[][] getFrustumEquations() {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			System.out.println("The camera frustum plane equations may be outdated. Please "
+			PApplet.println("The camera frustum plane equations may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		return fpCoefficients;
@@ -1454,7 +1454,7 @@ public class Camera implements Cloneable {
 	 */
 	public void setSceneRadius(float radius) {
 		if (radius <= 0.0f) {
-			System.out.println("Warning: Scene radius must be positive - Ignoring value");
+			PApplet.println("Warning: Scene radius must be positive - Ignoring value");
 			return;
 		}
 
@@ -1760,7 +1760,7 @@ public class Camera implements Cloneable {
 		boolean info = true;
 		if (!kfi.containsKey(key)) {
 			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), pg3d));
-			System.out.println("Position " + key + " saved");
+			PApplet.println("Position " + key + " saved");
 			info = false;
 		}
 
@@ -1770,7 +1770,7 @@ public class Camera implements Cloneable {
 			kfi.get(key).addKeyFrame(frame(), false);
 
 		if (info)
-			System.out.println("Path " + key + ", position "
+			PApplet.println("Path " + key + ", position "
 					+ kfi.get(key).numberOfKeyFrames() + " added");
 	}
 
@@ -1786,32 +1786,31 @@ public class Camera implements Cloneable {
 	 * The default keyboard shortcuts for this method are keys [1-5].
 	 */
 	public void playPath(int key) {
-		// TODO: info should go on the applet ;)
 		if (kfi.containsKey(key)) {
 			if (kfi.get(key).interpolationIsStarted()) {
 				kfi.get(key).stopInterpolation();
-				System.out.println("Path " + key + " stopped");
+				PApplet.println("Path " + key + " stopped");
 			} else {
 				if (anyInterpolationIsStarted())
 					stopAllInterpolations();
 				kfi.get(key).startInterpolation();
-				System.out.println("Path " + key + " started");
+				PApplet.println("Path " + key + " started");
 			}
 		}
 	}
 
 	/**
-	 * Deletes the {@link #keyFrameInterpolator(int)} of index {@code key}. The
-	 * default keyboard shortcuts for this method are keys [J-N] (note the CAPS).
-	 * //TODO: document me!
+	 * Deletes the {@link #keyFrameInterpolator(int)} of index {@code key}.
+	 * <p>
+	 * Check {@link remixlab.proscene.Scene#setDefaultShortcuts()} to see the
+	 * default KeyFrameInterpolators keyboard shortcuts.
 	 */
 	public void deletePath(int key) {
-		// TODO: info should go on the applet ;)
 		if (kfi.containsKey(key)) {
 			kfi.get(key).stopInterpolation();
 			kfi.get(key).deletePath();
 			kfi.remove(key);
-			System.out.println("Path " + key + " deleted");
+			PApplet.println("Path " + key + " deleted");
 		}
 	}
 
@@ -2505,7 +2504,6 @@ public class Camera implements Cloneable {
 	 * @see #interpolateToFitScene()
 	 */
 	public WorldPoint interpolateToZoomOnPixel(Point pixel) {
-		// TODO: from time to time ortho mode behaves weirdly
 		float coef = 0.1f;
 
 		WorldPoint target = pointUnderPixel(pixel);
@@ -2612,7 +2610,10 @@ public class Camera implements Cloneable {
 		interpolationKfi.startInterpolation();
 	}
 
-	// TODO stop all interpolations
+	/**
+	 * Returns {@code true} if any interpolation associated with this Camera
+	 * is currently being performed (and {@code false} otherwise).
+	 */
 	public boolean anyInterpolationIsStarted() {
 		itrtr = kfi.keySet().iterator();
 		while (itrtr.hasNext()) {
@@ -2623,6 +2624,10 @@ public class Camera implements Cloneable {
 		return interpolationKfi.interpolationIsStarted();
 	}
 
+	/**
+	 * Stops all interpolations currently being performed
+	 * associated with this Camera.
+	 */
 	public void stopAllInterpolations() {
 		itrtr = kfi.keySet().iterator();
 		while (itrtr.hasNext()) {
