@@ -27,7 +27,6 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 
 /**
  * Utility class that implements some drawing methods used among proscene
@@ -296,21 +295,22 @@ public class DrawingUtils implements PConstants {
 		p3d.vertex(0.0f, charShift, -charHeight);
 		// The Z
 		p3d.stroke(178, 178, 255);
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			p3d.vertex(-charWidth, -charHeight, charShift);
-			p3d.vertex(charWidth, -charHeight, charShift);
-			p3d.vertex(charWidth, -charHeight, charShift);
-			p3d.vertex(-charWidth, charHeight, charShift);
-			p3d.vertex(-charWidth, charHeight, charShift);
-			p3d.vertex(charWidth, charHeight, charShift);
-		} else {
-			p3d.vertex(-charWidth, charHeight, charShift);
-			p3d.vertex(charWidth, charHeight, charShift);
-			p3d.vertex(charWidth, charHeight, charShift);
-			p3d.vertex(-charWidth, -charHeight, charShift);
-			p3d.vertex(-charWidth, -charHeight, charShift);
-			p3d.vertex(charWidth, -charHeight, charShift);
-		}
+		
+		//left_handed
+		p3d.vertex(-charWidth, -charHeight, charShift);
+		p3d.vertex(charWidth, -charHeight, charShift);
+		p3d.vertex(charWidth, -charHeight, charShift);
+		p3d.vertex(-charWidth, charHeight, charShift);
+		p3d.vertex(-charWidth, charHeight, charShift);
+		p3d.vertex(charWidth, charHeight, charShift);
+	  //right_handed coordinate system should go like this:
+		//p3d.vertex(-charWidth, charHeight, charShift);
+		//p3d.vertex(charWidth, charHeight, charShift);
+		//p3d.vertex(charWidth, charHeight, charShift);
+		//p3d.vertex(-charWidth, -charHeight, charShift);
+		//p3d.vertex(-charWidth, -charHeight, charShift);
+		//p3d.vertex(charWidth, -charHeight, charShift);
+		
 		p3d.endShape();
 
 		// Z axis
@@ -713,31 +713,31 @@ public class DrawingUtils implements PConstants {
 		p3d.fill(color);
 		// Base
 		p3d.beginShape(PApplet.QUADS);
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			p3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
-			p3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
-			p3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
-			p3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
-		} else {
-			p3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
-			p3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
-			p3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
-			p3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
-		}
+		
+		p3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
+		p3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
+		p3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
+		p3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
+  	//right_handed coordinate system should go like this:
+		//p3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
+		//p3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
+		//p3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
+		//p3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
+		
 		p3d.endShape();
 
 		// Arrow
 		p3d.fill(color);
 		p3d.beginShape(PApplet.TRIANGLES);
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			p3d.vertex(0.0f, -arrowHeight, -points[0].z);
-			p3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
-			p3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
-		} else {
-			p3d.vertex(0.0f, arrowHeight, -points[0].z);
-			p3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
-			p3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
-		}
+		
+		p3d.vertex(0.0f, -arrowHeight, -points[0].z);
+		p3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
+		p3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
+  	//right_handed coordinate system should go like this:
+		//p3d.vertex(0.0f, arrowHeight, -points[0].z);
+		//p3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
+		//p3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
+		
 		p3d.endShape();
 
 		// Frustum lines
@@ -830,29 +830,29 @@ public class DrawingUtils implements PConstants {
 		p3d.fill(color);
 		// Base
 		p3d.beginShape(PApplet.QUADS);
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			p3d.vertex(baseHalfWidth, -halfHeight, -dist);
-			p3d.vertex(-baseHalfWidth, -halfHeight, -dist);
-			p3d.vertex(-baseHalfWidth, -baseHeight, -dist);
-			p3d.vertex(baseHalfWidth, -baseHeight, -dist);
-		} else {
-			p3d.vertex(-baseHalfWidth, halfHeight, -dist);
-			p3d.vertex(baseHalfWidth, halfHeight, -dist);
-			p3d.vertex(baseHalfWidth, baseHeight, -dist);
-			p3d.vertex(-baseHalfWidth, baseHeight, -dist);
-		}
+		
+		p3d.vertex(baseHalfWidth, -halfHeight, -dist);
+		p3d.vertex(-baseHalfWidth, -halfHeight, -dist);
+		p3d.vertex(-baseHalfWidth, -baseHeight, -dist);
+		p3d.vertex(baseHalfWidth, -baseHeight, -dist);
+  	//right_handed coordinate system should go like this:
+		//p3d.vertex(-baseHalfWidth, halfHeight, -dist);
+		//p3d.vertex(baseHalfWidth, halfHeight, -dist);
+		//p3d.vertex(baseHalfWidth, baseHeight, -dist);
+		//p3d.vertex(-baseHalfWidth, baseHeight, -dist);
+		
 		p3d.endShape();
 		// Arrow
 		p3d.beginShape(PApplet.TRIANGLES);
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			p3d.vertex(0.0f, -arrowHeight, -dist);
-			p3d.vertex(arrowHalfWidth, -baseHeight, -dist);
-			p3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
-		} else {
-			p3d.vertex(0.0f, arrowHeight, -dist);
-			p3d.vertex(-arrowHalfWidth, baseHeight, -dist);
-			p3d.vertex(arrowHalfWidth, baseHeight, -dist);
-		}
+		
+		p3d.vertex(0.0f, -arrowHeight, -dist);
+		p3d.vertex(arrowHalfWidth, -baseHeight, -dist);
+		p3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
+	  //right_handed coordinate system should go like this:
+		//p3d.vertex(0.0f, arrowHeight, -dist);
+		//p3d.vertex(-arrowHalfWidth, baseHeight, -dist);
+		//p3d.vertex(arrowHalfWidth, baseHeight, -dist);
+		
 		p3d.endShape();
 
 		p3d.popStyle();

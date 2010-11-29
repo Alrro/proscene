@@ -27,7 +27,6 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import remixlab.proscene.InteractiveFrame.CoordinateSystemConvention;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -504,7 +503,7 @@ public class Camera implements Cloneable {
 	 * @see #setUpVector(PVector)
 	 */
 	public void setOrientation(float theta, float phi) {
-		// TODO: check coordinate system convention
+		// TODO: need check.
 		PVector axis = new PVector(0.0f, 1.0f, 0.0f);
 		Quaternion rot1 = new Quaternion(axis, theta);
 		axis.set(-PApplet.cos(theta), 0.0f, PApplet.sin(theta));
@@ -519,24 +518,6 @@ public class Camera implements Cloneable {
 	public void setOrientation(Quaternion q) {
 		frame().setOrientation(q);
 		frame().updateFlyUpVector();
-	}
-
-	/**
-	 * Wrapper function that simply calls {@code
-	 * frame().setCoordinateSystemConvention(CoordinateSystemConvention.
-	 * LEFT_HANDED)}
-	 */
-	public void setCoordinateSystemLeftHanded() {
-		frm.setCoordinateSystemConvention(CoordinateSystemConvention.LEFT_HANDED);
-	}
-
-	/**
-	 * Wrapper function that simply calls {@code
-	 * frame().setCoordinateSystemConvention(CoordinateSystemConvention.
-	 * RIGHT_HANDED)}
-	 */
-	public void setCoordinateSystemRightHanded() {
-		frm.setCoordinateSystemConvention(CoordinateSystemConvention.RIGHT_HANDED);
 	}
 
 	// 3. FRUSTUM
@@ -2112,8 +2093,10 @@ public class Camera implements Cloneable {
 	public void convertClickToLine(final Point pixelInput, PVector orig,
 			PVector dir) {
 		Point pixel = new Point(pixelInput.getX(), pixelInput.getY());
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			pixel.y = screenHeight() - pixelInput.y;
+		
+		//lef-handed coordinate system correction
+		pixel.y = screenHeight() - pixelInput.y;
+		
 		switch (type()) {
 		case PERSPECTIVE:
 			orig.set(position());
@@ -2176,8 +2159,8 @@ public class Camera implements Cloneable {
 		} else
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			xyz[1] = screenHeight() - xyz[1];
+  	//lef-handed coordinate system correction
+		xyz[1] = screenHeight() - xyz[1];
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
@@ -2231,11 +2214,11 @@ public class Camera implements Cloneable {
 	public final PVector unprojectedCoordinatesOf(PVector src, Frame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
-		if (InteractiveFrame.coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,
-					projectionMat, viewport, xyz);
-		else
-			unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
+		
+		unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);		
+		//right_handed coordinate system should go like this:
+		//unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
+		
 		if (frame != null)
 			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1],
 					(float) xyz[2]));

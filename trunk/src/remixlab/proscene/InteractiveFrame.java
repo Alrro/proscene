@@ -47,17 +47,6 @@ import java.util.*;
 public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable {
 	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
 	private int grabsMouseThreshold;
-
-	/**
-	 * This enum defines the coordinate system convention which is defined as
-	 * {@code LEFT_HANDED} by default (processing standard).
-	 */
-	public enum CoordinateSystemConvention {
-		LEFT_HANDED, RIGHT_HANDED
-	};
-
-	static protected CoordinateSystemConvention coordSysConvention;
-
 	private float rotSensitivity;
 	private float transSensitivity;
 	private float spngSensitivity;
@@ -109,7 +98,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public InteractiveFrame(Scene scn) {
 		scene = scn;
 
-		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
 
@@ -149,7 +137,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	protected InteractiveFrame(Scene scn, InteractiveCameraFrame iFrame) {
 		super(iFrame.translation(), iFrame.rotation());
 		scene = scn;
-		coordSysConvention = CoordinateSystemConvention.LEFT_HANDED;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
 
@@ -206,25 +193,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
 		clonedIFrame.spngTimer = new Timer();
 		return clonedIFrame;
-	}
-
-	/**
-	 * Returns the coordinate system convention used by this InteractiveFrame.
-	 * 
-	 * @see #setCoordinateSystemConvention(CoordinateSystemConvention)
-	 */
-	static public CoordinateSystemConvention coordinateSystemConvention() {
-		return coordSysConvention;
-	}
-
-	/**
-	 * Defines the coordinate system convention of this InteractiveFrame, i.e.,
-	 * how mouse displacements are mapped into the virtual world.
-	 * 
-	 * @see #coordinateSystemConvention()
-	 */
-	public void setCoordinateSystemConvention(CoordinateSystemConvention c) {
-		coordSysConvention = c;
 	}
 
 	/**
@@ -564,10 +532,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY = 0;
 		if(action != Scene.MouseAction.NO_MOUSE_ACTION)
-			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				deltaY = (int) (prevPos.y - eventPoint.y);
-			else
-				deltaY = (int) (eventPoint.y - prevPos.y);
+			deltaY = (int) (prevPos.y - eventPoint.y);
+	    //right_handed coordinate system should go like this:
+		  //deltaY = (int) (eventPoint.y - prevPos.y);
 
 		switch (action) {
 		case TRANSLATE: {
@@ -621,11 +588,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 					- trans.x);
 			PVector axis = transformOf(camera.frame().inverseTransformOf(
 					new PVector(0.0f, 0.0f, -1.0f)));
-			Quaternion rot;
-			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				rot = new Quaternion(axis, prev_angle - angle);
-			else
-				rot = new Quaternion(axis, angle - prev_angle);
+			 
+			Quaternion rot = new Quaternion(axis, prev_angle - angle);
+		  //right_handed coordinate system should go like this:
+			//Quaternion rot = new Quaternion(axis, angle - prev_angle);
+			
 			// #CONNECTION# These two methods should go together (spinning detection
 			// and activation)
 			computeMouseSpeed(eventPoint);
@@ -740,11 +707,10 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			float wheelSensitivityCoef = 8E-4f;
 			// PVector trans(0.0, 0.0,
 			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
-			PVector trans;
-			if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED)
-				trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
-			else
-				trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+			
+			PVector	trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+		  //right_handed coordinate system should go like this:
+			//PVector trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
 			
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
 			trans = camera.frame().orientation().rotate(trans);
@@ -866,10 +832,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis)
 				/ MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
 
-		if (coordinateSystemConvention() == CoordinateSystemConvention.LEFT_HANDED) {
-			axis.y = -axis.y;
-			angle = -angle;
-		}
+  	//lef-handed coordinate system correction (next two lines)
+	  axis.y = -axis.y;
+	  angle = -angle;
 
 		return new Quaternion(axis, angle);
 	}
