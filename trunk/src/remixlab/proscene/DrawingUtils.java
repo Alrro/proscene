@@ -276,8 +276,9 @@ public class DrawingUtils implements PConstants {
 
 		// p3d.noLights();
 
-		p3d.beginShape(LINES);
 		p3d.pushStyle();
+		
+		p3d.beginShape(LINES);		
 		p3d.strokeWeight(2);
 		// The X
 		p3d.stroke(255, 178, 178);
@@ -350,8 +351,7 @@ public class DrawingUtils implements PConstants {
 	 * @see #drawArrow(PApplet, float, float)
 	 */
 	public static void drawArrow(PGraphics3D p3d, float length) {
-		float radius = 0.05f * length;
-		drawArrow(p3d, length, radius);
+		drawArrow(p3d, length, 0.05f * length);
 	}
 
 	/**
