@@ -1734,8 +1734,6 @@ public class Scene implements PConstants {
 	 * is taking place.
 	 */
 	protected void drawZoomWindowHint() {
-		if ((dE.fCorner == null) || (dE.lCorner == null))
-			return;
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
 		float p2x = (float) dE.lCorner.getX();
@@ -1760,8 +1758,6 @@ public class Scene implements PConstants {
 	 * place.
 	 */
 	protected void drawScreenRotateLineHint() {
-		if (dE.fCorner == null)
-			return;
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
