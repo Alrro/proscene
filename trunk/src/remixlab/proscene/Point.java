@@ -59,21 +59,36 @@ public class Point {
 	}
 
 	/**
-	 * Constructs and initializes a point at the specified (x,y) location in the
+	 * Constructs and initializes a point at the specified (xCoord,yCoord) location in the
 	 * coordinate space.
 	 */
-	public Point(int x, int y) {
-		this.x = x;
-		this.y = y;
+	public Point(int xCoord, int yCoord) {
+		set(xCoord, yCoord);
 	}
 
 	/**
-	 * Constructs and initializes a point at the specified (x,y) location in the
-	 * coordinate space. The location (x,y) is given in single float precision.
+	 * Constructs and initializes a point at the specified (xCoord,yCoord) location in the
+	 * coordinate space. The location (xCoord,yCoord) is given in single float precision.
 	 */
-	public Point(float x, float y) {
-		this.x = (int) x;
-		this.y = (int) y;
+	public Point(float xCoord, float yCoord) {
+		set(xCoord, yCoord);
+	}
+	
+	/**
+	 * Sets the (x,y) coordinates of this point from the given (xCoord,yCoord) coordinates.
+	 */
+	public void set(int xCoord, int yCoord) {
+		this.x = xCoord;
+		this.y = yCoord;
+	}
+	
+	/**
+	 * Sets the (x,y) coordinates of this point from the given single float precision
+	 * (xCoord,yCoord) coordinates.
+	 */
+	public void set(float xCoord, float yCoord) {
+		this.x = (int) xCoord;
+		this.y = (int) yCoord;
 	}
 
 	/**

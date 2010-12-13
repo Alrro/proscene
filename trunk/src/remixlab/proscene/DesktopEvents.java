@@ -59,6 +59,8 @@ public class DesktopEvents implements MouseWheelListener {
 		parent = s.parent;
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		keyHandled = false;
+		fCorner = new Point();
+		lCorner = new Point();
 	}
 	
 	// 1. KeyEvents
@@ -350,11 +352,11 @@ public class DesktopEvents implements MouseWheelListener {
 		}
 		camMouseAction = scene.currentCameraProfile().cameraMouseAction(event);
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION) {
-			fCorner = new Point(event.getX(), event.getY());
-			lCorner = new Point(event.getX(), event.getY());
+			fCorner.set(event.getX(), event.getY());
+			lCorner.set(event.getX(), event.getY());
 		}
 		if (camMouseAction == MouseAction.SCREEN_ROTATE)
-			fCorner = new Point(event.getX(), event.getY());
+			fCorner.set(event.getX(), event.getY());
 		scene.camera().frame().startAction(camMouseAction, scene.drawIsConstrained());
 		scene.camera().frame().mousePressed(new Point(event.getX(), event.getY()), scene.camera());
 	}
@@ -391,10 +393,10 @@ public class DesktopEvents implements MouseWheelListener {
 			return;
 		}
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION)
-			lCorner = new Point(event.getX(), event.getY());
+			lCorner.set(event.getX(), event.getY());
 		else {
 			if (camMouseAction == MouseAction.SCREEN_ROTATE)
-				fCorner = new Point(event.getX(), event.getY());
+				fCorner.set(event.getX(), event.getY());
 			scene.camera().frame().mouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 		}
 	}
@@ -436,7 +438,7 @@ public class DesktopEvents implements MouseWheelListener {
 		if ((camMouseAction == MouseAction.ZOOM_ON_REGION)
 				|| (camMouseAction == MouseAction.SCREEN_ROTATE)
 				|| (camMouseAction == MouseAction.SCREEN_TRANSLATE))
-			lCorner = new Point(event.getX(), event.getY());
+			lCorner.set(event.getX(), event.getY());
 		scene.camera().frame().mouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
