@@ -2008,7 +2008,6 @@ public class Scene implements PConstants {
 	 * @see #zCoord()
 	 */
 	public void beginScreenDrawing() {
-		if (parent.g != pg3d)	pg3d.beginDraw(); // Offscreen rendering.
 		if (startCoordCalls != 0)
 			throw new RuntimeException(
 					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
@@ -2047,8 +2046,6 @@ public class Scene implements PConstants {
 							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
 
 		pg3d.popMatrix();
-		if (parent.g != pg3d)
-			pg3d.endDraw(); // Offscreen rendering.
 	}
 
 	/**
