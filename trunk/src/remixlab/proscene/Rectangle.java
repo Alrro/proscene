@@ -1,12 +1,11 @@
 /**
- *                     ProScene (version 0.9.97)      
- *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
+ *                     ProScene (version 1.0.0)      
+ *        Copyright (c) 2010 by National University of Colombia
+ *                 @author Jean Pierre Charalambos      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
  * This java package provides classes to ease the creation of interactive 3D
  * scenes in Processing.
- * 
- * @author Jean Pierre Charalambos
  * 
  * This source file is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -23,8 +22,6 @@
  * writing to the Free Software Foundation, 51 Franklin Street, Suite 500
  * Boston, MA 02110-1335, USA.
  */
-
-//Thanks to Diego Chapeton who contributed code for this class
 
 package remixlab.proscene;
 

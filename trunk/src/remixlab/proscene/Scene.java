@@ -1,12 +1,11 @@
 /**
- *                     ProScene (version 0.9.97)      
- *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
+ *                     ProScene (version 1.0.0)      
+ *        Copyright (c) 2010 by National University of Colombia
+ *                 @author Jean Pierre Charalambos      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
  * This java package provides classes to ease the creation of interactive 3D
  * scenes in Processing.
- * 
- * @author Jean Pierre Charalambos
  * 
  * This source file is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -101,7 +100,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "0.9.97";
+	public static final String version = "1.0.0";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -504,10 +503,6 @@ public class Scene implements PConstants {
 	/** the name of the method to handle the animation */
 	protected String animateHandlerMethodName;	
 
-	// Mouse mapping
-	protected Method sketchMouseMapXMethod;
-	protected Method sketchMouseMapYMethod;
-	
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
 	 * objects...) are set to their default values. The PApplet background is set
@@ -586,8 +581,7 @@ public class Scene implements PConstants {
 		enableMouseHandling();
 		parseKeyXxxxMethods();
 		parseMouseXxxxMethods();
-		parseMouseMapMethods();
-		
+
 		// register draw method
 		removeDrawHandler();
 	  // register animation method
@@ -626,36 +620,6 @@ public class Scene implements PConstants {
 	 */
 	public void proscenium() {}
 
-	public int mouseMapX(int x) {
-		if (sketchMouseMapXMethod != null) {
-			try {
-				Integer res = (Integer)sketchMouseMapXMethod.invoke(parent, x);
-				return res.intValue();
-			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ sketchMouseMapXMethod + " method");
-				e.printStackTrace();
-				return x;
-			}
-		} else {
-			return x;
-		}
-	}
-	
-	public int mouseMapY(int y) {
-		if (sketchMouseMapYMethod != null) {
-			try {
-				Integer res = (Integer)sketchMouseMapYMethod.invoke(parent, y);
-				return res.intValue();
-			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ sketchMouseMapYMethod + " method");
-				e.printStackTrace();
-				return y;
-			}
-		} else {
-			return y;
-		}		
-	}	
-	
 	// 2. Associated objects
 
 	/**
@@ -1381,14 +1345,10 @@ public class Scene implements PConstants {
 	// 5. Drawing methods
 
 	/**
-	 * Internal use. Display various visual hints to be called from {@link #pre()}
+	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
 	 * or {@link #draw()} depending on the {@link #backgroundIsHandled()} state.
 	 */
-	private void displayVisualHints() {
-		if (gridIsDrawn())
-			drawGrid(camera().sceneRadius());
-		if (axisIsDrawn())
-			drawAxis(camera().sceneRadius());
+	private void displayVisualHints() {		
 		if (frameSelectionHintIsDrawn())
 			drawSelectionHints();
 		if (cameraPathsAreDrawn()) {
@@ -1397,7 +1357,6 @@ public class Scene implements PConstants {
 		} else {
 			camera().hideAllPaths();
 		}
-
 		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)
 			drawZoomWindowHint();
 		if (dE.camMouseAction == MouseAction.SCREEN_ROTATE)
@@ -1473,8 +1432,12 @@ public class Scene implements PConstants {
 		if (frustumEquationsUpdateIsEnable())
 			camera().updateFrustumEquations();
 
-		if (backgroundIsHandled() && !isOffscreen()) {
+		if (backgroundIsHandled()) {
 			setBackground();
+			if (gridIsDrawn())
+				drawGrid(camera().sceneRadius());
+			if (axisIsDrawn())
+				drawAxis(camera().sceneRadius());
 			displayVisualHints();
 		}
 	}
@@ -1516,8 +1479,13 @@ public class Scene implements PConstants {
 		}
 
 		// 3. Try to draw what should have been drawn in the pre()
-		if (!backgroundIsHandled())
+		if (!backgroundIsHandled()) {
+			if (gridIsDrawn())
+				drawGrid(camera().sceneRadius());
+			if (axisIsDrawn())
+				drawAxis(camera().sceneRadius());
 			displayVisualHints();
+		}
 	}
 
 	/**
@@ -1541,7 +1509,11 @@ public class Scene implements PConstants {
 				camera().updateFrustumEquations();
 
 			setBackground();
-			displayVisualHints();			
+			//in this mode on-screen visual hints should not be drawn
+			if (gridIsDrawn())
+				drawGrid(camera().sceneRadius());
+			if (axisIsDrawn())
+				drawAxis(camera().sceneRadius());
 		}
 	}
 
@@ -1882,8 +1854,11 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #drawArcballReferencePointHint()
 	 */
-	public void drawCross(int color, float px, float py, float size,
-			int strokeWeight) {
+	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
+		if (isOffscreen()) {
+			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
+			return;
+		}
 		beginScreenDrawing();
 		pg3d.pushStyle();
 		pg3d.stroke(color);
@@ -1913,6 +1888,10 @@ public class Scene implements PConstants {
 	 * @see #endScreenDrawing()
 	 */
 	public void drawFilledCircle(int color, PVector center, float radius) {
+		if (isOffscreen()) {
+			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
+			return;
+		}
 		float x = center.x;
 		float y = center.y;
 		float angle, x2, y2;
@@ -1946,9 +1925,12 @@ public class Scene implements PConstants {
 	 * @see #endScreenDrawing()
 	 */
 	public void drawFilledSquare(int color, PVector center, float edge) {
+		if (isOffscreen()) {
+			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
+			return;
+		}
 		float x = center.x;
 		float y = center.y;
-
 		beginScreenDrawing();
 		pg3d.pushStyle();
 		pg3d.noStroke();
@@ -1975,11 +1957,13 @@ public class Scene implements PConstants {
 	 * @param strokeWeight
 	 *          Stroke weight
 	 */
-	public void drawShooterTarget(int color, PVector center, float length,
-			int strokeWeight) {
+	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {
+		if (isOffscreen()) {
+			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
+			return;
+		}
 		float x = center.x;
 		float y = center.y;
-
 		beginScreenDrawing();
 		pg3d.pushStyle();
 
@@ -2043,10 +2027,14 @@ public class Scene implements PConstants {
 	 * @see #zCoord()
 	 */
 	public void beginScreenDrawing() {
+		if (isOffscreen())
+			throw new RuntimeException("Screen rendering is not allowed in off-screen rendering mode!");
+
 		if (startCoordCalls != 0)
 			throw new RuntimeException(
 					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
 							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+		
 		startCoordCalls++;
 
 		float threshold = 0.03f;
@@ -3247,26 +3235,6 @@ public class Scene implements PConstants {
 		}
 	}
 
-	protected void parseMouseMapMethods() {
-		try {
-			sketchMouseMapXMethod = parent.getClass().getDeclaredMethod("mouseMapX", new Class[] { Integer.TYPE });
-		} catch (SecurityException e) {
-		  e.printStackTrace();
-		  sketchMouseMapXMethod = null;
-		} catch (NoSuchMethodException e) {
-			sketchMouseMapXMethod = null;
-		}		
-				
-		try {
-			sketchMouseMapYMethod = parent.getClass().getDeclaredMethod("mouseMapY", new Class[] { Integer.TYPE });
-		} catch (SecurityException e) {
-		  e.printStackTrace();
-		  sketchMouseMapYMethod = null;
-		} catch (NoSuchMethodException e) {
-			sketchMouseMapYMethod = null;
-		}		
-	}
-	
 	/**
 	 * Returns {@code true} if mouse is currently being handled by proscene and
 	 * {@code false} otherwise. Set mouse handling with
