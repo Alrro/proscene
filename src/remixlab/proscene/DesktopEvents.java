@@ -1,12 +1,11 @@
 /**
- *                     ProScene (version 0.9.97)      
- *             Copyright (c) 2010 by RemixLab, DISI-UNAL      
+ *                     ProScene (version 1.0.0)      
+ *        Copyright (c) 2010 by National University of Colombia
+ *                 @author Jean Pierre Charalambos      
  *            http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
  * This java package provides classes to ease the creation of interactive 3D
  * scenes in Processing.
- * 
- * @author Jean Pierre Charalambos
  * 
  * This source file is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -311,12 +310,10 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabbable)} to the MouseGrabber that grabs the
 	 * mouse (or to {@code null} if none of them grab it).
 	 */
-	public void mouseMoved(MouseEvent event) {
-		int x = scene.mouseMapX(event.getX());
-    int y = scene.mouseMapY(event.getY());
+	public void mouseMoved(MouseEvent event) {		
 		scene.setMouseGrabber(null);
 		for (MouseGrabbable mg : scene.MouseGrabberPool) {
-			mg.checkIfGrabsMouse(x, y, scene.camera());
+			mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 			if (mg.grabsMouse())
 				scene.setMouseGrabber(mg);
 		}
@@ -337,31 +334,29 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mouseWheelMoved(MouseWheelEvent)
 	 */
 	public void mousePressed(MouseEvent event) {
-		int x = scene.mouseMapX(event.getX());
-    int y = scene.mouseMapY(event.getY());
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
 				iFrame.startAction(scene.currentCameraProfile().frameMouseAction(event), scene.drawIsConstrained());
-				iFrame.mousePressed(new Point(x, y), scene.camera());
+				iFrame.mousePressed(new Point(event.getX(), event.getY()), scene.camera());
 			} else
-				scene.mouseGrabber().mousePressed(new Point(x, y), scene.camera());
+				scene.mouseGrabber().mousePressed(new Point(event.getX(), event.getY()), scene.camera());
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameMouseAction(event), scene.drawIsConstrained());
-			scene.interactiveFrame().mousePressed(new Point(x, y), scene.camera());
+			scene.interactiveFrame().mousePressed(new Point(event.getX(), event.getY()), scene.camera());
 			return;
 		}
 		camMouseAction = scene.currentCameraProfile().cameraMouseAction(event);
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION) {
-			fCorner = new Point(x, y);
-			lCorner = new Point(x, y);
+			fCorner = new Point(event.getX(), event.getY());
+			lCorner = new Point(event.getX(), event.getY());
 		}
 		if (camMouseAction == MouseAction.SCREEN_ROTATE)
-			fCorner = new Point(x, y);
+			fCorner = new Point(event.getX(), event.getY());
 		scene.camera().frame().startAction(camMouseAction, scene.drawIsConstrained());
-		scene.camera().frame().mousePressed(new Point(x, y), scene.camera());
+		scene.camera().frame().mousePressed(new Point(event.getX(), event.getY()), scene.camera());
 	}
 	
 	/**
@@ -377,32 +372,30 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mouseReleased(MouseEvent)
 	 */
 	public void mouseDragged(MouseEvent event) {
-		int x = scene.mouseMapX(event.getX());
-    int y = scene.mouseMapY(event.getY());
 		if (scene.mouseGrabber() != null) {
-			scene.mouseGrabber().checkIfGrabsMouse(x, y, scene.camera());
+			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 			if (scene.mouseGrabber().grabsMouse())
 				if (scene.mouseGrabberIsADrivableFrame)
-					((InteractiveDrivableFrame) scene.mouseGrabber()).iDrivableMouseDragged(new Point(x, y), scene.camera());
+					((InteractiveDrivableFrame) scene.mouseGrabber()).iDrivableMouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 				else
-					scene.mouseGrabber().mouseDragged(new Point(x, y), scene.camera());
+					scene.mouseGrabber().mouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 			else
 				scene.setMouseGrabber(null);
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			if (scene.interactiveFrameIsDrivable)
-				((InteractiveDrivableFrame)scene.interactiveFrame()).iDrivableMouseDragged(new Point(x, y), scene.camera());
+				((InteractiveDrivableFrame)scene.interactiveFrame()).iDrivableMouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 			else
-				scene.interactiveFrame().mouseDragged(new Point(x, y), scene.camera());
+				scene.interactiveFrame().mouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 			return;
 		}
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION)
-			lCorner = new Point(x, y);
+			lCorner = new Point(event.getX(), event.getY());
 		else {
 			if (camMouseAction == MouseAction.SCREEN_ROTATE)
-				fCorner = new Point(x, y);
-			scene.camera().frame().mouseDragged(new Point(x, y), scene.camera());
+				fCorner = new Point(event.getX(), event.getY());
+			scene.camera().frame().mouseDragged(new Point(event.getX(), event.getY()), scene.camera());
 		}
 	}
 	
@@ -420,14 +413,12 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mouseDragged(MouseEvent)
 	 */
 	public void mouseReleased(MouseEvent event) {
-		int x = scene.mouseMapX(event.getX());
-    int y = scene.mouseMapY(event.getY());
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsADrivableFrame)
-				((InteractiveDrivableFrame) scene.mouseGrabber()).iDrivableMouseReleased(new Point(x, y), scene.camera());
+				((InteractiveDrivableFrame) scene.mouseGrabber()).iDrivableMouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 			else
-				scene.mouseGrabber().mouseReleased(new Point(x, y), scene.camera());
-			scene.mouseGrabber().checkIfGrabsMouse(x, y, scene.camera());
+				scene.mouseGrabber().mouseReleased(new Point(event.getX(), event.getY()), scene.camera());
+			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 			if (!(scene.mouseGrabber().grabsMouse()))
 				scene.setMouseGrabber(null);
 			// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
@@ -435,9 +426,9 @@ public class DesktopEvents implements MouseWheelListener {
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			if (scene.interactiveFrameIsDrivable)
-				((InteractiveDrivableFrame)scene.interactiveFrame()).iDrivableMouseReleased(new Point(x, y), scene.camera());
+				((InteractiveDrivableFrame)scene.interactiveFrame()).iDrivableMouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 			else
-				scene.interactiveFrame().mouseReleased(new Point(x, y), scene.camera());
+				scene.interactiveFrame().mouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 			// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 			return;
 		}
@@ -445,8 +436,8 @@ public class DesktopEvents implements MouseWheelListener {
 		if ((camMouseAction == MouseAction.ZOOM_ON_REGION)
 				|| (camMouseAction == MouseAction.SCREEN_ROTATE)
 				|| (camMouseAction == MouseAction.SCREEN_TRANSLATE))
-			lCorner = new Point(x, y);
-		scene.camera().frame().mouseReleased(new Point(x, y), scene.camera());
+			lCorner = new Point(event.getX(), event.getY());
+		scene.camera().frame().mouseReleased(new Point(event.getX(), event.getY()), scene.camera());
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 	}
