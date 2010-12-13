@@ -504,6 +504,10 @@ public class Scene implements PConstants {
 	/** the name of the method to handle the animation */
 	protected String animateHandlerMethodName;	
 
+	// Mouse mapping
+	protected Method sketchMouseMapXMethod;
+	protected Method sketchMouseMapYMethod;
+	
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
 	 * objects...) are set to their default values. The PApplet background is set
@@ -582,7 +586,8 @@ public class Scene implements PConstants {
 		enableMouseHandling();
 		parseKeyXxxxMethods();
 		parseMouseXxxxMethods();
-
+		parseMouseMapMethods();
+		
 		// register draw method
 		removeDrawHandler();
 	  // register animation method
@@ -621,6 +626,36 @@ public class Scene implements PConstants {
 	 */
 	public void proscenium() {}
 
+	public int mouseMapX(int x) {
+		if (sketchMouseMapXMethod != null) {
+			try {
+				Integer res = (Integer)sketchMouseMapXMethod.invoke(parent, x);
+				return res.intValue();
+			} catch (Exception e) {
+				PApplet.println("Something went wrong when invoking your "	+ sketchMouseMapXMethod + " method");
+				e.printStackTrace();
+				return x;
+			}
+		} else {
+			return x;
+		}
+	}
+	
+	public int mouseMapY(int y) {
+		if (sketchMouseMapYMethod != null) {
+			try {
+				Integer res = (Integer)sketchMouseMapYMethod.invoke(parent, y);
+				return res.intValue();
+			} catch (Exception e) {
+				PApplet.println("Something went wrong when invoking your "	+ sketchMouseMapYMethod + " method");
+				e.printStackTrace();
+				return y;
+			}
+		} else {
+			return y;
+		}		
+	}	
+	
 	// 2. Associated objects
 
 	/**
@@ -3212,6 +3247,26 @@ public class Scene implements PConstants {
 		}
 	}
 
+	protected void parseMouseMapMethods() {
+		try {
+			sketchMouseMapXMethod = parent.getClass().getDeclaredMethod("mouseMapX", new Class[] { Integer.TYPE });
+		} catch (SecurityException e) {
+		  e.printStackTrace();
+		  sketchMouseMapXMethod = null;
+		} catch (NoSuchMethodException e) {
+			sketchMouseMapXMethod = null;
+		}		
+				
+		try {
+			sketchMouseMapYMethod = parent.getClass().getDeclaredMethod("mouseMapY", new Class[] { Integer.TYPE });
+		} catch (SecurityException e) {
+		  e.printStackTrace();
+		  sketchMouseMapYMethod = null;
+		} catch (NoSuchMethodException e) {
+			sketchMouseMapYMethod = null;
+		}		
+	}
+	
 	/**
 	 * Returns {@code true} if mouse is currently being handled by proscene and
 	 * {@code false} otherwise. Set mouse handling with
