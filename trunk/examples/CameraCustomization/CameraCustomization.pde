@@ -2,7 +2,7 @@
  * Camera Customization.
  * by Jean Pierre Charalambos.
  * 
- * This example shows the different aspects of proscene that
+ * This example shows all the different aspects of proscene that
  * can be customized and how to do it.
  * 
  * Read the commented lines of the sketch code for details.
