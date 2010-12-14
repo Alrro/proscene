@@ -13,7 +13,7 @@
  * setAnimationPeriod(). The frame rate will then be fixed, provided that
  * your animation loop function is fast enough.
  *
- * This example requires the GLGraphics library:
+ * This example requires version 0.9.9 of the GLGraphics library:
  * http://glgraphics.sourceforge.net/
  *
  * Press 'm' to toggle (start/stop) animation.
@@ -54,7 +54,7 @@ void setup() {
 
   model = new GLModel(this, numPoints, GLModel.POINT_SPRITES, GLModel.DYNAMIC);
   model.initColors();
-  tex = new GLTexture(this, "particle.bmp");    
+  tex = new GLTexture(this, "particle.png");    
 
   coords = new float[4 * numPoints];
   colors = new float[4 * numPoints];
@@ -71,12 +71,16 @@ void setup() {
 
   scene.startAnimation();
 
-  println("Maximum sprite size supported by the video card: " + model.getMaxPointSize() + " pixels.");   
-  model.initTextures(1);
-  model.setTexture(0, tex);   
-  model.setPointSize(60);
-  model.setSpriteFadeSize(40);
-  model.setBlendMode(ADD);
+   float pmax = model.getMaxPointSize();
+   println("Maximum sprite size supported by the video card: " + pmax + " pixels.");   
+   model.initTextures(1);
+   model.setTexture(0, tex);  
+   // Setting the maximum sprite to the 90% of the maximum point size.
+   model.setMaxSpriteSize(0.9 * pmax);
+   // Setting the distance attenuation function so that the sprite size
+   // is 20 when the distance to the camera is 400.
+   model.setSpriteSize(20, 400);
+   model.setBlendMode(BLEND);
 }
 
 void draw() {    
@@ -85,8 +89,12 @@ void draw() {
 
   scene.background(0);
 
+  // Disabling depth masking to properly render semitransparent
+  // particles without need of depth-sorting them.    
+  renderer.setDepthMask(false);
   model.render();
-
+  renderer.setDepthMask(true);
+    
   renderer.endGL();
 }
 
