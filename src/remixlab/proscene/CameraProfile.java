@@ -82,10 +82,10 @@ import remixlab.proscene.Scene.MouseAction;
  * <li><b>Camera mouse bindings</b></li>
  * <ul>
  * <li>Button1 -> Rotate frame</li>
- * <li>Shift+Button1 -> Screen rotate</li>
- * <li>Ctrl+Button1 -> Zoom on region (camera or interactive drivable frame)</li>
+ * <li>Shift+Button1 -> Zoom on region (camera or interactive drivable frame)</li> 
  * <li>Button2 -> Zoom</li>
  * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * <li>Shift+Button3 -> Screen rotate  (camera or interactive frame)</li>
  * </ul>
  * <li><b>Mouse click bindings</b></li>
  * <ul>
@@ -117,10 +117,10 @@ import remixlab.proscene.Scene.MouseAction;
  * <li><b>Camera mouse bindings</b></li>
  * <ul>
  * <li>Button1 -> Rotate frame (camera or interactive frame)</li>
- * <li>Shift+Button1 -> Screen rotate (camera or interactive frame)</li>
- * <li>Ctrl+Button1 -> Zoom on region (camera or interactive drivable frame)</li>
+ * <li>Shift+Button1 -> Zoom on region (camera or interactive drivable frame)</li> * 
  * <li>Button2 -> Zoom</li>
  * <li>Button3 -> Translate frame (camera or interactive frame)</li>
+ * <li>Shift+Button3 -> Screen rotate (camera or interactive frame)</li>
  * </ul>
  * <li><b>Mouse click bindings</b></li>
  * <ul>
@@ -267,14 +267,15 @@ public class CameraProfile {
 			setFrameWheelBinding( MouseAction.ZOOM );			
 			break;
 		case FIRST_PERSON:
-			setCameraMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
-			setCameraMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
-			setCameraMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
-			setCameraMouseBinding((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
-			setCameraMouseBinding((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ),	Scene.MouseAction.DRIVE);
-			setFrameMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
-			setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
-			setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
+			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.MOVE_FORWARD);
+			setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.LOOK_AROUND);
+			setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.MOVE_BACKWARD);
+   		//setCameraMouseBinding((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL); //Same as:
+			setCameraMouseBinding((Scene.Button.LEFT.ID | Scene.Modifier.SHIFT.ID ), Scene.MouseAction.ROLL);			
+			setCameraMouseBinding((Scene.Button.RIGHT.ID | Scene.Modifier.SHIFT.ID ),	Scene.MouseAction.DRIVE);
+			setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+			setFrameMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
+			setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_CAMERA_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_CAMERA_FLY_SPEED);
@@ -283,11 +284,11 @@ public class CameraProfile {
 			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 			break;
 		case THIRD_PERSON:
-			setFrameMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.MOVE_FORWARD);
-			setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.LOOK_AROUND);
-			setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.MOVE_BACKWARD);
-			setFrameMouseBinding((InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.ROLL);
-			setFrameMouseBinding((InputEvent.BUTTON3_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK ), Scene.MouseAction.DRIVE);
+			setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.MOVE_FORWARD);
+			setFrameMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.LOOK_AROUND);
+			setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.MOVE_BACKWARD);
+			setFrameMouseBinding((Scene.Button.LEFT.ID | Scene.Modifier.SHIFT.ID ), Scene.MouseAction.ROLL);
+			setFrameMouseBinding((Scene.Button.RIGHT.ID | Scene.Modifier.SHIFT.ID ), Scene.MouseAction.DRIVE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_AVATAR_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);
@@ -307,20 +308,20 @@ public class CameraProfile {
 	 * Internal use. Called by the constructor by ARCBALL and WHEELED_ARCBALL modes.
 	 */
 	private void arcballDefaultShortcuts() {
-		setShortcut(KeyEvent.VK_RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);
-		setShortcut(KeyEvent.VK_LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
+		setShortcut(KeyEvent.VK_RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);		
+	  setShortcut(KeyEvent.VK_LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
 		setShortcut(KeyEvent.VK_UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
 		setShortcut(KeyEvent.VK_DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
 
-		setCameraMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
-		setCameraMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
-		setCameraMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
-		setFrameMouseBinding(InputEvent.BUTTON1_DOWN_MASK, Scene.MouseAction.ROTATE);
-		setFrameMouseBinding(InputEvent.BUTTON2_DOWN_MASK, Scene.MouseAction.ZOOM);
-		setFrameMouseBinding(InputEvent.BUTTON3_DOWN_MASK, Scene.MouseAction.TRANSLATE);
+		setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+		setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
+		setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
+		setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+		setFrameMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
+		setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
 
-		setCameraMouseBinding( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.CTRL_DOWN_MASK), Scene.MouseAction.ZOOM_ON_REGION);
-		setCameraMouseBinding( (InputEvent.BUTTON1_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK), Scene.MouseAction.SCREEN_ROTATE);
+		setCameraMouseBinding( (Scene.Button.LEFT.ID | Scene.Modifier.SHIFT.ID), Scene.MouseAction.ZOOM_ON_REGION);
+		setCameraMouseBinding( (Scene.Button.RIGHT.ID | Scene.Modifier.SHIFT.ID), Scene.MouseAction.SCREEN_ROTATE);
 
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
 		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
@@ -772,6 +773,9 @@ public class CameraProfile {
 	 * 
 	 * @param mask modifier mask that defines the binding
 	 * @param action action to be binded
+	 * 
+	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+	 * reserved to emulate the right button of the mouse. 
 	 */
 	public void setCameraMouseBinding(Integer mask,	Scene.MouseAction action) {
 		if ( isCameraMouseBindingInUse(mask) ) {
@@ -829,6 +833,9 @@ public class CameraProfile {
 	 * 
 	 * @param mask modifier mask that defines the binding
 	 * @param action action to be binded
+	 * 
+	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+	 * reserved to emulate the right button of the mouse.
 	 */
 	public void setFrameMouseBinding(Integer mask, Scene.MouseAction action) {
 		if ( isFrameMouseBindingInUse(mask) ) {
@@ -932,6 +939,9 @@ public class CameraProfile {
 	 * @param mask modifier mask defining the binding
 	 * @param button mouse button defining the binding
 	 * @param action action to be binded
+	 * 
+	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+	 * reserved to emulate the right button of the mouse.
 	 */
 	public void setClickBinding(Integer mask, Scene.Button button, Scene.ClickAction action) {
 		if ( isClickBindingInUse(mask, button) ) {
@@ -963,6 +973,9 @@ public class CameraProfile {
 	 * @param button mouse button defining the binding
 	 * @param nc number of clicks that defines the binding
 	 * @param action action to be binded
+	 * 
+	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+	 * reserved to emulate the right button of the mouse.
 	 */
 	public void setClickBinding(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
 		if ( isClickBindingInUse(mask, button, nc) ) {
@@ -1095,6 +1108,9 @@ public class CameraProfile {
 	 * @param mask modifier mask defining the binding
 	 * 
 	 * @see #setCameraWheelBinding(Scene.MouseAction)
+	 * 
+	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+	 * reserved to emulate the right button of the mouse.
 	 */
 	public void setCameraWheelBinding(Integer mask, Scene.MouseAction action) {
 		if ( isCameraWheelBindingInUse(mask) ) {
@@ -1186,6 +1202,9 @@ public class CameraProfile {
 	 * @param mask modifier mask defining the binding
 	 * 
 	 * @see #setFrameWheelBinding(Scene.MouseAction)
+	 * 
+	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+	 * reserved to emulate the right button of the mouse.
 	 */
 	public void setFrameWheelBinding(Integer mask, Scene.MouseAction action) {
 		if ( isFrameWheelBindingInUse(mask) ) {

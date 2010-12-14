@@ -2,8 +2,10 @@
  * Basic Use (Offscreen version).
  * by Andres Colubri.
  * 
- * This example illustrates a direct approach to using proscene by Scene proper
- * instantiation, plus integration with offscreen rendering in GLGraphics.
+ * Off-screen rendering version of the BasicUse example using GLGraphics.
+ *
+ * This example requires the GLGraphics library:
+ * http://glgraphics.sourceforge.net/
  * 
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
