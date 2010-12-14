@@ -23,7 +23,7 @@ void setup() {
   size(640, 360, GLConstants.GLGRAPHICS);
   
   canvas = new GLGraphicsOffScreen(this, width, height);
-  // You can create an antialised surface if the hardware
+  // You can create an antialiased surface if the hardware
   // supports it:
   //canvas = new GLGraphicsOffScreen(this, width, height, true, 4);
   
