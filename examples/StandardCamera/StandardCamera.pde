@@ -11,15 +11,13 @@
  * Note, however, that the precision of the z-Buffer highly depends on how the zNear()
  * and zFar() values are fitted to your scene (as it is done with the PROSCENE camera
  * kind). Loose boundaries will result in imprecision along the viewing direction.
- * 
- * Press 'v' in the main viewer (the upper one) to toggle the camera kind. 
- * 
- * Press 'u'/'U' in the main viewer to change the frustum size (when the
- * camera kind is "STANDARD").
  *
  * This example requires the napplet library (http://github.com/acsmith/napplet)
  * (download it here: http://github.com/acsmith/napplet/downloads).
  * 
+ * Press 'v' in the main viewer (the upper one) to toggle the camera kind.  
+ * Press 'u'/'U' in the main viewer to change the frustum size (when the
+ * camera kind is "STANDARD"). 
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
  * and mouse bindings in the console.
