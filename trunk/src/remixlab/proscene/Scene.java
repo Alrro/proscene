@@ -459,6 +459,7 @@ public class Scene implements PConstants {
 	MouseGrabbable mouseGrbbr;
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsADrivableFrame;
+	boolean mouseTrckn;
 
 	// F r u s t u m p l a n e c o e f f i c i e n t s
 	protected boolean fpCoefficientsUpdate;
@@ -518,24 +519,26 @@ public class Scene implements PConstants {
 	 * to black. See the associated documentation. A custom renderer can be
 	 * specified as well, and if it is different from the PApplet's renderer,
 	 * this will result in an offscreen Scene.
+	 * <p>
+	 * <b>Attention:</b> If the Scene is in offscreen mode, mouse tracking and
+	 * screen rendering are completely disabled.  
 	 */
 	public Scene(PApplet p, PGraphics3D renderer) {
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
 		height = pg3d.height;
-
-		// This scene is offscreen if the provided renderer is
-		// different from the main PApplet renderer.
-		offscreen = renderer != p.g;
 		
+		//event handler
 		dE = new DesktopEvents(this);
+		
+		//mouse grabber pool
+		MouseGrabberPool = new ArrayList<MouseGrabbable>();	
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
 		pathKeys = new Bindings<Integer, Integer>(this);		
 		setDefaultShortcuts();
 
-		MouseGrabberPool = new ArrayList<MouseGrabbable>();
 		avatarIsInteractiveDrivableFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
@@ -544,7 +547,13 @@ public class Scene implements PConstants {
 		setCamera(camera());// showAll();It is set in setCamera()
 		setInteractiveFrame(null);
 		setAvatar(null);
+		
+  	// This scene is offscreen if the provided renderer is
+		// different from the main PApplet renderer.
+		offscreen = renderer != p.g;		
+		setMouseTracking(!offscreen);
 		setMouseGrabber(null);
+		
 		mouseGrabberIsAnIFrame = false;
 		mouseGrabberIsADrivableFrame = false;
 
@@ -810,6 +819,41 @@ public class Scene implements PConstants {
 	 */
 	public void clearMouseGrabberPool() {
 		mouseGrabberPool().clear();
+	}
+	
+	/**
+	 * Returns {@code true}
+	 * if {@link remixlab.proscene.DesktopEvents#mouseMoved(java.awt.event.MouseEvent)}
+	 * is called even when no mouse button is pressed.
+	 * <p>
+	 * You need to setMouseTracking() to \c true in order to use MouseGrabber (see mouseGrabber()).
+	 */
+	public boolean hasMouseTracking() {
+		return mouseTrckn;
+	}
+	
+	/**
+	 * Sets the {@link #hasMouseTracking()} value.
+	 * <p>
+	 * <b>Attention:</b> If {@code enable} is {@code true} and the Scene is in offscreen
+	 * mode the call has no effect (i.e., it is silently ignored).
+	 */
+	public void setMouseTracking(boolean enable) {
+		if( enable && offscreen )
+			return;
+		if(!enable) {
+			if( mouseGrabber() != null )
+				mouseGrabber().setGrabsMouse(false);
+			setMouseGrabber(null);
+		}
+		mouseTrckn = enable;
+	}
+	
+	/**
+	 * Calls {@link #setMouseTracking(boolean)} to toggle the {@link #hasMouseTracking()} value.
+	 */
+	public void toggleMouseTracking() {
+		setMouseTracking(!hasMouseTracking());
 	}
 
 	// 4. State of the viewer

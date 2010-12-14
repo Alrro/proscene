@@ -312,13 +312,14 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabbable)} to the MouseGrabber that grabs the
 	 * mouse (or to {@code null} if none of them grab it).
 	 */
-	public void mouseMoved(MouseEvent event) {		
+	public void mouseMoved(MouseEvent event) {
 		scene.setMouseGrabber(null);
-		for (MouseGrabbable mg : scene.MouseGrabberPool) {
-			mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
-			if (mg.grabsMouse())
-				scene.setMouseGrabber(mg);
-		}
+		if( scene.hasMouseTracking() )
+			for (MouseGrabbable mg : scene.MouseGrabberPool) {
+				mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
+				if (mg.grabsMouse())
+					scene.setMouseGrabber(mg);
+			}
 	}
 	
 	/**
