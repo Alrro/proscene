@@ -1535,7 +1535,10 @@ public class Scene implements PConstants {
 	/**
 	 * This method should be called when using offscreen rendering 
 	 * right after renderer.beginDraw(), and it sets the background 
-	 * and display selected visual hints. 
+	 * and display the grid and the axis if necessary.
+	 * <p>
+	 * <b>Attention:</b> All visual hints that use on screen rendering,
+	 * are completely disabled in offscreen mode.
    */	
 	public void beginDraw() {
 		if (isOffscreen()) {
