@@ -38,16 +38,18 @@ import processing.core.*;
  * KeyFrameInterpolator regularly updates the {@link #frame()} position and
  * orientation along the path.
  * <p>
- * Here is a typical utilization example (see also the example KeyFrames):
+ * Here is a typical utilization example (see also the examples FrameInterpolation
+ * and CameraInterpolation):
  * <p>
  * {@code //PApplet.setup() should look like:}<br>
  * {@code size(640, 360, P3D);}<br>
- * {@code kfi = new KeyFrameInterpolator();}<br>
  * {@code // The KeyFrameInterpolator kfi is given the Frame that it will drive
  * over time.}<br>
- * {@code kfi = new KeyFrameInterpolator();}<br>
+ * {@code myFrame = new Frame());}
+ * {@code kfi = new KeyFrameInterpolator( myFrame );} 
+ * //or an anonymous Frame may also be given: {@code kfi = new KeyFrameInterpolator();}<br>
  * {@code //By default the Frame is provided as a reference to the
- * KeyFrameInterpolator:}<br>
+ * KeyFrameInterpolator}} (see {@link #addKeyFrame(Frame)} methods):<br>
  * {@code kfi.addKeyFrame( new Frame( new PVector(1,0,0), new Quaternion() ) );}<br>
  * {@code kfi.addKeyFrame( new Frame( new PVector(2,1,0), new Quaternion() ) );}<br>
  * {@code // ...and so on for all the keyFrames.}<br>

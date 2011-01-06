@@ -453,6 +453,7 @@ public class Scene implements PConstants {
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
+  protected int beginOffScreenDrawingCalls;
 
 	// M o u s e G r a b b e r
 	protected List<MouseGrabbable> MouseGrabberPool;
@@ -550,7 +551,8 @@ public class Scene implements PConstants {
 		
   	// This scene is offscreen if the provided renderer is
 		// different from the main PApplet renderer.
-		offscreen = renderer != p.g;		
+		offscreen = renderer != p.g;
+		beginOffScreenDrawingCalls = 0;
 		setMouseTracking(!offscreen);
 		setMouseGrabber(null);
 		
@@ -1542,6 +1544,12 @@ public class Scene implements PConstants {
    */	
 	public void beginDraw() {
 		if (isOffscreen()) {
+			if (beginOffScreenDrawingCalls != 0)
+				throw new RuntimeException(
+						"There should be exactly one beginDraw() call followed by a "
+								+ "endDraw() and they cannot be nested. Check your implementation!");
+			
+			beginOffScreenDrawingCalls++;
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 					&& (!camera().anyInterpolationIsStarted())) {
 				camera().setPosition(avatar().cameraPosition());
@@ -1570,7 +1578,12 @@ public class Scene implements PConstants {
 	 * just for code consistency. 
    */		
 	public void endDraw() {
+		beginOffScreenDrawingCalls--;
 		
+		if (beginOffScreenDrawingCalls != 0)
+			throw new RuntimeException(
+					"There should be exactly one beginDraw() call followed by a "
+							+ "endDraw() and they cannot be nested. Check your implementation!");
 	}
 	
 	// 4. Scene dimensions
