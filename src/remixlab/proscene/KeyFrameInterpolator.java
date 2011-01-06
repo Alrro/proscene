@@ -46,8 +46,8 @@ import processing.core.*;
  * {@code // The KeyFrameInterpolator kfi is given the Frame that it will drive
  * over time.}<br>
  * {@code myFrame = new Frame());}
- * {@code kfi = new KeyFrameInterpolator( myFrame );} 
- * //or an anonymous Frame may also be given: {@code kfi = new KeyFrameInterpolator();}<br>
+ * {@code kfi = new KeyFrameInterpolator( myFrame, this );} 
+ * //or an anonymous Frame may also be given: {@code kfi = new KeyFrameInterpolator( this );}<br>
  * {@code //By default the Frame is provided as a reference to the
  * KeyFrameInterpolator}} (see {@link #addKeyFrame(Frame)} methods):<br>
  * {@code kfi.addKeyFrame( new Frame( new PVector(1,0,0), new Quaternion() ) );}<br>
