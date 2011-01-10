@@ -4,8 +4,8 @@
  * 
  * This example illustrates 3D world point picking.
  * 
- * The click bindings defined below defined different picking user
- * interactions.
+ * The click bindings below define some per-pixel user interactions,
+ * such as "zoom on pixel" or "set the arcball reference point".
  * 
  * This example requires OpenGL to read the pixel depth. 
  * 
