@@ -1,8 +1,8 @@
 /**
- *                     ProScene (version 1.0.0)      
- *        Copyright (c) 2010 by National University of Colombia
+ *                     ProScene (version 1.0.1)      
+ *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
- *            http://www.disi.unal.edu.co/grupos/remixlab/
+ *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
  * This java package provides classes to ease the creation of interactive 3D
  * scenes in Processing.
@@ -198,7 +198,6 @@ public class KeyFrameInterpolator implements Cloneable {
 	private float interpolationTm;
 	private float interpolationSpd;
 	private boolean interpolationStrt;
-	private boolean fixedRate;
 
 	// M i s c
 	private boolean lpInterpolation;
@@ -272,7 +271,6 @@ public class KeyFrameInterpolator implements Cloneable {
 		pathIsValid = false;
 		valuesAreValid = true;
 		currentFrmValid = false;
-		setFixedRateExecution();
 		setFrame(frame);
 
 		currentFrame0 = keyFr.listIterator();
@@ -407,82 +405,6 @@ public class KeyFrameInterpolator implements Cloneable {
 	public void setInterpolationTime(float time) {
 		interpolationTm = time;
 	};
-	
-	/**
-	 * Toggles the interpolation execution mode between {@link #isFixedRateExecution()}
-	 * and {@link #isFixedDelayExecution()}.
-	 * 
-	 * @see #setFixedRateExecution()
-	 * @see #setFixedDelayExecution()
-	 * @see #isFixedRateExecution()
-	 * @see #isFixedDelayExecution()
-	 */
-	public void toggleExecutionType() {
-		fixedRate = !fixedRate;
-	}
-	
-	/**
-	 * Returns {@code true} if the KeyFrameInterpolator interpolation mode is set to fixed-rate
-	 * execution and {@code false} otherwise (i.e., the interpolation mode is set to fixed-delay
-	 * execution).
-	 * 
-	 * @see #isFixedDelayExecution()
-	 * @see #setFixedRateExecution()
-	 * @see #setFixedDelayExecution()
-	 * @see #toggleExecutionType()
-	 */
-	public boolean isFixedRateExecution() {
-		return fixedRate;
-	}
-	
-	/**
-	 * Convenience function that simply returns {@code !isFixedRateExecution()}
-	 * 
-	 * @see #isFixedRateExecution()
-	 * @see #setFixedRateExecution()
-	 * @see #setFixedDelayExecution()
-	 * @see #toggleExecutionType() 
-	 */
-	public boolean isFixedDelayExecution() {
-		return !isFixedRateExecution();
-	}
-	
-	/**
-	 * When {@link #interpolationIsStarted()} the KeyFrameInterpolation uses a java.util.Timer
-	 * to update the {@link #frame()} position and orientation for repeated execution,
-	 * which can be performed in one out of to ways:
-	 * <p>
-	 * 1. <a href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/Timer.html#scheduleAtFixedRate(java.util.TimerTask, long, long))">Fixed-rate execution</a>:
-	 * each execution is scheduled relative to the scheduled execution time of the
-	 * initial execution. This mode is appropriate to achieve "absolute time" precision
-	 * such as when performing a benchmark.
-	 * <p>
-	 * 2. <a href="http://download.oracle.com/javase/1.5.0/docs/api/java/util/Timer.html#schedule(java.util.TimerTask, java.util.Date)">Fixed-delay execution</a>:
-	 * each execution is scheduled relative to the actual execution time of the
-	 * previous execution. This mode is appropriate to achieve a "smoothness" interpolation.
-	 * <p>
-	 * Sets the KeyFrameInterpolator interpolation mode to fixed-rate execution (which is the default).
-	 * 
-	 * @see #setFixedDelayExecution()
-	 * @see #toggleExecutionType()
-	 * @see #isFixedRateExecution()
-	 * @see #isFixedDelayExecution()
-	 */
-	public void setFixedRateExecution() {
-		fixedRate = true;
-	}
-	
-	/**
-	 * Sets the KeyFrameInterpolator interpolation mode to fixed-delay execution.
-	 * 
-	 * @see #setFixedRateExecution()
-	 * @see #toggleExecutionType()
-	 * @see #isFixedRateExecution()
-	 * @see #isFixedDelayExecution()
-	 */
-	public void setFixedDelayExecution() {
-		fixedRate = false;
-	}
 
 	/**
 	 * Sets the {@link #interpolationSpeed()}. Negative or null values are
@@ -604,10 +526,6 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * Use {@link #setInterpolationTime(float)} before calling this method to
 	 * change the starting {@link #interpolationTime()}.
 	 * <p>
-	 * If {@link #isFixedRateExecution()} is {@code true} the interpolation
-	 * is performed in <i>fixed-rate execution</i> mode (default), otherwise it is
-	 * performed in <i>fixed-delay execution</i> mode.
-	 * <p>
 	 * <b>Attention:</b> The keyFrames must be defined (see
 	 * {@link #addKeyFrame(Frame, float)}) before you startInterpolation(), or
 	 * else the interpolation will naturally immediately stop.
@@ -633,11 +551,7 @@ public class KeyFrameInterpolator implements Cloneable {
 					update();
 				}
 			};
-			
-			if( isFixedRateExecution() )
-				timer.scheduleAtFixedRate(timerTask, 0, interpolationPeriod()); //fixed rate execution
-			else
-				timer.schedule(timerTask, 0, interpolationPeriod()); //fixed delay execution
+			timer.scheduleAtFixedRate(timerTask, 0, interpolationPeriod());
 
 			interpolationStrt = true;
 			update();

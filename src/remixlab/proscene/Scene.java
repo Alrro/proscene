@@ -1,8 +1,8 @@
 /**
  *                     ProScene (version 1.0.1)      
- *        Copyright (c) 2010 by National University of Colombia
+ *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
- *            http://www.disi.unal.edu.co/grupos/remixlab/
+ *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
  * This java package provides classes to ease the creation of interactive 3D
  * scenes in Processing.
@@ -2474,7 +2474,7 @@ public class Scene implements PConstants {
 			foundKT = false;
 		}
 
-		if (foundKP || foundKR || foundKT) {
+		if ( (foundKP || foundKR || foundKT) && keyboardIsHandled() ) {
 			// if( (foundKP || foundKR || foundKT) &&
 			// (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
 			PApplet.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene " +
@@ -3285,14 +3285,14 @@ public class Scene implements PConstants {
 			foundMC = false;
 		}
 
-		if (foundMD || foundMM || foundMR || foundMP || foundMC) {			
+		if ( (foundMD || foundMM || foundMR || foundMP || foundMC) && mouseIsHandled() ) {			
 			PApplet.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene " +
 			"mouse handling with Scene.disableMouseHandling() (you can re-enable it later with Scene.enableMouseHandling()).");
 		}
 	}
 
 	/**
-	 * Returns {@code true} if mouse is currently being handled by proscene and
+	 * Returns {@code true} if the mouse is currently being handled by proscene and
 	 * {@code false} otherwise. Set mouse handling with
 	 * {@link #enableMouseHandling(boolean)}.
 	 * <p>

@@ -1,8 +1,8 @@
 /**
  *                     ProScene (version 1.0.1)      
- *        Copyright (c) 2010 by National University of Colombia
+ *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
- *            http://www.disi.unal.edu.co/grupos/remixlab/
+ *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
  * This java package provides classes to ease the creation of interactive 3D
  * scenes in Processing.
