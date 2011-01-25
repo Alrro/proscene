@@ -1181,15 +1181,24 @@ public class Frame implements Cloneable {
 
 		return pM;
 	}
-
+	
 	/**
-	 * Apply the transformation defined by this Frame to {@code p}. The Frame is
+	 * Convenience wrapper function that simply calls {@code applyTransformation( (PGraphics3D) p.g )}.
+	 * 
+	 * @see #applyTransformation(PGraphics3D)
+	 */
+	public void applyTransformation(PApplet p) {
+		applyTransformation( (PGraphics3D) p.g );
+	}
+	
+	/**
+	 * Apply the transformation defined by this Frame to {@code p3d}. The Frame is
 	 * first translated and then rotated around the new translated origin.
 	 * <p>
 	 * Same as:
 	 * <p>
-	 * {@code p.translate(translation().x, translation().y, translation().z);} <br>
-	 * {@code p.rotate(rotation().angle(), rotation().axis().x,
+	 * {@code p3d.translate(translation().x, translation().y, translation().z);} <br>
+	 * {@code p3d.rotate(rotation().angle(), rotation().axis().x,
 	 * rotation().axis().y, rotation().axis().z);} <br>
 	 * <p>
 	 * This method should be used in conjunction with PApplet to modify the
@@ -1204,18 +1213,18 @@ public class Frame implements Cloneable {
 	 * <p>
 	 * The associated processing drawing code should look like:
 	 * <p>
-	 * {@code p.pushMatrix();//p is the PApplet instance} <br>
+	 * {@code p3d.pushMatrix();//p is the PApplet instance} <br>
 	 * {@code body.applyTransformation(p);} <br>
 	 * {@code drawBody();} <br>
-	 * {@code p.pushMatrix();} <br>
+	 * {@code p3d.pushMatrix();} <br>
 	 * {@code leftArm.applyTransformation(p);} <br>
 	 * {@code drawArm();} <br>
-	 * {@code p.popMatrix();} <br>
-	 * {@code p.pushMatrix();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * {@code p3d.pushMatrix();} <br>
 	 * {@code rightArm.applyTransformation(p);} <br>
 	 * {@code drawArm();} <br>
-	 * {@code p.popMatrix();} <br>
-	 * {@code p.popMatrix();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * {@code p3d.popMatrix();} <br>
 	 * <p>
 	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()} blocks
 	 * to represent the frame hierarchy: {@code leftArm} and {@code rightArm} are
@@ -1227,10 +1236,6 @@ public class Frame implements Cloneable {
 	 * 
 	 * @see #matrix()
 	 */
-	public void applyTransformation(PApplet p) {
-		applyTransformation( (PGraphics3D) p.g );
-	}
-	
 	public void applyTransformation(PGraphics3D p3d) {
 		p3d.translate(translation().x, translation().y, translation().z);
 		p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
