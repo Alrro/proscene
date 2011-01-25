@@ -1153,21 +1153,24 @@ public class Camera implements Cloneable {
 			PApplet.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
+		boolean allInForAllPlanes = true;
 		for (int i = 0; i < 6; ++i) {
 			float d = distanceToFrustumPlane(i, center);
 			if (d > radius)
 				return Camera.Visibility.INVISIBLE;
-			if (PApplet.abs(d) < radius)
-				return Camera.Visibility.SEMIVISIBLE;
+			if ((d > 0) || (-d < radius))
+				allInForAllPlanes = false;
 		}
-		return Camera.Visibility.VISIBLE;
+		if(allInForAllPlanes)
+			return Camera.Visibility.VISIBLE;
+		return Camera.Visibility.SEMIVISIBLE;
 	}
 
 	/**
 	 * Returns {@link remixlab.proscene.Camera.Visibility#VISIBLE},
 	 * {@link remixlab.proscene.Camera.Visibility#INVISIBLE}, or
 	 * {@link remixlab.proscene.Camera.Visibility#SEMIVISIBLE}, depending whether
-	 * the axis aligned box (defined corners {@code p1} and {@code p2}) is
+	 * the axis aligned box (defined by corners {@code p1} and {@code p2}) is
 	 * visible, invisible, or semi-visible, respectively.
 	 * <p>
 	 * <b>Attention:</b> The camera frustum plane equations should be updated
