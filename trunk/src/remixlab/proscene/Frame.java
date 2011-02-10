@@ -450,7 +450,7 @@ public class Frame implements Cloneable {
 	 * Sets the {@link #orientation()} of the Frame, defined in the world
 	 * coordinate system.
 	 * <p>
-	 * Use {@link #setRotation(Quaternion)}to define the local frame rotation
+	 * Use {@link #setRotation(Quaternion)} to define the local frame rotation
 	 * (with respect to the {@link #referenceFrame()}). The potential
 	 * {@link #constraint()} of the Frame is not taken into account, use
 	 * {@link #setOrientationWithConstraint(Quaternion)} instead.
