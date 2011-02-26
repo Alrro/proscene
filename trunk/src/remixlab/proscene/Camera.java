@@ -718,6 +718,8 @@ public class Camera implements Cloneable {
 	/**
 	 * Convenience function that simply returns {@code getOrthoWidthHeight(new
 	 * float[2])}.
+	 * 
+	 * @see #getOrthoWidthHeight(float[])
 	 */
 	public float[] getOrthoWidthHeight() {
 		return getOrthoWidthHeight(new float[2]);
