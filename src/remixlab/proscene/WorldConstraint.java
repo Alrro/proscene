@@ -31,11 +31,9 @@ import processing.core.*;
  * An AxisPlaneConstraint defined in the world coordinate system.
  * <p>
  * The {@link #translationConstraintDirection()} and
- * {@link #rotationConstraintDirection()} are expressed in the Frame world
- * coordinate system (see {@link remixlab.proscene.Frame#referenceFrame()}).
+ * {@link #rotationConstraintDirection()} are expressed in the world coordinate system.
  */
 public class WorldConstraint extends AxisPlaneConstraint {
-
 	/**
 	 * Depending on {@link #translationConstraintType()}, {@code constrain}
 	 * translation to be along an axis or limited to a plane defined in the Frame

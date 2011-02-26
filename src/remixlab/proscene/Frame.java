@@ -513,8 +513,8 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Translates the Frame according to {@code t} (which is defined in the Frame
-	 * coordinate system). Calls {@link #modified()}.
+	 * Translates the Frame according to {@code t}, locally defined with respect
+	 * to the {@link #referenceFrame()}. Calls {@link #modified()}.
 	 * <p>
 	 * If there's a {@link #constraint()} it is satisfied. Hence the translation
 	 * actually applied to the Frame may differ from {@code t} (since it can be
