@@ -855,4 +855,5 @@ class Vector3f {
 		}
 		throw new IllegalArgumentException("index must be either 0, 1 or 2");
 	}
+	
 }
