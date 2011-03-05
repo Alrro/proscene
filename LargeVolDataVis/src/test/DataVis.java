@@ -27,11 +27,12 @@ public class DataVis extends PApplet {
 	
 	OctreeNode vfcAp;
 
-	int cubeCount = 5000;
+	int cubeCount = 500000;
 	int vertPerCube = 8;
 	float cubeSize = 10;
 	float volSize = 1000;
 
+	boolean drawingOC = true;
 	boolean drawBoundingVolumes = false;
 	boolean freezeCalc = false;
 	boolean enableVFC;
@@ -105,7 +106,7 @@ public class DataVis extends PApplet {
 		  Vector3f[] verts=new Vector3f[xVerts.size()];
 		  for(int i=0;i<xVerts.size();i++){
 			  verts[i]=new Vector3f(xVerts.get(i), yVerts.get(i), zVerts.get(i));
-			  println(verts[i]);
+			  //println(verts[i]);
 		  }
 		  vfcAp=new OctreeNode(verts);
 		}
@@ -148,8 +149,10 @@ public class DataVis extends PApplet {
 			}
 		}
 
-		stroke(0,0,255);
-		pintarOc(vfcAp);
+		if (drawingOC) {
+		  stroke(0,0,255);
+		  pintarOc(vfcAp);
+		}
 		
 		chrono.printFps();
 	}
@@ -287,12 +290,23 @@ public class DataVis extends PApplet {
 		if (key == 'b' || key == 'B') {
 			if (drawBoundingVolumes) {
 				drawBoundingVolumes = false;
-				println("Habilitando dibujado de bounding volumes");
+				println("Deshabilitando dibujado de bounding volumes");
 			} else {
 				drawBoundingVolumes = true;
-				println("Deshabilitando dibujado de bounding volumes");
+				println("Habilitando dibujado de bounding volumes");				
 			}
 			return;
+		}
+		
+		if (key == 'o' || key == 'O') {
+      if (drawingOC) {
+        drawingOC = false;
+        println("Deshabilitando dibujado del octree");
+      } else {
+        drawingOC = true;
+        println("Habilitando dibujado del octree");        
+      }
+      return;		 
 		}
 
 		if ((key == 'n' || key == 'N') && enableVFC) {
