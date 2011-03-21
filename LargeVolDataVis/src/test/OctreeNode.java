@@ -1,12 +1,11 @@
 package test;
 
 import java.nio.FloatBuffer;
-import java.security.AllPermission;
 import java.util.ArrayList;
 
 public class OctreeNode {
 	OctreeNode hijos[];
-	Vector3f verts[];
+	ArrayList<Float> indexes;
 	float xMax,xMin,yMax,yMin,zMax,zMin;
 	float xMedio,yMedio,zMedio;
 	float xTam,yTam,zTam;
@@ -18,7 +17,6 @@ public class OctreeNode {
 	}
 	
 	public OctreeNode(Vector3f[] verts) {
-		this.verts = verts;
 		//Definimos los puntos maximos y minimos de entre los vertices del nodo padre
 		xMax=verts[0].x;
 		xMin=verts[0].x;

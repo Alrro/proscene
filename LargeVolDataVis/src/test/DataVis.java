@@ -15,6 +15,7 @@
 
 package test;
 
+import java.nio.BufferUnderflowException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -27,7 +28,7 @@ public class DataVis extends PApplet {
 	
 	OctreeNode vfcAp;
 
-	int cubeCount = 500000;
+	int cubeCount = 4	;
 	int vertPerCube = 8;
 	float cubeSize = 10;
 	float volSize = 1000;
@@ -35,7 +36,7 @@ public class DataVis extends PApplet {
 	boolean drawingOC = true;
 	boolean drawBoundingVolumes = false;
 	boolean freezeCalc = false;
-	boolean enableVFC;
+	boolean enableVFC,pruebaDibujado;
 	
 	GLModel cubes;
 	Scene scene;
@@ -89,6 +90,7 @@ public class DataVis extends PApplet {
 		  ArrayList<Float> xVerts=new ArrayList<Float>();
 		  ArrayList<Float> yVerts=new ArrayList<Float>();
 		  ArrayList<Float> zVerts=new ArrayList<Float>();
+		  ArrayList<Integer> indexVerts=new ArrayList<Integer>();
 		  FloatBuffer tempFB=cubes.vertices.duplicate();
 		  cubes.endUpdateVertices();
 		  boolean leer=true;
@@ -98,15 +100,18 @@ public class DataVis extends PApplet {
 				  yVerts.add(tempFB.get());
 				  zVerts.add(tempFB.get());
 				  tempFB.get();
+				  indexVerts.add(tempFB.position()-1);
 			  }
-			  catch (Exception e) {
+			  catch (BufferUnderflowException e) {
+				  System.out.println("FloatBuffer del modelo, terminado de leer");
 				  leer=false;
 			  }
 		  }
 		  Vector3f[] verts=new Vector3f[xVerts.size()];
 		  for(int i=0;i<xVerts.size();i++){
 			  verts[i]=new Vector3f(xVerts.get(i), yVerts.get(i), zVerts.get(i));
-			  //println(verts[i]);
+			  System.out.println(verts[i]);
+			  System.out.println(indexVerts.get(i));
 		  }
 		  vfcAp=new OctreeNode(verts);
 		}
@@ -120,7 +125,16 @@ public class DataVis extends PApplet {
 		if (enableVFC) {
 			vfc(renderer);
 		} else {
+			
+		}
+		
+		if(pruebaDibujado){
+			pruebaDibujado(renderer);
+		}
+		
+		if(!enableVFC && !pruebaDibujado){
 			renderer.model(cubes);
+			System.out.println("Ningun renderer activo");
 		}
 
 		renderer.endGL();    
@@ -261,6 +275,46 @@ public class DataVis extends PApplet {
 		renderer.model(cubes, 0, renderedCubes * indicesPerCube);	  
 	}
 	
+/*	
+	void vfc(GLGraphics renderer) {
+		renderedCubes = 0;
+		minInd = cubeCount * indicesPerCube; 
+		maxInd = -minInd;
+		for (int i = 0; i < cubeCount; i++) {
+			switch (scene.camera().sphereIsVisible(new PVector(bss[i].center.x, bss[i].center.y, bss[i].center.z), bss[i].radius)) {
+			case VISIBLE:        
+				arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
+				minInd = min(minInd, vertPerCube * i);
+				maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
+				renderedCubes++;          
+				break;
+			case SEMIVISIBLE:
+				PVector BBCorner1 = new PVector( (bbs[i].center.x - bbs[i].xExtent), (bbs[i].center.y - bbs[i].yExtent), (bbs[i].center.z + bbs[i].zExtent) );
+				PVector BBCorner2 = new PVector( (bbs[i].center.x + bbs[i].xExtent), (bbs[i].center.y + bbs[i].yExtent), (bbs[i].center.z - bbs[i].zExtent) );          
+				switch (scene.camera().aaBoxIsVisible(BBCorner1, BBCorner2)) {
+				case VISIBLE:
+				case SEMIVISIBLE:
+					arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
+					minInd = min(minInd, vertPerCube * i);
+					maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
+					renderedCubes++;
+					break;
+				case INVISIBLE:
+					break;
+				}
+				break;
+			case INVISIBLE:
+				break;
+			}
+		}
+		cubes.updateIndices(indices, renderedCubes * indicesPerCube);
+		cubes.setMinIndex(minInd);
+		cubes.setMaxIndex(maxInd);      
+
+
+		renderer.model(cubes, 0, renderedCubes * indicesPerCube);	  
+	}
+	*/
 	void enableVFC() {
 		scene.enableFrustumEquationsUpdate();
 		enableVFC = true;
@@ -273,6 +327,13 @@ public class DataVis extends PApplet {
 		println("Desactivando VFC");
 	}
 
+	void pruebaDibujado(GLGraphics renderer){
+		cubes.updateIndices( new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35}, 36);
+		cubes.setMinIndex(0);
+		cubes.setMaxIndex(2);      
+		renderer.model(cubes, 0, 36);
+	}
+	
 	public void keyPressed() {
 		if (key == 'c' || key == 'C') {
 			scene.toggleCameraType();
@@ -299,14 +360,26 @@ public class DataVis extends PApplet {
 		}
 		
 		if (key == 'o' || key == 'O') {
-      if (drawingOC) {
-        drawingOC = false;
-        println("Deshabilitando dibujado del octree");
-      } else {
-        drawingOC = true;
-        println("Habilitando dibujado del octree");        
-      }
-      return;		 
+	      if (drawingOC) {
+	        drawingOC = false;
+	        println("Deshabilitando dibujado del octree");
+	        
+	      } else {
+	        drawingOC = true;
+	        println("Habilitando dibujado del octree");
+	      }
+	      return;		 
+		}
+		if (key == 'p' || key == 'P') {
+			if(pruebaDibujado){
+				pruebaDibujado=false;
+				System.out.println("Prueba de dibujo por indices: Desactivada");
+				}
+			else{
+				pruebaDibujado=true;
+				System.out.println("Prueba de dibujo por indices: Activada");
+				}
+			return;		 
 		}
 
 		if ((key == 'n' || key == 'N') && enableVFC) {
@@ -356,7 +429,7 @@ public class DataVis extends PApplet {
 			// usa FloatBuffers. Mas adelante se puede intergrar mejor los calculos de bounding
 			// volumes con las estructuras de datos de GLGraphics.
 			FloatBuffer points = FloatBuffer.allocate(vertPerCube * 3);
-			points.put(0, x0 - cubeSize); 
+			points.put(0, x0 - cubeSize);
 			points.put(1, y0 - cubeSize); 
 			points.put(2, z0 - cubeSize);    
 			points.put(3, x0 + cubeSize); 
