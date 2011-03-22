@@ -129,7 +129,7 @@ public class DataVis extends PApplet {
 		}
 		
 		if(pruebaDibujado){
-			pruebaDibujado(renderer);
+			pruebaDibujado(renderer, 0);
 		}
 		
 		if(!enableVFC && !pruebaDibujado){
@@ -327,11 +327,14 @@ public class DataVis extends PApplet {
 		println("Desactivando VFC");
 	}
 
-	void pruebaDibujado(GLGraphics renderer){
-		cubes.updateIndices( new int[]{0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35}, 36);
-		cubes.setMinIndex(0);
-		cubes.setMaxIndex(2);      
-		renderer.model(cubes, 0, 36);
+	void pruebaDibujado(GLGraphics renderer, int i){
+	  int[] temp = new int[indicesPerCube];
+	  arrayCopy(indices0, indicesPerCube * i, temp, 0, indicesPerCube);
+
+    renderer.model(cubes, 0, indicesPerCube); 	  
+		cubes.setMinIndex(vertPerCube * i);
+		cubes.setMaxIndex(vertPerCube * (i + 1) - 1);      
+		renderer.model(cubes, 0, indicesPerCube);
 	}
 	
 	public void keyPressed() {
