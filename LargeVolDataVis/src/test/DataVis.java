@@ -330,8 +330,8 @@ public class DataVis extends PApplet {
 	void pruebaDibujado(GLGraphics renderer, int i){
 	  int[] temp = new int[indicesPerCube];
 	  arrayCopy(indices0, indicesPerCube * i, temp, 0, indicesPerCube);
-
-    renderer.model(cubes, 0, indicesPerCube); 	  
+	  
+	  cubes.updateIndices(temp, indicesPerCube);
 		cubes.setMinIndex(vertPerCube * i);
 		cubes.setMaxIndex(vertPerCube * (i + 1) - 1);      
 		renderer.model(cubes, 0, indicesPerCube);
