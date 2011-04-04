@@ -22,13 +22,8 @@
 
 import remixlab.proscene.*;
 
-Scene scene;
-// GLGraphicsOffScreen canvas;
-PGraphics canvas;
-
-Scene auxScene;
-// GLGraphicsOffScreen canvas;
-PGraphics auxCanvas;
+Scene scene, auxScene;
+PGraphics canvas, auxCanvas;
 
 void setup() {
   size(640, 720, P3D);
@@ -82,16 +77,12 @@ void draw() {
   handleMouse();
   canvas.beginDraw();
   scene.beginDraw();
-  //canvas.fill(204, 102, 0);
-  //canvas.box(20, 30, 50);
   scene.endDraw();
   canvas.endDraw();
   image(canvas, 0, 0);
 
   auxCanvas.beginDraw();
   auxScene.beginDraw();
-  //canvas.fill(204, 102, 0);
-  //canvas.box(20, 30, 50);
   auxScene.endDraw();
   auxCanvas.endDraw();
   image(auxCanvas, 0, 360);
