@@ -11,9 +11,6 @@
  * Note, however, that the precision of the z-Buffer highly depends on how the zNear()
  * and zFar() values are fitted to your scene (as it is done with the PROSCENE camera
  * kind). Loose boundaries will result in imprecision along the viewing direction.
- *
- * This example requires the napplet library (http://github.com/acsmith/napplet)
- * (download it here: http://github.com/acsmith/napplet/downloads).
  * 
  * Press 'v' in the main viewer (the upper one) to toggle the camera kind.  
  * Press 'u'/'U' in the main viewer to change the frustum size (when the
@@ -24,44 +21,93 @@
  */
 
 import remixlab.proscene.*;
-import napplet.*;
 
-NAppletManager nappletManager;
-NApplet mainNApplet;
+Scene scene;
+// GLGraphicsOffScreen canvas;
+PGraphics canvas;
+
+Scene auxScene;
+// GLGraphicsOffScreen canvas;
+PGraphics auxCanvas;
 
 void setup() {
   size(640, 720, P3D);
-  // instantiate the viewers and embed them into a napplet manager
-  nappletManager = new NAppletManager(this);
-  mainNApplet = nappletManager.createNApplet("MainViewer", 0, 0);  
-  nappletManager.createNApplet("AuxiliarViewer", 0, 360);
+
+  canvas = createGraphics(640, 360, P3D);
+  scene = new Scene(this, (PGraphics3D) canvas);
+  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
+  // enable computation of the frustum planes equations (disabled by
+  // default)
+  scene.enableFrustumEquationsUpdate();
+  scene.setGridIsDrawn(false);
+  scene.addDrawHandler(this, "mainDrawing");
+
+  auxCanvas = createGraphics(640, 360, P3D);
+  auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+  auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
+  auxScene.setAxisIsDrawn(false);
+  auxScene.setGridIsDrawn(false);
+  auxScene.setRadius(200);
+  auxScene.showAll();
+  auxScene.addDrawHandler(this, "auxiliarDrawing");
+
+  handleMouse();
 }
 
-void mainDrawing(Scene s) {
-  PApplet p = s.parent;
+void mainDrawing(Scene s) {		
+  PGraphics3D p = s.renderer();
   p.noStroke();
-  // the main viewer camera is used to cull the sphere object against its frustum
-  Scene scn = ((MainViewer)(mainNApplet)).scene;
-  switch (scn.camera().sphereIsVisible(new PVector(0,0,0), 40)) {
-    case VISIBLE :
-      p.fill(0, 255, 0);
-      p.sphere(40);
+  // the main viewer camera is used to cull the sphere object against its
+  // frustum
+  switch (scene.camera().sphereIsVisible(new PVector(0, 0, 0), 40)) {
+  case VISIBLE:
+    p.fill(0, 255, 0);
+    p.sphere(40);
     break;
-    case SEMIVISIBLE :
-      p.fill(255, 0, 0);
-      p.sphere(40);
+  case SEMIVISIBLE:
+    p.fill(255, 0, 0);
+    p.sphere(40);
     break;
-    case INVISIBLE :
+  case INVISIBLE:
     break;
   }
 }
 
-// same as the main drawing, but we also draw a representation of the main camera
-void auxiliarDrawing(Scene s) {  
+void auxiliarDrawing(Scene s) {
   mainDrawing(s);
-  DrawingUtils.drawCamera(s.parent, ((MainViewer)(mainNApplet)).scene.camera());
+  DrawingUtils.drawCamera(s.renderer(), scene.camera());
 }
 
-void draw() {  
-  background(50);
+void draw() {
+  handleMouse();
+  canvas.beginDraw();
+  scene.beginDraw();
+  //canvas.fill(204, 102, 0);
+  //canvas.box(20, 30, 50);
+  scene.endDraw();
+  canvas.endDraw();
+  image(canvas, 0, 0);
+
+  auxCanvas.beginDraw();
+  auxScene.beginDraw();
+  //canvas.fill(204, 102, 0);
+  //canvas.box(20, 30, 50);
+  auxScene.endDraw();
+  auxCanvas.endDraw();
+  image(auxCanvas, 0, 360);
 }
+
+public void handleMouse() {
+  if (mouseY < 360) {
+    scene.enableMouseHandling();
+    scene.enableKeyboardHandling();
+    auxScene.disableMouseHandling();
+    auxScene.disableKeyboardHandling();
+  } 
+  else {
+    scene.disableMouseHandling();
+    scene.disableKeyboardHandling();
+    auxScene.enableMouseHandling();
+    auxScene.enableKeyboardHandling();
+  }
+}		

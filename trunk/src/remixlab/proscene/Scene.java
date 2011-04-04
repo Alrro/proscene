@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.1)      
+ *                     ProScene (version 1.1.0)      
  *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -100,7 +100,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.0.1";
+	public static final String version = "1.1.0";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -1507,7 +1507,21 @@ public class Scene implements PConstants {
 	 */
 	public void draw() {
 		if (isOffscreen()) return;
-		
+		drawCommon();
+		// Try to draw what should have been drawn in the pre()
+		if (!backgroundIsHandled()) {
+			if (gridIsDrawn())
+				drawGrid(camera().sceneRadius());
+			if (axisIsDrawn())
+				drawAxis(camera().sceneRadius());
+			displayVisualHints();
+		}
+	}
+	
+	/**
+	 * Internal method. Called by {@link #draw()} and {@link #beginDraw()}.
+	 */
+	protected void drawCommon() {
 		if( animationIsStarted() )
 			performAnimation();
 		
@@ -1522,16 +1536,16 @@ public class Scene implements PConstants {
 				PApplet.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
 				e.printStackTrace();
 			}
-		}
-
-		// 3. Try to draw what should have been drawn in the pre()
-		if (!backgroundIsHandled()) {
-			if (gridIsDrawn())
-				drawGrid(camera().sceneRadius());
-			if (axisIsDrawn())
-				drawAxis(camera().sceneRadius());
-			displayVisualHints();
-		}
+		}				
+	}
+	
+	/**
+	 * Returns the renderer context linked to this scene. 
+	 * 
+	 * @return PGraphics3D renderer.
+	 */
+	public PGraphics3D renderer() {
+		return pg3d;
 	}
 
 	/**
@@ -1569,6 +1583,8 @@ public class Scene implements PConstants {
 				drawGrid(camera().sceneRadius());
 			if (axisIsDrawn())
 				drawAxis(camera().sceneRadius());
+			
+			drawCommon();
 		}
 	}
 
@@ -2520,6 +2536,8 @@ public class Scene implements PConstants {
 	 * @see #disableKeyboardHandling()
 	 */
 	public void enableKeyboardHandling() {
+		if( keyboardIsHandled() )
+			return;
 		keyboardHandling = true;
 		parent.registerKeyEvent(dE);
 	}
@@ -2530,6 +2548,8 @@ public class Scene implements PConstants {
 	 * @see #keyboardIsHandled()
 	 */
 	public void disableKeyboardHandling() {
+		if( !keyboardIsHandled() )
+			return;
 		keyboardHandling = false;
 		parent.unregisterKeyEvent(dE);
 	}
@@ -2906,6 +2926,8 @@ public class Scene implements PConstants {
 	 * Internal method. Handles the different global keyboard actions.
 	 */
 	protected void handleKeyboardAction(KeyboardAction id) {
+		if( !keyboardIsHandled() )
+			return;
 		switch (id) {
 		case DRAW_AXIS:
 			toggleAxisIsDrawn();
@@ -2976,6 +2998,8 @@ public class Scene implements PConstants {
 	 * Internal method. Handles the different camera keyboard actions.
 	 */
 	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
+		if( !keyboardIsHandled() )
+			return;
 		switch (id) {
 		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
 			if (Camera.class == camera().getClass())
@@ -3329,6 +3353,8 @@ public class Scene implements PConstants {
 	 * @see #enableKeyboardHandling()
 	 */
 	public void enableMouseHandling() {
+		if( mouseIsHandled() )
+			return;
 		mouseHandling = true;
 		parent.registerMouseEvent(dE);
 	}
@@ -3340,6 +3366,8 @@ public class Scene implements PConstants {
 	 * @see #mouseIsHandled()
 	 */
 	public void disableMouseHandling() {
+		if( !mouseIsHandled() )
+			return;
 		mouseHandling = false;
 		parent.unregisterMouseEvent(dE);
 	}
@@ -3351,7 +3379,8 @@ public class Scene implements PConstants {
 		// public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT,
 		// SELECT, ARP_FROM_PIXEL, RESET_ARP,
 		// CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA }
-
+		if( !mouseIsHandled() )
+			return;
 		switch (action) {
 		case NO_CLICK_ACTION:
 			break;
