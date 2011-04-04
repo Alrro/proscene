@@ -19,44 +19,44 @@ public class OctreeNode {
     child = new OctreeNode[8];
   }
   
-  public void draw(PApplet parent) {
-    parent.stroke(color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
-    parent.strokeWeight(level+1);
+  public void draw(PGraphics3D pg3d) {
+    pg3d.stroke(color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
+    pg3d.strokeWeight(level+1);
     
-    parent.beginShape();
-    parent.vertex(p1.x, p1.y, p1.z);
-    parent.vertex(p1.x, p2.y, p1.z);
-    parent.vertex(p2.x, p2.y, p1.z);
-    parent.vertex(p2.x, p1.y, p1.z);
-    parent.vertex(p1.x, p1.y, p1.z);
-    parent.vertex(p1.x, p1.y, p2.z);
-    parent.vertex(p1.x, p2.y, p2.z);
-    parent.vertex(p2.x, p2.y, p2.z);
-    parent.vertex(p2.x, p1.y, p2.z);
-    parent.vertex(p1.x, p1.y, p2.z);
-    parent.endShape();
-    //parent.endShape(CLOSE);
+    pg3d.beginShape();
+    pg3d.vertex(p1.x, p1.y, p1.z);
+    pg3d.vertex(p1.x, p2.y, p1.z);
+    pg3d.vertex(p2.x, p2.y, p1.z);
+    pg3d.vertex(p2.x, p1.y, p1.z);
+    pg3d.vertex(p1.x, p1.y, p1.z);
+    pg3d.vertex(p1.x, p1.y, p2.z);
+    pg3d.vertex(p1.x, p2.y, p2.z);
+    pg3d.vertex(p2.x, p2.y, p2.z);
+    pg3d.vertex(p2.x, p1.y, p2.z);
+    pg3d.vertex(p1.x, p1.y, p2.z);
+    pg3d.endShape();
+    //pg3d.endShape(CLOSE);
     
-    parent.beginShape(LINES);
-    parent.vertex(p1.x, p2.y, p1.z);
-    parent.vertex(p1.x, p2.y, p2.z);
-    parent.vertex(p2.x, p2.y, p1.z);
-    parent.vertex(p2.x, p2.y, p2.z);
-    parent.vertex(p2.x, p1.y, p1.z);
-    parent.vertex(p2.x, p1.y, p2.z);
-    parent.endShape();
+    pg3d.beginShape(LINES);
+    pg3d.vertex(p1.x, p2.y, p1.z);
+    pg3d.vertex(p1.x, p2.y, p2.z);
+    pg3d.vertex(p2.x, p2.y, p1.z);
+    pg3d.vertex(p2.x, p2.y, p2.z);
+    pg3d.vertex(p2.x, p1.y, p1.z);
+    pg3d.vertex(p2.x, p1.y, p2.z);
+    pg3d.endShape();
   }
   
-  public void drawIfAllChildrenAreVisible(PApplet parent, Camera camera) {
+  public void drawIfAllChildrenAreVisible(PGraphics3D pg3d, Camera camera) {
     Camera.Visibility vis = camera.aaBoxIsVisible(p1, p2);
     if ( vis == Camera.Visibility.VISIBLE )
-      draw(parent);
+      draw(pg3d);
     else if ( vis == Camera.Visibility.SEMIVISIBLE )
       if (child[0]!=null)
         for (int i=0; i<8; ++i)
-          child[i].drawIfAllChildrenAreVisible(parent, camera);
+          child[i].drawIfAllChildrenAreVisible(pg3d, camera);
       else
-        draw(parent);
+        draw(pg3d);
   }
   
   public void buildBoxHierarchy(int l) {
