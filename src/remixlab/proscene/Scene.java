@@ -434,6 +434,7 @@ public class Scene implements PConstants {
 	public PGraphics3D pg3d;
 	int width, height;// size
 	boolean offscreen;
+	protected Frame tmpFrame;
 
 	// O B J E C T S
 	protected DesktopEvents dE;
@@ -529,6 +530,8 @@ public class Scene implements PConstants {
 		pg3d = renderer;
 		width = pg3d.width;
 		height = pg3d.height;
+		
+		tmpFrame = new Frame();
 		
 		//event handler
 		dE = new DesktopEvents(this);
@@ -1744,65 +1747,597 @@ public class Scene implements PConstants {
 	}
 
 	// 6. Display of visual hints and Display methods
+	
+	/**
+	 * Draws a cylinder of width {@code w} and height {@code h}, along the {@link #renderer()} 
+	 * positive {@code z} axis.
+	 * <p>
+	 * Code adapted from http://www.processingblogs.org/category/processing-java/
+	 */
+	public void cylinder(float w, float h) {
+		float px, py;
+
+		pg3d.beginShape(QUAD_STRIP);
+		for (float i = 0; i < 13; i++) {
+			px = PApplet.cos(PApplet.radians(i * 30)) * w;
+			py = PApplet.sin(PApplet.radians(i * 30)) * w;
+			pg3d.vertex(px, py, 0);
+			pg3d.vertex(px, py, h);
+		}
+		pg3d.endShape();
+
+		pg3d.beginShape(TRIANGLE_FAN);
+		pg3d.vertex(0, 0, 0);
+		for (float i = 12; i > -1; i--) {
+			px = PApplet.cos(PApplet.radians(i * 30)) * w;
+			py = PApplet.sin(PApplet.radians(i * 30)) * w;
+			pg3d.vertex(px, py, 0);
+		}
+		pg3d.endShape();
+
+		pg3d.beginShape(TRIANGLE_FAN);
+		pg3d.vertex(0, 0, h);
+		for (float i = 0; i < 13; i++) {
+			px = PApplet.cos(PApplet.radians(i * 30)) * w;
+			py = PApplet.sin(PApplet.radians(i * 30)) * w;
+			pg3d.vertex(px, py, h);
+		}
+		pg3d.endShape();
+	}	
+	
+	/**
+	 * Same as {@code cone(det, 0, 0, r, h);}
+	 * 
+	 * @see #cone(int, float, float, float, float)
+	 */
+	public void cone(int det, float r, float h) {
+		cone(det, 0, 0, r, h);
+	}		
+	
+	/**
+	 * Same as {@code cone(12, 0, 0, r, h);}
+	 * 
+	 * @see #cone(int, float, float, float, float)
+	 */
+	public void cone(float r, float h) {
+		cone(12, 0, 0, r, h);
+	}			
+	
+	/**
+	 * Draws a cone along the {@link #renderer()} positive {@code z} axis, with its
+	 * base centered at {@code (x,y)}, height {@code h}, and radius {@code r}.
+	 * <p>
+	 * The code of this function was adapted from
+	 * http://processinghacks.com/hacks:cone Thanks to Tom Carden.
+	 * 
+	 * @see #cone(int, float, float, float, float, float)
+	 */
+	public void cone(int detail, float x, float y, float r, float h) {
+		float unitConeX[] = new float[detail + 1];
+		float unitConeY[] = new float[detail + 1];
+
+		for (int i = 0; i <= detail; i++) {
+			float a1 = TWO_PI * i / detail;
+			unitConeX[i] = r * (float) Math.cos(a1);
+			unitConeY[i] = r * (float) Math.sin(a1);
+		}
+
+		pg3d.pushMatrix();
+		pg3d.translate(x, y);
+		pg3d.beginShape(TRIANGLE_FAN);
+		pg3d.vertex(0, 0, h);
+		for (int i = 0; i <= detail; i++) {
+			pg3d.vertex(unitConeX[i], unitConeY[i], 0.0f);
+		}
+		pg3d.endShape();
+		pg3d.popMatrix();
+	}
+	
+	/**
+	 * Same as {@code cone(det, 0, 0, r1, r2, h);}
+	 * 
+	 * @see #cone(int, float, float, float, float, float)
+	 */
+	public void cone(int det, float r1, float r2, float h) {
+		cone(det, 0, 0, r1, r2, h);
+	}	
+	
+	/**
+	 * Same as {@code cone(18, 0, 0, r1, r2, h);}
+	 * 
+	 * @see #cone(int, float, float, float, float, float)
+	 */
+	public void cone(float r1, float r2, float h) {
+		cone(18, 0, 0, r1, r2, h);
+	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawAxis(parent)}
+	 * Draws a truncated cone along the {@link #renderer()} positive {@code z} axis,
+	 * with its base centered at {@code (x,y)}, height {@code h}, and radii
+	 * {@code r1} and {@code r2} (basis and height respectively).
 	 * 
-	 * @see remixlab.proscene.DrawingUtils#drawAxis(PApplet)
+	 * @see #cone(int, float, float, float, float)
+	 */
+	public void cone(int detail, float x, float y,	float r1, float r2, float h) {
+		float firstCircleX[] = new float[detail + 1];
+		float firstCircleY[] = new float[detail + 1];
+		float secondCircleX[] = new float[detail + 1];
+		float secondCircleY[] = new float[detail + 1];
+
+		for (int i = 0; i <= detail; i++) {
+			float a1 = TWO_PI * i / detail;
+			firstCircleX[i] = r1 * (float) Math.cos(a1);
+			firstCircleY[i] = r1 * (float) Math.sin(a1);
+			secondCircleX[i] = r2 * (float) Math.cos(a1);
+			secondCircleY[i] = r2 * (float) Math.sin(a1);
+		}
+
+		pg3d.pushMatrix();
+		pg3d.translate(x, y);
+		pg3d.beginShape(QUAD_STRIP);
+		for (int i = 0; i <= detail; i++) {
+			pg3d.vertex(firstCircleX[i], firstCircleY[i], 0);
+			pg3d.vertex(secondCircleX[i], secondCircleY[i], h);
+		}
+		pg3d.endShape();
+		pg3d.popMatrix();
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawAxis(100)}.
 	 */
 	public void drawAxis() {
-		DrawingUtils.drawAxis(pg3d);
-	}
-
+		drawAxis(100);
+	}		
+	
 	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawAxis(parent, length)}
+	 * Draws an axis of length {@code length} which origin correspond to the
+	 * {@link #renderer()}'s world coordinate system origin.
 	 * 
-	 * @see remixlab.proscene.DrawingUtils#drawAxis(PApplet, float)
+	 * @see #drawGrid(float, int)
 	 */
 	public void drawAxis(float length) {
-		DrawingUtils.drawAxis(pg3d, length);
-	}
+		final float charWidth = length / 40.0f;
+		final float charHeight = length / 30.0f;
+		final float charShift = 1.04f * length;
 
+		// pg3d.noLights();
+
+		pg3d.pushStyle();
+		
+		pg3d.beginShape(LINES);		
+		pg3d.strokeWeight(2);
+		// The X
+		pg3d.stroke(255, 178, 178);
+		pg3d.vertex(charShift, charWidth, -charHeight);
+		pg3d.vertex(charShift, -charWidth, charHeight);
+		pg3d.vertex(charShift, -charWidth, -charHeight);
+		pg3d.vertex(charShift, charWidth, charHeight);
+		// The Y
+		pg3d.stroke(178, 255, 178);
+		pg3d.vertex(charWidth, charShift, charHeight);
+		pg3d.vertex(0.0f, charShift, 0.0f);
+		pg3d.vertex(-charWidth, charShift, charHeight);
+		pg3d.vertex(0.0f, charShift, 0.0f);
+		pg3d.vertex(0.0f, charShift, 0.0f);
+		pg3d.vertex(0.0f, charShift, -charHeight);
+		// The Z
+		pg3d.stroke(178, 178, 255);
+		
+		//left_handed
+		pg3d.vertex(-charWidth, -charHeight, charShift);
+		pg3d.vertex(charWidth, -charHeight, charShift);
+		pg3d.vertex(charWidth, -charHeight, charShift);
+		pg3d.vertex(-charWidth, charHeight, charShift);
+		pg3d.vertex(-charWidth, charHeight, charShift);
+		pg3d.vertex(charWidth, charHeight, charShift);
+	  //right_handed coordinate system should go like this:
+		//pg3d.vertex(-charWidth, charHeight, charShift);
+		//pg3d.vertex(charWidth, charHeight, charShift);
+		//pg3d.vertex(charWidth, charHeight, charShift);
+		//pg3d.vertex(-charWidth, -charHeight, charShift);
+		//pg3d.vertex(-charWidth, -charHeight, charShift);
+		//pg3d.vertex(charWidth, -charHeight, charShift);
+		
+		pg3d.endShape();
+
+		// Z axis
+		pg3d.noStroke();
+		pg3d.fill(178, 178, 255);
+		drawArrow(length, 0.01f * length);
+
+		// X Axis
+		pg3d.fill(255, 178, 178);
+		pg3d.pushMatrix();
+		pg3d.rotateY(HALF_PI);
+		drawArrow(length, 0.01f * length);
+		pg3d.popMatrix();
+
+		// Y Axis
+		pg3d.fill(178, 255, 178);
+		pg3d.pushMatrix();
+		pg3d.rotateX(-HALF_PI);
+		drawArrow(length, 0.01f * length);
+		pg3d.popMatrix();
+
+		pg3d.popStyle();
+	}			
+	
 	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(pg3d, 100, 10)}
+	 * Simply calls {@code drawArrow(length, 0.05f * length)}
 	 * 
-	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet)
+	 * @see #drawArrow(float, float)
+	 */
+	public void drawArrow(float length) {
+		drawArrow(length, 0.05f * length);
+	}		
+	
+	/**
+	 * Draws a 3D arrow along the {@link #renderer()} positive Z axis.
+	 * <p>
+	 * {@code length} and {@code radius} define its geometry.
+	 * <p>
+	 * Use {@link #drawArrow(PVector, PVector, float)} to place the arrow
+	 * in 3D.
+	 */
+	public void drawArrow(float length, float radius) {
+		float head = 2.5f * (radius / length) + 0.1f;
+		float coneRadiusCoef = 4.0f - 5.0f * head;
+
+		cylinder(radius, length * (1.0f - head / coneRadiusCoef));
+		pg3d.translate(0.0f, 0.0f, length * (1.0f - head));
+		cone(coneRadiusCoef * radius, head * length);
+		pg3d.translate(0.0f, 0.0f, -length * (1.0f - head));
+	}		
+	
+	/**
+	 * Draws a 3D arrow between the 3D point {@code from} and the 3D point {@code
+	 * to}, both defined in the current {@link #renderer()} ModelView coordinates
+	 * system.
+	 * 
+	 * @see #drawArrow(float, float)
+	 */
+	public void drawArrow(PVector from, PVector to,	float radius) {
+		pg3d.pushMatrix();
+		pg3d.translate(from.x, from.y, from.z);
+		pg3d.applyMatrix(new Quaternion(new PVector(0, 0, 1), PVector.sub(to,
+				from)).matrix());
+		drawArrow(PVector.sub(to, from).mag(), radius);
+		pg3d.popMatrix();
+	}			
+	
+	/**
+	 * Convenience function that simply calls {@code drawGrid(100, 10)}
+	 * 
+	 * @see #drawGrid(float, int)
 	 */
 	public void drawGrid() {
-		DrawingUtils.drawGrid(pg3d, 100, 10);
-	}
-
+		drawGrid(100, 10);
+	}	
+	
 	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(pg3d, size, 10)}
+	 * Convenience function that simply calls {@code drawGrid(size, 10)}
 	 * 
-	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float)
+	 * @see #drawGrid(float, int)
 	 */
 	public void drawGrid(float size) {
-		DrawingUtils.drawGrid(pg3d, size, 10);
+		drawGrid(size, 10);
 	}
-
+	
 	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(pg3d, 100, nbSubdivisions)}
+	 * Convenience function that simply calls {@code drawGrid(100,
+	 * nbSubdivisions)}
 	 * 
-	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
+	 * @see #drawGrid(float, int)
 	 */
 	public void drawGrid(int nbSubdivisions) {
-		DrawingUtils.drawGrid(pg3d, 100, nbSubdivisions);
+		drawGrid(100, nbSubdivisions);
 	}
 
 	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * DrawingUtils.drawGrid(pg3d, size, nbSubdivisions)}
+	 * Draws a grid in the XY plane, centered on (0,0,0) (defined in the current
+	 * coordinate system).
+	 * <p>
+	 * {@code size} (processing scene units) and {@code nbSubdivisions} define its
+	 * geometry.
 	 * 
-	 * @see remixlab.proscene.DrawingUtils#drawGrid(PApplet, float, int)
+	 * @see #drawAxis(float)
 	 */
 	public void drawGrid(float size, int nbSubdivisions) {
-		DrawingUtils.drawGrid(pg3d, size, nbSubdivisions);
+		pg3d.pushStyle();
+		pg3d.stroke(170, 170, 170);
+		pg3d.strokeWeight(1);
+		pg3d.beginShape(LINES);
+		for (int i = 0; i <= nbSubdivisions; ++i) {
+			final float pos = size * (2.0f * i / nbSubdivisions - 1.0f);
+			pg3d.vertex(pos, -size);
+			pg3d.vertex(pos, +size);
+			pg3d.vertex(-size, pos);
+			pg3d.vertex(size, pos);
+		}
+		pg3d.endShape();
+		pg3d.popStyle();
+	}
+	
+	// 2. CAMERA
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera,
+	 * 170, true, 1.0f)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera) {
+		drawCamera(camera, 170, true, 1.0f);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera,
+	 * 170, true, scale)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera, float scale) {
+		drawCamera(camera, 170, true, scale);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera,
+	 * color, true, 1.0f)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera, int color) {
+		drawCamera(camera, color, true, 1.0f);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera,
+	 * 170, drawFarPlane, 1.0f)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera,	boolean drawFarPlane) {
+		drawCamera(camera, 170, drawFarPlane, 1.0f);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera, 170, drawFarPlane, scale)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera,	boolean drawFarPlane, float scale) {
+		drawCamera(camera, 170, drawFarPlane, scale);
+	}
+
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera, color, true, scale)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera, int color,	float scale) {
+		drawCamera(camera, color, true, scale);
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code drawCamera(camera,
+	 * color, drawFarPlane, 1.0f)}
+	 * 
+	 * @see #drawCamera(Camera, int, boolean, float)
+	 */
+	public void drawCamera(Camera camera, int color,	boolean drawFarPlane) {
+		drawCamera(camera, color, drawFarPlane, 1.0f);
+	}
+
+	/**
+	 * Draws a representation of the {@code camera} in the {@link #renderer()} 3D
+	 * virtual world using {@code color}.
+	 * <p>
+	 * The near and far planes are drawn as quads, the frustum is drawn using
+	 * lines and the camera up vector is represented by an arrow to disambiguate
+	 * the drawing.
+	 * <p>
+	 * When {@code drawFarPlane} is {@code false}, only the near plane is drawn.
+	 * {@code scale} can be used to scale the drawing: a value of 1.0 (default)
+	 * will draw the Camera's frustum at its actual size.
+	 * <p>
+	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be
+	 * visible, but may create artifacts due to numerical imprecisions.
+	 */
+	public void drawCamera(Camera camera, int color, boolean drawFarPlane, float scale) {
+		pg3d.pushMatrix();
+
+		// pg3d.applyMatrix(camera.frame().worldMatrix());
+		// same as the previous line, but maybe more efficient
+		tmpFrame.fromMatrix(camera.frame().worldMatrix());
+		tmpFrame.applyTransformation(pg3d);
+
+		// 0 is the upper left coordinates of the near corner, 1 for the far one
+		PVector[] points = new PVector[2];
+		points[0] = new PVector();
+		points[1] = new PVector();
+
+		points[0].z = scale * camera.zNear();
+		points[1].z = scale * camera.zFar();
+
+		switch (camera.type()) {
+		case PERSPECTIVE: {
+			points[0].y = points[0].z * PApplet.tan(camera.fieldOfView() / 2.0f);
+			points[0].x = points[0].y * camera.aspectRatio();
+			float ratio = points[1].z / points[0].z;
+			points[1].y = ratio * points[0].y;
+			points[1].x = ratio * points[0].x;
+			break;
+		}
+		case ORTHOGRAPHIC: {
+			float[] wh = camera.getOrthoWidthHeight();
+			points[0].x = points[1].x = scale * wh[0];
+			points[0].y = points[1].y = scale * wh[1];
+			break;
+		}
+		}
+
+		int farIndex = drawFarPlane ? 1 : 0;
+
+		// Near and (optionally) far plane(s)
+		pg3d.pushStyle();
+		pg3d.noStroke();
+		pg3d.fill(color);
+		pg3d.beginShape(PApplet.QUADS);
+		for (int i = farIndex; i >= 0; --i) {
+			pg3d.normal(0.0f, 0.0f, (i == 0) ? 1.0f : -1.0f);
+			pg3d.vertex(points[i].x, points[i].y, -points[i].z);
+			pg3d.vertex(-points[i].x, points[i].y, -points[i].z);
+			pg3d.vertex(-points[i].x, -points[i].y, -points[i].z);
+			pg3d.vertex(points[i].x, -points[i].y, -points[i].z);
+		}
+		pg3d.endShape();
+
+		// Up arrow
+		float arrowHeight = 1.5f * points[0].y;
+		float baseHeight = 1.2f * points[0].y;
+		float arrowHalfWidth = 0.5f * points[0].x;
+		float baseHalfWidth = 0.3f * points[0].x;
+
+		// pg3d.noStroke();
+		pg3d.fill(color);
+		// Base
+		pg3d.beginShape(PApplet.QUADS);
+		
+		pg3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
+		pg3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
+		pg3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
+		pg3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
+  	//right_handed coordinate system should go like this:
+		//pg3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
+		//pg3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
+		//pg3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
+		//pg3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
+		
+		pg3d.endShape();
+
+		// Arrow
+		pg3d.fill(color);
+		pg3d.beginShape(PApplet.TRIANGLES);
+		
+		pg3d.vertex(0.0f, -arrowHeight, -points[0].z);
+		pg3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
+		pg3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
+  	//right_handed coordinate system should go like this:
+		//pg3d.vertex(0.0f, arrowHeight, -points[0].z);
+		//pg3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
+		//pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
+		
+		pg3d.endShape();
+
+		// Frustum lines
+		pg3d.stroke(color);
+		pg3d.strokeWeight(2);
+		switch (camera.type()) {
+		case PERSPECTIVE:
+			pg3d.beginShape(PApplet.LINES);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d
+					.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(-points[farIndex].x, points[farIndex].y,
+					-points[farIndex].z);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(-points[farIndex].x, -points[farIndex].y,
+					-points[farIndex].z);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(points[farIndex].x, -points[farIndex].y,
+					-points[farIndex].z);
+			pg3d.endShape();
+			break;
+		case ORTHOGRAPHIC:
+			if (drawFarPlane) {
+				pg3d.beginShape(PApplet.LINES);
+				pg3d.vertex(points[0].x, points[0].y, -points[0].z);
+				pg3d.vertex(points[1].x, points[1].y, -points[1].z);
+				pg3d.vertex(-points[0].x, points[0].y, -points[0].z);
+				pg3d.vertex(-points[1].x, points[1].y, -points[1].z);
+				pg3d.vertex(-points[0].x, -points[0].y, -points[0].z);
+				pg3d.vertex(-points[1].x, -points[1].y, -points[1].z);
+				pg3d.vertex(points[0].x, -points[0].y, -points[0].z);
+				pg3d.vertex(points[1].x, -points[1].y, -points[1].z);
+				pg3d.endShape();
+			}
+		}
+
+		pg3d.popStyle();
+
+		pg3d.popMatrix();
+	}
+
+	// 3. KEYFRAMEINTERPOLATOR CAMERA
+
+	public void drawKFICamera(float scale) {
+		drawKFICamera(170, scale);
+	}
+
+	public void drawKFICamera(int color, float scale) {
+		float halfHeight = scale * 0.07f;
+		float halfWidth = halfHeight * 1.3f;
+		float dist = halfHeight / PApplet.tan(PApplet.PI / 8.0f);
+
+		float arrowHeight = 1.5f * halfHeight;
+		float baseHeight = 1.2f * halfHeight;
+		float arrowHalfWidth = 0.5f * halfWidth;
+		float baseHalfWidth = 0.3f * halfWidth;
+
+		// Frustum outline
+		pg3d.pushStyle();
+
+		pg3d.noFill();
+		pg3d.stroke(color);
+		pg3d.beginShape();
+		pg3d.vertex(-halfWidth, halfHeight, -dist);
+		pg3d.vertex(-halfWidth, -halfHeight, -dist);
+		pg3d.vertex(0.0f, 0.0f, 0.0f);
+		pg3d.vertex(halfWidth, -halfHeight, -dist);
+		pg3d.vertex(-halfWidth, -halfHeight, -dist);
+		pg3d.endShape();
+		pg3d.noFill();
+		pg3d.beginShape();
+		pg3d.vertex(halfWidth, -halfHeight, -dist);
+		pg3d.vertex(halfWidth, halfHeight, -dist);
+		pg3d.vertex(0.0f, 0.0f, 0.0f);
+		pg3d.vertex(-halfWidth, halfHeight, -dist);
+		pg3d.vertex(halfWidth, halfHeight, -dist);
+		pg3d.endShape();
+
+		// Up arrow
+		pg3d.noStroke();
+		pg3d.fill(color);
+		// Base
+		pg3d.beginShape(PApplet.QUADS);
+		
+		pg3d.vertex(baseHalfWidth, -halfHeight, -dist);
+		pg3d.vertex(-baseHalfWidth, -halfHeight, -dist);
+		pg3d.vertex(-baseHalfWidth, -baseHeight, -dist);
+		pg3d.vertex(baseHalfWidth, -baseHeight, -dist);
+  	//right_handed coordinate system should go like this:
+		//pg3d.vertex(-baseHalfWidth, halfHeight, -dist);
+		//pg3d.vertex(baseHalfWidth, halfHeight, -dist);
+		//pg3d.vertex(baseHalfWidth, baseHeight, -dist);
+		//pg3d.vertex(-baseHalfWidth, baseHeight, -dist);
+		
+		pg3d.endShape();
+		// Arrow
+		pg3d.beginShape(PApplet.TRIANGLES);
+		
+		pg3d.vertex(0.0f, -arrowHeight, -dist);
+		pg3d.vertex(arrowHalfWidth, -baseHeight, -dist);
+		pg3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
+	  //right_handed coordinate system should go like this:
+		//pg3d.vertex(0.0f, arrowHeight, -dist);
+		//pg3d.vertex(-arrowHalfWidth, baseHeight, -dist);
+		//pg3d.vertex(arrowHalfWidth, baseHeight, -dist);
+		
+		pg3d.endShape();
+
+		pg3d.popStyle();
 	}
 
 	/**

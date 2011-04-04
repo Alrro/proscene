@@ -183,7 +183,7 @@ public class Camera implements Cloneable {
 		fpCoefficients = new float[6][4];
 
 		// KeyFrames
-		interpolationKfi = new KeyFrameInterpolator(frame(), pg3d);
+		interpolationKfi = new KeyFrameInterpolator(scene, frame());
 		kfi = new HashMap<Integer, KeyFrameInterpolator>();
 
 		setFrame(new InteractiveCameraFrame(scene));
@@ -1744,7 +1744,7 @@ public class Camera implements Cloneable {
 	public void addKeyFrameToPath(int key, boolean editablePath) {
 		boolean info = true;
 		if (!kfi.containsKey(key)) {
-			setKeyFrameInterpolator(key, new KeyFrameInterpolator(frame(), pg3d));
+			setKeyFrameInterpolator(key, new KeyFrameInterpolator(scene, frame()));
 			PApplet.println("Position " + key + " saved");
 			info = false;
 		}

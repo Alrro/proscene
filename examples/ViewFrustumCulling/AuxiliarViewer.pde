@@ -32,6 +32,6 @@ public class AuxiliarViewer extends NApplet {
   
   void draw() {
     Root.drawIfAllChildrenAreVisible(this, ((MainViewer)mainNApplet).getScene().camera());
-    DrawingUtils.drawCamera(this, ((MainViewer)mainNApplet).getScene().camera());
+    scene.drawCamera(((MainViewer)mainNApplet).getScene().camera());
   }
 }
