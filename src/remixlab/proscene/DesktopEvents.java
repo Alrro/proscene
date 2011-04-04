@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.0.1)      
+ *                     ProScene (version 1.1.0)      
  *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -72,6 +72,8 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see remixlab.proscene.Scene#enableKeyboardHandling(boolean)
 	 */
 	public void keyEvent(KeyEvent e) {
+		if( !scene.keyboardIsHandled() )
+			return;
 		keyHandled = false;
 		switch (e.getID()) {		
 		case KeyEvent.KEY_PRESSED:
@@ -267,8 +269,8 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see remixlab.proscene.Scene#mouseIsHandled()
 	 * @see remixlab.proscene.Scene#enableMouseHandling(boolean)
 	 */
-	public void mouseEvent(MouseEvent e) {
-		if (scene.currentCameraProfile() == null)
+	public void mouseEvent(MouseEvent e) {		
+		if ((scene.currentCameraProfile() == null) || (!scene.mouseIsHandled()) )
 			return;
 		switch (e.getID()) {
 		case MouseEvent.MOUSE_CLICKED:
@@ -460,6 +462,8 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mousePressed(MouseEvent)
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
+		if(!scene.mouseIsHandled())
+			return;
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				if (scene.mouseGrabberIsADrivableFrame) {	
