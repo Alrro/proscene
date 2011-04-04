@@ -40,7 +40,7 @@ void setup() {
   scene.showAll();
   scene.setFrameSelectionHintIsDrawn(true);
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-  kfi = new KeyFrameInterpolator(this);
+  kfi = new KeyFrameInterpolator(scene);
   kfi.setLoopInterpolation();
   
   // An array of interactive (key) frames.

@@ -75,7 +75,7 @@ void mainDrawing(Scene s) {
 
 void auxiliarDrawing(Scene s) {
   mainDrawing(s);
-  DrawingUtils.drawCamera(s.renderer(), scene.camera());
+  s.drawCamera(scene.camera());
 }
 
 void draw() {

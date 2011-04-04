@@ -209,41 +209,20 @@ public class KeyFrameInterpolator implements Cloneable {
 	private boolean splineCacheIsValid;
 	private PVector v1, v2;
 
-	// P R O C E S S I N G A P P L E T
-	public PGraphics3D pg3d;
-
-	/**
-	 * Convenience constructor that simply calls {@code this(new Frame(), p)}.
-	 * <p>
-	 * Creates an anonymous {@link #frame()} to be interpolated by this
-	 * KeyFrameInterpolator.
-	 * 
-	 * @see #KeyFrameInterpolator(Frame, PApplet)
-	 */	
-	public KeyFrameInterpolator(PApplet p) {
-		this(new Frame(), p);
-	}
-	
-	/**
-	 * Convenience constructor that simply calls {@code this(new Frame(), p3d)}.
-	 * <p>
-	 * Creates an anonymous {@link #frame()} to be interpolated by this
-	 * KeyFrameInterpolator.
-	 * 
-	 * @see #KeyFrameInterpolator(Frame, PGraphics3D)
-	 */
-	public KeyFrameInterpolator(PGraphics3D p3d) {
-		this(new Frame(), p3d);
-	}
-	
-	/**
-	 * Convenience constructor that simply calls {this(frame, (PGraphics3D) parent.g)}.
-	 * 
-	 * @see #KeyFrameInterpolator(Frame, PGraphics3D)
-	 */
-	public KeyFrameInterpolator(Frame frame, PApplet parent) {
-		this(frame, (PGraphics3D) parent.g);
-	}
+  //S C E N E
+  public Scene scene;
+  
+  /**
+   * Convenience constructor that simply calls {@code this(scn, new Frame())}.
+   * <p>
+   * Creates an anonymous {@link #frame()} to be interpolated by this
+   * KeyFrameInterpolator.
+   * 
+   * @see #KeyFrameInterpolator(Scene, Frame)
+   */
+  public KeyFrameInterpolator(Scene scn) {
+  	this(scn, new Frame());
+  }
 
 	/**
 	 * Creates a KeyFrameInterpolator, with {@code frame} as associated
@@ -254,11 +233,9 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * <p>
 	 * {@link #interpolationTime()}, {@link #interpolationSpeed()} and
 	 * {@link #interpolationPeriod()} are set to their default values.
-	 * 
-	 * @see #KeyFrameInterpolator(PApplet)
 	 */
-	public KeyFrameInterpolator(Frame frame, PGraphics3D p3d) {
-		pg3d = p3d;
+	public KeyFrameInterpolator(Scene scn, Frame frame) {
+		scene = scn;
 		myFrame = new Frame();
 		keyFr = new ArrayList<KeyFrame>();
 		path = new ArrayList<Frame>();
@@ -830,16 +807,16 @@ public class KeyFrameInterpolator implements Cloneable {
 		}
 
 		if (mask != 0) {
-			pg3d.pushStyle();
-			pg3d.strokeWeight(2);
+			scene.renderer().pushStyle();
+			scene.renderer().strokeWeight(2);
 
 			if ((mask & 1) != 0) {
-				pg3d.noFill();
-				pg3d.stroke(170);
-				pg3d.beginShape();
+				scene.renderer().noFill();
+				scene.renderer().stroke(170);
+				scene.renderer().beginShape();
 				for (Frame myFr : path)
-					pg3d.vertex(myFr.position().x, myFr.position().y, myFr.position().z);
-				pg3d.endShape();
+					scene.renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+				scene.renderer().endShape();
 			}
 			if ((mask & 6) != 0) {
 				int count = 0;
@@ -850,20 +827,20 @@ public class KeyFrameInterpolator implements Cloneable {
 				for (Frame myFr : path)
 					if ((count++) >= goal) {
 						goal += nbSteps / (float) nbFrames;
-						pg3d.pushMatrix();
+						scene.renderer().pushMatrix();
 
 						// pg3d.applyMatrix(myFr.matrix());
-						myFr.applyTransformation(pg3d);
+						myFr.applyTransformation(scene.renderer());
 
 						if ((mask & 2) != 0)
-							DrawingUtils.drawKFICamera(pg3d, scale);
+							scene.drawKFICamera(scale);
 						if ((mask & 4) != 0)
-							DrawingUtils.drawAxis(pg3d, scale / 10.0f);
+							scene.drawAxis(scale / 10.0f);
 
-						pg3d.popMatrix();
+						scene.renderer().popMatrix();
 					}
 			}
-			pg3d.popStyle();
+			scene.renderer().popStyle();
 		}
 	}
 
