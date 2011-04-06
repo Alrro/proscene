@@ -1581,13 +1581,14 @@ public class Scene implements PConstants {
 				camera().updateFrustumEquations();
 
 			setBackground();
+			
+			drawCommon();
+			
 			//in this mode on-screen visual hints should not be drawn
 			if (gridIsDrawn())
 				drawGrid(camera().sceneRadius());
 			if (axisIsDrawn())
-				drawAxis(camera().sceneRadius());
-			
-			drawCommon();
+				drawAxis(camera().sceneRadius());			
 		}
 	}
 
