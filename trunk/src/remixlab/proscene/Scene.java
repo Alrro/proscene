@@ -504,7 +504,18 @@ public class Scene implements PConstants {
 	/** The method in animateHandlerObject to execute */
 	protected Method animateHandlerMethod;
 	/** the name of the method to handle the animation */
-	protected String animateHandlerMethodName;	
+	protected String animateHandlerMethodName;
+	
+	// D E V I C E S
+	
+	protected ArrayList<SixDOFDevice> devices;
+	protected ArrayList<Object> deviceHandlerObjectList;	
+	protected ArrayList<Method> deviceHandlerMethodList;	
+	protected ArrayList<String> deviceHandlerMethodNameList;
+	
+	protected Object deviceHandlerObject;	
+	protected Method deviceHandlerMethod;	
+	protected String deviceHandlerMethodName;
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -537,7 +548,9 @@ public class Scene implements PConstants {
 		dE = new DesktopEvents(this);
 		
 		//mouse grabber pool
-		MouseGrabberPool = new ArrayList<MouseGrabbable>();	
+		MouseGrabberPool = new ArrayList<MouseGrabbable>();
+		
+		devices = new ArrayList<SixDOFDevice>();
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
 		pathKeys = new Bindings<Integer, Integer>(this);		
@@ -1539,7 +1552,22 @@ public class Scene implements PConstants {
 				PApplet.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
 				e.printStackTrace();
 			}
-		}				
+		}
+		
+		// 3.
+		for (SixDOFDevice device : devices) {
+			device.handleDevice();
+		}
+		/**
+		if (deviceHandlerObject != null) {
+			try {
+				deviceHandlerMethod.invoke(deviceHandlerObject);
+			} catch (Exception e) {
+				PApplet.println("Something went wrong when invoking your "	+ deviceHandlerMethodName + " method");
+				e.printStackTrace();
+			}
+		}
+		*/
 	}
 	
 	/**
@@ -3989,7 +4017,53 @@ public class Scene implements PConstants {
 			camera().frame().alignWithFrame(null, true);
 			break;
 		}
-	}	
+	}
+	
+	// Device registration
+	
+	// TODO implement me!
+	
+	public void addDevice(SixDOFDevice device) {
+		devices.add(device);
+	}
+	
+	public void removeDevice(SixDOFDevice device) {
+		devices.remove(device);
+	}
+	
+	public void removeAllDevices() {
+		devices.clear();
+	}
+	
+	public void addDeviceHandler(Object obj, String methodName) {
+		try {
+			deviceHandlerMethod = obj.getClass().getMethod(methodName);
+			deviceHandlerObject = obj;
+			deviceHandlerMethodName = methodName;
+		} catch (Exception e) {
+			  PApplet.println("Something went wrong when registering your " + methodName + " method");
+			  e.printStackTrace();
+		}
+	}
+	
+	public void removeDeviceHandler() {
+		deviceHandlerMethod = null;
+		deviceHandlerObject = null;
+		deviceHandlerMethodName = null;
+	}
+	
+	/**
+	public void addAnimationHandler(Object obj, String methodName) {
+		try {		     
+			animateHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { Scene.class });
+			animateHandlerObject = obj;
+			animateHandlerMethodName = methodName;
+		} catch (Exception e) {
+			  PApplet.println("Something went wrong when registering your " + methodName + " method");
+			  e.printStackTrace();
+		}
+	}
+	*/
 
 	// 10. Draw method registration
 
