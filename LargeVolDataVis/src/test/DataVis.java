@@ -15,9 +15,7 @@
 
 package test;
 
-import java.nio.BufferUnderflowException;
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
 
 import processing.core.*;
 import codeanticode.glgraphics.*;
@@ -26,9 +24,7 @@ import remixlab.proscene.*;
 public class DataVis extends PApplet {
 	private static final long serialVersionUID = 1L;
 	
-	OctreeNode vfcAp;
-
-	int cubeCount = 4	;
+	int cubeCount = 500;
 	int vertPerCube = 8;
 	float cubeSize = 10;
 	float volSize = 1000;
@@ -40,19 +36,18 @@ public class DataVis extends PApplet {
 	
 	GLModel cubes;
 	Scene scene;
+	
+	OptimizatorRender optim;
 
 	// Los indices de los 8 vertices en un cubo, de manera tal que definen	
 	// 12 triangulos (2 por cara).
 	int cubeIndices[] = { 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3,
 			3, 7, 4, 3, 4, 0, 4, 7, 6, 4, 6, 5, 3, 0, 1, 3, 1, 2 };
 	int indicesPerCube = cubeIndices.length;
-
 	int indices0[] = new int[indicesPerCube * cubeCount];
 	int indices[] = new int[indicesPerCube * cubeCount];
 	int minInd, maxInd;
-
 	int first, last;
-
 	int renderedCubes;	
 
 	Chronometer chrono;
@@ -67,77 +62,36 @@ public class DataVis extends PApplet {
 		chrono = new Chronometer(this);
 
 		scene = new Scene(this);
-		enableVFC();
-
+		enableVFC=true;
+		scene.enableFrustumEquationsUpdate();
 		scene.setRadius(volSize);
 		scene.showAll();
 		scene.setAxisIsDrawn(false);
 		scene.setGridIsDrawn(false);
 		scene.disableKeyboardHandling();
 
-		sphereDetail(7);
+		sphereDetail(10);
 
 		println("Creando cubos...");
 		createCubes();
-		println("Creando Octrees...");
-		infoVertices();
+		println("Creando el Optimizador...");
+		optim=new OptimizatorRender(cubes,this);
 		println("Listo.");
-		
 	}
 	
-	void infoVertices(){
-		  cubes.beginUpdateVertices();
-		  ArrayList<Float> xVerts=new ArrayList<Float>();
-		  ArrayList<Float> yVerts=new ArrayList<Float>();
-		  ArrayList<Float> zVerts=new ArrayList<Float>();
-		  ArrayList<Integer> indexVerts=new ArrayList<Integer>();
-		  FloatBuffer tempFB=cubes.vertices.duplicate();
-		  cubes.endUpdateVertices();
-		  boolean leer=true;
-		  while(leer){
-			  try{
-				  xVerts.add(tempFB.get());
-				  yVerts.add(tempFB.get());
-				  zVerts.add(tempFB.get());
-				  tempFB.get();
-				  indexVerts.add(tempFB.position()-1);
-			  }
-			  catch (BufferUnderflowException e) {
-				  System.out.println("FloatBuffer del modelo, terminado de leer");
-				  leer=false;
-			  }
-		  }
-		  Vector3f[] verts=new Vector3f[xVerts.size()];
-		  for(int i=0;i<xVerts.size();i++){
-			  verts[i]=new Vector3f(xVerts.get(i), yVerts.get(i), zVerts.get(i));
-			  System.out.println(verts[i]);
-			  System.out.println(indexVerts.get(i));
-		  }
-		  vfcAp=new OctreeNode(verts);
-		}
-
 	public void draw() {
+		
 		chrono.update();
 
 		GLGraphics renderer = (GLGraphics) g;
-		renderer.beginGL();
-
 		if (enableVFC) {
-			vfc(renderer);
+			optim.vfc(renderer, cubes, scene);
 		} else {
-			
-		}
-		
-		if(pruebaDibujado){
-			pruebaDibujado(renderer, 0);
-		}
-		
-		if(!enableVFC && !pruebaDibujado){
+			renderer.beginGL();
 			renderer.model(cubes);
-			System.out.println("Ningun renderer activo");
+			renderer.endGL();
 		}
-
-		renderer.endGL();    
+   
 
 		if (drawBoundingVolumes) {
 			// Los bounding volumes no se dibujan a trabjas de GLGraphics, sino que con la API regular
@@ -165,7 +119,7 @@ public class DataVis extends PApplet {
 
 		if (drawingOC) {
 		  stroke(0,0,255);
-		  pintarOc(vfcAp);
+		  pintarOc(optim.oc);
 		}
 		
 		chrono.printFps();
@@ -194,127 +148,6 @@ public class DataVis extends PApplet {
 
 	}
 
-
-/*	void vfc(GLGraphics renderer) {
-		if (!freezeCalc) {
-			renderedCubes = 0;
-			minInd = cubeCount * indicesPerCube; 
-			maxInd = -minInd;
-			for (int i = 0; i < cubeCount; i++) {
-				switch (scene.camera().sphereIsVisible(new PVector(bss[i].center.x, bss[i].center.y, bss[i].center.z), bss[i].radius)) {
-				case VISIBLE:        
-					arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
-					minInd = min(minInd, vertPerCube * i);
-					maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
-					renderedCubes++;          
-					break;
-				case SEMIVISIBLE:
-					PVector BBCorner1 = new PVector( (bbs[i].center.x - bbs[i].xExtent), (bbs[i].center.y - bbs[i].yExtent), (bbs[i].center.z + bbs[i].zExtent) );
-					PVector BBCorner2 = new PVector( (bbs[i].center.x + bbs[i].xExtent), (bbs[i].center.y + bbs[i].yExtent), (bbs[i].center.z - bbs[i].zExtent) );          
-					switch (scene.camera().aaBoxIsVisible(BBCorner1, BBCorner2)) {
-					case VISIBLE:
-					case SEMIVISIBLE:
-						arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
-						minInd = min(minInd, vertPerCube * i);
-						maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
-						renderedCubes++;
-						break;
-					case INVISIBLE:
-						break;
-					}
-					break;
-				case INVISIBLE:
-					break;
-				}
-			}
-			cubes.updateIndices(indices, renderedCubes * indicesPerCube);
-			cubes.setMinIndex(minInd);
-			cubes.setMaxIndex(maxInd);      
-		}
-
-		renderer.model(cubes, 0, renderedCubes * indicesPerCube);	  
-	}
-*/
-	
-	void vfc(GLGraphics renderer) {
-		renderedCubes = 0;
-		minInd = cubeCount * indicesPerCube; 
-		maxInd = -minInd;
-		for (int i = 0; i < cubeCount; i++) {
-			switch (scene.camera().sphereIsVisible(new PVector(bss[i].center.x, bss[i].center.y, bss[i].center.z), bss[i].radius)) {
-			case VISIBLE:        
-				arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
-				minInd = min(minInd, vertPerCube * i);
-				maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
-				renderedCubes++;          
-				break;
-			case SEMIVISIBLE:
-				PVector BBCorner1 = new PVector( (bbs[i].center.x - bbs[i].xExtent), (bbs[i].center.y - bbs[i].yExtent), (bbs[i].center.z + bbs[i].zExtent) );
-				PVector BBCorner2 = new PVector( (bbs[i].center.x + bbs[i].xExtent), (bbs[i].center.y + bbs[i].yExtent), (bbs[i].center.z - bbs[i].zExtent) );          
-				switch (scene.camera().aaBoxIsVisible(BBCorner1, BBCorner2)) {
-				case VISIBLE:
-				case SEMIVISIBLE:
-					arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
-					minInd = min(minInd, vertPerCube * i);
-					maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
-					renderedCubes++;
-					break;
-				case INVISIBLE:
-					break;
-				}
-				break;
-			case INVISIBLE:
-				break;
-			}
-		}
-		cubes.updateIndices(indices, renderedCubes * indicesPerCube);
-		cubes.setMinIndex(minInd);
-		cubes.setMaxIndex(maxInd);      
-
-
-		renderer.model(cubes, 0, renderedCubes * indicesPerCube);	  
-	}
-	
-/*	
-	void vfc(GLGraphics renderer) {
-		renderedCubes = 0;
-		minInd = cubeCount * indicesPerCube; 
-		maxInd = -minInd;
-		for (int i = 0; i < cubeCount; i++) {
-			switch (scene.camera().sphereIsVisible(new PVector(bss[i].center.x, bss[i].center.y, bss[i].center.z), bss[i].radius)) {
-			case VISIBLE:        
-				arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
-				minInd = min(minInd, vertPerCube * i);
-				maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
-				renderedCubes++;          
-				break;
-			case SEMIVISIBLE:
-				PVector BBCorner1 = new PVector( (bbs[i].center.x - bbs[i].xExtent), (bbs[i].center.y - bbs[i].yExtent), (bbs[i].center.z + bbs[i].zExtent) );
-				PVector BBCorner2 = new PVector( (bbs[i].center.x + bbs[i].xExtent), (bbs[i].center.y + bbs[i].yExtent), (bbs[i].center.z - bbs[i].zExtent) );          
-				switch (scene.camera().aaBoxIsVisible(BBCorner1, BBCorner2)) {
-				case VISIBLE:
-				case SEMIVISIBLE:
-					arrayCopy(indices0, indicesPerCube * i, indices, indicesPerCube * renderedCubes, indicesPerCube);
-					minInd = min(minInd, vertPerCube * i);
-					maxInd = max(maxInd, vertPerCube * (i + 1) - 1);
-					renderedCubes++;
-					break;
-				case INVISIBLE:
-					break;
-				}
-				break;
-			case INVISIBLE:
-				break;
-			}
-		}
-		cubes.updateIndices(indices, renderedCubes * indicesPerCube);
-		cubes.setMinIndex(minInd);
-		cubes.setMaxIndex(maxInd);      
-
-
-		renderer.model(cubes, 0, renderedCubes * indicesPerCube);	  
-	}
-	*/
 	void enableVFC() {
 		scene.enableFrustumEquationsUpdate();
 		enableVFC = true;
@@ -327,15 +160,7 @@ public class DataVis extends PApplet {
 		println("Desactivando VFC");
 	}
 
-	void pruebaDibujado(GLGraphics renderer, int i){
-	  int[] temp = new int[indicesPerCube];
-	  arrayCopy(indices0, indicesPerCube * i, temp, 0, indicesPerCube);
-	  
-	  cubes.updateIndices(temp, indicesPerCube);
-		cubes.setMinIndex(vertPerCube * i);
-		cubes.setMaxIndex(vertPerCube * (i + 1) - 1);      
-		renderer.model(cubes, 0, indicesPerCube);
-	}
+
 	
 	public void keyPressed() {
 		if (key == 'c' || key == 'C') {
@@ -372,22 +197,6 @@ public class DataVis extends PApplet {
 	        println("Habilitando dibujado del octree");
 	      }
 	      return;		 
-		}
-		if (key == 'p' || key == 'P') {
-			if(pruebaDibujado){
-				pruebaDibujado=false;
-				System.out.println("Prueba de dibujo por indices: Desactivada");
-				}
-			else{
-				pruebaDibujado=true;
-				System.out.println("Prueba de dibujo por indices: Activada");
-				}
-			return;		 
-		}
-
-		if ((key == 'n' || key == 'N') && enableVFC) {
-			println("Numero de cubos dibujados = " + renderedCubes);
-			return;
 		}
 
 		if ((key == 'f' || key == 'F') && enableVFC) {
