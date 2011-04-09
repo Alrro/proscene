@@ -71,16 +71,16 @@ void setup() {
 
   scene.startAnimation();
 
-   float pmax = model.getMaxPointSize();
-   println("Maximum sprite size supported by the video card: " + pmax + " pixels.");   
-   model.initTextures(1);
-   model.setTexture(0, tex);  
-   // Setting the maximum sprite to the 90% of the maximum point size.
-   model.setMaxSpriteSize(0.9 * pmax);
-   // Setting the distance attenuation function so that the sprite size
-   // is 20 when the distance to the camera is 400.
-   model.setSpriteSize(20, 400);
-   model.setBlendMode(BLEND);
+  float pmax = model.getMaxPointSize();
+  println("Maximum sprite size supported by the video card: " + pmax + " pixels.");   
+  model.initTextures(1);
+  model.setTexture(0, tex);  
+  // Setting the maximum sprite to the 90% of the maximum point size.
+  model.setMaxSpriteSize(0.9 * pmax);
+  // Setting the distance attenuation function so that the sprite size
+  // is 20 when the distance to the camera is 400.
+  model.setSpriteSize(20, 400);
+  model.setBlendMode(BLEND);
 }
 
 void draw() {    
@@ -94,7 +94,7 @@ void draw() {
   renderer.setDepthMask(false);
   model.render();
   renderer.setDepthMask(true);
-    
+
   renderer.endGL();
 }
 
