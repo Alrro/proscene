@@ -508,14 +508,7 @@ public class Scene implements PConstants {
 	
 	// D E V I C E S
 	
-	protected ArrayList<SixDOFDevice> devices;
-	protected ArrayList<Object> deviceHandlerObjectList;	
-	protected ArrayList<Method> deviceHandlerMethodList;	
-	protected ArrayList<String> deviceHandlerMethodNameList;
-	
-	protected Object deviceHandlerObject;	
-	protected Method deviceHandlerMethod;	
-	protected String deviceHandlerMethodName;
+	protected ArrayList<SixDOFDevice> devices;	
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -1556,18 +1549,8 @@ public class Scene implements PConstants {
 		
 		// 3.
 		for (SixDOFDevice device : devices) {
-			device.handleDevice();
-		}
-		/**
-		if (deviceHandlerObject != null) {
-			try {
-				deviceHandlerMethod.invoke(deviceHandlerObject);
-			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ deviceHandlerMethodName + " method");
-				e.printStackTrace();
-			}
-		}
-		*/
+			device.handle();
+		}		
 	}
 	
 	/**
@@ -4033,37 +4016,7 @@ public class Scene implements PConstants {
 	
 	public void removeAllDevices() {
 		devices.clear();
-	}
-	
-	public void addDeviceHandler(Object obj, String methodName) {
-		try {
-			deviceHandlerMethod = obj.getClass().getMethod(methodName);
-			deviceHandlerObject = obj;
-			deviceHandlerMethodName = methodName;
-		} catch (Exception e) {
-			  PApplet.println("Something went wrong when registering your " + methodName + " method");
-			  e.printStackTrace();
-		}
-	}
-	
-	public void removeDeviceHandler() {
-		deviceHandlerMethod = null;
-		deviceHandlerObject = null;
-		deviceHandlerMethodName = null;
-	}
-	
-	/**
-	public void addAnimationHandler(Object obj, String methodName) {
-		try {		     
-			animateHandlerMethod = obj.getClass().getMethod(methodName, new Class[] { Scene.class });
-			animateHandlerObject = obj;
-			animateHandlerMethodName = methodName;
-		} catch (Exception e) {
-			  PApplet.println("Something went wrong when registering your " + methodName + " method");
-			  e.printStackTrace();
-		}
-	}
-	*/
+	}	
 
 	// 10. Draw method registration
 

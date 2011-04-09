@@ -624,8 +624,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			}
 			}
 			// Transform to world coordinate system.
-			trans = camera.frame().orientation().rotate(
-					PVector.mult(trans, translationSensitivity()));
+			trans = camera.frame().orientation().rotate(PVector.mult(trans, translationSensitivity()));
 			// And then down to frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
