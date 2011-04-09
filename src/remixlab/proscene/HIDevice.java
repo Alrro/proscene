@@ -5,7 +5,7 @@ import java.lang.reflect.Method;
 import processing.core.PApplet;
 import processing.core.PVector;
 
-public class SixDOFDevice {
+public class HIDevice {
 	public enum CameraMode {FIRST_PERSON, GOOGLE_EARTH, WORLD, CUSTOM}
 	public enum IFrameMode {FRAME, CAMERA, WORLD, CUSTOM}
 	
@@ -35,7 +35,7 @@ public class SixDOFDevice {
 
 	protected Quaternion quaternion;
 
-	public SixDOFDevice(Scene scn) {
+	public HIDevice(Scene scn) {
 		scene = scn;
 		camera = scene.camera();
 		cameraFrame = camera.frame();
@@ -152,7 +152,7 @@ public class SixDOFDevice {
 	
 	public void addHandler(Object obj, String methodName) {
 		try {
-			handlerMethod = obj.getClass().getMethod(methodName, new Class[] { SixDOFDevice.class });
+			handlerMethod = obj.getClass().getMethod(methodName, new Class[] { HIDevice.class });
 			handlerObject = obj;
 			handlerMethodName = methodName;
 		} catch (Exception e) {
@@ -300,7 +300,7 @@ public class SixDOFDevice {
 			PApplet.println("Camera mode set to WORLD");
 			break;
 		case WORLD:
-			if (SixDOFDevice.class == this.getClass()) {
+			if (HIDevice.class == this.getClass()) {
 				camMode = CameraMode.FIRST_PERSON;
 				PApplet.println("Camera mode set to FIRST_PERSON");
 			}
@@ -319,7 +319,7 @@ public class SixDOFDevice {
   public void previousCameraMode() {
   	switch (camMode) {
 		case FIRST_PERSON:
-			if (SixDOFDevice.class == this.getClass()) {
+			if (HIDevice.class == this.getClass()) {
 				camMode = CameraMode.WORLD;
 				PApplet.println("Camera mode set to WORLD");
 			}
@@ -358,7 +358,7 @@ public class SixDOFDevice {
 			PApplet.println("iFrame mode set to WORLD");
 			break;
 		case WORLD:
-			if (SixDOFDevice.class == this.getClass()) {
+			if (HIDevice.class == this.getClass()) {
 				iFrameMode = IFrameMode.FRAME;
 				PApplet.println("iFrame mode set to FRAME");
 			}
@@ -377,7 +377,7 @@ public class SixDOFDevice {
   public void prevIFrameMode() {  	
   	switch (iFrameMode) {
 		case FRAME:
-			if (SixDOFDevice.class == this.getClass()) {
+			if (HIDevice.class == this.getClass()) {
 				iFrameMode = IFrameMode.WORLD;
 				PApplet.println("iFrame mode set to WORLD");
 			}

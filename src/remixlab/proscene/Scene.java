@@ -508,7 +508,7 @@ public class Scene implements PConstants {
 	
 	// D E V I C E S
 	
-	protected ArrayList<SixDOFDevice> devices;	
+	protected ArrayList<HIDevice> devices;	
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -543,7 +543,7 @@ public class Scene implements PConstants {
 		//mouse grabber pool
 		MouseGrabberPool = new ArrayList<MouseGrabbable>();
 		
-		devices = new ArrayList<SixDOFDevice>();
+		devices = new ArrayList<HIDevice>();
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
 		pathKeys = new Bindings<Integer, Integer>(this);		
@@ -1548,7 +1548,7 @@ public class Scene implements PConstants {
 		}
 		
 		// 3.
-		for (SixDOFDevice device : devices) {
+		for (HIDevice device : devices) {
 			device.handle();
 		}		
 	}
@@ -4006,11 +4006,11 @@ public class Scene implements PConstants {
 	
 	// TODO implement me!
 	
-	public void addDevice(SixDOFDevice device) {
+	public void addDevice(HIDevice device) {
 		devices.add(device);
 	}
 	
-	public void removeDevice(SixDOFDevice device) {
+	public void removeDevice(HIDevice device) {
 		devices.remove(device);
 	}
 	
