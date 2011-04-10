@@ -6,8 +6,33 @@ import processing.core.PApplet;
 import processing.core.PVector;
 
 public class HIDevice {
-	public enum CameraMode {FIRST_PERSON, GOOGLE_EARTH, WORLD, CUSTOM}
-	public enum IFrameMode {FRAME, CAMERA, WORLD, CUSTOM}
+	public enum CameraMode {
+		FIRST_PERSON("FIRST_PERSON camera mode set"),
+		GOOGLE_EARTH("GOOGLE_EARTH camera mode set"),
+		WORLD("WORLD camera mode set"),
+		CUSTOM("CUSTOM camera mode set");
+    private String description;		
+    CameraMode(String description) {
+       this.description = description;
+    }		
+    public String description() {
+        return description;
+    }
+	}
+	
+	public enum IFrameMode {
+		FRAME("FRAME interactive frame control mode set"),
+		CAMERA("CAMERA interactive frame control mode set"),
+		WORLD("WORLD interactive frame control mode set"),
+		CUSTOM("CUSTOM interactive frame control mode set");
+		private String description;		
+		IFrameMode(String description) {
+       this.description = description;
+    }		
+    public String description() {
+        return description;
+    }
+	}
 	
 	protected CameraMode camMode;
 	protected IFrameMode iFrameMode;
@@ -292,53 +317,39 @@ public class HIDevice {
 	public void nextCameraMode() {
 		switch (camMode) {
 		case FIRST_PERSON:
-			camMode = CameraMode.GOOGLE_EARTH;
-			PApplet.println("Camera mode set to GOOGLE_EARTH");
+			setCameraMode(CameraMode.GOOGLE_EARTH);
 			break;
 		case GOOGLE_EARTH:
-			camMode = CameraMode.WORLD;
-			PApplet.println("Camera mode set to WORLD");
+			setCameraMode(CameraMode.WORLD);
 			break;
 		case WORLD:
-			if (HIDevice.class == this.getClass()) {
-				camMode = CameraMode.FIRST_PERSON;
-				PApplet.println("Camera mode set to FIRST_PERSON");
-			}
-			else {
-				camMode = CameraMode.CUSTOM;
-				PApplet.println("Camera mode set to CUSTOM");
-			}			
+			if (HIDevice.class == this.getClass())
+				setCameraMode(CameraMode.FIRST_PERSON);
+			else
+				setCameraMode(CameraMode.CUSTOM);
 			break;
 		case CUSTOM:
-			camMode = CameraMode.FIRST_PERSON;
-			PApplet.println("Camera mode set to FIRST_PERSON");
+			setCameraMode(CameraMode.FIRST_PERSON);
 			break;
 		}
 	}
 	
-  public void previousCameraMode() {
+  public void previousCameraMode() {  	
   	switch (camMode) {
 		case FIRST_PERSON:
-			if (HIDevice.class == this.getClass()) {
-				camMode = CameraMode.WORLD;
-				PApplet.println("Camera mode set to WORLD");
-			}
-			else {
-				camMode = CameraMode.CUSTOM;
-				PApplet.println("Camera mode set to CUSTOM");
-			}
+			if (HIDevice.class == this.getClass())
+				setCameraMode(CameraMode.WORLD);
+			else
+				setCameraMode(CameraMode.CUSTOM);
 			break;
 		case GOOGLE_EARTH:
-			camMode = CameraMode.FIRST_PERSON;
-			PApplet.println("Camera mode set to FIRST_PERSON");
+			setCameraMode(CameraMode.FIRST_PERSON);
 			break;
 		case WORLD:
-			camMode = CameraMode.GOOGLE_EARTH;
-			PApplet.println("Camera mode set to GOOGLE_EARTH");
+			setCameraMode(CameraMode.GOOGLE_EARTH);
 			break;
 		case CUSTOM:
-			camMode = CameraMode.WORLD;
-			PApplet.println("Camera mode set to WORLD");
+			setCameraMode(CameraMode.WORLD);
 			break;
 		}
 	}
@@ -347,29 +358,29 @@ public class HIDevice {
   	return camMode;
   }
   
+  public void setCameraMode(CameraMode cMode) {
+  	camMode = cMode;
+  	if( camMode == CameraMode.GOOGLE_EARTH)
+  		camera.interpolateToFitScene(); 
+  	PApplet.println( camMode.description() );
+  }
+  
   public void nextIFrameMode() {  	
   	switch (iFrameMode) {
 		case FRAME:
-			iFrameMode = IFrameMode.CAMERA;
-			PApplet.println("iFrame mode set to CAMERA");
+			setIFrameMode(IFrameMode.CAMERA);
 			break;
 		case CAMERA:
-			iFrameMode = IFrameMode.WORLD;
-			PApplet.println("iFrame mode set to WORLD");
+			setIFrameMode(IFrameMode.WORLD);
 			break;
 		case WORLD:
-			if (HIDevice.class == this.getClass()) {
-				iFrameMode = IFrameMode.FRAME;
-				PApplet.println("iFrame mode set to FRAME");
-			}
-			else {
-				iFrameMode = IFrameMode.CUSTOM;
-				PApplet.println("iFrame mode set to CUSTOM");
-			}
+			if (HIDevice.class == this.getClass())
+				setIFrameMode(IFrameMode.FRAME);
+			else
+				setIFrameMode(IFrameMode.CUSTOM);
 			break;
 		case CUSTOM:
-			iFrameMode = IFrameMode.FRAME;
-			PApplet.println("iFrame mode set to FRAME");
+			setIFrameMode(IFrameMode.FRAME);
 			break;
 		}
   }
@@ -377,32 +388,30 @@ public class HIDevice {
   public void prevIFrameMode() {  	
   	switch (iFrameMode) {
 		case FRAME:
-			if (HIDevice.class == this.getClass()) {
-				iFrameMode = IFrameMode.WORLD;
-				PApplet.println("iFrame mode set to WORLD");
-			}
-			else {
-				iFrameMode = IFrameMode.CUSTOM;
-				PApplet.println("iFrame mode set to CUSTOM");
-			}
+			if (HIDevice.class == this.getClass())
+				setIFrameMode(IFrameMode.WORLD);
+			else
+				setIFrameMode(IFrameMode.CUSTOM);
 			break;
 		case CAMERA:
-			iFrameMode = IFrameMode.FRAME;
-			PApplet.println("iFrame mode set to FRAME");
+			setIFrameMode(IFrameMode.FRAME);
 			break;
 		case WORLD:
-			iFrameMode = IFrameMode.CAMERA;
-			PApplet.println("iFrame mode set to CAMERA");
+			setIFrameMode(IFrameMode.CAMERA);
 			break;
 		case CUSTOM:
-			iFrameMode = IFrameMode.WORLD;
-			PApplet.println("iFrame mode set to WORLD");
+			setIFrameMode(IFrameMode.WORLD);
 			break;
 		}
   }
   
   public IFrameMode iFrameModeMode() {
   	return iFrameMode;
+  }
+  
+  public void setIFrameMode(IFrameMode iMode) {
+  	iFrameMode = iMode; 
+  	PApplet.println( iFrameMode.description() );
   }
 	
 	protected void customCameraHandle() {}

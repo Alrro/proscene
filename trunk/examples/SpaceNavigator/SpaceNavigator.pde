@@ -29,8 +29,7 @@ import procontroll.*;
 import net.java.games.input.*;
 
 Scene scene;
-InteractiveCameraFrame cameraFrame;
-boolean googleEarth;
+HIDevice dev;
 
 ControllIO controll;
 ControllDevice device; // my SpaceNavigator
@@ -55,28 +54,29 @@ GLModel earth;
 GLTexture tex;
 
 float distance = 30000; // Distance of camera from origin.
-float sensitivity = 1.0;
 
 void setup() {
   size(1024, 768, GLConstants.GLGRAPHICS);
-  
+  openSpaceNavigator();
   scene = new Scene(this);
-  scene.setRadius(globeRadius);
-  scene.showAll();
-  scene.setMouseTracking(false);
+  scene.setRadius(globeRadius*1.3f);
+  scene.showAll();  
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);		
   scene.setInteractiveFrame(new InteractiveFrame(scene));
   scene.interactiveFrame().translate(new PVector(globeRadius/2, globeRadius/2, 0));
 
   // press 'f' to draw frame selection hint
-  //scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   // press 'i' to switch the interaction between the camera frame and the interactive frame
   scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
-  //setGoogleEarthNavigationMode(false);
-  cameraFrame = scene.camera().frame();  
-  
-  openSpaceNavigator();
+
+  dev = new HIDevice(scene);
+  dev.addHandler(this, "feed");
+  dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
+  dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
+  dev.setCameraMode(HIDevice.CameraMode.GOOGLE_EARTH);
+  scene.addDevice(dev);
 
   // This function calculates the vertices, texture coordinates and normals for the earth model.
   calculateEarthCoords();
@@ -101,6 +101,11 @@ void setup() {
   earth.setColors(255);
 }
 
+void feed(HIDevice d) {
+  d.feedTranslation(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue());
+  d.feedRotation(sliderXrot.getValue(), sliderYrot.getValue(), sliderZrot.getValue());
+}
+
 void draw() {
   scene.background(0);
 
@@ -108,14 +113,14 @@ void draw() {
   renderer.beginGL();   
   renderer.model(earth);
   renderer.endGL();
-  
-    pushMatrix();
+
+  pushMatrix();
   scene.interactiveFrame().applyTransformation();//very efficient
-  // Draw an axis using the Scene static function
-  scene.drawAxis(20);
+  // Draw the interactive frame local axis
+  scene.drawAxis(70);
   // Draw a box associated with the iFrame
   stroke(122);
-  if (scene.interactiveFrameIsDrawn()) {
+  if (scene.interactiveFrameIsDrawn() || scene.interactiveFrame().grabsMouse()) {
     fill(0, 255, 255);
     box(50, 75, 60);
   }
@@ -128,7 +133,9 @@ void draw() {
 
 void keyPressed() {
   if ((key == 'u') || (key == 'U'))
-    setGoogleEarthNavigationMode(!googleEarth);
+    dev.nextCameraMode();
+  if ((key == 'v') || (key == 'V'))
+    dev.nextIFrameMode();
 }
 
 void openSpaceNavigator() {
@@ -148,87 +155,4 @@ void openSpaceNavigator() {
   sliderZrot = device.getSlider(3);
   button1 = device.getButton(0);
   button2 = device.getButton(1);
-  sliderXpos.setMultiplier(0.01f); // sensitivities
-  sliderYpos.setMultiplier(0.01f);
-  sliderZpos.setMultiplier(0.01f);
-  sliderXrot.setMultiplier(0.0001f);
-  sliderYrot.setMultiplier(0.0001f);
-  sliderZrot.setMultiplier(0.0001f);
-}
-
-void updateScene() {
-  PVector trans = new PVector();
-  Quaternion q = new Quaternion();  
-
-  // 1.
-  // We first check if there's any iFrame to be handled
-  if( scene.interactiveFrameIsDrawn() ) {
-    InteractiveFrame iFrame = scene.interactiveFrame();
-
-    // 1.1. Translate the iFrame
-    trans.set(sliderXpos.getValue(), sliderYpos.getValue(), -sliderZpos.getValue());      
-    // Transform to world coordinate system
-    //trans = scene.camera().frame().orientation().rotate(PVector.mult(trans, iFrame.translationSensitivity()));
-    trans = cameraFrame.orientation().rotate(trans);
-    // And then down to frame
-    if (iFrame.referenceFrame() != null)
-      trans = iFrame.referenceFrame().transformOf(trans);
-    iFrame.translate(trans);
-
-    // 1.2. Rotate the iFrame
-    trans = scene.camera().projectedCoordinatesOf(iFrame.position());
-    q.fromEulerAngles(sliderXrot.getValue(), sliderYrot.getValue(), -sliderZrot.getValue()); 
-    trans.set(-q.x, -q.y, -q.z);
-    trans = cameraFrame.orientation().rotate(trans);
-    trans = iFrame.transformOf(trans);
-    q.x = trans.x;
-    q.y = trans.y;
-    q.z = trans.z;
-    iFrame.rotate(q);
-  }
-
-  // 2. Otherwise translate/rotate the camera:
-  else {
-    if(!googleEarth) { //first person emulation
-      // Translate
-      trans.set(sliderXpos.getValue(), sliderYpos.getValue(), -sliderZpos.getValue());
-      cameraFrame.translate(scene.camera().frame().localInverseTransformOf(trans));
-      // Rotate
-      q.fromEulerAngles(-sliderXrot.getValue(), -sliderYrot.getValue(), sliderZrot.getValue());
-      cameraFrame.rotate(q);
-    }
-    else { // Google earth navigation emulation      
-      trans = PVector.mult(cameraFrame.position(), -sliderZpos.getValue());    
-      cameraFrame.translate(trans);
-
-      q.fromEulerAngles(-sliderYpos.getValue(), sliderXpos.getValue(), 0);
-      cameraFrame.rotateAroundPoint(q, scene.camera().arcballReferencePoint());
-
-      q.fromEulerAngles(0, 0, sliderZrot.getValue());
-      cameraFrame.rotateAroundPoint(q, scene.camera().arcballReferencePoint());
-      
-      q.fromEulerAngles(-sliderXrot.getValue(), 0, 0);
-      cameraFrame.rotate(q);
-    }
-  }
-}
-
-void setGoogleEarthNavigationMode(boolean gE) {
-  googleEarth = gE;
-  scene.camera().centerScene();
-  if( googleEarth ) {
-    scene.setDrawInteractiveFrame(false);
-    scene.removeShortcut('i');      
-    sliderXpos.setMultiplier(0.0001f);
-    sliderYpos.setMultiplier(0.0001f);
-    sliderZpos.setMultiplier(0.0001f);
-    println("Google earth camera control emulation");
-  }
-  else {
-    scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);      
-    sliderXpos.setMultiplier(0.01f);
-    sliderYpos.setMultiplier(0.01f);
-    sliderZpos.setMultiplier(0.01f);
-    println("First person camera control emulation");
-  }
 }
