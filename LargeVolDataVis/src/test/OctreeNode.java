@@ -5,10 +5,7 @@ package test;
 import java.nio.BufferUnderflowException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-
 import processing.core.PApplet;
-import sun.awt.GlobalCursorManager;
-
 import codeanticode.glgraphics.GLModel;
 
 public class OctreeNode {
