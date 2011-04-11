@@ -1548,9 +1548,8 @@ public class Scene implements PConstants {
 		}
 		
 		// 3.
-		for (HIDevice device : devices) {
+		for (HIDevice device : devices)
 			device.handle();
-		}		
 	}
 	
 	/**
@@ -4348,8 +4347,7 @@ public class Scene implements PConstants {
 			break;
 		case ORTHOGRAPHIC:
 			float[] wh = camera().getOrthoWidthHeight();
-			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera()
-					.zFar());
+			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
 		// if our camera() matrices are detached from the processing Camera
@@ -4366,9 +4364,9 @@ public class Scene implements PConstants {
 	protected void setPModelViewMatrix() {
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
-		pg3d.camera(camera().position().x, camera().position().y, camera()
-				.position().z, camera().at().x, camera().at().y, camera().at().z,
-				camera().upVector().x, camera().upVector().y, camera().upVector().z);
+		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
+				        camera().at().x, camera().at().y, camera().at().z,
+				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		// if our camera() matrices are detached from the processing Camera
 		// matrices,
 		// we cache the processing camera modelview matrix into our camera()
