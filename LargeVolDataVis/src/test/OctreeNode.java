@@ -31,11 +31,11 @@ public class OctreeNode {
 		ArrayList<Float> verts = GLModelToVertexArray();
 		ArrayList<Integer> indexes = GLModelToIndexArray();
 		System.out.print("");
+		if (verts.size() == 0) return;
+		
 		xMax=xMin=verts.get(0);
 		yMax=yMin=verts.get(1);
 		zMax=zMin=verts.get(2);
-
-
 
 		for(int i=0;i<verts.size();i+=4){
 			xMax=Math.max(xMax, verts.get(i));
@@ -158,7 +158,7 @@ public class OctreeNode {
 	private ArrayList<Float> GLModelToVertexArray(){
 		boolean leer=true;
 		ArrayList<Float> verts=new ArrayList<Float>();
-
+		if (model.getSize() == 0) return verts;
 		while(leer){
 			try{
 				System.out.print("Entró ");
@@ -178,7 +178,8 @@ public class OctreeNode {
 		
    private ArrayList<Integer> GLModelToIndexArray( ){		
 		boolean leer=true;
-		ArrayList<Integer> indices=new ArrayList<Integer>(model.vertices.capacity());
+		ArrayList<Integer> indices=new ArrayList<Integer>();
+		if (model.getSize() == 0) return indices;
 		while(leer){
 			try{
 				indices.add(model.indices.get());
@@ -210,7 +211,10 @@ public class OctreeNode {
 	
 	
 	private GLModel createGLModel(ArrayList<Integer> localVerts,ArrayList<Integer> localInds,ArrayList<Float> globalVerts){
-		GLModel model = new GLModel(parent, localVerts.size(), parent.TRIANGLES, GLModel.STATIC);
+		PApplet.println("Creating model with " + localVerts.size() + " vertices.");	  
+		GLModel model = new GLModel(parent, localVerts.size(), PApplet.TRIANGLES, GLModel.STATIC);
+		if (localVerts.size() == 0) return model;
+		
 		model.beginUpdateVertices();
 		for(int i=0;i<localVerts.size();i++){
 			model.updateVertex(i, globalVerts.get(i*4), globalVerts.get((i*4)+1), globalVerts.get((i*4)+2));
@@ -226,7 +230,7 @@ public class OctreeNode {
 		model.initIndices(indices.length);
 		model.updateIndices(indices);
 		model.endUpdateIndices();
-		return null;
+		return model;
 	}
 
 }
