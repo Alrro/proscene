@@ -1547,7 +1547,7 @@ public class Scene implements PConstants {
 			}
 		}
 		
-		// 3.
+		// 3. HIDevices
 		for (HIDevice device : devices)
 			device.handle();
 	}
@@ -4003,16 +4003,32 @@ public class Scene implements PConstants {
 	
 	// Device registration
 	
-	// TODO implement me!
-	
+	/**
+	 * Adds an HIDevice to the scene.
+	 * 
+	 * @see #removeDevice(HIDevice)
+	 * @see #removeAllDevices()
+	 */
 	public void addDevice(HIDevice device) {
 		devices.add(device);
 	}
 	
+	/**
+	 * Removes the device from the scene.
+	 * 
+	 * @see #addDevice(HIDevice)
+	 * @see #removeAllDevices()
+	 */
 	public void removeDevice(HIDevice device) {
 		devices.remove(device);
 	}
 	
+	/**
+	 * Removes all registered devices from the scene.
+	 * 
+	 * @see #addDevice(HIDevice)
+	 * @see #removeDevice(HIDevice)
+	 */
 	public void removeAllDevices() {
 		devices.clear();
 	}	
@@ -4027,6 +4043,8 @@ public class Scene implements PConstants {
 	 *          the object to handle the event
 	 * @param methodName
 	 *          the method to execute in the object handler class
+	 * 
+	 * @see #removeDrawHandler()
 	 */
 	public void addDrawHandler(Object obj, String methodName) {
 		try {
