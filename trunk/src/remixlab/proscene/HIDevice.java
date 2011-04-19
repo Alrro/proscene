@@ -32,11 +32,22 @@ import processing.core.PVector;
 
 /**
  * An HIDevice represents a Human Interactive Device with (<=) 6 degrees of freedom.
+ * <p>
+ * An HIDevice has a type which can be RELATIVE (default) or ABSOLUTE. A RELATIVE HIDevice
+ * has a neutral position that the device holds when it is not being manipulated. An ABSOLUTE HIDevice
+ * has no such neutral position. Examples of RELATIVE devices are the space navigator and the joystick,
+ * examples of ABSOLUTE devices are the wii or the kinect.
  */
 public class HIDevice {
 	/**
-	 * This enum holds the camera modes predefined by an HIDevice.
+	 * This enum holds the device type.
+	 *
 	 */
+	public enum Mode {RELATIVE, ABSOLUTE}
+	
+	/**
+	 * This enum holds the camera modes predefined by an HIDevice.
+	 */	
 	public enum CameraMode {
 		FIRST_PERSON("FIRST_PERSON camera mode set"),
 		GOOGLE_EARTH("GOOGLE_EARTH camera mode set"),
@@ -68,6 +79,7 @@ public class HIDevice {
     }
 	}
 	
+	protected Mode mode;
 	protected CameraMode camMode;
 	protected IFrameMode iFrameMode;
 	
@@ -83,6 +95,9 @@ public class HIDevice {
 	protected PVector rotation, rotSens;
 	protected PVector translation, transSens;
 	
+	//absolute mode
+	protected PVector prevRotation, prevTranslation;
+	
 	protected PVector t;
 	protected Quaternion q;
 	protected float tx;
@@ -93,13 +108,25 @@ public class HIDevice {
   protected float yaw;
 
 	protected Quaternion quaternion;
-
+	
 	/**
-	 * Default constructor.
+	 * Convenience constructor that simply calls {@code this(scn, Mode.RELATIVE)}.
 	 * 
 	 * @param scn The Scene object this HIDevice belongs to.
+	 * 
+	 * @see #HIDevice(Scene, Mode)
 	 */
 	public HIDevice(Scene scn) {
+		this(scn, Mode.RELATIVE);
+	}
+
+	/**
+	 * Main constructor.
+	 * 
+	 * @param scn The Scene object this HIDevice belongs to.
+	 * @param m The device {@link #mode()}.
+	 */
+	public HIDevice(Scene scn, Mode m) {
 		scene = scn;
 		camera = scene.camera();
 		cameraFrame = camera.frame();
@@ -117,8 +144,10 @@ public class HIDevice {
   	roll = rotation.x * rotSens.x;
     pitch = rotation.y * rotSens.y;
     yaw = rotation.z * rotSens.z;
-    camMode = CameraMode.FIRST_PERSON;
-    iFrameMode = IFrameMode.CAMERA;
+    
+    setMode(m);
+    setCameraMode(CameraMode.FIRST_PERSON);
+    setIFrameMode(IFrameMode.CAMERA);    
 	}
 	
 	/**
@@ -149,6 +178,8 @@ public class HIDevice {
 	 * @see #feedRotation(float, float, float)
 	 */
 	public void feedTranslation(float x, float y, float z) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevTranslation.set(translation);
 		translation.set(x, y, z);
 	}
 	
@@ -165,6 +196,8 @@ public class HIDevice {
 	 * @see #feedTranslation(float, float, float)
 	 */
 	public void feedRotation(float x, float y, float z) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevRotation.set(rotation);
 		rotation.set(x, y, z);
 	}
 	
@@ -174,6 +207,8 @@ public class HIDevice {
 	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
 	 */
 	public void feedXTranslation(float t) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevTranslation.x = translation.x; 
 		translation.x = t;
 	}
 
@@ -183,6 +218,9 @@ public class HIDevice {
 	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
 	 */
 	public void feedYTranslation(float t) {
+		if ( mode() == Mode.ABSOLUTE ) {
+			prevTranslation.y = translation.y; 
+		}
 		translation.y = t;
 	}
 
@@ -192,6 +230,8 @@ public class HIDevice {
 	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
 	 */
 	public void feedZTranslation(float t) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevTranslation.z = translation.z; 
 		translation.z = t;
 	}	
 
@@ -201,6 +241,8 @@ public class HIDevice {
 	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice. 
 	 */
 	public void feedXRotation(float t) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevRotation.x = rotation.x; 
 		rotation.x = t;
 	}
 
@@ -210,6 +252,8 @@ public class HIDevice {
 	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice. 
 	 */
 	public void feedYRotation(float t) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevRotation.y = rotation.y;
 		rotation.y = t;
 	}
 
@@ -219,6 +263,8 @@ public class HIDevice {
 	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice. 
 	 */
 	public void feedZRotation(float t) {
+		if ( mode() == Mode.ABSOLUTE )
+			prevRotation.z = rotation.z;
 		rotation.z = t;
 	}
 	
@@ -384,7 +430,7 @@ public class HIDevice {
 				e.printStackTrace();
 			}
 		}
-		else {
+		else {			
 			feedXTranslation(feedXTranslation());
 			feedYTranslation(feedYTranslation());
 			feedZTranslation(feedZTranslation());
@@ -393,12 +439,22 @@ public class HIDevice {
 			feedZRotation(feedZRotation());
 		}
 		
-		tx = translation.x * transSens.x;
-    ty = translation.y * transSens.y;
-    tz = translation.z * transSens.z;
-  	roll = rotation.x * rotSens.x;
-    pitch = rotation.y * rotSens.y;
-    yaw = rotation.z * rotSens.z;
+		if ( mode() == Mode.ABSOLUTE ) {
+			tx = (translation.x - prevTranslation.x) * transSens.x;
+			ty = (translation.y - prevTranslation.y) * transSens.y;
+			tz = (translation.z - prevTranslation.z) * transSens.z;
+			roll = (rotation.x - prevRotation.x) * rotSens.x;
+			pitch = (rotation.y - prevRotation.y) * rotSens.y;
+			yaw = (rotation.z - prevRotation.z) * rotSens.z;
+		}
+		else {
+			tx = translation.x * transSens.x;
+			ty = translation.y * transSens.y;
+			tz = translation.z * transSens.z;
+			roll = rotation.x * rotSens.x;
+			pitch = rotation.y * rotSens.y;
+			yaw = rotation.z * rotSens.z;
+		}
 		
 		if (scene.interactiveFrameIsDrawn() || (scene.mouseGrabber() != null && scene.mouseGrabber() instanceof InteractiveFrame) )
 			handleIFrame();
@@ -461,7 +517,7 @@ public class HIDevice {
   /**
 	 * Handles the {@link remixlab.proscene.Scene#camera()} with this HIDevice.
 	 */
-	protected void handleCamera() {		
+	protected void handleCamera() {
 		switch (camMode) {
 		case FIRST_PERSON:
    		// Translate      
@@ -561,7 +617,7 @@ public class HIDevice {
    */
   public void setCameraMode(CameraMode cMode) {
   	camMode = cMode;
-  	if( camMode == CameraMode.GOOGLE_EARTH)
+  	if( camMode == CameraMode.GOOGLE_EARTH )
   		camera.interpolateToFitScene(); 
   	PApplet.println( camMode.description() );
   }
@@ -625,6 +681,26 @@ public class HIDevice {
   public void setIFrameMode(IFrameMode iMode) {
   	iFrameMode = iMode; 
   	PApplet.println( iFrameMode.description() );
+  }
+  
+  /**
+   * Sets the device type.
+   */
+  public void setMode(Mode m) {
+  	if(m == Mode.ABSOLUTE) {
+  		if(prevTranslation == null)
+  			prevTranslation = new PVector();
+  		if(prevRotation == null)
+  			prevRotation = new PVector();
+    }
+  	mode = m;
+  }
+  
+  /**
+   * Return tge device type.
+   */
+  public Mode mode() {
+  	return mode;
   }
 	
   /**
