@@ -171,15 +171,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			break;
 		}
 	}
-
-	/**
-	 * Protected method that simply calls {@code startAction(action, true)}.
-	 * 
-	 * @see #startAction(Scene.MouseAction, boolean)
-	 */
-	protected void startAction(Scene.MouseAction action) {
-		startAction(action, true);
-	}
 	
 	/**
 	 * Protected internal method used to handle mouse actions.
