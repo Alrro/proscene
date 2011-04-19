@@ -1,3 +1,28 @@
+/**
+ *                     ProScene (version 1.1.0)      
+ *    Copyright (c) 2010-2011 by National University of Colombia
+ *                 @author Jean Pierre Charalambos      
+ *           http://www.disi.unal.edu.co/grupos/remixlab/
+ *                           
+ * This java package provides classes to ease the creation of interactive 3D
+ * scenes in Processing.
+ * 
+ * This source file is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * A copy of the GNU General Public License is available on the World Wide Web
+ * at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by
+ * writing to the Free Software Foundation, 51 Franklin Street, Suite 500
+ * Boston, MA 02110-1335, USA.
+ */
+
 package remixlab.proscene;
 
 import java.lang.reflect.Method;
@@ -5,7 +30,13 @@ import java.lang.reflect.Method;
 import processing.core.PApplet;
 import processing.core.PVector;
 
+/**
+ * An HIDevice represents a Human Interactive Device with (<=) 6 degrees of freedom.
+ */
 public class HIDevice {
+	/**
+	 * This enum holds the camera modes predefined by an HIDevice.
+	 */
 	public enum CameraMode {
 		FIRST_PERSON("FIRST_PERSON camera mode set"),
 		GOOGLE_EARTH("GOOGLE_EARTH camera mode set"),
@@ -20,6 +51,9 @@ public class HIDevice {
     }
 	}
 	
+	/**
+	 * This enum holds the interactive frame manipulation modes predefined by an HIDevice.
+	 */
 	public enum IFrameMode {
 		FRAME("FRAME interactive frame control mode set"),
 		CAMERA("CAMERA interactive frame control mode set"),
@@ -60,6 +94,11 @@ public class HIDevice {
 
 	protected Quaternion quaternion;
 
+	/**
+	 * Default constructor.
+	 * 
+	 * @param scn The Scene object this HIDevice belongs to.
+	 */
 	public HIDevice(Scene scn) {
 		scene = scn;
 		camera = scene.camera();
@@ -82,99 +121,234 @@ public class HIDevice {
     iFrameMode = IFrameMode.CAMERA;
 	}
 	
+	/**
+	 * Feed the HIDevice with hardware output using a controller. The controller should be implemented
+	 * by the application. This method simply calls {@code feedTranslation(tx,ty,tz)} and
+	 * {@code feedRotation(rx,ry,rz)}.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
+	 * 
+	 * @see #feedTranslation(float, float, float)
+	 * @see #feedRotation(float, float, float)
+	 */
 	public void feed(float tx, float ty, float tz, float rx, float ry, float rz) {
 		feedTranslation(tx,ty,tz);
 		feedRotation(rx,ry,rz);
 	}
 
+	/**
+	 * Defines the device translation feed.
+	 * <p> 
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
+	 * 
+	 * @param x x-axis translation
+	 * @param y y-axis translation
+	 * @param z z-axis translation
+	 * 
+	 * @see #feed(float, float, float, float, float, float)
+	 * @see #feedRotation(float, float, float)
+	 */
 	public void feedTranslation(float x, float y, float z) {
 		translation.set(x, y, z);
 	}
 	
+	/**
+	 * Defines the device rotation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
+	 * 
+	 * @param x x-axis rotation
+	 * @param y y-axis rotation
+	 * @param z z-axis rotation
+	 * 
+	 * @see #feed(float, float, float, float, float, float)
+	 * @see #feedTranslation(float, float, float)
+	 */
 	public void feedRotation(float x, float y, float z) {
 		rotation.set(x, y, z);
 	}
 	
+	/**
+	 * Defines the device x-axis translation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
+	 */
 	public void feedXTranslation(float t) {
 		translation.x = t;
 	}
 
+	/**
+	 * Defines the device y-axis translation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
+	 */
 	public void feedYTranslation(float t) {
 		translation.y = t;
 	}
 
+	/**
+	 * Defines the device z-axis translation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice.
+	 */
 	public void feedZTranslation(float t) {
 		translation.z = t;
 	}	
 
+	/**
+	 * Defines the device x-axis rotation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice. 
+	 */
 	public void feedXRotation(float t) {
 		rotation.x = t;
 	}
 
+	/**
+	 * Defines the device y-axis rotation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice. 
+	 */
 	public void feedYRotation(float t) {
 		rotation.y = t;
 	}
 
+	/**
+	 * Defines the device z-axis rotation feed.
+	 * <p>
+	 * Useful when {@link #addHandler(Object, String)} has been called on this HIDevice. 
+	 */
 	public void feedZRotation(float t) {
 		rotation.z = t;
 	}
 	
+	/**
+	 * Overload this method to define the x-axis translation feed this method
+	 * if you plan to implement your own HIDevice. Otherwise use {@link #feedXTranslation(float)}
+	 * and {@link #addHandler(Object, String)} to the HIDevice.
+	 */
 	public float feedXTranslation() {
 		return 0;
 	}
 
+	/**
+	 * Overload this method to define the y-axis translation feed this method
+	 * if you plan to implement your own HIDevice. Otherwise use {@link #feedYTranslation(float)}
+	 * and {@link #addHandler(Object, String)} to the HIDevice.
+	 */
 	public float feedYTranslation() {
 		return 0;
 	}
 
+	/**
+	 * Overload this method to define the z-axis translation feed this method
+	 * if you plan to implement your own HIDevice. Otherwise use {@link #feedZTranslation(float)}
+	 * and {@link #addHandler(Object, String)} to the HIDevice.
+	 */
 	public float feedZTranslation() {
 		return 0;
 	}
 
+	/**
+	 * Overload this method to define the x-axis rotation feed this method
+	 * if you plan to implement your own HIDevice. Otherwise use {@link #feedXRotation(float)}
+	 * and {@link #addHandler(Object, String)} to the HIDevice.
+	 */
 	public float feedXRotation() {
 		return 0;
 	}
 
+	/**
+	 * Overload this method to define the y-axis rotation feed this method
+	 * if you plan to implement your own HIDevice. Otherwise use {@link #feedYRotation(float)}
+	 * and {@link #addHandler(Object, String)} to the HIDevice.
+	 */
 	public float feedYRotation() {
 		return 0;
 	}
 
+	/**
+	 * Overload this method to define the z-axis rotation feed this method
+	 * if you plan to implement your own HIDevice. Otherwise use {@link #feedZRotation(float)}
+	 * and {@link #addHandler(Object, String)} to the HIDevice.
+	 */
 	public float feedZRotation() {
 		return 0;
 	}
-		
+
+	/**
+	 * Sets the translation sensitivity.
+	 * 
+	 * @param sx x-axis translation sensitivity
+	 * @param sy y-axis translation sensitivity
+	 * @param sz z-axis translation sensitivity
+	 */
 	public void setTranslationSensitivity(float sx, float sy, float sz) {
 		transSens.set(sx, sy, sz);
 	}
 	
+	/**
+	 * Sets the rotation sensitivity.
+	 * 
+	 * @param sx x-axis rotation sensitivity
+	 * @param sy y-axis rotation sensitivity
+	 * @param sz z-axis rotation sensitivity
+	 */
 	public void setRotationSensitivity(float sx, float sy, float sz) {
 		rotSens.set(sx, sy, sz);
 	}
 	
+	/**
+	 * Sets the x-axis translation sensitivity.
+	 */
 	public void setXTranslationSensitivity(float sensitivity) {
 		transSens.x = sensitivity;
 	}
 
+	/**
+	 * Sets the y-axis translation sensitivity.
+	 */
 	public void setYTranslationSensitivity(float sensitivity) {
 		transSens.y = sensitivity;
 	}
 
+	/**
+	 * Sets the z-axis translation sensitivity.
+	 */
 	public void setZTranslationSensitivity(float sensitivity) {
 		transSens.z = sensitivity;
 	}	
 
+	/**
+	 * Sets the x-axis rotation sensitivity.
+	 */
 	public void setXRotationSensitivity(float sensitivity) {
 		rotSens.x = sensitivity;
 	}
 
+	/**
+	 * Sets the y-axis rotation sensitivity.
+	 */
 	public void setYRotationSensitivity(float sensitivity) {
 		rotSens.y = sensitivity;
 	}
 
+	/**
+	 * Sets the z-axis rotation sensitivity.
+	 */
 	public void setZRotationSensitivity(float sensitivity) {
 		rotSens.z = sensitivity;
 	}	
 	
+	/**
+	 * Attempt to add a 'feed' handler method to the HIDevice. The default feed
+	 * handler is a method that returns void and has one single HIDevice parameter.
+	 * 
+	 * @param obj the object to handle the feed
+	 * @param methodName the method to execute the feed in the object handler class
+	 * 
+	 * @see #removeHandler()
+	 */
 	public void addHandler(Object obj, String methodName) {
 		try {
 			handlerMethod = obj.getClass().getMethod(methodName, new Class[] { HIDevice.class });
@@ -186,12 +360,21 @@ public class HIDevice {
 		}
 	}
 	
+	/**
+	 * Unregisters the 'feed' handler method (if any has previously been added to
+	 * the HIDevice).
+	 * 
+	 * @see #addHandler(Object, String)
+	 */
 	public void removeHandler() {
 		handlerMethod = null;
 		handlerObject = null;
 		handlerMethodName = null;
 	}
 
+	/**
+	 * Handle the feed by properly calling {@link #handleCamera()} or {@link #handleIFrame()}.
+	 */
 	protected void handle() {		
 		if (handlerObject != null) {
 			try {
@@ -223,6 +406,9 @@ public class HIDevice {
 			handleCamera();
   }
 	
+	/**
+	 * Handles the {@link remixlab.proscene.Scene#interactiveFrame()} with this HIDevice.
+	 */
   protected void handleIFrame() {  	
   	switch (iFrameMode) {
 		case FRAME:
@@ -272,6 +458,9 @@ public class HIDevice {
 		}  	
 	}
 
+  /**
+	 * Handles the {@link remixlab.proscene.Scene#camera()} with this HIDevice.
+	 */
 	protected void handleCamera() {		
 		switch (camMode) {
 		case FIRST_PERSON:
@@ -314,6 +503,9 @@ public class HIDevice {
 		}
 	}
 	
+	/**
+	 * Sets the next camera mode.
+	 */
 	public void nextCameraMode() {
 		switch (camMode) {
 		case FIRST_PERSON:
@@ -334,6 +526,9 @@ public class HIDevice {
 		}
 	}
 	
+	/**
+	 * Sets the previous camera mode.
+	 */
   public void previousCameraMode() {  	
   	switch (camMode) {
 		case FIRST_PERSON:
@@ -354,10 +549,16 @@ public class HIDevice {
 		}
 	}
   
+  /**
+   * Returns the current camera mode.
+   */
   public CameraMode cameraMode() {
   	return camMode;
   }
   
+  /**
+   * Sets the camera handle mode.
+   */
   public void setCameraMode(CameraMode cMode) {
   	camMode = cMode;
   	if( camMode == CameraMode.GOOGLE_EARTH)
@@ -365,6 +566,9 @@ public class HIDevice {
   	PApplet.println( camMode.description() );
   }
   
+  /**
+   * Sets the next interactive frame manipulation mode.
+   */
   public void nextIFrameMode() {  	
   	switch (iFrameMode) {
 		case FRAME:
@@ -385,7 +589,10 @@ public class HIDevice {
 		}
   }
   
-  public void prevIFrameMode() {  	
+  /**
+   * Sets the previous interactive frame manipulation mode.
+   */
+  public void previousIFrameMode() {  	
   	switch (iFrameMode) {
 		case FRAME:
 			if (HIDevice.class == this.getClass())
@@ -405,16 +612,30 @@ public class HIDevice {
 		}
   }
   
+  /**
+   * Returns the current interactive frame manipulation mode.
+   */
   public IFrameMode iFrameModeMode() {
   	return iFrameMode;
   }
   
+  /**
+   * Sets the interactive frame manipulation mode.
+   */
   public void setIFrameMode(IFrameMode iMode) {
   	iFrameMode = iMode; 
   	PApplet.println( iFrameMode.description() );
   }
 	
+  /**
+   * Overload this method in your HIDevice derived class if you plan to define your own camera handle method.
+   * Default implementation is empty.
+   */
 	protected void customCameraHandle() {}
 	
+	/**
+   * Overload this method in your HIDevice derived class if you plan to define your own
+   * interactive frame handle method. Default implementation is empty.
+   */
   protected void customIFrameHandle() {}
 }
