@@ -697,7 +697,7 @@ public class HIDevice {
   }
   
   /**
-   * Return tge device type.
+   * Return the device type.
    */
   public Mode mode() {
   	return mode;

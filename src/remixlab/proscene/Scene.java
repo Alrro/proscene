@@ -100,7 +100,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.0";
+	public static final String version = "1.0.6";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
