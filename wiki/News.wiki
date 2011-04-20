@@ -1,8 +1,6 @@
 #summary Wiki page containing all the project news.
 
-=A. News=
-
-==20/04/2011 Release of *Proscene v-1.1.0-alpha1 (a.k.a. v-1.0.6)*==
+=20/04/2011 Release of *Proscene v-1.1.0-alpha1 (a.k.a. v-1.0.6)*=
 
 This is the first alpha release of the next version of *proscene* targeted at testers an enthusiasts that wish to give us some feedback (download it [http://proscene.googlecode.com/files/proscene-1.0.6.zip here]). Development has been focused in the following arenas:
 
@@ -13,7 +11,7 @@ This is the first alpha release of the next version of *proscene* targeted at te
 
 The main goal of this release is to add support for Human Interface Devices.
 
-==14/12/2010 Release of *Proscene v-1.0.0*==
+=14/12/2010 Release of *Proscene v-1.0.0*=
 
 Our Christmas mushroom is out for you to grab it! We are pleased to announce the immediate availability of proscene v-1.0.0. Changelog:
 
@@ -27,7 +25,7 @@ Our Christmas mushroom is out for you to grab it! We are pleased to announce the
 
 Many thanks to [http://codeanticode.wordpress.com Andres Colubri] for all his contributions to the project which includes, among many, off-screen rendering mode. Many thanks also to Alejandro Duarte for his cool Scramble demo. Many thanks also to other contributors, testers and followers!
 
-==18/07/2010 Release of *Proscene v-0.9.0*==
+=18/07/2010 Release of *Proscene v-0.9.0*=
 
 Version 0.9.0 of *Proscene* is out. Changelog:
 
@@ -43,7 +41,7 @@ Version 0.9.0 of *Proscene* is out. Changelog:
 
 Many thanks to [http://github.com/acsmith/napplet "adamcsmitty"] and to [http://www.lagers.org.uk/ Peter Lagger] for their suggestions regarding how to handle multiple viewers in proscene. *Note* that the new [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/StandardCamera/applet/index.html StandardCamera] and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/ViewFrustumCulling/applet/index.html ViewFrustumCulling] examples (which handle multiple viewers) need Adam's [http://github.com/acsmith/napplet/downloads napplet library (>=0.3.5)] to run.
 
-==24/04/2010 Release of *Proscene v-0.8.0*==
+=24/04/2010 Release of *Proscene v-0.8.0*=
 
 The main changes in this release respect to the previous one (v-0.7.1) are:
 
