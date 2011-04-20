@@ -1,0 +1,43 @@
+#summary Wiki page containing all the project news.
+
+=A. News=
+
+==14/12/2010 Release of *Proscene v-1.0.0*==
+
+Our Christmas mushroom is out for you to grab it! We are pleased to announce the immediate availability of proscene v-1.0.0. Changelog:
+
+  # *Keyboard shortcuts and camera profiles customization*. Keyboard shortcuts which define global actions (such as drawing of the world axis), and mouse bindings which define how camera actions are binded to the mouse, are fully customizable. Their default behavior should cover most user needs out there though. See the new example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/CameraCustomization/applet/index.html CameraCustomization].
+  # *New animation framework.* The framework comprises three animation mechanisms to define how your scene evolves over time:
+    # *Overriding the animate() method.* In this case, once you declare a Scene derived class, you should implement _animate()_ which defines how your scene objects evolve over time. See the new example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/Animation/applet/index.html Animation].
+    # *External animation handler registration.* You can also declare an external animation method and then register it at the Scene with _addAnimationHandler(Object, String)_. That method should return {{{void}}} and have one single {{{Scene}}} parameter. See the new example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/AnimationHandler/applet/index.html AnimationHandler].
+    # *By querying the state of the animatedFrameWasTriggered variable.* During the drawing loop, the variable _animatedFrameWasTriggered_ is set to {{{true}}} each time an animated frame is triggered (or it is set to {{{false}}} otherwise), which is useful to notify the outside world when an animation event occurs. See the example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/Flock/applet/index.html Flock] which has been ported to the new animation framework using this technique.
+  # *New off-screen rendering mode support*. Off-screen rendering mode allows to map your scene contents to a texture and then you can do whatever you want with it. Check the new example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/BasicUseOffscreen/applet/index.html BasicUseOffscreen].
+  # *New and improved examples* which illustrates many aspects of the library. New examples are: [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/Animation/applet/index.html Animation], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/AnimationHandler/applet/index.html AnimationHandler], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/BasicUseOffscreen/applet/index.html BasicUseOffscreen], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/CameraCustomization/applet/index.html CameraCustomization] and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/Scramble/applet/index.html Scramble]. Improved examples are: [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/CameraInterpolation/applet/index.html CameraInterpolation], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/MouseGrabbers/applet/index.html MouseGrabbers] and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.0.0/demos/Flock/applet/index.html Flock].
+
+Many thanks to [http://codeanticode.wordpress.com Andres Colubri] for all his contributions to the project which includes, among many, off-screen rendering mode. Many thanks also to Alejandro Duarte for his cool Scramble demo. Many thanks also to other contributors, testers and followers!
+
+==18/07/2010 Release of *Proscene v-0.9.0*==
+
+Version 0.9.0 of *Proscene* is out. Changelog:
+
+ * New examples: [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/Flock/applet/index.html Flock], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/StandardCamera/applet/index.html StandardCamera], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/ThirdPersonCamera/applet/index.html ThirdPersonCamera] and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/ViewFrustumCulling/applet/index.html ViewFrustumCulling].
+ * New scene external draw handler registration (see the Scene documentation for details).
+ * New analytical computation of the frustum planes equations which enables view frustum culling against the proscene camera.
+ * New THIRD_PERSON camera mode. How does it work?
+   * Simply add an _!InteractiveAvatarFrame_ (which is an specialization of an _Avatar_) to your scene: call {{{scene.setInteractiveFrame(myInteractiveAvatarFrame)}}} (see the example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/ThirdPersonCamera/applet/index.html ThirdPersonCamera]) or  {{{scene.setAvatar(myAvatar)}}} (see the example [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/Flock/applet/index.html Flock]).
+   * Then just call {{{scene.setCameraMode(CameraMode.THIRD_PERSON)}}} and the camera will follow your _!InteractiveAvatarFrame_ (which is controlled using the mouse).
+ * New registration of the keyboard and mouse handlers which provides tighter integration with processing. It also means that proscene enabled sketches comprise even less code.
+ * Code polishing.
+ * Developed and fully tested in *Processing-1.2.1* under x86_64 GNU/Linux (Kubuntu-10.04).
+
+Many thanks to [http://github.com/acsmith/napplet "adamcsmitty"] and to [http://www.lagers.org.uk/ Peter Lagger] for their suggestions regarding how to handle multiple viewers in proscene. *Note* that the new [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/StandardCamera/applet/index.html StandardCamera] and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/ViewFrustumCulling/applet/index.html ViewFrustumCulling] examples (which handle multiple viewers) need Adam's [http://github.com/acsmith/napplet/downloads napplet library (>=0.3.5)] to run.
+
+==24/04/2010 Release of *Proscene v-0.8.0*==
+
+The main changes in this release respect to the previous one (v-0.7.1) are:
+
+  * New *keyframes*' functionality through the !KeyFrameInterpolator class.
+  * New handy set of examples, including [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/CameraInterpolation/applet/index.html CameraInterpolation], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/FrameInterpolation/applet/index.html FrameInterpolation], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/Luxo/applet/index.html Luxo], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/PointUnderPixel/applet/index.html PointUnderPixel], and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-0.9.0/demos/ScreenDrawing/applet/index.html ScreenDrawing].
+  * Code polishing and tighter integration with *Processing*, meaning that sketches using *proscene* should run even faster than before.
+
+This version of *Proscene* has been developed and fully tested in *Processing-1.1* under x86_64 GNU/Linux (Kubuntu-9.10). However, it should properly work under Mac and Windows too (as some users have reported).
