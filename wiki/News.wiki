@@ -2,6 +2,17 @@
 
 =A. News=
 
+==20/04/2011 Release of *Proscene v-1.1.0-alpha1 (a.k.a. v-1.0.6)*==
+
+This is the first alpha release of the next version of *proscene* targeted at testers an enthusiasts that wish to give us some feedback (download it [http://proscene.googlecode.com/files/proscene-1.0.6.zip here]). Development has been focused in the following arenas:
+
+ * Works with the latest [http://processing.org/ Processing] version (1.5). The current stable version of *proscene (1.0.0)* should do it too.
+ * Fixes a bug in the `Camera.sphereIsVisible` test needed to properly implement view-frustum-culling).
+ * *Off-screen-rendering* has been greatly improved which means *proscene* examples requiring multiple viewers in one skecth no longer require the *napplet* dependency.
+ * Generic suppport for [http://en.wikipedia.org/wiki/Human_interface_device Human Interface Devices] has been implemented.
+
+The main goal of this release is to add support for Human Interface Devices.
+
 ==14/12/2010 Release of *Proscene v-1.0.0*==
 
 Our Christmas mushroom is out for you to grab it! We are pleased to announce the immediate availability of proscene v-1.0.0. Changelog:
