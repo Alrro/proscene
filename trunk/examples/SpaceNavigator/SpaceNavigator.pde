@@ -1,15 +1,21 @@
 /**
- * Textured Sphere 
- * by Mike 'Flux' Chang (cleaned up by Aaron Koblin). 
- * Based on code by Toxi. 
- * Ported to GLGraphics by Andres Colubri.
+ * Space Navigator by Jean Pierre Charalambos
  *
- * 3DConnexion SpaceNavigator support using procontroll
+ * Originally, Textured Sphere by Mike 'Flux' Chang (cleaned up by Aaron Koblin). 
+ * Based on code by Toxi.
+ * Initially ported to GLGraphics by Andres Colubri:
+ * http://glgraphics.sourceforge.net/
+ * 3DConnexion SpaceNavigator support using procontroll:
+ * http://www.creativecomputing.cc/p5libs/procontroll/
  * by Ralf Löhmer - rl@loehmer.de
- * Ported to proscene by Jean Pierre Charalambos
  * 
  * A 3D textured sphere with simple rotation control and
  * 3DConnexion SpaceNavigator support.
+ *
+ * This example illustrates the use of the HIDevice (Human Interaction
+ * Device) class to manipulate your scene through sophisticated
+ * interaction devices, such as the 3d space navigator (which is
+ * required to run the sketch).
  *
  * This demo requires the GLGraphics (http://glgraphics.sourceforge.net/)
  * and procontroll (http://www.creativecomputing.cc/p5libs/procontroll/) libraries.
@@ -71,6 +77,7 @@ void setup() {
   // press 'i' to switch the interaction between the camera frame and the interactive frame
   scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 
+  // Define the RELATIVE mode HIDevice.
   dev = new HIDevice(scene);
   dev.addHandler(this, "feed");
   dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
