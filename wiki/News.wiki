@@ -9,16 +9,18 @@ This is the first alpha release of the next version of *proscene* targeted at te
  * *Off-screen-rendering* has been greatly improved which means *proscene* examples requiring multiple viewers in one skecth no longer require the *napplet* dependency.
  * Generic suppport for [http://en.wikipedia.org/wiki/Human_interface_device Human Interface Devices] has been implemented.
 
-The main goal of this release has been to add support for Human Interface Devices (HID) with six (or less) [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] to control both the camera and any interactive frame attached to the scene. This has been done through the new *HIDevice* class. An *HIDevice* object has a type which can of one of two types: *RELATIVE* or *ABSOLUTE*:
+The main goal of this release has been to add support for Human Interface Devices (HID) with six (or less) [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] to control both the camera and any interactive frame attached to the *scene*. This has been done through the new *HIDevice* class. An *HIDevice* object has a type which can of one of two types: *RELATIVE* or *ABSOLUTE*:
 
  * A *RELATIVE HIDevice* (default configuration) have a neutral position that the device holds when it is not being manipulated. Examples of such devices are the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator] and the [http://en.wikipedia.org/wiki/Joystick joystick].
- * An *ABSOLUTE* HIDevice has no such neutral position. Examples of ABSOLUTE devices are the [http://en.wikipedia.org/wiki/Wii wii] or the [http://en.wikipedia.org/wiki/Kinect kinect].
+ * An *ABSOLUTE HIDevice* has no such neutral position. Examples of ABSOLUTE devices are the [http://en.wikipedia.org/wiki/Wii wii] or the [http://en.wikipedia.org/wiki/Kinect kinect].
 
 *Observations:*
 
  # *Proscene* does not handle the device directly. This should be achieved  with a third party library such [http://www.creativecomputing.cc/p5libs/procontroll/ procontroll].
- # There are three new examples that illustrate how to instantiate and use a *HIDevice*: *SpaceNavigator*.
- # These examples have been tested in Ubuntu and Windows using *procontroll* but they only work in Windows. I hope to contact *procontroll* developers soon. Testing them in Mac still requires to be done. *Feedback is more than welcome*!
+ # An *HIDevice* implements some default configurations to manipulate the camera and a given interactive frame. A third party configuration can easily be implemented too (see the HIDevice for details). *If you implement your own configuration and wish to share please let us know. If you want us to implement a new one, let us know it.*
+ # There are three new examples that illustrate how to instantiate and use a *HIDevice*: *!SpaceNavigator*, *!HIDeviceSingleViewer*, and *!HIDeviceMultiViewer*. The three examples require a space navigator and while the first one should make it to the final release the latter two are provided only for testing purposes.
+ # These three examples have been tested in Ubuntu and Windows using *procontroll* but they only work in Windows. This has to do with a *procontroll* issue and I hope to contact its developers soon. Testing them in Mac still requires to be done. *Feedback is more than welcome*!
+ # If you implement support for another device *please let us know*. For instance we'd love to see support for the kinect in the near future. We just don't have one to play around at the time ;)
 
 =14/12/2010 Release of *Proscene v-1.0.0*=
 
