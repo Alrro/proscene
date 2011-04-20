@@ -17,7 +17,7 @@ The main goal of this release has been to add support for Human Interface Device
 *Observations:*
 
  # *Proscene* does not handle the device directly. This should be achieved  with a third party library such [http://www.creativecomputing.cc/p5libs/procontroll/ procontroll].
- # An *HIDevice* implements some default configurations to manipulate the camera and a given interactive frame. A third party configuration can easily be implemented too (see the HIDevice for details). *If you implement your own configuration and wish to share please let us know. If you want us to implement a new one, let us know it.*
+ # An *HIDevice* implements some default configurations to manipulate the camera and a given interactive frame. A third party configuration can easily be implemented too (see the *HIDevice* API for details). *If you implement your own configuration and wish to share please let us know. If you want us to implement a new one, let us know it.*
  # There are three new examples that illustrate how to instantiate and use a *HIDevice*: *!SpaceNavigator*, *HIDeviceSingleViewer*, and *HIDeviceMultiViewer*. The three examples require a space navigator and while the first one should make it to the final release the latter two are provided only for testing purposes.
  # These three examples have been tested in Ubuntu and Windows using *procontroll* but they only work in Windows. This has to do with a *procontroll* issue and I hope to contact its developers soon. Testing them in Mac still requires to be done. *Feedback is more than welcome*!
  # If you implement support for another device *please let us know*. For instance we'd love to see support for the kinect in the near future. We just don't have one to play around at the time ;)
