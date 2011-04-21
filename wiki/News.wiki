@@ -51,7 +51,7 @@ void feed(HIDevice d) {
 }
 }}}
 
-===Option 2: Inherit from HIDevice and override the feeds===
+===Option 2: Declare your own HIDevice derived class and override the feeds===
 
 The following code will handle the device exactly as in the previous option.
 
@@ -59,6 +59,7 @@ The following code will handle the device exactly as in the previous option.
 void setup() {
   ...
   scene = new Scene(this);//declare the a scene, which is the main Proscene object
+  //declare your own HIDevice derived class
   dev = new HIDevice(scene) {
     //if one of the feeds is not overridden the correspondent translation/rotation would be disabled 
     public float feedXTranslation() {
