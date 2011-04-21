@@ -14,7 +14,73 @@ The main goal of this release has been to add support for Human Interface Device
  * A *RELATIVE HIDevice* (default configuration) have a neutral position that the device holds when it is not being manipulated. Examples of such devices are the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator] and the [http://en.wikipedia.org/wiki/Joystick joystick].
  * An *ABSOLUTE HIDevice* has no such neutral position. Examples of ABSOLUTE devices are the [http://en.wikipedia.org/wiki/Wii wii] and the [http://en.wikipedia.org/wiki/Kinect kinect].
 
-*Observations:*
+==How to use a *HIDevice*?==
+
+Suppose that we wish to control our camera and some objects in our scene with a [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] device such the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator]. We have two options to do it (in the code below *note* that the `slider*pos` and the `slider*rot` objects belong to the third party library actually controlling the hardware):
+
+===Option 1: Declare your own HIDevice and add a feed handler ===
+
+{{{
+dev = new HIDevice(scene);//declare a RELATIVE mode HIDevice
+dev.addHandler(this, "feed");//add the feed defined below
+//Define the translation sensitivities
+//(0 will disable the translation, a negative value will reverse its direction)
+dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
+//Define the translation sensitivities
+//(0 will disable the rotation, a negative value will reverse its orientation)
+dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
+scene.addDevice(dev);
+//The feed function should look like the following:
+void feed(HIDevice d) {
+  //enable the three translations
+  //again, 0 will disable the translation, a negative value will reverse its direction
+  //to produce a different mapping between the device axes and the different scene coordinates systems
+  //(referred in proscene as Frames) simply exchange the order of the slider*pos parameters at will.
+  d.feedTranslation(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue());
+  //enable the three rotations
+  //again, will disable the rotation, a negative value will reverse its orientation
+  //to produce a different mapping between the device axes and the different scene frames
+  //simply exchange the order of the slider*pos parameters at will.
+  d.feedRotation(sliderXrot.getValue(), sliderYrot.getValue(), sliderZrot.getValue());
+}
+}}}
+
+===Option 2: Derivate from HIDevice and override the feeds===
+
+The following code will handle the device exactly as in the previous option.
+
+{{{
+dev = new HIDevice(scene) {
+  //if one of the feeds is not overridden the correspondent translation/rotation would be disabled 
+  public float feedXTranslation() {
+    return sliderXpos.getValue();
+  }
+  public float feedYTranslation() {
+    return sliderYpos.getValue();
+  }
+  public float feedZTranslation() {
+    return sliderZpos.getValue();
+  }
+  public float feedXRotation() {
+    return sliderXrot.getValue();
+  }
+  public float feedYRotation() {
+    return sliderYrot.getValue();
+  }
+  public float feedZRotation() {
+    return sliderZrot.getValue();
+  }
+};
+//Define the translation sensitivities
+//(0 will disable the translation, a negative value will reverse its direction)
+dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
+//Define the translation sensitivities
+//(0 will disable the rotation, a negative value will reverse its orientation)
+dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
+scene.addDevice(dev);
+}}}
+
+==Observations:==
 
  # *Proscene* does not handle the device directly. This should be achieved  with a third party library such [http://www.creativecomputing.cc/p5libs/procontroll/ procontroll].
  # An *HIDevice* implements some default configurations to manipulate the camera and a given interactive frame. A third party configuration can easily be implemented too (see the *HIDevice* API for details). *If you implement your own configuration and wish to share please let us know. If you want us to implement a new one, let us know it too :)*
