@@ -25,6 +25,7 @@ To instantiate and define a *HIDevice* we have the following two options (in the
 {{{
 void setup() {
   ...
+  scene = new Scene(this);//declare the a scene, which is the main Proscene object
   dev = new HIDevice(scene);//declare a RELATIVE mode HIDevice
   dev.addHandler(this, "feed");//add the feed defined below
   //Define the translation sensitivities
@@ -57,6 +58,7 @@ The following code will handle the device exactly as in the previous option.
 {{{
 void setup() {
   ...
+  scene = new Scene(this);//declare the a scene, which is the main Proscene object
   dev = new HIDevice(scene) {
     //if one of the feeds is not overridden the correspondent translation/rotation would be disabled 
     public float feedXTranslation() {
