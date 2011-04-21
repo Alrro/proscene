@@ -21,15 +21,18 @@ Suppose that we wish to control our camera and some objects in our *scene* using
 ===Option 1: Declare your own HIDevice and add a feed handler ===
 
 {{{
-dev = new HIDevice(scene);//declare a RELATIVE mode HIDevice
-dev.addHandler(this, "feed");//add the feed defined below
-//Define the translation sensitivities
-//(0 will disable the translation, a negative value will reverse its direction)
-dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
-//Define the translation sensitivities
-//(0 will disable the rotation, a negative value will reverse its orientation)
-dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
-scene.addDevice(dev);
+void setup() {
+  ...
+  dev = new HIDevice(scene);//declare a RELATIVE mode HIDevice
+  dev.addHandler(this, "feed");//add the feed defined below
+  //Define the translation sensitivities
+  //(0 will disable the translation, a negative value will reverse its direction)
+  dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
+  //Define the translation sensitivities
+  //(0 will disable the rotation, a negative value will reverse its orientation)
+  dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
+  scene.addDevice(dev);
+}
 //The feed function should look like the following:
 void feed(HIDevice d) {
   //enable the three translations
@@ -50,34 +53,36 @@ void feed(HIDevice d) {
 The following code will handle the device exactly as in the previous option.
 
 {{{
-dev = new HIDevice(scene) {
-  //if one of the feeds is not overridden the correspondent translation/rotation would be disabled 
-  public float feedXTranslation() {
-    return sliderXpos.getValue();
-  }
-  public float feedYTranslation() {
-    return sliderYpos.getValue();
-  }
-  public float feedZTranslation() {
-    return sliderZpos.getValue();
-  }
-  public float feedXRotation() {
-    return sliderXrot.getValue();
-  }
-  public float feedYRotation() {
-    return sliderYrot.getValue();
-  }
-  public float feedZRotation() {
-    return sliderZrot.getValue();
-  }
-};
-//Define the translation sensitivities
-//(0 will disable the translation, a negative value will reverse its direction)
-dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
-//Define the translation sensitivities
-//(0 will disable the rotation, a negative value will reverse its orientation)
-dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
-scene.addDevice(dev);
+void setup() {
+  dev = new HIDevice(scene) {
+    //if one of the feeds is not overridden the correspondent translation/rotation would be disabled 
+    public float feedXTranslation() {
+      return sliderXpos.getValue();
+    }
+    public float feedYTranslation() {
+      return sliderYpos.getValue();
+    }
+    public float feedZTranslation() {
+      return sliderZpos.getValue();
+    }
+    public float feedXRotation() {
+      return sliderXrot.getValue();
+    }
+    public float feedYRotation() {
+      return sliderYrot.getValue();
+    }
+    public float feedZRotation() {
+      return sliderZrot.getValue();
+    }
+  };
+  //Define the translation sensitivities
+  //(0 will disable the translation, a negative value will reverse its direction)
+  dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
+  //Define the translation sensitivities
+  //(0 will disable the rotation, a negative value will reverse its orientation)
+  dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
+  scene.addDevice(dev);
+}
 }}}
 
 ==Observations:==
