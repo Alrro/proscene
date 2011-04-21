@@ -18,7 +18,7 @@ The main goal of this release has been to add support for Human Interface Device
 
 Suppose that we wish to control our camera and some objects in our *scene* using a [http://en.wikipedia.org/wiki/6DOF 6-DOF] device such the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator]. Once we instantiate an *HIDevice*, say `dev`, we can cycle to the predefined camera and frame configurations calling `dev.nextCameraMode()` and `dev.nextIFrameMode()`, respectively.
 
-To instantiate and define a *HIDevice* we have two options to do it (in the code below *note* that the `slider*pos` and the `slider*rot` objects belong to the third party library actually controlling the hardware):
+To instantiate and define a *HIDevice* we have the following two options (in the code below *note* that the `slider*pos` and the `slider*rot` objects belong to the third party library actually controlling the hardware):
 
 ===Option 1: Declare your own HIDevice and add a feed handler ===
 
