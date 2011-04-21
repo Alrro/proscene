@@ -54,6 +54,7 @@ The following code will handle the device exactly as in the previous option.
 
 {{{
 void setup() {
+  ...
   dev = new HIDevice(scene) {
     //if one of the feeds is not overridden the correspondent translation/rotation would be disabled 
     public float feedXTranslation() {
