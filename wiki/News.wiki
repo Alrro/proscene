@@ -35,7 +35,7 @@ void feed(HIDevice d) {
   //enable the three translations
   //again, 0 will disable the translation, a negative value will reverse its direction
   //to produce a different mapping between the device axes and the different scene coordinates systems
-  //(referred in proscene as Frames) simply exchange the order of the slider*pos parameters at will.
+  //(referred to in proscene as Frames) simply exchange the order of the slider*pos parameters at will.
   d.feedTranslation(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue());
   //enable the three rotations
   //again, will disable the rotation, a negative value will reverse its orientation
