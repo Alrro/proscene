@@ -51,7 +51,7 @@ void feed(HIDevice d) {
 }
 }}}
 
-===Option 2: Derivate from HIDevice and override the feeds===
+===Option 2: Inherit from HIDevice and override the feeds===
 
 The following code will handle the device exactly as in the previous option.
 
