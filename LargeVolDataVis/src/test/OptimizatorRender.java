@@ -10,7 +10,7 @@ import codeanticode.glgraphics.*;
 
 public class OptimizatorRender {
 	/*
-	 * Declaración Miembros de Clase
+	 * Declaraciï¿½n Miembros de Clase
 	 * */
 	OctreeNode oc;
 	ArrayList<Integer> indexes=new ArrayList<Integer>();
@@ -35,12 +35,12 @@ public class OptimizatorRender {
 	 */
 	public void vfc(GLGraphics renderer , GLModel model , Scene scene){
 		renderer.beginGL();
-		vfcVerify( oc , scene , renderer );
+		vfcVerify( oc , scene , renderer , 1);
 		renderer.endGL();
 		}
 	
 	
-	private void vfcVerify(OctreeNode octree, Scene scene ,GLGraphics renderer){
+	private void vfcVerify(OctreeNode octree, Scene scene ,GLGraphics renderer,int a){
 		switch (scene.camera().sphereIsVisible(new PVector(octree.bss.center.x, octree.bss.center.y, octree.bss.center.z), octree.bss.radius)) {
 		case VISIBLE:
 			renderer.model(octree.model);
@@ -54,20 +54,21 @@ public class OptimizatorRender {
 				break;
 			case SEMIVISIBLE:
 				if(octree.hijos==null){
-					renderer.model(octree.model);					
+					renderer.model(octree.model);
 				}else{
 					for(int i=0;i<octree.hijos.length;i++){
-						vfcVerify(octree.hijos[i], scene , renderer);
+						a++;
+						vfcVerify(octree.hijos[i], scene , renderer , a);
 					}
 				}
 				break;
 			case INVISIBLE:
-				System.out.println("no se imprime por cubo");
+				//System.out.println("no se imprime por cubo");
 				break;
 			}
 			break;
 		case INVISIBLE:
-			System.out.println("no se imprime por esfera");
+			//System.out.println("no se imprime por esfera");
 			break;
 	}
 	}

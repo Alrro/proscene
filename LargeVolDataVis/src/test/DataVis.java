@@ -1,25 +1,18 @@
-/**  
- * LargeVolDataVis
- * Programa implementado con las librerias Proscene y GLGraphics de Processing.
- * El objetivo es evaluar el uso de distintos metodos de oclusion de escena a  
- * efectos de mejorar la performance de render en tiempo real de modelos 3D con 
- * gran cantidad de vertices.
- * 
- * En este caso, toda la geometria esta almacenada en un unico objeto GLModel,
- * y subdividida dentro del mismo en cubos, cada uno de ellos utilzando 8 vertices. 
- * 
- * El uso de view-fustrum-culling (VFC) se activa/desactiva con la tecla V.
- * Para utilizar VFC pero sin actualizar el volumen de oclusion, persionar F.
- * 
- */
-
 package test;
+
+
+
 
 import java.nio.FloatBuffer;
 
 import processing.core.*;
 import codeanticode.glgraphics.*;
 import remixlab.proscene.*;
+import test.BoundingBox;
+import test.BoundingSphere;
+import test.Chronometer;
+import test.OctreeNode;
+import test.OptimizatorRender;
 
 public class DataVis extends PApplet {
 	private static final long serialVersionUID = 1L;
@@ -75,7 +68,7 @@ public class DataVis extends PApplet {
 		println("Creando cubos...");
 		createCubes();
 		println("Creando el Optimizador...");
-		optim=new OptimizatorRender(cubes,this);
+		if(enableVFC)optim=new OptimizatorRender(cubes,this);
 		println("Listo.");
 	}
 	
@@ -117,7 +110,7 @@ public class DataVis extends PApplet {
 			}
 		}
 
-		if (drawingOC) {
+		if (drawingOC && enableVFC) {
 		  stroke(0,0,255);
 		  pintarOc(optim.oc);
 		}
@@ -265,9 +258,6 @@ public class DataVis extends PApplet {
 			points.put(21, x0 - cubeSize); 
 			points.put(22, y0 + cubeSize); 
 			points.put(23, z0 + cubeSize);
-
-			bbs[i].computeFromPoints(points);
-			bss[i].computeFromPoints(points);
 		}
 		cubes.endUpdateVertices();
 
