@@ -16,7 +16,7 @@ The main goal of this release has been to add support for Human Interface Device
 
 ==How to use a *HIDevice*?==
 
-Suppose that we wish to control our camera and some objects in our scene with a [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] device such the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator]. We have two options to do it (in the code below *note* that the `slider*pos` and the `slider*rot` objects belong to the third party library actually controlling the hardware):
+Suppose that we wish to control our camera and some objects in our *scene* using a [http://en.wikipedia.org/wiki/6DOF 6-DOF] device such the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator]. We have two options to do it (in the code below *note* that the `slider*pos` and the `slider*rot` objects belong to the third party library actually controlling the hardware):
 
 ===Option 1: Declare your own HIDevice and add a feed handler ===
 
