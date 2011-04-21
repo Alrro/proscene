@@ -36,7 +36,7 @@ void setup() {
   dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
   scene.addDevice(dev);
 }
-//The feed function should look like the following:
+//The feed handler function should look like the following:
 void feed(HIDevice d) {
   //enable the three translations
   //again, 0 will disable the translation, a negative value will reverse its direction
