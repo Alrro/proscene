@@ -6,7 +6,7 @@ This is the first alpha release of the next version of *proscene* targeted at te
 
  * Works with the latest [http://processing.org/ Processing] version (1.5). The current stable version of *proscene (1.0.0)* should do it too.
  * Fixes a bug in the `Camera.sphereIsVisible` test needed to properly implement view-frustum-culling).
- * *Off-screen-rendering* has been greatly improved which means *proscene* examples requiring multiple viewers in one skecth no longer require the *napplet* dependency.
+ * *Off-screen-rendering* has been greatly improved which means *proscene* examples with multiple viewers running in a single skecth no longer require the *napplet* dependency.
  * Generic suppport for [http://en.wikipedia.org/wiki/Human_interface_device Human Interface Devices] has been implemented.
 
 The main goal of this release has been to add support for Human Interface Devices (HID) with six (or less) [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] to control both the camera and any interactive frame attached to the *scene*. This has been done through the new *HIDevice* class. An *HIDevice* object has a type which can of one of two types: *RELATIVE* or *ABSOLUTE*:
