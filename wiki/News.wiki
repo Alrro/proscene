@@ -9,7 +9,7 @@ This is the first alpha release of the next version of *proscene* targeted at te
  * *Off-screen-rendering* has been greatly improved which means *proscene* examples with multiple viewers running in a single skecth no longer require the *napplet* dependency.
  * Generic suppport for [http://en.wikipedia.org/wiki/Human_interface_device Human Interface Devices] has been implemented.
 
-The main goal of this release has been to add support for Human Interface Devices (HID) with six (or less) [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] to control both the camera and any interactive frame attached to the *scene*. This has been done through the new *HIDevice* class. An *HIDevice* object has a type which can be of one of two types: *RELATIVE* or *ABSOLUTE*:
+The main goal of this release has been to add support for Human Interface Devices (HID) with six (or less) [http://en.wikipedia.org/wiki/6DOF degrees-of-freedom] to control both the camera and any interactive frame attached to the *scene*. This has been done through the new *HIDevice* class. An *HIDevice* object can be of one of two types: *RELATIVE* or *ABSOLUTE*:
 
  * A *RELATIVE HIDevice* (default configuration) have a neutral position that the device holds when it is not being manipulated. Examples of such devices are the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator] and the [http://en.wikipedia.org/wiki/Joystick joystick].
  * An *ABSOLUTE HIDevice* has no such neutral position. Examples of ABSOLUTE devices are the [http://en.wikipedia.org/wiki/Wii wii] and the [http://en.wikipedia.org/wiki/Kinect kinect].
