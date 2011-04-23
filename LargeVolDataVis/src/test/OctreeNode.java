@@ -1,344 +1,169 @@
 package test;
+
 /*
  * Actualmente implementado solo para TRIANGLES
  * */
-import java.nio.BufferUnderflowException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
-
-import javax.media.opengl.GL;
-
 import processing.core.PApplet;
-import processing.core.PConstants;
+import codeanticode.glgraphics.GLGraphics;
 import codeanticode.glgraphics.GLModel;
 
 public class OctreeNode {
-	OctreeNode hijos[];
-	GLModel model;
-	PApplet parent;
-	float xMax,xMin,yMax,yMin,zMax,zMin;
-	float xMedio,yMedio,zMedio;
-	BoundingBox bbs;
-	BoundingSphere bss;
+  int level;
+  OctreeNode hijos[];
+  GLModel model;
+  int[] indices;
+  DataVis parent;
+  int idxMax, idxMin;
+  float xMax, xMin, yMax, yMin, zMax, zMin;
+  float xMedio, yMedio, zMedio;
+  BoundingBox bbs;
+  BoundingSphere bss;
 
-	public OctreeNode() {
-		hijos=null;
-	}
+  public OctreeNode() {
+    hijos = null;
+  }
 
-	public OctreeNode(GLModel model , PApplet parent){
-		this.parent=parent;
-		this.model=model;
-		childsGeneration();
-	}
+  public OctreeNode(GLModel model, int[] indices, DataVis parent, int level) {
+    this.parent = parent;
+    this.model = model;
+    this.indices = indices;
 
-	private void childsGeneration(){
-		ArrayList<Float> verts = GLModelToVertexArray();
-		ArrayList<Integer> indexes = GLModelToIndexArray();
-		System.out.print("");
-		if (verts.size() == 0) return;
+    idxMin = model.getSize();
+    idxMax = idxMin;
+    for (int i = 0; i < indices.length; i++) {
+      idxMin = PApplet.min(idxMin, indices[i]);
+      idxMax = PApplet.max(idxMax, indices[i]);
+    }
 
-		xMax=xMin=verts.get(0);
-		yMax=yMin=verts.get(1);
-		zMax=zMin=verts.get(2);
+    model.updateBounds(indices, indices.length);
+    xMax = model.xmax;
+    xMin = model.xmin;
+    yMax = model.ymax;
+    yMin = model.ymin;
+    zMax = model.zmax;
+    zMin = model.zmin;
 
-		for(int i=0;i<verts.size();i+=4){
-			xMax=Math.max(xMax, verts.get(i));
-			xMin=Math.min(xMin, verts.get(i));
-			yMax=Math.max(yMax, verts.get(i+1));
-			yMin=Math.min(yMin, verts.get(i+1));
-			zMax=Math.max(zMax, verts.get(i+2));
-			zMin=Math.min(zMin, verts.get(i+2));
-		}
+    xMedio = ((xMax - xMin) / 2) + xMin;
+    yMedio = ((yMax - yMin) / 2) + yMin;
+    zMedio = ((zMax - zMin) / 2) + zMin;
 
-		if(model.vertices.capacity()/4>2000){
+    bbs = new BoundingBox();
+    bss = new BoundingSphere();
 
-			ArrayList<Integer>  verts1=new ArrayList<Integer>()
-			,verts2=new ArrayList<Integer>()
-			,verts3=new ArrayList<Integer>()
-			,verts4=new ArrayList<Integer>()
-			,verts5=new ArrayList<Integer>()
-			,verts6=new ArrayList<Integer>()
-			,verts7=new ArrayList<Integer>()
-			,verts8=new ArrayList<Integer>();
+    FloatBuffer buf = FloatBuffer.allocate(6);
+    buf.put(0, xMax);
+    buf.put(1, yMax);
+    buf.put(2, zMax);
+    buf.put(3, xMin);
+    buf.put(4, yMin);
+    buf.put(5, zMin);
 
-			ArrayList<Integer>  inds1=new ArrayList<Integer>()
-			,inds2=new ArrayList<Integer>()
-			,inds3=new ArrayList<Integer>()
-			,inds4=new ArrayList<Integer>()
-			,inds5=new ArrayList<Integer>()
-			,inds6=new ArrayList<Integer>()
-			,inds7=new ArrayList<Integer>()
-			,inds8=new ArrayList<Integer>();
+    bbs.computeFromPoints(buf);
+    bss.computeFromPoints(buf);
 
-			xMedio=((xMax-xMin)/2)+xMin;
-			yMedio=((yMax-yMin)/2)+yMin;
-			zMedio=((zMax-zMin)/2)+zMin;
+    this.level = level + 1;
+    if (parent.maxOctreeLevel <= level)
+      return;
 
-			for(int i=0;i<verts.size();i+=4){
-				if(verts.get(i)>xMedio && verts.get(i+1)>yMedio && verts.get(i+2)>zMedio){ 
-					verts1.add(i/4);
-				}
-				if(verts.get(i)>xMedio && verts.get(i+1)<yMedio && verts.get(i+2)>zMedio){ 
-					verts2.add(i/4);
-				}
-				if(verts.get(i)>xMedio && verts.get(i+1)>yMedio && verts.get(i+2)<zMedio){ 
-					verts3.add(i/4);
-				}
-				if(verts.get(i)>xMedio && verts.get(i+1)<yMedio && verts.get(i+2)<zMedio){ 
-					verts4.add(i/4);
-				}
-				if(verts.get(i)<xMedio && verts.get(i+1)>yMedio && verts.get(i+2)>zMedio){ 
-					verts5.add(i/4);
-				}
-				if(verts.get(i)<xMedio && verts.get(i+1)<yMedio && verts.get(i+2)>zMedio){
-					verts6.add(i/4);
-				}
-				if(verts.get(i)<xMedio && verts.get(i+1)>yMedio && verts.get(i+2)<zMedio){
-					verts7.add(i/4);
-				}
-				if(verts.get(i)<xMedio && verts.get(i+1)<yMedio && verts.get(i+2)<zMedio){
-					verts8.add(i/4);
-				}
-			}
+    childsGeneration();
+  }
 
-			initIndices(inds1, verts1, indexes, verts);
-			initIndices(inds2, verts2, indexes, verts);
-			initIndices(inds3, verts3, indexes, verts);
-			initIndices(inds4, verts4, indexes, verts);
-			initIndices(inds5, verts5, indexes, verts);
-			initIndices(inds6, verts6, indexes, verts);
-			initIndices(inds7, verts7, indexes, verts);
-			initIndices(inds8, verts8, indexes, verts);
+  public void draw(GLGraphics renderer) {
+    // PApplet.println("Drawing octree");
+    model.updateIndices(indices, indices.length);
+    model.setMinIndex(idxMin);
+    model.setMaxIndex(idxMax);
+    renderer.model(model);
+  }
 
-			/*
-			System.out.println("Vertices 1: "+ verts1);
-			System.out.println("Vertices 2: "+ verts2);
-			System.out.println("Vertices 3: "+ verts3);
-			System.out.println("Vertices 4: "+ verts4);
-			System.out.println("Vertices 5: "+ verts5);
-			System.out.println("Vertices 6: "+ verts6);
-			System.out.println("Vertices 7: "+ verts7);
-			System.out.println("Vertices 8: "+ verts8);
+  private void childsGeneration() {
+    ArrayList<Integer> inds1 = new ArrayList<Integer>(), inds2 = new ArrayList<Integer>(), inds3 = new ArrayList<Integer>(), inds4 = new ArrayList<Integer>(), inds5 = new ArrayList<Integer>(), inds6 = new ArrayList<Integer>(), inds7 = new ArrayList<Integer>(), inds8 = new ArrayList<Integer>();
 
-			System.out.println("Indices 1: "+ inds1);
-			System.out.println("Indices 2: "+ inds2);
-			System.out.println("Indices 3: "+ inds3);
-			System.out.println("Indices 4: "+ inds4);
-			System.out.println("Indices 5: "+ inds5);
-			System.out.println("Indices 6: "+ inds6);
-			System.out.println("Indices 7: "+ inds7);
-			System.out.println("Indices 8: "+ inds8);*/
+    model.beginUpdateVertices();
+    FloatBuffer vbuf = model.vertices;
+    float vert[] = { 0, 0, 0 };
+    for (int n = 0; n < indices.length; n += 3) {
+      // Asumiendo que tres indices consecutivos representan un
+      // triangulo.
+      int vidx0 = indices[n];
+      int vidx1 = indices[n + 1];
+      int vidx2 = indices[n + 2];
+      // Por convencion: solamente se usa el primer vertice del triangulo para
+      // determinar la pertenencia a los hijos del octree. Cualquier otra
+      // convencion
+      // que determine una pertenencia univoca de cada triangulo seria
+      // igualmente valida.
+      // Al asignar indices en grupos de tres, siendo cada grupo un triangulo
+      // del modelo
+      // original, se asegura que (a) se pierdan triangulos al quedar vertices
+      // de los mismos
+      // en distintas regiones del octree, y (b) no haya redundancia de
+      // triangulos.
+      vbuf.position(4 * vidx0);
+      vbuf.get(vert, 0, 3);
+      if (vert[0] > xMedio && vert[1] > yMedio && vert[2] > zMedio) {
+        inds1.add(vidx0);
+        inds1.add(vidx1);
+        inds1.add(vidx2);
+      }
+      if (vert[0] > xMedio && vert[1] < yMedio && vert[2] > zMedio) {
+        inds2.add(vidx0);
+        inds2.add(vidx1);
+        inds2.add(vidx2);
+      }
+      if (vert[0] > xMedio && vert[1] > yMedio && vert[2] < zMedio) {
+        inds3.add(vidx0);
+        inds3.add(vidx1);
+        inds3.add(vidx2);
+      }
+      if (vert[0] > xMedio && vert[1] < yMedio && vert[2] < zMedio) {
+        inds4.add(vidx0);
+        inds4.add(vidx1);
+        inds4.add(vidx2);
+      }
+      if (vert[0] < xMedio && vert[1] > yMedio && vert[2] > zMedio) {
+        inds5.add(vidx0);
+        inds5.add(vidx1);
+        inds5.add(vidx2);
+      }
+      if (vert[0] < xMedio && vert[1] < yMedio && vert[2] > zMedio) {
+        inds6.add(vidx0);
+        inds6.add(vidx1);
+        inds6.add(vidx2);
+      }
+      if (vert[0] < xMedio && vert[1] > yMedio && vert[2] < zMedio) {
+        inds7.add(vidx0);
+        inds7.add(vidx1);
+        inds7.add(vidx2);
+      }
+      if (vert[0] < xMedio && vert[1] < yMedio && vert[2] < zMedio) {
+        inds8.add(vidx0);
+        inds8.add(vidx1);
+        inds8.add(vidx2);
+      }
+    }
+    vbuf.rewind();
+    model.endUpdateVertices();
 
-			/*
-			 * Se crean los GLModel de los hijos
-			 */
+    hijos = new OctreeNode[8];
+    hijos[0] = new OctreeNode(model, toIntArray(inds1), parent, level);
+    hijos[1] = new OctreeNode(model, toIntArray(inds2), parent, level);
+    hijos[2] = new OctreeNode(model, toIntArray(inds3), parent, level);
+    hijos[3] = new OctreeNode(model, toIntArray(inds4), parent, level);
+    hijos[4] = new OctreeNode(model, toIntArray(inds5), parent, level);
+    hijos[5] = new OctreeNode(model, toIntArray(inds6), parent, level);
+    hijos[6] = new OctreeNode(model, toIntArray(inds7), parent, level);
+    hijos[7] = new OctreeNode(model, toIntArray(inds8), parent, level);
+  }
 
-			GLModel mod1,mod2,mod3,mod4,mod5,mod6,mod7,mod8;
-
-			mod1=createGLModel(verts1,inds1,verts,indexes);
-			mod2=createGLModel(verts2,inds2,verts,indexes);
-			mod3=createGLModel(verts3,inds3,verts,indexes);
-			mod4=createGLModel(verts4,inds4,verts,indexes);
-			mod5=createGLModel(verts5,inds5,verts,indexes);
-			mod6=createGLModel(verts6,inds6,verts,indexes);
-			mod7=createGLModel(verts7,inds7,verts,indexes);
-			mod8=createGLModel(verts8,inds8,verts,indexes);
-
-			hijos= new OctreeNode[8];
-			hijos[0]=new OctreeNode(mod1,parent);
-			hijos[1]=new OctreeNode(mod2,parent);
-			hijos[2]=new OctreeNode(mod3,parent);
-			hijos[3]=new OctreeNode(mod4,parent);
-			hijos[4]=new OctreeNode(mod5,parent);
-			hijos[5]=new OctreeNode(mod6,parent);
-			hijos[6]=new OctreeNode(mod7,parent);
-			hijos[7]=new OctreeNode(mod8,parent);
-		}
-		bbs=new BoundingBox();
-		bss=new BoundingSphere();
-
-		FloatBuffer buf=FloatBuffer.allocate(6);
-		buf.put(0,xMax);
-		buf.put(1,yMax);
-		buf.put(2,zMax);
-		buf.put(3,xMin);
-		buf.put(4,yMin);
-		buf.put(5,zMin);
-
-
-		bbs.computeFromPoints(buf);
-		bss.computeFromPoints(buf);
-	}
-
-	private ArrayList<Float> GLModelToVertexArray(){
-		boolean leer=true;
-		ArrayList<Float> verts=new ArrayList<Float>();
-		if (model.getSize() == 0) return verts;
-		while(leer){
-			try{
-				//System.out.print("Entr� ");
-				verts.add(model.vertices.get());
-				verts.add(model.vertices.get());
-				verts.add(model.vertices.get());
-				model.vertices.get();
-				verts.add((float)((model.vertices.position()+1)/4 - 1));
-			}
-			catch (BufferUnderflowException e) {
-				leer=false;
-			}
-		}
-		return verts;
-	}
-
-	private ArrayList<Integer> GLModelToIndexArray( ){		
-		boolean leer=true;
-		ArrayList<Integer> indices=new ArrayList<Integer>();
-		if (model.getSize() == 0) return indices;
-		while(leer){
-			try{
-				indices.add(model.indices.get());
-			}catch (Exception e) {
-				leer=false;
-			}
-		}
-		return indices;
-	}
-
-	private void initIndices(ArrayList<Integer> localInds, ArrayList<Integer> localVerts, ArrayList<Integer> globalInds,ArrayList<Float> globalVerts){
-		switch(model.getMode()){
-		case GL.GL_POINT:
-			break;
-		case GL.GL_LINE:
-			break;
-		case GL.GL_LINE_STRIP:
-			break;
-		case GL.GL_LINE_LOOP:
-			break;
-		case GL.GL_TRIANGLES:
-			boolean tmp1,tmp2,tmp3;
-			
-			for(int i=0;i<globalInds.size();i+=3){
-
-				tmp1=localVerts.contains(globalInds.get(i));
-				tmp2=localVerts.contains(globalInds.get(i+1));
-				tmp3=localVerts.contains(globalInds.get(i+2));
-				
-				boolean addInds= tmp1 || tmp2 || tmp3;
-
-				if(addInds){
-					if(!tmp1)localVerts.add(globalInds.get(i));
-					if(!tmp2)localVerts.add(globalInds.get(i+1));
-					if(!tmp3)localVerts.add(globalInds.get(i+2));
-
-					localInds.add(globalInds.get(i));
-					localInds.add(globalInds.get(i+1));
-					localInds.add(globalInds.get(i+2));
-				}
-			}
-			System.out.println("Numero de Indices del modelo: "+localInds.size());
-			break;
-		case GL.GL_TRIANGLE_STRIP:
-			break;
-		case GL.GL_QUADS:
-			break;
-		case GL.GL_QUAD_STRIP:
-			break;
-		case GL.GL_POLYGON:
-			break;
-		default:
-			System.out.println("Modo del modelo: "+model.getMode());
-			System.out.println("Modo POINTS: "+GL.GL_POINTS);
-			System.out.println("Modo LINES: "+GL.GL_LINES);
-			System.out.println("Modo LINE_STRIP: "+GL.GL_LINE_STRIP);
-			System.out.println("Modo LINE_LOOP: "+GL.GL_LINE_LOOP);
-			System.out.println("Modo TRIANGLES: "+GL.GL_TRIANGLES);
-			System.out.println("Modo TRIANGLE_FAN: "+GL.GL_TRIANGLE_FAN);
-			System.out.println("Modo TRIANGLE_STRIP: "+GL.GL_TRIANGLE_STRIP);
-			System.out.println("Modo QUAD_STRIP: "+GL.GL_QUAD_STRIP);
-			System.out.println("Modo QUADS: "+GL.GL_QUADS);
-			System.out.println("Modo POLYGON: "+GL.GL_POLYGON);
-			throw new RuntimeException("Metodo de indexacion no soportado");
-		}
-	}
-
-	private GLModel createGLModel(ArrayList<Integer> localVerts , ArrayList<Integer> localInds , 
-			ArrayList<Float> globalVerts , ArrayList<Integer> globalInds){
-
-		if(localVerts.size()<=0)throw new RuntimeException("Intentando crear GLModel vacio");
-
-		PApplet.println("Creating model with " + localVerts.size() + " vertices.");
-
-		switch(model.getMode()){
-			
-			case GL.GL_POINT:
-				break;
-				
-			case GL.GL_LINE:
-				break;
-				
-			case GL.GL_LINE_STRIP:
-				break;
-				
-			case GL.GL_LINE_LOOP:
-				break;
-				
-			case GL.GL_TRIANGLES:
-				
-				GLModel modelChild= new GLModel(parent, localVerts.size(), PApplet.TRIANGLES , GLModel.STATIC);
-				
-				modelChild.beginUpdateVertices();
-				for(int i=0;i<localVerts.size();i++){
-					modelChild.updateVertex(i,globalVerts.get(localVerts.get(i)*4+0),
-							globalVerts.get(localVerts.get(i)*4+1),globalVerts.get(localVerts.get(i)*4+2));
-					System.out.println(i+"  "+localVerts.get(i)+"  "+globalVerts.get(localVerts.get(i)*4+0)+"  "+
-							globalVerts.get(localVerts.get(i)*4+1)+"  "+globalVerts.get(localVerts.get(i)*4+2));
-				}
-				modelChild.endUpdateVertices();
-	
-				int indices[]=new int[localInds.size()];
-				for(int i=0;i<indices.length;i++){
-					indices[i]=localVerts.indexOf(localInds.get(i));
-				}
-
-	
-				//modelChild.beginUpdateIndices();
-				modelChild.initIndices(indices.length);
-				modelChild.autoIndexBounds(false);
-				modelChild.updateIndices(indices);
-				//modelChild.endUpdateIndices();
-				
-				System.out.println(modelChild.vertices.capacity()+" "+modelChild.indices.capacity());
-
-				return modelChild;
-				
-			case GL.GL_TRIANGLE_STRIP:
-				break;
-				
-			case GL.GL_QUADS:
-				break;
-				
-			case GL.GL_QUAD_STRIP:
-				break;
-				
-			case GL.GL_POLYGON:
-				break;
-				
-			default:
-				System.out.println("Modo del modelo: "+model.getMode());
-				System.out.println("Modo POINTS: "+GL.GL_POINTS);
-				System.out.println("Modo LINES: "+GL.GL_LINES);
-				System.out.println("Modo LINE_STRIP: "+GL.GL_LINE_STRIP);
-				System.out.println("Modo LINE_LOOP: "+GL.GL_LINE_LOOP);
-				System.out.println("Modo TRIANGLES: "+GL.GL_TRIANGLES);
-				System.out.println("Modo TRIANGLE_FAN: "+GL.GL_TRIANGLE_FAN);
-				System.out.println("Modo TRIANGLE_STRIP: "+GL.GL_TRIANGLE_STRIP);
-				System.out.println("Modo QUAD_STRIP: "+GL.GL_QUAD_STRIP);
-				System.out.println("Modo QUADS: "+GL.GL_QUADS);
-				System.out.println("Modo POLYGON: "+GL.GL_POLYGON);
-				throw new RuntimeException("Metodo de indexacion no soportado");
-		}
-
-		return null;
-	}
-	
+  private int[] toIntArray(ArrayList<Integer> list) {
+    Object obj[] = list.toArray();
+    int res[] = new int[obj.length];
+    for (int i = 0; i < res.length; i++) {
+      res[i] = (Integer) obj[i];
+    }
+    return res;
+  }
 }

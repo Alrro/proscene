@@ -1,9 +1,8 @@
 package test;
 
-
-
-
 import java.nio.FloatBuffer;
+
+import javax.media.opengl.GL;
 
 import processing.core.*;
 import codeanticode.glgraphics.*;
@@ -16,16 +15,24 @@ import test.OptimizatorRender;
 
 public class DataVis extends PApplet {
 	private static final long serialVersionUID = 1L;
-	
-	int cubeCount = 500;
+
+  // La maxima profundidad del octree.
+  int maxOctreeLevel = 2;	
+  
+  // Si esta variable es true, entonces el modelo se dibuja con una sola
+  // llamada a renderer.model(), reuniendo todos los indices de los nodos
+  // visibles del octree en un unico array.
+  // En el caso de que sea false, cada nodo visible se dibuja por separado.
+  boolean oneDrawCall = false;
+  	
+	int cubeCount = 5000;
 	int vertPerCube = 8;
 	float cubeSize = 10;
 	float volSize = 1000;
 
-	boolean drawingOC = true;
-	boolean drawBoundingVolumes = false;
-	boolean freezeCalc = false;
-	boolean enableVFC,pruebaDibujado;
+	boolean drawBBS = false;
+	boolean drawBSS = false;	
+	boolean enableVFC = true;
 	
 	GLModel cubes;
 	Scene scene;
@@ -49,13 +56,12 @@ public class DataVis extends PApplet {
 	BoundingSphere[] bss;
 
 	public void setup() {
-		size(800, 800, GLConstants.GLGRAPHICS);
+		size(600, 600, GLConstants.GLGRAPHICS);
 		frameRate(120);
 
 		chrono = new Chronometer(this);
 
 		scene = new Scene(this);
-		enableVFC=true;
 		scene.enableFrustumEquationsUpdate();
 		scene.setRadius(volSize);
 		scene.showAll();
@@ -68,50 +74,35 @@ public class DataVis extends PApplet {
 		println("Creando cubos...");
 		createCubes();
 		println("Creando el Optimizador...");
-		if(enableVFC)optim=new OptimizatorRender(cubes,this);
+		optim = new OptimizatorRender(cubes, indices0, this);
 		println("Listo.");
 	}
 	
-	public void draw() {
-		
+	public void draw() {		
 		chrono.update();
 
 		GLGraphics renderer = (GLGraphics) g;
+    
+		GL gl = renderer.gl;
+    // Deshabilitando depth mask para que el dibujado de
+    // objetos semi-transparentes no tenga artefactos.
+    //gl.glDepthMask(false);
+		
 		if (enableVFC) {
 			optim.vfc(renderer, cubes, scene);
 		} else {
+		  // Dibujando todo el sistema, sin optimizacion de VFC.
 			renderer.beginGL();
-			renderer.model(cubes);
+	    cubes.updateIndices(indices0, indices0.length);
+	    cubes.setMinIndex(minInd);
+	    cubes.setMaxIndex(maxInd);     
+	    renderer.model(cubes);  
 			renderer.endGL();
 		}
-   
 
-		if (drawBoundingVolumes) {
-			// Los bounding volumes no se dibujan a trabjas de GLGraphics, sino que con la API regular
-			// de Processing, con lo cual no es recomendable dibujarlos cuando se tiene un GLModel muy
-			// grande.
-			noFill();
-
-			stroke(255, 0, 0);
-			for (int i = 0; i < bbs.length; i++) {
-				pushMatrix();
-				translate(bbs[i].center.x, bbs[i].center.y, bbs[i].center.z);
-				box(2.01f * bbs[i].xExtent, 2.01f * bbs[i].yExtent,
-						2.01f * bbs[i].zExtent);
-				popMatrix();
-			}
-
-			stroke(0, 255, 0);
-			for (int i = 0; i < bss.length; i++) {
-				pushMatrix();
-				translate(bss[i].center.x, bss[i].center.y, bss[i].center.z);
-				sphere(bss[i].radius);
-				popMatrix();
-			}
-		}
-
-		if (drawingOC && enableVFC) {
-		  stroke(0,0,255);
+    //gl.glDepthMask(true);		
+		
+		if (enableVFC && (drawBBS || drawBSS)) {
 		  pintarOc(optim.oc);
 		}
 		
@@ -119,26 +110,33 @@ public class DataVis extends PApplet {
 	}
 	
 	void pintarOc(OctreeNode oct){
+	  // Los bounding volumes no se dibujan a trabjas de GLGraphics, sino que con la API regular
+    // de Processing, con lo cual no es recomendable dibujarlos cuando se tiene un GLModel muy
+    // grande.	  
 		if(oct.hijos!=null){
 			for(int i=0;i<8;i++){
 				pintarOc(oct.hijos[i]);
 			}
 		}
 
-		noFill();
-		stroke(255, 0, 0);
-		pushMatrix();
-		translate(oct.bbs.center.x, oct.bbs.center.y, oct.bbs.center.z);
-		box(2.01f * oct.bbs.xExtent, 2.01f * oct.bbs.yExtent,
-				2.01f * oct.bbs.zExtent);
-		popMatrix();
+		if (drawBBS) {
+		  noFill();
+	  	stroke(255, 0, 0);
+		  pushMatrix();
+		  translate(oct.bbs.center.x, oct.bbs.center.y, oct.bbs.center.z);
+		  box(2.01f * oct.bbs.xExtent, 2.01f * oct.bbs.yExtent,
+			  	2.01f * oct.bbs.zExtent);
+		  popMatrix();
+		}
 
-		stroke(0, 255, 0);
-		pushMatrix();
-		translate(oct.bss.center.x, oct.bss.center.y, oct.bss.center.z);
-		sphere(oct.bss.radius);
-		popMatrix();
-
+    if (drawBSS) {		
+      noFill();
+		  stroke(0, 255, 0);
+		  pushMatrix();
+		  translate(oct.bss.center.x, oct.bss.center.y, oct.bss.center.z);
+		  sphere(oct.bss.radius);
+		  popMatrix();
+    }
 	}
 
 	void enableVFC() {
@@ -152,8 +150,6 @@ public class DataVis extends PApplet {
 		enableVFC = false;
 		println("Desactivando VFC");
 	}
-
-
 	
 	public void keyPressed() {
 		if (key == 'c' || key == 'C') {
@@ -168,40 +164,39 @@ public class DataVis extends PApplet {
 				enableVFC();
 			return;
 		}
-
-		if (key == 'b' || key == 'B') {
-			if (drawBoundingVolumes) {
-				drawBoundingVolumes = false;
-				println("Deshabilitando dibujado de bounding volumes");
-			} else {
-				drawBoundingVolumes = true;
-				println("Habilitando dibujado de bounding volumes");				
-			}
-			return;
-		}
 		
-		if (key == 'o' || key == 'O') {
-	      if (drawingOC) {
-	        drawingOC = false;
-	        println("Deshabilitando dibujado del octree");
-	        
-	      } else {
-	        drawingOC = true;
-	        println("Habilitando dibujado del octree");
-	      }
-	      return;		 
-		}
-
-		if ((key == 'f' || key == 'F') && enableVFC) {
-			if (freezeCalc) {
-				freezeCalc = false;
-				println("Descongelando calculo de VFC");      
-			} else {
-				freezeCalc = true;
-				println("Congelando calculo de VFC con " + renderedCubes + " cubos");
-			}
-			return;
-		}  
+    if (key == 'b' || key == 'B') {
+      if (drawBBS) {
+        drawBBS = false;
+        println("Deshabilitando dibujado de los bounding boxes del octree");
+      } else {
+        drawBBS = true;
+        println("Habilitando dibujado de los bounding boxes del octree");
+      }
+      return;
+    }
+    
+    if (key == 's' || key == 'S') {
+      if (drawBSS) {
+        drawBSS = false;
+        println("Deshabilitando dibujado de los bounding spheres del octree");
+      } else {
+        drawBSS = true;
+        println("Habilitando dibujado de los bounding spheres del octree");
+      }
+      return;
+    }    
+    
+    if (key == '1') {
+      if (oneDrawCall) {
+        oneDrawCall = false;
+        println("Deshabilitando dibujado en una sola llamada");
+      } else {
+        oneDrawCall = true;
+        println("Habilitando dibujado en una sola llamada");
+      }
+      return;
+    }    
 	}
 
 	void createCubes() {
