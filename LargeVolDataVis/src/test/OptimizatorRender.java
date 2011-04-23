@@ -39,7 +39,6 @@ public class OptimizatorRender {
    *          The GLModel we will apply the VFC
    */
   public void vfc(GLGraphics renderer, GLModel model, Scene scene) {
-    renderer.beginGL();
     if (parent.oneDrawCall) {
       indCount = 0;
       indMin = drawIndices.length;
@@ -47,12 +46,13 @@ public class OptimizatorRender {
     }
     vfcVerify(oc, scene, renderer, 1);
     if (parent.oneDrawCall) {
-      model.updateIndices(drawIndices, indCount);
-      model.setMinIndex(indMin);
-      model.setMaxIndex(indMax);
+      if (parent.mouseMoved) {
+        model.updateIndices(drawIndices, indCount);
+        model.setMinIndex(indMin);
+        model.setMaxIndex(indMax);
+      }
       renderer.model(model);
     }
-    renderer.endGL();
   }
 
   private void vfcVerify(OctreeNode octree, Scene scene, GLGraphics renderer, int a) {
@@ -107,9 +107,11 @@ public class OptimizatorRender {
   }
 
   private void copyIndicesFromOC(OctreeNode oc) {
-    PApplet.arrayCopy(oc.indices, 0, drawIndices, indCount, oc.indices.length);
-    indCount += oc.indices.length;
-    indMin = PApplet.min(indMin, oc.idxMin);
-    indMin = PApplet.max(indMin, oc.idxMax);
+    if (parent.mouseMoved) {    
+      PApplet.arrayCopy(oc.indices, 0, drawIndices, indCount, oc.indices.length);
+      indCount += oc.indices.length;
+      indMin = PApplet.min(indMin, oc.idxMin);
+      indMin = PApplet.max(indMin, oc.idxMax);
+    }
   }
 }

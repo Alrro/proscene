@@ -71,7 +71,6 @@ public class OctreeNode {
   }
 
   public void draw(GLGraphics renderer) {
-    // PApplet.println("Drawing octree");
     model.updateIndices(indices, indices.length);
     model.setMinIndex(idxMin);
     model.setMaxIndex(idxMax);

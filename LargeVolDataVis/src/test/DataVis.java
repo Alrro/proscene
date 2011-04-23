@@ -1,60 +1,50 @@
 package test;
 
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.GL;
-
 import processing.core.*;
 import codeanticode.glgraphics.*;
 import remixlab.proscene.*;
-import test.BoundingBox;
-import test.BoundingSphere;
 import test.Chronometer;
 import test.OctreeNode;
 import test.OptimizatorRender;
+import java.util.ArrayList;
 
 public class DataVis extends PApplet {
 	private static final long serialVersionUID = 1L;
 
-  // La maxima profundidad del octree.
+  // La maxima profundidad del octree. El tiempo de inicializacion
+	// depende exponencialmente de este parametro.
   int maxOctreeLevel = 2;	
   
   // Si esta variable es true, entonces el modelo se dibuja con una sola
   // llamada a renderer.model(), reuniendo todos los indices de los nodos
   // visibles del octree en un unico array.
   // En el caso de que sea false, cada nodo visible se dibuja por separado.
-  boolean oneDrawCall = false;
-  	
-	int cubeCount = 5000;
-	int vertPerCube = 8;
-	float cubeSize = 10;
-	float volSize = 1000;
+  boolean oneDrawCall = true;
+  
+  // Tamanio del volumen 3D donde los objectos son distribuidos aleatoriamente
+  float volSize = 1000;
+  
+  // Numero total de objetos individuales:
+	int objCount = 500000;
+	
+	// Tamanio de cada objeto.
+  float objSize = 10;
 
 	boolean drawBBS = false;
 	boolean drawBSS = false;	
 	boolean enableVFC = true;
-	
-	GLModel cubes;
-	Scene scene;
-	
-	OptimizatorRender optim;
+	boolean mouseMoved = false;
 
-	// Los indices de los 8 vertices en un cubo, de manera tal que definen	
-	// 12 triangulos (2 por cara).
-	int cubeIndices[] = { 0, 4, 5, 0, 5, 1, 1, 5, 6, 1, 6, 2, 2, 6, 7, 2, 7, 3,
-			3, 7, 4, 3, 4, 0, 4, 7, 6, 4, 6, 5, 3, 0, 1, 3, 1, 2 };
-	int indicesPerCube = cubeIndices.length;
-	int indices0[] = new int[indicesPerCube * cubeCount];
-	int indices[] = new int[indicesPerCube * cubeCount];
-	int minInd, maxInd;
-	int first, last;
-	int renderedCubes;	
-
-	Chronometer chrono;
-
-	BoundingBox[] bbs;
-	BoundingSphere[] bss;
-
+  Scene scene;  
+  OptimizatorRender optim;  
+  Chronometer chrono;
+		
+	GLModel objects;
+  int allIndices[];
+  int minInd, maxInd;
+  int vertPerObj;
+  int indicesPerObj;
+  
 	public void setup() {
 		size(600, 600, GLConstants.GLGRAPHICS);
 		frameRate(120);
@@ -72,35 +62,33 @@ public class DataVis extends PApplet {
 		sphereDetail(10);
 
 		println("Creando cubos...");
-		createCubes();
+		createObjects();
 		println("Creando el Optimizador...");
-		optim = new OptimizatorRender(cubes, indices0, this);
+		optim = new OptimizatorRender(objects, allIndices, this);
 		println("Listo.");
 	}
 	
 	public void draw() {		
 		chrono.update();
+		
+		// Esta variable la usamos para evitar re-enviar los indices.
+		// Esto es incompleto porque no detecta el cambio en zoom 
+		// con el mouse scroll.
+		//mouseMoved = 0 < abs(mouseX - pmouseX) + abs(mouseY - pmouseY);
+		mouseMoved = true;
 
-		GLGraphics renderer = (GLGraphics) g;
-    
-		GL gl = renderer.gl;
-    // Deshabilitando depth mask para que el dibujado de
-    // objetos semi-transparentes no tenga artefactos.
-    //gl.glDepthMask(false);
+		GLGraphics renderer = (GLGraphics)g;	
+		renderer.beginGL();
+		renderer.lights();
 		
 		if (enableVFC) {
-			optim.vfc(renderer, cubes, scene);
+			optim.vfc(renderer, objects, scene);
 		} else {
-		  // Dibujando todo el sistema, sin optimizacion de VFC.
-			renderer.beginGL();
-	    cubes.updateIndices(indices0, indices0.length);
-	    cubes.setMinIndex(minInd);
-	    cubes.setMaxIndex(maxInd);     
-	    renderer.model(cubes);  
-			renderer.endGL();
+		  // Dibujando todo el sistema, sin optimizacion de VFC.				        
+	    renderer.model(objects);  			
 		}
-
-    //gl.glDepthMask(true);		
+		
+		renderer.endGL();	
 		
 		if (enableVFC && (drawBBS || drawBSS)) {
 		  pintarOc(optim.oc);
@@ -109,62 +97,21 @@ public class DataVis extends PApplet {
 		chrono.printFps();
 	}
 	
-	void pintarOc(OctreeNode oct){
-	  // Los bounding volumes no se dibujan a trabjas de GLGraphics, sino que con la API regular
-    // de Processing, con lo cual no es recomendable dibujarlos cuando se tiene un GLModel muy
-    // grande.	  
-		if(oct.hijos!=null){
-			for(int i=0;i<8;i++){
-				pintarOc(oct.hijos[i]);
-			}
-		}
-
-		if (drawBBS) {
-		  noFill();
-	  	stroke(255, 0, 0);
-		  pushMatrix();
-		  translate(oct.bbs.center.x, oct.bbs.center.y, oct.bbs.center.z);
-		  box(2.01f * oct.bbs.xExtent, 2.01f * oct.bbs.yExtent,
-			  	2.01f * oct.bbs.zExtent);
-		  popMatrix();
-		}
-
-    if (drawBSS) {		
-      noFill();
-		  stroke(0, 255, 0);
-		  pushMatrix();
-		  translate(oct.bss.center.x, oct.bss.center.y, oct.bss.center.z);
-		  sphere(oct.bss.radius);
-		  popMatrix();
+  public void keyPressed() {
+    if (key == 'c' || key == 'C') {
+      scene.toggleCameraType();
+      return;
     }
-	}
 
-	void enableVFC() {
-		scene.enableFrustumEquationsUpdate();
-		enableVFC = true;
-		println("Activando VFC");
-	}
-
-	void disableVFC() {
-		scene.disableFrustumEquationsUpdate();
-		enableVFC = false;
-		println("Desactivando VFC");
-	}
-	
-	public void keyPressed() {
-		if (key == 'c' || key == 'C') {
-			scene.toggleCameraType();
-			return;
-		}
-
-		if (key == 'v' || key == 'V') {
-			if (enableVFC)
-				disableVFC();
-			else
-				enableVFC();
-			return;
-		}
-		
+    if (key == 'v' || key == 'V') {
+      if (enableVFC) {
+        disableVFC();
+      } else {
+        enableVFC();
+      }
+      return;
+    }
+    
     if (key == 'b' || key == 'B') {
       if (drawBBS) {
         drawBBS = false;
@@ -197,89 +144,171 @@ public class DataVis extends PApplet {
       }
       return;
     }    
+  }	
+	
+	private void pintarOc(OctreeNode oct){
+	  // Los bounding volumes no se dibujan a trabjas de GLGraphics, sino que con la API regular
+    // de Processing, con lo cual no es recomendable dibujarlos cuando se tiene un GLModel muy
+    // grande.	  
+		if(oct.hijos!=null){
+			for(int i=0;i<8;i++){
+				pintarOc(oct.hijos[i]);
+			}
+		}
+
+		if (drawBBS) {
+		  noFill();
+	  	stroke(255, 0, 0);
+		  pushMatrix();
+		  translate(oct.bbs.center.x, oct.bbs.center.y, oct.bbs.center.z);
+		  box(2.01f * oct.bbs.xExtent, 2.01f * oct.bbs.yExtent,
+			  	2.01f * oct.bbs.zExtent);
+		  popMatrix();
+		}
+
+    if (drawBSS) {		
+      noFill();
+		  stroke(0, 255, 0);
+		  pushMatrix();
+		  translate(oct.bss.center.x, oct.bss.center.y, oct.bss.center.z);
+		  sphere(oct.bss.radius);
+		  popMatrix();
+    }
 	}
 
-	void createCubes() {
-		cubes = new GLModel(this, vertPerCube * cubeCount, TRIANGLES, GLModel.STATIC);
+	private void enableVFC() {
+		scene.enableFrustumEquationsUpdate();
+		enableVFC = true;
+		println("Activando VFC");
+	}
 
-		bbs = new BoundingBox[cubeCount];
-		bss = new BoundingSphere[cubeCount];
+	private void disableVFC() {
+		scene.disableFrustumEquationsUpdate();
+		enableVFC = false;
+		println("Desactivando VFC");
+		
+		// Necesitamos de usar todos los indices. Pero los enviamos
+		// una sola vez.
+		objects.updateIndices(allIndices, allIndices.length);
+    objects.setMinIndex(minInd);
+    objects.setMaxIndex(maxInd); 		
+	}
 
-		cubes.beginUpdateVertices();
-		for (int i = 0; i < cubeCount; i++) {
-			int n0 = vertPerCube * i;
+	private void createObjects() {
+	  ArrayList<PVector> vertices = new ArrayList<PVector>();
+	  ArrayList<PVector> normals = new ArrayList<PVector>();	  
+	  
+	  // Primero creamos un objeto individual.
+	  createObject(vertices, normals);
+	  vertPerObj = vertices.size();
+	  indicesPerObj = vertices.size();
+	  
+	  // Creamos un GLModel conteniendo objCount copias del objeto:
+		objects = new GLModel(this, vertPerObj * objCount, TRIANGLES, GLModel.STATIC);
+		
+		objects.beginUpdateVertices();
+		for (int i = 0; i < objCount; i++) {
+			int n0 = vertPerObj * i;
+			
+			// Desplazamos la copia i-esima de manera aleatoria dentro del volumen de
+			// visualizacion
 			float x0 = random(-volSize, +volSize);
 			float y0 = random(-volSize, +volSize);    
 			float z0 = random(-volSize, +volSize);
 
-			cubes.updateVertex(n0 + 0, x0 - cubeSize, y0 - cubeSize, z0 - cubeSize);
-			cubes.updateVertex(n0 + 1, x0 + cubeSize, y0 - cubeSize, z0 - cubeSize);
-			cubes.updateVertex(n0 + 2, x0 + cubeSize, y0 + cubeSize, z0 - cubeSize);
-			cubes.updateVertex(n0 + 3, x0 - cubeSize, y0 + cubeSize, z0 - cubeSize);
-			cubes.updateVertex(n0 + 4, x0 - cubeSize, y0 - cubeSize, z0 + cubeSize);
-			cubes.updateVertex(n0 + 5, x0 + cubeSize, y0 - cubeSize, z0 + cubeSize);
-			cubes.updateVertex(n0 + 6, x0 + cubeSize, y0 + cubeSize, z0 + cubeSize);
-			cubes.updateVertex(n0 + 7, x0 - cubeSize, y0 + cubeSize, z0 + cubeSize);
-
-			bbs[i] = new BoundingBox();
-			bss[i] = new BoundingSphere();    
-
-			// Aqui uso un FloatBuffer para pasarle los vertices a los algoritmos de calculo de
-			// bbs y bss, es medio engorroso pero lo deje asi porque el codigo original de jMonkey
-			// usa FloatBuffers. Mas adelante se puede intergrar mejor los calculos de bounding
-			// volumes con las estructuras de datos de GLGraphics.
-			FloatBuffer points = FloatBuffer.allocate(vertPerCube * 3);
-			points.put(0, x0 - cubeSize);
-			points.put(1, y0 - cubeSize); 
-			points.put(2, z0 - cubeSize);    
-			points.put(3, x0 + cubeSize); 
-			points.put(4, y0 - cubeSize); 
-			points.put(5, z0 - cubeSize);
-			points.put(6, x0 + cubeSize); 
-			points.put(7, y0 + cubeSize); 
-			points.put(8, z0 - cubeSize);    
-			points.put(9, x0 - cubeSize); 
-			points.put(10, y0 + cubeSize); 
-			points.put(11, z0 - cubeSize);    
-			points.put(12, x0 - cubeSize); 
-			points.put(13, y0 - cubeSize); 
-			points.put(14, z0 + cubeSize);    
-			points.put(15, x0 + cubeSize); 
-			points.put(16, y0 - cubeSize); 
-			points.put(17, z0 + cubeSize);    
-			points.put(18, x0 + cubeSize); 
-			points.put(19, y0 + cubeSize); 
-			points.put(20, z0 + cubeSize);    
-			points.put(21, x0 - cubeSize); 
-			points.put(22, y0 + cubeSize); 
-			points.put(23, z0 + cubeSize);
+			for (int j = 0; j < vertPerObj; j++) {
+			  PVector v = (PVector)vertices.get(j);
+			  objects.updateVertex(n0 + j, x0 + objSize * v.x, y0 + objSize * v.y, z0 + objSize * v.z);
+			}
 		}
-		cubes.endUpdateVertices();
+		objects.endUpdateVertices();
 
-		cubes.initColors();
-		cubes.setColors(255, 200);
+		objects.initNormals();
+		objects.beginUpdateNormals();
+    for (int i = 0; i < objCount; i++) {
+      int n0 = vertPerObj * i;	
+      for (int j = 0; j < vertPerObj; j++) {
+        PVector v = (PVector)normals.get(j);
+        objects.updateNormal(n0 + j, v.x, v.y, v.z);
+      }      
+    }
+    objects.endUpdateNormals();
+		
+		objects.initColors();
+		objects.setColors(255, 200, 120, 255);
 
-		// Creating vertex indices for all the cubes in the model.
-		// Since each cube is identical, the indices are the same,
-		// with the exception of the shifting to take into account
-		// the position of the cube inside the model.
-		minInd = vertPerCube * cubeCount; 
-		maxInd = -minInd;
-		for (int i = 0; i < cubeCount; i++) {
-			int n0 = indicesPerCube * i;    
-			int m0 = vertPerCube * i;
-			for (int j = 0; j < indicesPerCube; j++) indices0[n0 + j] = m0 + cubeIndices[j];
-			minInd = min(minInd, vertPerCube * i);
-			maxInd = max(maxInd, vertPerCube * (i + 1) - 1);    
-		}  
+		// Los vertices del GLModel determinan una secuencia de triangulos,
+		// por lo cual los indices reflejan esta estructura:
+		int n = indicesPerObj * objCount;
+		allIndices = new int[n];
+		for (int i = 0; i < n; i++) {
+		  allIndices[i] = i;  
+		}
+		minInd = 0;
+		maxInd = n - 1;
 
-		cubes.initIndices(indicesPerCube * cubeCount, GLModel.STREAM);
-		cubes.autoIndexBounds(false);
-		cubes.updateIndices(indices0, indices0.length);
-		cubes.setMinIndex(minInd);
-		cubes.setMaxIndex(maxInd);
+		objects.initIndices(allIndices.length, GLModel.STREAM);
+		objects.autoIndexBounds(false);
+		objects.updateIndices(allIndices, allIndices.length);
+		objects.setMinIndex(minInd);
+		objects.setMaxIndex(maxInd);
 	}
 
+  private void createObject(ArrayList<PVector> vertices, ArrayList<PVector> normals) {
+    addTriangle(vertices, normals, 0.0f, 0.0f, 1.0f, 
+                                   1.0f, 0.0f, 0.0f, 
+                                   0.0f, 1.0f, 0.0f);
+
+    addTriangle(vertices, normals, 1.0f, 0.0f,  0.0f, 
+                                   0.0f, 0.0f, -1.0f, 
+                                   0.0f, 1.0f,  0.0f);
+
+    addTriangle(vertices, normals, 0.0f, 0.0f, -1.0f, 
+                                  -1.0f, 0.0f,  0.0f, 
+                                   0.0f, 1.0f,  0.0f);
+
+    addTriangle(vertices, normals, -1.0f, 0.0f, 0.0f, 
+                                    0.0f, 0.0f, 1.0f, 
+                                    0.0f, 1.0f, 0.0f);
+
+    addTriangle(vertices, normals, 0.0f,  0.0f, 1.0f, 
+                                   1.0f,  0.0f, 0.0f, 
+                                   0.0f, -1.0f, 0.0f);
+
+    addTriangle(vertices, normals, 1.0f,  0.0f,  0.0f, 
+                                   0.0f,  0.0f, -1.0f, 
+                                   0.0f, -1.0f,  0.0f);
+
+    addTriangle(vertices, normals, 0.0f,  0.0f, -1.0f, 
+                                  -1.0f,  0.0f,  0.0f, 
+                                   0.0f, -1.0f,  0.0f);
+
+    addTriangle(vertices, normals, -1.0f,  0.0f, 0.0f, 
+                                    0.0f,  0.0f, 1.0f, 
+                                    0.0f, -1.0f, 0.0f);
+  }
+	
+  private void addTriangle(ArrayList<PVector> vertices, ArrayList<PVector> normals,
+                           float x0, float y0, float z0, 
+                           float x1, float y1, float z1,
+                           float x2, float y2, float z2) {
+    PVector v0 = new PVector(x0, y0, z0);
+    PVector v1 = new PVector(x1, y1, z1);
+    PVector v2 = new PVector(x2, y2, z2);
+
+    PVector v01 = PVector.sub(v1, v0);
+    PVector v02 = PVector.sub(v2, v0);
+    PVector tnorm = v01.cross(v02);
+
+    vertices.add(v0);
+    vertices.add(v1);
+    vertices.add(v2);
+
+    normals.add(tnorm);
+    normals.add(tnorm);
+    normals.add(tnorm);
+  }
+  
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "test.DataVis" });
 	}
