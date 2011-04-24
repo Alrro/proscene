@@ -4,10 +4,14 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="lib" path="libs/core.jar"/>
 	<classpathentry kind="lib" path="libs/GLGraphics.jar" sourcepath="C:/Users/Wookie/Documents/Processing/libraries/GLGraphics/src"/>
-	<classpathentry kind="lib" path="libs/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="libs/gluegen-rt.jar">
+		<attributes>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LargeVolDataVis/libs/linux64"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LargeVolDataVis/libs"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LargeVolDataVis/libs/linux64"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/opengl.jar"/>
