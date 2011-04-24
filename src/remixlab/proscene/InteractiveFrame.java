@@ -851,7 +851,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		float size_limit = size2 * 0.5f;
 
 		float d = x * x + y * y;
-		return d < size_limit ? PApplet.sqrt(size2 - d) : size_limit
-				/ PApplet.sqrt(d);
+		return d < size_limit ? PApplet.sqrt(size2 - d) : size_limit	/ PApplet.sqrt(d);
 	}
 }

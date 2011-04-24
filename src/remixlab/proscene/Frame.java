@@ -237,7 +237,7 @@ public class Frame implements Cloneable {
 	/**
 	 * Resets the cache of all KeyFrameInterpolators' associated with this Frame.
 	 */
-	private void modified() {
+	protected void modified() {
 		Iterator<KeyFrameInterpolator> it = list.iterator();
 		while (it.hasNext()) {
 			it.next().invalidateValues();

@@ -48,8 +48,9 @@ import processing.core.*;
  * {@link remixlab.proscene.Scene#mouseGrabberPool()} upon creation.
  */
 public class InteractiveCameraFrame extends InteractiveDrivableFrame {
+	private Camera camera;
 	private PVector arcballRefPnt;
-
+	
 	/**
 	 * Default constructor.
 	 * <p>
@@ -60,6 +61,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 */
 	public InteractiveCameraFrame(Scene scn) {
 		super(scn);
+		camera = null;
 		removeFromMouseGrabberPool();
 		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
 	}
@@ -73,11 +75,43 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */
 	public InteractiveCameraFrame clone() {
-		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super
-				.clone();
-		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x,
-				arcballRefPnt.y, arcballRefPnt.z);
+		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
+		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
 		return clonedICamFrame;
+	}
+	
+	/**
+	 * Sets the camera this interactive frame is attached to. Called
+	 * by {@link remixlab.proscene.Camera#setFrame(InteractiveCameraFrame)}.
+	 * <p>
+	 * Useful when {@link remixlab.proscene.Scene#frustumEquationsUpdateIsEnable()}.
+	 * 
+	 * @see #modified()
+	 */
+	protected void setCamera(Camera cam) {
+		camera = cam;
+	}
+	
+	/**
+	 * Return the camera this interactive frame is attached to.
+	 * 
+	 * @see #setCamera(Camera)
+	 * <p>
+	 * Useful when {@link remixlab.proscene.Scene#frustumEquationsUpdateIsEnable()}.
+	 */
+	protected Camera camera() {
+		return camera;
+	}
+	
+	/**
+	 * Updates the {@link remixlab.proscene.Camera#lastFrameUpdate} variable
+	 * when the frame changes and then calls {@code super.modified()}. 
+	 */
+	@Override
+	protected void modified() {
+		if(camera()!=null)
+			camera().lastFrameUpdate = scene.parent.frameCount;			
+		super.modified();
 	}
 
 	/**
@@ -113,8 +147,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveDrivableFrame#mouseDragged(Point, Camera)}
-	 * .
+	 * {@link remixlab.proscene.InteractiveDrivableFrame#mouseDragged(Point, Camera)}.
 	 * <p>
 	 * Motion depends on mouse binding. The resulting displacements are basically
 	 * inverted from those of an InteractiveFrame.
@@ -208,8 +241,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				case PERSPECTIVE:
 					trans.mult(2.0f
 							* PApplet.tan(camera.fieldOfView() / 2.0f)
-							* PApplet.abs((camera.frame()
-									.coordinatesOf(arcballReferencePoint())).z)
+							* PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z)
 							/ camera.screenHeight());
 					break;
 				case ORTHOGRAPHIC: {

@@ -135,6 +135,17 @@ public class Camera implements Cloneable {
 
 	// F r u s t u m p l a n e c o e f f i c i e n t s
 	protected float fpCoefficients[][];
+	protected boolean fpCoefficientsUpdate;
+	/**
+   * Which was the last frame the camera changes.
+   * <P>
+   * Takes into account the {@link #frame()} (position and orientation of the camera)
+   * and the camera {@link #type()} and {@link #kind()}.
+   */
+	public int lastFrameUpdate = 0;
+	protected int lastFPCoeficientsUpdateIssued = -1;
+	//TODO
+	public int fpComputationCount = 0;
 
 	// A t t a c h e d S c e n e
 	private boolean attachedToPCam;
@@ -174,6 +185,8 @@ public class Camera implements Cloneable {
 		scene = scn;
 		pg3d = scene.pg3d;
 		attachedToPCam = attachedToScene;
+		
+		enableFrustumEquationsUpdate(false);
 
 		for (int i = 0; i < normal.length; i++)
 			normal[i] = new PVector();
@@ -402,8 +415,7 @@ public class Camera implements Cloneable {
 	 * @see #setOrientation(Quaternion)
 	 */
 	public void setUpVector(PVector up, boolean noMove) {
-		Quaternion q = new Quaternion(new PVector(0.0f, 1.0f, 0.0f), frame()
-				.transformOf(up));
+		Quaternion q = new Quaternion(new PVector(0.0f, 1.0f, 0.0f), frame().transformOf(up));
 
 		if (!noMove)
 			frame().setPosition(
@@ -455,8 +467,7 @@ public class Camera implements Cloneable {
 		}
 
 		Quaternion q = new Quaternion();
-		q.fromRotatedBasis(xAxis, xAxis.cross(direction), PVector.mult(direction,
-				-1));
+		q.fromRotatedBasis(xAxis, xAxis.cross(direction), PVector.mult(direction,	-1));
 		frame().setOrientationWithConstraint(q);
 	}
 
@@ -552,7 +563,9 @@ public class Camera implements Cloneable {
 	 * Sets the kind of the Camera: PROSCENE or STANDARD.
 	 */
 	public void setKind(Kind k) {
-		knd = k;
+		if(k!=knd)
+			lastFrameUpdate = scene.parent.frameCount;
+		knd = k;		
 	}
 
 	/**
@@ -563,6 +576,8 @@ public class Camera implements Cloneable {
 	 * @see #zFar()
 	 */
 	public void setStandardZNear(float zN) {
+		if( (kind() == Camera.Kind.STANDARD) && (zN != stdZNear) )
+			lastFrameUpdate = scene.parent.frameCount;
 		stdZNear = zN;
 	}
 
@@ -585,6 +600,8 @@ public class Camera implements Cloneable {
 	 * @see #zFar()
 	 */
 	public void setStandardZFar(float zF) {
+		if( (kind() == Camera.Kind.STANDARD) && (zF != stdZFar) )
+			lastFrameUpdate = scene.parent.frameCount;
 		stdZFar = zF;
 	}
 
@@ -608,6 +625,8 @@ public class Camera implements Cloneable {
 	 * @see #standardOrthoFrustumSize()
 	 */
 	public void changeStandardOrthoFrustumSize(boolean augment) {
+		if( (kind() == Camera.Kind.STANDARD) && (type() == Camera.Type.ORTHOGRAPHIC) )
+			lastFrameUpdate = scene.parent.frameCount;
 		if (augment)
 			orthoSize *= 1.01f;
 		else
@@ -639,8 +658,9 @@ public class Camera implements Cloneable {
 		// through RAP). Done only when CHANGING type since orthoCoef may have
 		// been changed with a
 		// setArcballReferencePoint in the meantime.
-		if ((type == Camera.Type.ORTHOGRAPHIC)
-				&& (type() == Camera.Type.PERSPECTIVE))
+		if( type != type() )
+			lastFrameUpdate = scene.parent.frameCount;
+		if ((type == Camera.Type.ORTHOGRAPHIC) && (type() == Camera.Type.PERSPECTIVE))
 			orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
 
 		this.tp = type;
@@ -709,8 +729,7 @@ public class Camera implements Cloneable {
 	 */
 	public void setFOVToFitScene() {
 		if (distanceToSceneCenter() > PApplet.sqrt(2.0f) * sceneRadius())
-			setFieldOfView(2.0f * PApplet.asin(sceneRadius()
-					/ distanceToSceneCenter()));
+			setFieldOfView(2.0f * PApplet.asin(sceneRadius() / distanceToSceneCenter()));
 		else
 			setFieldOfView(Quaternion.PI / 2.0f);
 	}
@@ -779,8 +798,7 @@ public class Camera implements Cloneable {
 	 * aspectRatio() )}.
 	 */
 	public float horizontalFieldOfView() {
-		return 2.0f * PApplet.atan(PApplet.tan(fieldOfView() / 2.0f)
-				* aspectRatio());
+		return 2.0f * PApplet.atan(PApplet.tan(fieldOfView() / 2.0f) * aspectRatio());
 	}
 
 	/**
@@ -792,8 +810,7 @@ public class Camera implements Cloneable {
 	 * call to {@link #horizontalFieldOfView()} returns the expected value.
 	 */
 	public void setHorizontalFieldOfView(float hfov) {
-		setFieldOfView(2.0f * PApplet
-				.atan(PApplet.tan(hfov / 2.0f) / aspectRatio()));
+		setFieldOfView(2.0f * PApplet.atan(PApplet.tan(hfov / 2.0f) / aspectRatio()));
 	}
 
 	/**
@@ -838,8 +855,9 @@ public class Camera implements Cloneable {
 	 * use {@link #setAspectRatio(float)} instead to define the projection matrix.
 	 */
 	public void setScreenWidthAndHeight(int width, int height) {
-		// Prevent negative and zero dimensions that would cause divisions by
-		// zero.
+		// Prevent negative and zero dimensions that would cause divisions by zero.
+		if( (width != scrnWidth) && (height != scrnHeight) )
+			lastFrameUpdate = scene.parent.frameCount;
 		scrnWidth = width > 0 ? width : 1;
 		scrnHeight = height > 0 ? height : 1;
 	}
@@ -1003,6 +1021,8 @@ public class Camera implements Cloneable {
 	 * Sets the {@link #zNearCoefficient()} value.
 	 */
 	public void setZNearCoefficient(float coef) {
+		if(coef != zNearCoef)
+			lastFrameUpdate = scene.parent.frameCount;
 		zNearCoef = coef;
 	}
 
@@ -1031,6 +1051,8 @@ public class Camera implements Cloneable {
 	 * Sets the {@link #zClippingCoefficient()} value.
 	 */
 	public void setZClippingCoefficient(float coef) {
+		if(coef != zClippingCoef)
+			lastFrameUpdate = scene.parent.frameCount;
 		zClippingCoef = coef;
 	}
 
@@ -1237,7 +1259,12 @@ public class Camera implements Cloneable {
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
 	 */
 	public void updateFrustumEquations() {
-		computeFrustumEquations(fpCoefficients);
+		if( lastFrameUpdate != lastFPCoeficientsUpdateIssued )	{
+		  //TODO
+			//PApplet.println("frustum eq issued at: " + lastUpdatedFrame);
+			computeFrustumEquations(fpCoefficients);
+			lastFPCoeficientsUpdateIssued = lastFrameUpdate;		  
+		}
 	}
 
 	/**
@@ -1322,7 +1349,11 @@ public class Camera implements Cloneable {
 	 * 
 	 * @see #computeFrustumEquations()
 	 */
-	public float[][] computeFrustumEquations(float[][] coef) {
+	public float[][] computeFrustumEquations(float[][] coef) {		
+	  //TODO
+		//PApplet.println("frustum eq computed at: " + scene.parent.frameCount);
+		fpComputationCount++;
+		//end
 		// soft check:
 		if (coef == null || (coef.length == 0))
 			coef = new float[6][4];
@@ -1406,8 +1437,30 @@ public class Camera implements Cloneable {
 			coef[i][2] = normal[i].z;
 			coef[i][3] = dist[i];
 		}
-
+		
 		return coef;
+	}
+	
+	/**
+	 * Enables or disables automatic update of the camera frustum plane equations
+	 * every frame according to {@code flag}. Computation of the equations is
+	 * expensive and hence is disabled by default.
+	 * 
+	 * @see #updateFrustumEquations()
+	 */
+	protected void enableFrustumEquationsUpdate(boolean flag) {
+		fpCoefficientsUpdate = flag;
+	}
+	
+	/**
+	 * Returns {@code true} if automatic update of the camera frustum plane
+	 * equations is enabled and {@code false} otherwise. Computation of the
+	 * equations is expensive and hence is disabled by default.
+	 * 
+	 * @see #updateFrustumEquations()
+	 */
+	protected boolean frustumEquationsUpdateIsEnable() {
+		return fpCoefficientsUpdate;
 	}
 
 	// 4. SCENE RADIUS AND CENTER
@@ -1442,7 +1495,7 @@ public class Camera implements Cloneable {
 			PApplet.println("Warning: Scene radius must be positive - Ignoring value");
 			return;
 		}
-
+		
 		scnRadius = radius;
 
 		setFocusDistance(sceneRadius() / PApplet.tan(fieldOfView() / 2.0f));
@@ -1451,8 +1504,7 @@ public class Camera implements Cloneable {
 
 		// if there's an avatar we change its fly speed as well
 		if (scene.avatarIsInteractiveDrivableFrame)
-			((InteractiveDrivableFrame) scene.avatar()).setFlySpeed(0.01f * scene
-					.radius());
+			((InteractiveDrivableFrame) scene.avatar()).setFlySpeed(0.01f * scene.radius());
 	}
 
 	/**
@@ -1606,7 +1658,8 @@ public class Camera implements Cloneable {
 	}
 
 	/**
-	 * Sets the Camera {@link #frame()}.
+	 * Sets the Camera {@link #frame()}. Calls
+	 * {@link remixlab.proscene.InteractiveCameraFrame#setCamera(Camera)}.
 	 * <p>
 	 * If you want to move the Camera, use {@link #setPosition(PVector)} and
 	 * {@link #setOrientation(Quaternion)} or one of the Camera positioning
@@ -1618,12 +1671,15 @@ public class Camera implements Cloneable {
 	 * to move the Camera.
 	 * <p>
 	 * A {@code null} {@code icf} reference will silently be ignored.
+	 * 
+	 * @see remixlab.proscene.InteractiveCameraFrame#setCamera(Camera)
 	 */
 	public final void setFrame(InteractiveCameraFrame icf) {
 		if (icf == null)
 			return;
 
 		frm = icf;
+		frm.setCamera(this);
 		interpolationKfi.setFrame(frame());
 	}
 
@@ -2094,8 +2150,7 @@ public class Camera implements Cloneable {
 	 * <p>
 	 * This method is useful for analytical intersection in a selection method.
 	 */
-	public void convertClickToLine(final Point pixelInput, PVector orig,
-			PVector dir) {
+	public void convertClickToLine(final Point pixelInput, PVector orig, PVector dir) {
 		Point pixel = new Point(pixelInput.getX(), pixelInput.getY());
 		
 		//lef-handed coordinate system correction
@@ -2330,8 +2385,7 @@ public class Camera implements Cloneable {
 		}
 		}
 
-		PVector newPos = PVector.sub(center, PVector
-				.mult(viewDirection(), distance));
+		PVector newPos = PVector.sub(center, PVector.mult(viewDirection(), distance));
 		frame().setPositionWithConstraint(newPos);
 	}
 
@@ -2341,8 +2395,7 @@ public class Camera implements Cloneable {
 	 * {@link #fitSphere(PVector, float)}.
 	 */
 	public void fitBoundingBox(PVector min, PVector max) {
-		float diameter = PApplet.max(PApplet.abs(max.y - min.y), PApplet.abs(max.x
-				- min.x));
+		float diameter = PApplet.max(PApplet.abs(max.y - min.y), PApplet.abs(max.x - min.x));
 		diameter = PApplet.max(PApplet.abs(max.z - min.z), diameter);
 		fitSphere(PVector.mult(PVector.add(min, max), 0.5f), 0.5f * diameter);
 	}
@@ -2363,8 +2416,7 @@ public class Camera implements Cloneable {
 		PVector vd = viewDirection();
 		float distToPlane = distanceToSceneCenter();
 
-		Point center = new Point((int) rectangle.getCenterX(), (int) rectangle
-				.getCenterY());
+		Point center = new Point((int) rectangle.getCenterX(), (int) rectangle.getCenterY());
 
 		PVector orig = new PVector();
 		PVector dir = new PVector();
@@ -2464,8 +2516,7 @@ public class Camera implements Cloneable {
 		// without modifying frame
 		tempFrame = new InteractiveCameraFrame(scene);
 		InteractiveCameraFrame originalFrame = frame();
-		tempFrame.setPosition(new PVector(frame().position().x,
-				frame().position().y, frame().position().z));
+		tempFrame.setPosition(new PVector(frame().position().x,	frame().position().y, frame().position().z));
 		tempFrame.setOrientation(new Quaternion(frame().orientation()));
 		setFrame(tempFrame);
 		fitScreenRegion(rectangle);
@@ -2715,6 +2766,8 @@ public class Camera implements Cloneable {
 	 * Sets the focusDistance(), in processing scene units.
 	 */
 	public void setFocusDistance(float distance) {
+		if(distance != focusDist)
+			lastFrameUpdate = scene.parent.frameCount;
 		focusDist = distance;
 	}
 
