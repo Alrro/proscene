@@ -100,7 +100,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.0.6";
+	public static final String version = "1.0.7";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -462,9 +462,6 @@ public class Scene implements PConstants {
 	boolean mouseGrabberIsAnIFrame;
 	boolean mouseGrabberIsADrivableFrame;
 	boolean mouseTrckn;
-
-	// F r u s t u m p l a n e c o e f f i c i e n t s
-	protected boolean fpCoefficientsUpdate;
 
 	// D I S P L A Y F L A G S
 	boolean axisIsDrwn; // world axis
@@ -1104,7 +1101,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.Camera#updateFrustumEquations()
 	 */
 	public boolean frustumEquationsUpdateIsEnable() {
-		return fpCoefficientsUpdate;
+		return camera().frustumEquationsUpdateIsEnable();
 	}
 
 	/**
@@ -1118,7 +1115,10 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.Camera#updateFrustumEquations()
 	 */
 	public void toggleFrustumEquationsUpdate() {
-		fpCoefficientsUpdate = !fpCoefficientsUpdate;
+		if ( frustumEquationsUpdateIsEnable() )
+			disableFrustumEquationsUpdate();
+		else
+			enableFrustumEquationsUpdate();
 	}
 
 	/**
@@ -1162,7 +1162,7 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.Camera#updateFrustumEquations()
 	 */
 	public void enableFrustumEquationsUpdate(boolean flag) {
-		fpCoefficientsUpdate = flag;
+		camera().enableFrustumEquationsUpdate(flag);
 	}
 
 	/**
@@ -4360,8 +4360,7 @@ public class Scene implements PConstants {
 		// parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
-			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(), camera()
-					.zNear(), camera().zFar());
+			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
 			break;
 		case ORTHOGRAPHIC:
 			float[] wh = camera().getOrthoWidthHeight();

@@ -31,7 +31,7 @@ import processing.core.PApplet;
 import processing.core.PVector;
 
 /**
- * An HIDevice represents a Human Interactive Device with (<=) 6 degrees of freedom.
+ * An HIDevice represents a Human Interface Device with (<=) 6 degrees of freedom.
  * <p>
  * An HIDevice has a type which can be RELATIVE (default) or ABSOLUTE. A RELATIVE HIDevice
  * has a neutral position that the device holds when it is not being manipulated. An ABSOLUTE HIDevice
