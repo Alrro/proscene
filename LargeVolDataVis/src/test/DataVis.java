@@ -25,7 +25,7 @@ public class DataVis extends PApplet {
   float volSize = 1000;
   
   // Numero total de objetos individuales:
-	int objCount = 500000;
+	int objCount = 500;
 	
 	// Tamanio de cada objeto.
   float objSize = 10;
@@ -33,7 +33,7 @@ public class DataVis extends PApplet {
 	boolean drawBBS = false;
 	boolean drawBSS = false;	
 	boolean enableVFC = true;
-	boolean mouseMoved = false;
+	boolean cameraChange = false;
 
   Scene scene;  
   OptimizatorRender optim;  
@@ -72,10 +72,8 @@ public class DataVis extends PApplet {
 		chrono.update();
 		
 		// Esta variable la usamos para evitar re-enviar los indices.
-		// Esto es incompleto porque no detecta el cambio en zoom 
-		// con el mouse scroll.
-		//mouseMoved = 0 < abs(mouseX - pmouseX) + abs(mouseY - pmouseY);
-		mouseMoved = true;
+		cameraChange = scene.camera().lastFrameUpdate == frameCount - 1;
+		println(scene.camera().lastFrameUpdate + " " + (frameCount - 1) + " " + cameraChange);
 
 		GLGraphics renderer = (GLGraphics)g;	
 		renderer.beginGL();

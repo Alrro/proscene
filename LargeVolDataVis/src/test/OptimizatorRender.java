@@ -46,7 +46,7 @@ public class OptimizatorRender {
     }
     vfcVerify(oc, scene, renderer, 1);
     if (parent.oneDrawCall) {
-      if (parent.mouseMoved) {
+      if (parent.cameraChange) {
         model.updateIndices(drawIndices, indCount);
         model.setMinIndex(indMin);
         model.setMaxIndex(indMax);
@@ -107,7 +107,7 @@ public class OptimizatorRender {
   }
 
   private void copyIndicesFromOC(OctreeNode oc) {
-    if (parent.mouseMoved) {    
+    if (parent.cameraChange) {    
       PApplet.arrayCopy(oc.indices, 0, drawIndices, indCount, oc.indices.length);
       indCount += oc.indices.length;
       indMin = PApplet.min(indMin, oc.idxMin);
