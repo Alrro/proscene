@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="17cm" height="12cm" viewBox="321 181 322 221" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <path style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #7f7f7f" d="M 491 337 C 483,348 466,352 451,352 C 436,352 410,351 394,348 C 378,345 360,336 367,314 C 374,292 401,293 424,293 C 447,293 473.834,284 489,277 C 504.166,270 510,264 525,253 C 540,242 552,232 575,238 C 598,244 589,282 565,286 C 541,290 520,291 509,303 C 498,315 499,326 491,337"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="486.832" y1="214.67" x2="439.824" y2="242.326"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="560.824" y1="242.326" x2="513.17" y2="214.67"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="400.324" y1="300.826" x2="426.656" y2="274.12"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="472.324" y1="301.826" x2="452.994" y2="274.12"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="527.324" y1="301.826" x2="547.656" y2="274.12"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="593.324" y1="301.826" x2="573.994" y2="274.12"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="623.824" y1="363.826" x2="606.494" y2="333.62"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="580.156" y1="333.62" x2="557.324" y2="361.826"/>
+  <g>
+    <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #7f7f7f" x1="491" y1="337" x2="496.063" y2="360.627"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #7f7f7f" points="489.547,354.083 496.531,362.814 499.325,351.988 "/>
+  </g>
+  <text style="fill: #000000;text-anchor:start;font-size:16;font-family:sanserif;font-style:normal;font-weight:normal" x="467" y="380">
+    <tspan x="467" y="380">Front</tspan>
+  </text>
+  <g>
+    <ellipse style="fill: #ff00ff" cx="500.001" cy="201.5" rx="18.625" ry="18.625"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="500.001" cy="201.5" rx="18.625" ry="18.625"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffff00" cx="400.325" cy="319.451" rx="18.625" ry="18.625"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="400.325" cy="319.451" rx="18.625" ry="18.625"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffff00" cx="472.325" cy="320.451" rx="18.625" ry="18.625"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="472.325" cy="320.451" rx="18.625" ry="18.625"/>
+  </g>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="557.325" cy="380.451" rx="18.625" ry="18.625"/>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="623.825" cy="382.451" rx="18.625" ry="18.625"/>
+  <g>
+    <ellipse style="fill: #00ff00" cx="560.825" cy="260.951" rx="18.625" ry="18.625"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="560.825" cy="260.951" rx="18.625" ry="18.625"/>
+  </g>
+  <g>
+    <ellipse style="fill: #ff00ff" cx="439.825" cy="260.951" rx="18.625" ry="18.625"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="439.825" cy="260.951" rx="18.625" ry="18.625"/>
+  </g>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="527.325" cy="320.451" rx="18.625" ry="18.625"/>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="593.325" cy="320.451" rx="18.625" ry="18.625"/>
+  <rect style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #000000" x="322.892" y="183" width="88.108" height="80.2504" rx="2.35099e-38" ry="2.35099e-38"/>
+  <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="350.328" y="221.028">
+    <tspan x="350.328" y="221.028">Invisible</tspan>
+  </text>
+  <g>
+    <ellipse style="fill: #00ff00" cx="335.62" cy="218.51" rx="7.77817" ry="7.77817"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #000000" cx="335.62" cy="218.51" rx="7.77817" ry="7.77817"/>
+  </g>
+  <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="349.886" y="242.338">
+    <tspan x="349.886" y="242.338">Rendered</tspan>
+    <tspan x="349.886" y="258.338">node</tspan>
+  </text>
+  <g>
+    <ellipse style="fill: #ffff00" cx="335.934" cy="242.744" rx="7.77817" ry="7.77817"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #000000" cx="335.934" cy="242.744" rx="7.77817" ry="7.77817"/>
+  </g>
+  <text style="fill: #000000;text-anchor:start;font-size:12.8;font-family:sanserif;font-style:normal;font-weight:normal" x="350.686" y="198.096">
+    <tspan x="350.686" y="198.096">Visible</tspan>
+  </text>
+  <g>
+    <ellipse style="fill: #ff00ff" cx="335.978" cy="195.578" rx="7.77817" ry="7.77817"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke-linejoin: round; stroke: #000000" cx="335.978" cy="195.578" rx="7.77817" ry="7.77817"/>
+  </g>
+</svg>

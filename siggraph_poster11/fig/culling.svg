@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="12cm" height="7cm" viewBox="44 31 237 126" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="280.474,155.183 63.8946,95.4832 279.764,36.7432 "/>
+  <ellipse style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" cx="63.8945" cy="95.4833" rx="15.2577" ry="15.2577"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="74.6834" y1="106.273" x2="53.1058" y2="84.6944"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" x1="53.1058" y1="106.273" x2="74.6834" y2="84.6944"/>
+  <text style="fill: #000000;text-anchor:start;font-size:9.6;font-family:sanserif;font-style:normal;font-weight:normal" x="44.8" y="122.303">
+    <tspan x="44.8" y="122.303">Viewpoint</tspan>
+  </text>
+  <text style="fill: #000000;text-anchor:start;font-size:9.6;font-family:sanserif;font-style:normal;font-weight:normal" x="171.254" y="143.127">
+    <tspan x="171.254" y="143.127">View</tspan>
+    <tspan x="171.254" y="155.127">Frustum</tspan>
+  </text>
+  <text style="fill: #0000ff;text-anchor:start;font-size:9.6;font-family:sanserif;font-style:normal;font-weight:normal" x="102.93" y="40.8">
+    <tspan x="102.93" y="40.8">View-frustum</tspan>
+    <tspan x="102.93" y="52.8">culling</tspan>
+  </text>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="147.628,77.7948 125.318,86.5164 139.502,97.155 "/>
+  <polyline style="fill: none; fill-opacity:0; stroke-width: 2; stroke: #000000" points="155.128,94.2948 134.378,106.797 152.324,114.129 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="88.9484,57.683 102.628,60.7948 96.7504,77.5412 81.8564,71.8674 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="143.452,49.8248 166.148,48.4064 162.128,61.7948 148.416,64.0092 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="237.24,67.227 254.512,63.4028 252.384,78.2964 233.944,79.0056 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="205.956,82.0226 219.272,73.4348 231.328,92.5838 215.726,98.257 "/>
+  <polygon style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" points="252.128,124.795 265.128,115.795 263.128,133.795 251.128,134.795 "/>
+  <text style="fill: #0000ff;text-anchor:start;font-size:9.6;font-family:sanserif;font-style:normal;font-weight:normal" x="158.984" y="84.8284">
+    <tspan x="158.984" y="84.8284">Back-face</tspan>
+    <tspan x="158.984" y="96.8284">culling</tspan>
+  </text>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="140.21" y1="96.655" x2="146.628" y2="78.7948"/>
+  <line style="fill: none; fill-opacity:0; stroke-width: 2; stroke-dasharray: 4; stroke: #000000" x1="152.628" y1="114.295" x2="154.128" y2="94.7948"/>
+  <text style="fill: #ff0000;text-anchor:start;font-size:9.6;font-family:sanserif;font-style:normal;font-weight:normal" x="198.978" y="109.745">
+    <tspan x="198.978" y="109.745">Occlusion culling</tspan>
+  </text>
+</svg>
