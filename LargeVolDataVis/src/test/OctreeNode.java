@@ -6,6 +6,7 @@ package test;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import processing.core.PApplet;
+import processing.core.PVector;
 import codeanticode.glgraphics.GLGraphics;
 import codeanticode.glgraphics.GLModel;
 
@@ -29,6 +30,8 @@ public class OctreeNode {
     this.parent = parent;
     this.model = model;
     this.indices = indices;
+    
+    getNormals();
 
     idxMin = model.getSize();
     idxMax = idxMin;
@@ -76,7 +79,23 @@ public class OctreeNode {
     model.setMaxIndex(idxMax);
     renderer.model(model);
   }
-
+  
+  public ArrayList<PVector> getNormals() {
+    ArrayList<PVector> list = new ArrayList<PVector>();
+        
+    model.beginUpdateNormals();    
+    FloatBuffer nbuf = model.normals;
+    float norm[] = { 0, 0, 0 };
+    for (int n = 0; n < indices.length; n += 1) {
+      nbuf.position(4 * n);
+      nbuf.get(norm, 0, 3);
+      list.add(new PVector(norm[0], norm[1], norm[2]));
+    }
+    model.endUpdateNormals();
+    
+    return list;
+  }
+  
   private void childsGeneration() {
     ArrayList<Integer> inds1 = new ArrayList<Integer>(), inds2 = new ArrayList<Integer>(), inds3 = new ArrayList<Integer>(), inds4 = new ArrayList<Integer>(), inds5 = new ArrayList<Integer>(), inds6 = new ArrayList<Integer>(), inds7 = new ArrayList<Integer>(), inds8 = new ArrayList<Integer>();
 

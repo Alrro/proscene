@@ -46,6 +46,8 @@ public class DataVis extends PApplet {
 	int minInd, maxInd;
 	int vertPerObj;
 	int indicesPerObj;
+	
+	GLSLShader shader;	
 
 	public void setup() {
 		size(600, 600, GLConstants.GLGRAPHICS);
@@ -53,6 +55,12 @@ public class DataVis extends PApplet {
 
 		chrono = new Chronometer(this);
 
+	  shader = new GLSLShader(this, "subdivvert.glsl", "subdivgeom.glsl", "subdivfrag.glsl");
+	  int n = shader.getMaxOutVertCount();
+	  println("Maximum number of vertices that can be emitted by the geometry shader: " + n);
+	  shader.setupGeometryShader(TRIANGLES, TRIANGLE_STRIP, n);
+		
+		
 		scene = new Scene(this);
 		scene.enableFrustumEquationsUpdate();
 		scene.setRadius(volSize);
@@ -77,15 +85,20 @@ public class DataVis extends PApplet {
 		// cameraChange = scene.camera().lastFrameUpdate == frameCount - 1;
 		// println(scene.camera().lastFrameUpdate + " " + (frameCount - 1) + " " + cameraChange);
 		cameraChange = scene.camera().lastFrameUpdate != lastTimeMyFxWasIssued;		
-		if (cameraChange) { // change test
-			println(frameCount + " cameraChange");
-			lastTimeMyFxWasIssued = scene.camera().lastFrameUpdate;
-		}
+		//if (cameraChange) { // change test
+	  //		println(frameCount + " cameraChange");
+		//	lastTimeMyFxWasIssued = scene.camera().lastFrameUpdate;
+		//}
 
 		GLGraphics renderer = (GLGraphics) g;
 		renderer.beginGL();
 		renderer.lights();
-
+		
+	  //shader.start();
+	  //shader.setFloatUniform("FpLevel", 0);
+	  //shader.setFloatUniform("Radius", 100);
+	  //shader.setVecUniform("Color", 1, 1, 0, 1);		
+	  
 		if (enableVFC) {
 			optim.vfc(renderer, objects, scene);
 		} else {
@@ -93,6 +106,7 @@ public class DataVis extends PApplet {
 			renderer.model(objects);
 		}
 
+		//shader.stop();
 		renderer.endGL();
 
 		if (enableVFC && (drawBBS || drawBSS)) {
