@@ -16,6 +16,10 @@ public class Cone {
 		set(vec, a);
 	}
 	
+	public Cone(ArrayList<PVector> normals) {
+		set(normals);
+	}
+	
 	public Cone(PVector [] normals) {
 		set(normals);
 	}
@@ -38,40 +42,8 @@ public class Cone {
 		angle = a;
 	}
 	
-	/**
-	virtual void setConeOfNormals( Mesh & mesh ) {      
-    typename Mesh::FaceIter                  f_it;
-    VectorT< FT, 3 > aux;
-    if ( !mesh.has_face_normals() )
-    mesh.request_face_normals();       
-    mesh.update_face_normals();
-    //normalize face normals--needed?R they are already normalize!  
-    //for (f_it=mesh.faces_begin(); f_it!=mesh.faces_end(); ++f_it) {
-    //  aux = mesh.normal(f_it.handle());
-    //  aux.normalize();
-    //  //mesh.set_normal (f_it, aux);//the same as:
-    //  mesh.set_normal (f_it.handle(), aux);
-    //}
-    axis.vectorize(0);
-    for (f_it=mesh.faces_begin(); f_it!=mesh.faces_end(); ++f_it) {
-      axis = axis + mesh.normal(f_it.handle());
-    }
-    if ( axis.norm() != 0 ) {
-      axis.normalize();
-    }
-    else {
-      axis[0] = 0;
-      axis[0] = 0;
-      axis[1] = 1;
-    }
-    angle = 0;        
-    for (f_it=mesh.faces_begin(); f_it!=mesh.faces_end(); ++f_it)
-      angle = std::max( angle, (FT) acos( dot(mesh.normal(f_it.handle()), axis) ) );
-  }
-  // */
-	
 	public void set(ArrayList<PVector> normals) {
-		set( (PVector[]) normals.toArray() );
+		set( normals.toArray( new PVector [normals.size()] ) );		
 	}
 	
 	public void set(PVector [] normals) {
@@ -80,20 +52,24 @@ public class Cone {
 			reset();
 			return;
 		}
+		
 		PVector [] n = new PVector [normals.length];
 		for(int i=0; i<normals.length; i++ ) {
+			n[i] = new PVector();
 			n[i].set(normals[i]);
 			n[i].normalize();
 			axis = PVector.add(axis, n[i]);
 		}
+		
 		if ( axis.mag() != 0 ) {
       axis.normalize();
     }
     else {
       axis.set(0,0,1);
     }
+		
 		angle = 0;        
-		for(int i=0; i<normals.length; i++ )
-			angle = PApplet.max( angle, PApplet.acos( PVector.dot(n[i], axis)));
+		for(int i=0; i<normals.length; i++ )		
+			angle = PApplet.max( angle, PApplet.acos( PVector.dot(n[i], axis)));		
 	}	
 }
