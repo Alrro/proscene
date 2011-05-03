@@ -1462,6 +1462,51 @@ public class Camera implements Cloneable {
 	protected boolean frustumEquationsUpdateIsEnable() {
 		return fpCoefficientsUpdate;
 	}
+	
+	/**
+	 * Convenience function that simply returns {@code coneIsBackFacing(cone.axis(), cone.angle())}.
+	 * 
+	 * @see #coneIsBackFacing(PVector, float)
+	 * @see #faceIsBackFacing(PVector)
+	 */
+	public boolean coneIsBackFacing(Cone cone) {
+		return coneIsBackFacing(cone.axis(), cone.angle());
+	}
+	
+	/**
+	 * Returns {@code true} if the given cone is back facing the camera.
+	 * Otherwise returns {@code false}.
+	 * 
+	 * @param axis normalized cone axis
+	 * @param angle cone angle
+	 * 
+	 * @see #coneIsBackFacing(Cone)
+	 * @see #faceIsBackFacing(PVector)
+	 */
+	public boolean coneIsBackFacing(PVector axis, float angle) {
+		if( angle < PApplet.HALF_PI ) {
+			float phi = PApplet.acos ( PVector.dot(axis, viewDirection()) );
+			if ( ( ( angle - PApplet.HALF_PI ) <= phi ) &&  ( phi <= ( PApplet.HALF_PI - angle ) ) )
+				return true;    
+		}
+    return false;
+	}
+	
+	/**
+	 * Returns {@code true} if the given face is back facing the camera.
+	 * Otherwise returns {@code false}. Same as {@code coneIsBackFacing(axis, 0)}.
+	 * 
+	 * @param axis normalized face axis
+	 * 
+	 * @see #coneIsBackFacing(PVector, float)
+	 * @see #coneIsBackFacing(Cone)
+	 */
+	public boolean faceIsBackFacing(PVector axis) {
+		float phi = PApplet.acos ( PVector.dot(axis, viewDirection()) );
+		if ( ( ( - PApplet.HALF_PI ) <= phi ) &&  ( phi <= ( PApplet.HALF_PI ) ) )
+			return true;		
+    return false;
+	}
 
 	// 4. SCENE RADIUS AND CENTER
 
