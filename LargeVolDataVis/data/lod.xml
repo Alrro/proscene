@@ -1,0 +1,14 @@
+<effect name="LOD">
+    <description>GPU Level-of-Detail refinement</description>
+    <vertex>subdivvert.glsl</vertex>
+    <geometry input="triangles" output="triangle_strip" vertcount="512">subdivgeom.glsl</geometry>
+    <fragment>subdivfrag.glsl</fragment>  
+    <vertexattribs>
+        <vertexattrib type="vec3" name="objCenter" label="Object center">0 0 0</vertexattrib>
+    </vertexattribs>
+    <parameters>
+        <parameter type="float" name="FpLevel" label="LOD level">2</parameter>
+        <parameter type="float" name="Radius" label="Sphere radius">10</parameter>
+        <parameter type="vec4" name="Color" label="Geometry color">1 0.78 0.47 1</parameter>
+    </parameters>        
+</effect>

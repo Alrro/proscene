@@ -26,10 +26,10 @@ public class OptimizatorRender {
    * @param model
    *          The GLModel that you create the Octree Node
    * */
-  public OptimizatorRender(GLModel model, int[] indices, DataVis parent) {
+  public OptimizatorRender(GLModel model, GLModelEffect lod, int[] indices, DataVis parent) {
     this.parent = parent;
     drawIndices = new int[indices.length];
-    oc = new OctreeNode(model, indices, parent, 0);
+    oc = new OctreeNode(model, lod, indices, parent, 0);
   }
 
   /**
@@ -38,7 +38,7 @@ public class OptimizatorRender {
    * @param model
    *          The GLModel we will apply the VFC
    */
-  public void vfc(GLGraphics renderer, GLModel model, Scene scene) {
+  public void vfc(GLGraphics renderer, GLModel model, GLModelEffect lod, Scene scene) {
     if (parent.oneDrawCall) {
       indCount = 0;
       indMin = drawIndices.length;
@@ -51,7 +51,11 @@ public class OptimizatorRender {
         model.setMinIndex(indMin);
         model.setMaxIndex(indMax);
       }
-      renderer.model(model);
+      if (parent.useLOD) {
+        renderer.model(model, lod);
+      } else {
+        renderer.model(model);
+      }
     }
   }
 

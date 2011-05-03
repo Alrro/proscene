@@ -11,7 +11,7 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/jogl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LargeVolDataVis/libs/linux64"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="LargeVolDataVis/libs/macosx"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="libs/opengl.jar"/>
