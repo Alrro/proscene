@@ -112,8 +112,8 @@
   <line style="fill: none; fill-opacity:0; stroke-width: 1.6; stroke: #000000" x1="657.406" y1="236.04" x2="647.024" y2="216.052"/>
   <line style="fill: none; fill-opacity:0; stroke-width: 1.6; stroke: #000000" x1="656.906" y1="203.04" x2="647.378" y2="216.406"/>
   <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="434.906" y1="172.929" x2="228.087" y2="200.596"/>
-    <polyline style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" points="236.006,194.492 226.758,200.774 237.332,204.404 "/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="434.906" y1="172.929" x2="228.088" y2="200.596"/>
+    <polyline style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" points="236.007,194.492 226.758,200.774 237.332,204.404 "/>
   </g>
   <g>
     <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="434.906" y1="172.929" x2="288.016" y2="200.236"/>
@@ -136,11 +136,11 @@
     <polyline style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" points="513.911,202.164 524.935,200.3 516.829,192.6 "/>
   </g>
   <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="435.239" y1="172.932" x2="583.081" y2="200.241"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="435.238" y1="172.932" x2="583.081" y2="200.241"/>
     <polyline style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" points="573.659,203.585 584.401,200.484 575.475,193.751 "/>
   </g>
   <g>
-    <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="435.239" y1="172.932" x2="641.679" y2="200.058"/>
+    <line style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" x1="435.238" y1="172.932" x2="641.68" y2="200.058"/>
     <polyline style="fill: none; fill-opacity:0; stroke-width: 1.2; stroke: #000000" points="632.444,203.888 643.01,200.233 633.746,193.973 "/>
   </g>
   <line style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" x1="200.014" y1="243.378" x2="250.842" y2="243.378"/>
