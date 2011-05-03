@@ -26,6 +26,8 @@
 package remixlab.proscene;
 
 import processing.core.*;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -1464,6 +1466,34 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
+	 * Convenience function that simply calls {@code coneIsBackFacing(new Cone(normals))}.
+	 * 
+	 * @see #coneIsBackFacing(Cone)
+	 * @see #coneIsBackFacing(PVector[])
+	 */
+	public boolean coneIsBackFacing(ArrayList<PVector> normals) {
+		return coneIsBackFacing(new Cone(normals));
+	}
+	
+	public boolean coneIsBackFacing(PVector viewDirection, ArrayList<PVector> normals) {
+		return coneIsBackFacing(viewDirection, new Cone(normals));
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code coneIsBackFacing(new Cone(normals))}.
+	 * 
+	 * @see #coneIsBackFacing(Cone)
+	 * @see #coneIsBackFacing(ArrayList)
+	 */
+	public boolean coneIsBackFacing(PVector [] normals) {
+		return coneIsBackFacing(new Cone(normals));
+	}
+	
+	public boolean coneIsBackFacing(PVector viewDirection, PVector [] normals) {
+		return coneIsBackFacing(viewDirection, new Cone(normals));
+	}
+	
+	/**
 	 * Convenience function that simply returns {@code coneIsBackFacing(cone.axis(), cone.angle())}.
 	 * 
 	 * @see #coneIsBackFacing(PVector, float)
@@ -1473,39 +1503,68 @@ public class Camera implements Cloneable {
 		return coneIsBackFacing(cone.axis(), cone.angle());
 	}
 	
+	public boolean coneIsBackFacing(PVector viewDirection, Cone cone) {
+		return coneIsBackFacing(viewDirection, cone.axis(), cone.angle());
+	}
+	
+	/**
+	 * Convinience funtion that simply returns
+	 * {@code coneIsBackFacing(viewDirection(), axis, angle)}.
+	 * <p>
+	 * Non-cached version of {@link #coneIsBackFacing(PVector, PVector, float)}
+	 */
+	public boolean coneIsBackFacing(PVector axis, float angle) {
+		return coneIsBackFacing(viewDirection(), axis, angle);
+	}
+	
 	/**
 	 * Returns {@code true} if the given cone is back facing the camera.
 	 * Otherwise returns {@code false}.
 	 * 
+	 * @param viewDirection cached view direction
 	 * @param axis normalized cone axis
 	 * @param angle cone angle
 	 * 
 	 * @see #coneIsBackFacing(Cone)
 	 * @see #faceIsBackFacing(PVector)
 	 */
-	public boolean coneIsBackFacing(PVector axis, float angle) {
-		if( angle < PApplet.HALF_PI ) {
-			float phi = PApplet.acos ( PVector.dot(axis, viewDirection()) );
-			if ( ( ( angle - PApplet.HALF_PI ) <= phi ) &&  ( phi <= ( PApplet.HALF_PI - angle ) ) )
-				return true;    
+	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {		
+		if( angle < PApplet.HALF_PI ) {			
+			float phi = PApplet.acos ( PVector.dot(axis, viewDirection ) );
+			if(phi >= PApplet.HALF_PI)
+				return false;
+			if( (phi+angle) >= PApplet.HALF_PI)
+				return false;
+			return true;
 		}
-    return false;
+		return false;
+	}	
+	
+	/**
+	 * Convinience funtion that simply returns
+	 * {@code faceIsBackFacing(viewDirection(), axis)}.
+	 * <p>
+	 * Non-cached version of {@link #faceIsBackFacing(PVector, PVector)}.
+	 */
+	public boolean faceIsBackFacing(PVector axis) {
+		return faceIsBackFacing(viewDirection(), axis);
 	}
 	
 	/**
 	 * Returns {@code true} if the given face is back facing the camera.
 	 * Otherwise returns {@code false}. Same as {@code coneIsBackFacing(axis, 0)}.
 	 * 
+	 * @param viewDirection cached view direction
 	 * @param axis normalized face axis
 	 * 
 	 * @see #coneIsBackFacing(PVector, float)
 	 * @see #coneIsBackFacing(Cone)
 	 */
-	public boolean faceIsBackFacing(PVector axis) {
-		float phi = PApplet.acos ( PVector.dot(axis, viewDirection()) );
-		if ( ( ( - PApplet.HALF_PI ) <= phi ) &&  ( phi <= ( PApplet.HALF_PI ) ) )
-			return true;		
-    return false;
+	public boolean faceIsBackFacing(PVector viewDirection, PVector axis) {
+		float phi = PApplet.acos ( PVector.dot(axis, viewDirection ) );
+		if( phi <= PApplet.HALF_PI )
+			return true;
+		return false;
 	}
 
 	// 4. SCENE RADIUS AND CENTER
