@@ -35,10 +35,12 @@ public class DataVis extends PApplet {
 	boolean drawBBS = false;
 	boolean drawBSS = false;
 	boolean enableVFC = true;
+	boolean enableBFC = true;
 	boolean cameraChange = false;
 	boolean useLOD = false;
 
 	Scene scene;
+	PVector viewDir;
 	OptimizatorRender optim;
 	Chronometer chrono;
 
@@ -47,7 +49,7 @@ public class DataVis extends PApplet {
 	int minInd, maxInd;
 	int vertPerObj;
 	int indicesPerObj;
-		
+
 	GLModelEffect lod;
 
 	public void setup() {
@@ -55,16 +57,16 @@ public class DataVis extends PApplet {
 		frameRate(120);
 
 		chrono = new Chronometer(this);
-	  
-	  lod = new GLModelEffect(this, "lod.xml");
-		
+
+		// lod = new GLModelEffect(this, "lod.xml");
+
 		scene = new Scene(this);
 		scene.enableFrustumEquationsUpdate();
 		scene.setRadius(volSize);
 		scene.showAll();
 		scene.setAxisIsDrawn(false);
 		scene.setGridIsDrawn(false);
-		//scene.disableKeyboardHandling();
+		// scene.disableKeyboardHandling();
 
 		sphereDetail(10);
 
@@ -80,30 +82,33 @@ public class DataVis extends PApplet {
 
 		// Esta variable la usamos para evitar re-enviar los indices.
 		// cameraChange = scene.camera().lastFrameUpdate == frameCount - 1;
-		// println(scene.camera().lastFrameUpdate + " " + (frameCount - 1) + " " + cameraChange);
-		cameraChange = scene.camera().lastFrameUpdate != lastTimeMyFxWasIssued;		
+		// println(scene.camera().lastFrameUpdate + " " + (frameCount - 1) + " "
+		// + cameraChange);
+		cameraChange = scene.camera().lastFrameUpdate != lastTimeMyFxWasIssued;
 
 		GLGraphics renderer = (GLGraphics) g;
 		renderer.beginGL();
 		renderer.lights();
+
+		// shader.start();
+		// shader.setFloatUniform("FpLevel", 0);
+		// shader.setFloatUniform("Radius", 100);
+		// shader.setVecUniform("Color", 1, 1, 0, 1);
 		
-	  //shader.start();
-	  //shader.setFloatUniform("FpLevel", 0);
-	  //shader.setFloatUniform("Radius", 100);
-	  //shader.setVecUniform("Color", 1, 1, 0, 1);		
-	  
+		viewDir = scene.camera().viewDirection(); //cached
+
 		if (enableVFC) {
 			optim.vfc(renderer, objects, lod, scene);
 		} else {
 			// Dibujando todo el sistema, sin optimizacion de VFC.
-		  if (useLOD) {
-			  renderer.model(objects, lod);
-		  } else {
-		    renderer.model(objects);		    
-		  }
+			if (useLOD) {
+				renderer.model(objects, lod);
+			} else {
+				renderer.model(objects);
+			}
 		}
 
-		//shader.stop();
+		// shader.stop();
 		renderer.endGL();
 
 		if (enableVFC && (drawBBS || drawBSS)) {
@@ -114,9 +119,18 @@ public class DataVis extends PApplet {
 	}
 
 	public void keyPressed() {
-		// only useful if scene.disableKeyboardHandling() has been called in setup
+		// only useful if scene.disableKeyboardHandling() has been called in
+		// setup
 		// if (key == 'c' || key == 'C') { scene.toggleCameraType(); return; }
-		 
+		
+		if (key == 'b' || key == 'B') {
+			enableBFC = !enableBFC;
+			if(enableBFC)
+				println("Activando BFC");
+			else
+				println("Desactivando BFC");			
+		}
+
 		if (key == 'v' || key == 'V') {
 			if (enableVFC) {
 				disableVFC();
@@ -149,16 +163,16 @@ public class DataVis extends PApplet {
 		}
 
 		if (key == 'l' || key == 'L') {
-      if (useLOD) {
-        useLOD = false;
-        println("Deshabilitando LOD");
-      } else {
-        useLOD = true;
-        println("Habilitando LOD");
-      }
-      return;
-    }		
-		
+			if (useLOD) {
+				useLOD = false;
+				println("Deshabilitando LOD");
+			} else {
+				useLOD = true;
+				println("Habilitando LOD");
+			}
+			return;
+		}
+
 		if (key == '1') {
 			if (oneDrawCall) {
 				oneDrawCall = false;
@@ -225,7 +239,7 @@ public class DataVis extends PApplet {
 		ArrayList<PVector> vertices = new ArrayList<PVector>();
 		ArrayList<PVector> normals = new ArrayList<PVector>();
 		ArrayList<float[]> centers = new ArrayList<float[]>();
-		
+
 		// Primero creamos un objeto individual.
 		createObject(vertices, normals);
 		vertPerObj = vertices.size();
@@ -245,15 +259,15 @@ public class DataVis extends PApplet {
 			float x0 = random(-volSize, +volSize);
 			float y0 = random(-volSize, +volSize);
 			float z0 = random(-volSize, +volSize);
-			
+
 			for (int j = 0; j < vertPerObj; j++) {
 				PVector v = (PVector) vertices.get(j);
 				objects.updateVertex(n0 + j, x0 + objSize * v.x, y0 + objSize
 						* v.y, z0 + objSize * v.z);
 				// Guardando el centro de la copia actual del objecto, para cada
 				// vertice del mismo.
-				centers.add(new float[] {x0, y0, z0});
-			}			
+				centers.add(new float[] { x0, y0, z0 });
+			}
 		}
 		objects.endUpdateVertices();
 
@@ -268,10 +282,10 @@ public class DataVis extends PApplet {
 		}
 		objects.endUpdateNormals();
 
-	  objects.initAttributes(1);
-	  objects.setAttribute(0, "Object center", 3);
-	  objects.updateAttributes(0, centers);
-		
+		objects.initAttributes(1);
+		objects.setAttribute(0, "Object center", 3);
+		objects.updateAttributes(0, centers);
+
 		objects.initColors();
 		objects.setColors(255, 200, 120, 255);
 
