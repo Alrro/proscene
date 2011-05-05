@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kst version="2.0">
+    <data>
+        <source reader="ASCII file" file="/home/pierre/Documents/Dropbox/own_papers/siggraph_poster11/plots/b2.txt" fileRelative="b2.txt">
+            <properties delimiters="#" columntype="0" headerstart="0" fields="0" readfields="false" usedot="true" columnwidthisconst="false" readunits="false" units="0"/>
+        </source>
+    </data>
+    <variables>
+        <datavector file="/home/pierre/Documents/Dropbox/own_papers/siggraph_poster11/plots/b2.txt" fileRelative="b2.txt" field="Column 1" start="0" count="60" skip="-1" doAve="false" descriptiveNameIsManual="true" descriptiveName="frame number" initialVNum="1" initialXNum="1"/>
+        <datavector file="/home/pierre/Documents/Dropbox/own_papers/siggraph_poster11/plots/b2.txt" fileRelative="b2.txt" field="Column 2" start="0" count="60" skip="-1" doAve="false" descriptiveNameIsManual="true" descriptiveName="VFC" initialVNum="2" initialXNum="13"/>
+        <datavector file="/home/pierre/Documents/Dropbox/own_papers/siggraph_poster11/plots/b2.txt" fileRelative="b2.txt" field="Column 3" start="0" count="60" skip="-1" doAve="false" descriptiveNameIsManual="true" descriptiveName="Without VFC" initialVNum="3" initialXNum="25"/>
+        <string value="2011-05-05 15:39:32" initialTNum="1"/>
+        <string value="2011-05-05 15:39:32" initialTNum="2"/>
+        <string value="b1.txt" initialTNum="3"/>
+        <string value="/home/pierre/Documents/Dropbox/own_papers/siggraph_poster11/plots" initialTNum="4"/>
+        <string orphan="true" editable="true" value="2011-05-05 15:39:32" initialTNum="1"/>
+        <string orphan="true" editable="true" value="2011-05-05 15:39:32" initialTNum="2"/>
+        <string orphan="true" editable="true" value="b1.txt" initialTNum="3"/>
+        <string orphan="true" editable="true" value="/home/pierre" initialTNum="4"/>
+        <string value="2011-05-05 17:02:50" initialTNum="5"/>
+        <string value="2011-05-05 17:02:50" initialTNum="6"/>
+        <string value="b2.txt" initialTNum="7"/>
+        <string value="/home/pierre/Documents/Dropbox/own_papers/siggraph_poster11/plots" initialTNum="8"/>
+    </variables>
+    <objects/>
+    <relations>
+        <curve xvector="frame number (V1)" yvector="VFC (V2)" color="#0000ff" headcolor="#000000" haslines="true" linewidth="0" linestyle="0" haspoints="false" pointtype="0" pointdensity="0" hasbars="false" barstyle="0" ignoreautoscale="false" hashead="false" headtype="0" initialCNum="1"/>
+        <curve xvector="frame number (V1)" yvector="Without VFC (V3)" color="#008000" headcolor="#000000" haslines="true" linewidth="0" linestyle="0" haspoints="false" pointtype="1" pointdensity="0" hasbars="false" barstyle="0" ignoreautoscale="false" hashead="false" headtype="0" initialCNum="2"/>
+    </relations>
+    <graphics>
+        <view name="View &amp;1" width="1365" height="639">
+            <plot tiedxzoom="false" tiedyzoom="false" leftlabelvisible="true" bottomlabelvisible="true" rightlabelvisible="true" toplabelvisible="true" globalfont="Ubuntu,12,-1,5,50,0,0,0,0,0" globalfontscale="16" globalfontcolor="#000000" showlegend="false" hidebottomaxislabel="false" hidetopaxislabel="false" hideleftaxislabel="false" hiderightaxislabel="false" descriptiveNameIsManual="true" descriptiveName="fps" initialPlotNum="1" name="Plot">
+                <position x="692" y="321"/>
+                <rect x="-668.7253" y="-310.752" width="1337.4506" height="621.504"/>
+                <relativesize width="0.9791" height="0.9711" centerx="0.506588579795022" centery="0.5015625" posx="0.017038579795022" posy="0.0160125"/>
+                <transform m11="1" m12="0" m13="0" m21="0" m22="1" m23="0" m31="0" m32="0" m33="1"/>
+                <pen style="1" width="0" miterlimit="2" cap="16" joinStyle="64">
+                    <brush color="#000000" style="1"/>
+                </pen>
+                <brush color="#ffffff" style="1"/>
+                <legend auto="true" title="" font="Ubuntu,12,-1,5,50,0,0,0,0,0" fontscale="9.6" verticaldisplay="false" name="Legend">
+                    <position x="347.08572959" y="-231.9103968"/>
+                    <rect x="-139.018275" y="-11.01" width="256.076241506654" height="22"/>
+                    <relativesize width="0.205279665188067" height="0.0408160236287671" centerx="0.747789832594034" centery="0.121208011814384" posx="0.64515" posy="0.1008"/>
+                    <transform m11="1" m12="0" m13="0" m21="0" m22="1" m23="0" m31="0" m32="0" m33="1"/>
+                    <pen style="1" width="0" miterlimit="2" cap="16" joinStyle="64">
+                        <brush color="#000000" style="1"/>
+                    </pen>
+                    <brush color="#ffffff" style="1"/>
+                    <relation tag="VFC vs frame number (C1)"/>
+                    <relation tag="Without VFC vs frame number (C2)"/>
+                </legend>
+                <cartesianrender name="Cartesian Plot" type="1">
+                    <relation tag="VFC vs frame number (C1)"/>
+                    <relation tag="Without VFC vs frame number (C2)"/>
+                </cartesianrender>
+                <plotaxis id="xaxis" visible="true" log="false" reversed="false" autobaseoffset="true" baseoffset="false" interpret="false" interpretation="1" display="4" majortickmode="5" minortickcount="5" autominortickcount="true" drawmajorticks="true" drawminorticks="true" drawmajorgridlines="true" drawminorgridlines="false" drawmajorgridlinecolor="#a0a0a4" drawminorgridlinecolor="#a0a0a4" drawmajorgridlinestyle="2" drawminorgridlinestyle="2" drawmajorgridlinewidth="1" drawminorgridlinewidth="1" significantdigits="9" rotation="0" zoommode="0">
+                    <plotmarkers xaxis="true" linecolor="#000000" linestyle="1" linewidth="1" curvemode="0"/>
+                </plotaxis>
+                <plotaxis id="yaxis" visible="true" log="false" reversed="false" autobaseoffset="true" baseoffset="false" interpret="false" interpretation="1" display="4" majortickmode="5" minortickcount="5" autominortickcount="true" drawmajorticks="true" drawminorticks="true" drawmajorgridlines="true" drawminorgridlines="false" drawmajorgridlinecolor="#a0a0a4" drawminorgridlinecolor="#a0a0a4" drawmajorgridlinestyle="2" drawminorgridlinestyle="2" drawmajorgridlinewidth="1" drawminorgridlinewidth="1" significantdigits="9" rotation="0" zoommode="1">
+                    <plotmarkers xaxis="false" linecolor="#000000" linestyle="1" linewidth="1" curvemode="0"/>
+                </plotaxis>
+                <plotlabel id="leftlabel" visible="true" overridetext="1 / frame time (=fps)" autolabel="false" font="Ubuntu,12,-1,5,50,0,0,0,0,0" fontscale="16" fontcolor="#000000" fontuseglobal="true"/>
+                <plotlabel id="rightlabel" visible="true" overridetext="" autolabel="true" font="Ubuntu,12,-1,5,50,0,0,0,0,0" fontscale="16" fontcolor="#000000" fontuseglobal="true"/>
+                <plotlabel id="toplabel" visible="true" overridetext="" autolabel="true" font="Ubuntu,12,-1,5,50,0,0,0,0,0" fontscale="16" fontcolor="#000000" fontuseglobal="true"/>
+                <plotlabel id="bottomlabel" visible="true" overridetext="frame number" autolabel="true" font="Ubuntu,12,-1,5,50,0,0,0,0,0" fontscale="16" fontcolor="#000000" fontuseglobal="true"/>
+                <plotlabel id="numberlabel" visible="true" overridetext="" autolabel="false" font="Ubuntu,12,-1,5,50,0,0,0,0,0" fontscale="16" fontcolor="#000000" fontuseglobal="true"/>
+                <projectionrect x="0" y="4.55" width="590" height="39.9"/>
+            </plot>
+        </view>
+    </graphics>
+</kst>
