@@ -1489,6 +1489,13 @@ public class Camera implements Cloneable {
 		return coneIsBackFacing(new Cone(normals));
 	}
 	
+	/**
+	 * Convenience function that simply returns
+	 * {@code coneIsBackFacing(viewDirection, new Cone(normals))}.
+	 * 
+	 * @param viewDirection Cached camera view direction.
+	 * @param normals cone of normals.
+	 */
 	public boolean coneIsBackFacing(PVector viewDirection, PVector [] normals) {
 		return coneIsBackFacing(viewDirection, new Cone(normals));
 	}
@@ -1503,6 +1510,13 @@ public class Camera implements Cloneable {
 		return coneIsBackFacing(cone.axis(), cone.angle());
 	}
 	
+	/**
+	 * Convenience function that simply returns 
+	 * {@code coneIsBackFacing(viewDirection, cone.axis(), cone.angle())}.
+	 * 
+	 * @param viewDirection cached camera view direction.
+	 * @param cone cone of normals
+	 */
 	public boolean coneIsBackFacing(PVector viewDirection, Cone cone) {
 		return coneIsBackFacing(viewDirection, cone.axis(), cone.angle());
 	}
@@ -1553,9 +1567,12 @@ public class Camera implements Cloneable {
 	/**
 	 * Returns {@code true} if the given face is back facing the camera.
 	 * Otherwise returns {@code false}. Same as {@code coneIsBackFacing(axis, 0)}.
+	 * <p> 
 	 * 
-	 * @param viewDirection cached view direction
-	 * @param axis normalized face axis
+	 * @param viewDirection cached camera view direction.
+	 * @param axis normalized face axis. If the camera is in perspective mode, the normal
+	 * should be given in projection space (otherwise it could be given in the world
+	 * coodinate system).
 	 * 
 	 * @see #coneIsBackFacing(PVector, float)
 	 * @see #coneIsBackFacing(Cone)
