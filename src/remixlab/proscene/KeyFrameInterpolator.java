@@ -351,6 +351,8 @@ public class KeyFrameInterpolator implements Cloneable {
 	 * {@link #interpolationTime()} at each update, and the {@link #frame()} state
 	 * is modified accordingly (see {@link #interpolateAtTime(float)}). Default
 	 * value is 40 milliseconds.
+	 * 
+	 * @see #setInterpolationPeriod(int)
 	 */
 	public int interpolationPeriod() {
 		return period;
@@ -392,12 +394,16 @@ public class KeyFrameInterpolator implements Cloneable {
 	}
 
 	/**
-	 * Sets the {@link #interpolationPeriod()}.
+	 * Sets the {@link #interpolationPeriod()}. Should positive.
 	 */
 	public void setInterpolationPeriod(int myPeriod) {
-		period = myPeriod;
+		if(myPeriod > 0)
+			period = myPeriod;
 	}
 
+	/**
+	 * Convenience function that simply calls  {@code setLoopInterpolation(true)}. 
+	 */
 	public void setLoopInterpolation() {
 		setLoopInterpolation(true);
 	}
