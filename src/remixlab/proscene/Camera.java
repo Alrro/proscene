@@ -1475,6 +1475,13 @@ public class Camera implements Cloneable {
 		return coneIsBackFacing(new Cone(normals));
 	}
 	
+	/**
+	 * Convenience function that simply calls
+	 * {coneIsBackFacing(viewDirection, new Cone(normals))}.
+	 * 
+	 * @param viewDirection Cached camera view direction.
+	 * @param normals cone of normals.
+	 */
 	public boolean coneIsBackFacing(PVector viewDirection, ArrayList<PVector> normals) {
 		return coneIsBackFacing(viewDirection, new Cone(normals));
 	}
