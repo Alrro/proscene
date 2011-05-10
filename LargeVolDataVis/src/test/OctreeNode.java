@@ -6,6 +6,7 @@ package test;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import remixlab.proscene.*;
+import remixlab.proscene.Camera.*;
 import processing.core.PApplet;
 import processing.core.PVector;
 import codeanticode.glgraphics.GLGraphics;
@@ -18,28 +19,31 @@ public class OctreeNode {
 	GLModel model;
 	GLModelEffect lod;
 	int[] indices;
+	Scene scene;
 	DataVis parent;
 	int idxMax, idxMin;
 	float xMax, xMin, yMax, yMin, zMax, zMin;
 	float xMedio, yMedio, zMedio;
 	BoundingBox bbs;
 	BoundingSphere bss;
-	Cone cone;
+	Camera.Cone cone;
 
-	public OctreeNode() {
+	public OctreeNode(Scene scn) {
 		hijos = null;
-		cone = new Cone(getNormals());
+		scene = scn;
+		this.parent = (DataVis) scene.parent;
+		cone = scene.camera().new Cone();
 	}
 
-	public OctreeNode(GLModel model, GLModelEffect lod, int[] indices,
-			DataVis parent, int level) {
-		this.parent = parent;
+	public OctreeNode(GLModel model, GLModelEffect lod, int[] indices, Scene scn, int level) {
+		this.scene = scn;
+		this.parent = (DataVis) scene.parent;
 		this.model = model;
 		this.lod = lod;
 		this.indices = indices;
 
 		//getNormals();
-		cone = new Cone(getNormals());
+		cone = scene.camera().new Cone();
 
 		idxMin = model.getSize();
 		idxMax = idxMin;
@@ -181,14 +185,14 @@ public class OctreeNode {
 		model.endUpdateVertices();
 
 		hijos = new OctreeNode[8];
-		hijos[0] = new OctreeNode(model, lod, toIntArray(inds1), parent, level);
-		hijos[1] = new OctreeNode(model, lod, toIntArray(inds2), parent, level);
-		hijos[2] = new OctreeNode(model, lod, toIntArray(inds3), parent, level);
-		hijos[3] = new OctreeNode(model, lod, toIntArray(inds4), parent, level);
-		hijos[4] = new OctreeNode(model, lod, toIntArray(inds5), parent, level);
-		hijos[5] = new OctreeNode(model, lod, toIntArray(inds6), parent, level);
-		hijos[6] = new OctreeNode(model, lod, toIntArray(inds7), parent, level);
-		hijos[7] = new OctreeNode(model, lod, toIntArray(inds8), parent, level);
+		hijos[0] = new OctreeNode(model, lod, toIntArray(inds1), scene, level);
+		hijos[1] = new OctreeNode(model, lod, toIntArray(inds2), scene, level);
+		hijos[2] = new OctreeNode(model, lod, toIntArray(inds3), scene, level);
+		hijos[3] = new OctreeNode(model, lod, toIntArray(inds4), scene, level);
+		hijos[4] = new OctreeNode(model, lod, toIntArray(inds5), scene, level);
+		hijos[5] = new OctreeNode(model, lod, toIntArray(inds6), scene, level);
+		hijos[6] = new OctreeNode(model, lod, toIntArray(inds7), scene, level);
+		hijos[7] = new OctreeNode(model, lod, toIntArray(inds8), scene, level);
 	}
 
 	private int[] toIntArray(ArrayList<Integer> list) {

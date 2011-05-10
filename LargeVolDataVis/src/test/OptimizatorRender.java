@@ -13,6 +13,7 @@ public class OptimizatorRender {
 	 */
 	OctreeNode oc;
 	ArrayList<Integer> indexes = new ArrayList<Integer>();
+	Scene scene;
 	DataVis parent;
 
 	int[] drawIndices;
@@ -26,10 +27,11 @@ public class OptimizatorRender {
 	 * @param model
 	 *            The GLModel that you create the Octree Node
 	 * */
-	public OptimizatorRender(GLModel model, GLModelEffect lod, int[] indices, DataVis parent) {
-		this.parent = parent;
+	public OptimizatorRender(GLModel model, GLModelEffect lod, int[] indices, Scene scn) {
+		scene = scn;
+		this.parent = (DataVis) scene.parent;
 		drawIndices = new int[indices.length];
-		oc = new OctreeNode(model, lod, indices, parent, 0);
+		oc = new OctreeNode(model, lod, indices, scene, 0);
 	}
 
 	/**

@@ -73,7 +73,7 @@ public class DataVis extends PApplet {
 		println("Creando cubos...");
 		createObjects();
 		println("Creando el Optimizador...");
-		optim = new OptimizatorRender(objects, lod, allIndices, this);
+		optim = new OptimizatorRender(objects, lod, allIndices, scene);
 		println("Listo.");
 	}
 
