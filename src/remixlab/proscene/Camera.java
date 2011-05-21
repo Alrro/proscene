@@ -1842,7 +1842,7 @@ public class Camera implements Cloneable {
 	 * Current implementation always returns {@code WorlPoint.found = false}
 	 * (dummy value), meaning that no point was found under pixel.
 	 */
-	protected WorldPoint pointUnderPixel(Point pixel) {
+	public WorldPoint pointUnderPixel(Point pixel) {
 		return new WorldPoint(new PVector(0, 0, 0), false);
 	}
 

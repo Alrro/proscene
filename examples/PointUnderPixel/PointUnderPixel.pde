@@ -72,7 +72,7 @@ class GLCamera extends Camera {
     glu = pgl.glu;
   }
     
-  protected WorldPoint pointUnderPixel(Point pixel) {
+  public WorldPoint pointUnderPixel(Point pixel) {
     float []depth = new float[1];
     pgl.beginGL();
     gl.glReadPixels((int)pixel.x, (screenHeight() - (int)pixel.y), 1, 1, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap(depth));

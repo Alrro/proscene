@@ -36,14 +36,15 @@ import processing.core.*;
  * Constraint to a Frame (default is a {@code null}
  * {@link remixlab.proscene.Frame#constraint()}.
  */
-public class Constraint {
+public abstract class Constraint {
 	/**
 	 * Filters the translation applied to the Frame. This default implementation
 	 * is empty (no filtering).
 	 * <p>
 	 * Overload this method in your own Constraint class to define a new
 	 * translation constraint. {@code frame} is the Frame to which is applied the
-	 * translation. Use its {@link remixlab.proscene.Frame#position()} and update
+	 * translation. You should refrain from directly changing its value in the
+	 * constraint. Use its {@link remixlab.proscene.Frame#position()} and update
 	 * the translation accordingly instead.
 	 * <p>
 	 * {@code translation} is expressed in the local Frame coordinate system. Use

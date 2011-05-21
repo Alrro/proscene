@@ -51,7 +51,7 @@ public class HIDevice {
 	public enum CameraMode {
 		FIRST_PERSON("FIRST_PERSON camera mode set"),
 		GOOGLE_EARTH("GOOGLE_EARTH camera mode set"),
-		WORLD("WORLD camera mode set"),
+		/**WORLD("WORLD camera mode set"),*/
 		CUSTOM("CUSTOM camera mode set");
     private String description;		
     CameraMode(String description) {
@@ -492,8 +492,8 @@ public class HIDevice {
       q.y = t.y;
       q.z = t.z;
       iFrame.rotate(q);
-			break;
-    case WORLD:    	
+			break;			
+    case WORLD:
       // Transform to frame
     	t.set(tx,ty,-tz);
       if (iFrame.referenceFrame() != null)
@@ -539,10 +539,10 @@ public class HIDevice {
       q.fromEulerAngles(-roll, 0, 0);
       cameraFrame.rotate(q);
 			break;
+			/**
 		case WORLD:
 		  // Translate          
-      cameraFrame.translate(new PVector(tx,ty,tz));
-      // /**
+      cameraFrame.translate(new PVector(tx,ty,tz));      
       // Rotate (same as q.fromEulerAngles, but axes are expressed int the world coordinate system)            
       Quaternion qx = new Quaternion(cameraFrame.transformOf(new PVector(1, 0, 0)), -roll);
       Quaternion qy = new Quaternion(cameraFrame.transformOf(new PVector(0, 1, 0)), -pitch);     
@@ -551,8 +551,8 @@ public class HIDevice {
       q.multiply(qz);
       q.multiply(qx);
       cameraFrame.rotate(q);
-      // */
 			break;
+			*/
 		case CUSTOM:
 			customCameraHandle();
 			break;
@@ -568,6 +568,13 @@ public class HIDevice {
 			setCameraMode(CameraMode.GOOGLE_EARTH);
 			break;
 		case GOOGLE_EARTH:
+			if (HIDevice.class == this.getClass())
+				setCameraMode(CameraMode.FIRST_PERSON);
+			else
+				setCameraMode(CameraMode.CUSTOM);
+			break;
+		/**
+		case GOOGLE_EARTH:
 			setCameraMode(CameraMode.WORLD);
 			break;
 		case WORLD:
@@ -576,6 +583,7 @@ public class HIDevice {
 			else
 				setCameraMode(CameraMode.CUSTOM);
 			break;
+		*/
 		case CUSTOM:
 			setCameraMode(CameraMode.FIRST_PERSON);
 			break;
@@ -587,6 +595,20 @@ public class HIDevice {
 	 */
   public void previousCameraMode() {  	
   	switch (camMode) {
+  	case FIRST_PERSON:
+			if (HIDevice.class == this.getClass())
+				setCameraMode(CameraMode.GOOGLE_EARTH);
+			else
+				setCameraMode(CameraMode.CUSTOM);
+			break;
+		case GOOGLE_EARTH:
+			setCameraMode(CameraMode.FIRST_PERSON);
+			break;
+		case CUSTOM:
+			setCameraMode(CameraMode.GOOGLE_EARTH);
+			break;
+		}
+  	/**
 		case FIRST_PERSON:
 			if (HIDevice.class == this.getClass())
 				setCameraMode(CameraMode.WORLD);
@@ -603,6 +625,7 @@ public class HIDevice {
 			setCameraMode(CameraMode.WORLD);
 			break;
 		}
+		*/
 	}
   
   /**

@@ -60,6 +60,7 @@ public class CameraConstraint extends AxisPlaneConstraint {
 	 * {@link #camera()} coordinate system by
 	 * {@link #translationConstraintDirection()}.
 	 */
+	@Override
 	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
 		PVector proj;
@@ -67,15 +68,13 @@ public class CameraConstraint extends AxisPlaneConstraint {
 		case FREE:
 			break;
 		case PLANE:
-			proj = camera().frame().inverseTransformOf(
-					translationConstraintDirection());
+			proj = camera().frame().inverseTransformOf(translationConstraintDirection());
 			if (frame.referenceFrame() != null)
 				proj = frame.referenceFrame().transformOf(proj);
 			res = MathUtils.projectVectorOnPlane(translation, proj);
 			break;
 		case AXIS:
-			proj = camera().frame().inverseTransformOf(
-					translationConstraintDirection());
+			proj = camera().frame().inverseTransformOf(translationConstraintDirection());
 			if (frame.referenceFrame() != null)
 				proj = frame.referenceFrame().transformOf(proj);
 			res = MathUtils.projectVectorOnAxis(translation, proj);
@@ -93,6 +92,7 @@ public class CameraConstraint extends AxisPlaneConstraint {
 	 * {@link #camera()} coordinate system by
 	 * {@link #rotationConstraintDirection()}.
 	 */
+	@Override
 	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
 		Quaternion res = new Quaternion(rotation);
 		switch (rotationConstraintType()) {
