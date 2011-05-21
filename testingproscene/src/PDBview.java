@@ -1,4 +1,3 @@
-package molecule;
 import java.util.ArrayList;
 import java.util.HashMap;
 
