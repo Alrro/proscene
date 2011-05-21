@@ -15,27 +15,109 @@ public class TestingAPI extends PApplet {
 	int nbKeyFrames;
 	int currentKF_;
 	
-	public void setup()	{
-		size(640, 360, OPENGL);
-		//size(640, 360, P3D);
+	public void setup()	{		
+		size(640, 360, P3D);
 		//size(300, 200, OPENGL);
 		//size(300, 200, P3D);
 		scene = new Scene(this); 
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);
 		
+		ArrayList<String> list = new ArrayList<String>();
+		String name = "jean";
+		String on = "jean"; 
+		list.add(name);
+		if ( list.contains(on) )
+			PApplet.println("contains jean!");
+		else
+			PApplet.println("does not contain jean!");
+		
+		//Quaternion q1 = Quaternion.randomQuaternion();
+		//Quaternion q2 = new Quaternion(q1);
+		
+		Quaternion q1 = new Quaternion();
+		Quaternion q2 = new Quaternion();
+		
+		/**
+		float roll = this.QUARTER_PI;
+		float pitch = this.THIRD_PI/2;
+		float yaw = this.HALF_PI/2;
+		*/
+		
+		float low = -PApplet.PI;
+		float high = PApplet.PI;
+		
+		float roll = random(low, high);		
+		float pitch = random(low, high);		
+		float yaw = random(low, high);		
+		PApplet.println("roll = " + roll);
+		PApplet.println("pitch = " + pitch);
+		PApplet.println("yaw = " + yaw);		
+		
+		q1.fromEulerAngles(roll, pitch, yaw);
+		
+		PApplet.println("q1 = (" + q1.x + ", " + q1.y + ", " + q1.z + ", " + q1.w + ")");
+		
+		PVector v = q1.eulerAngles();
+		
+		roll = v.x;
+		pitch = v.y;
+		yaw = v.z;		
+		PApplet.println("roll = " + roll);
+		PApplet.println("pitch = " + pitch);
+		PApplet.println("yaw = " + yaw);
+		
+		q2.fromEulerAngles(roll, pitch, yaw);
+		
+		PApplet.println("q2 = (" + q2.x + ", " + q2.y + ", " + q2.z + ", " + q2.w + ")");
+		
+		float x = random(200);
+		float y = random(200);
+		float z = random(200);
+		PVector axis3 = new PVector(x, y, z);
+		PVector axis4 = new PVector(-x, -y, -z);
+		float angle = random(low, high);;
+		
+		Quaternion q3 = new Quaternion(axis3, angle);
+		Quaternion q4 = new Quaternion(axis4, -angle);
+		
+		PApplet.println("q3 = (" + q3.x + ", " + q3.y + ", " + q3.z + ", " + q3.w + ")");
+		PApplet.println("q4 = (" + q4.x + ", " + q4.y + ", " + q4.z + ", " + q4.w + ")");
+		
+		PVector vec = new PVector(0, -8, 5);
+		
+		float mag = 45;
+		
+		vec.normalize();
+		
+		vec.mult(mag);
+		
+		PApplet.println(vec.mag()); 
+		
+		
+		
+		//q1.normalize();
+		//q2.normalize();
+		
+		//PApplet.println("q1 = (" + q1.x + " ," + q1.y + " ," + q1.z + " ," + q1.w + ")");
+		//PApplet.println("q2 = (" + q2.x + " ," + q2.y + " ," + q2.z + " ," + q2.w + ")");
+		
+		/**
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setCameraType(Camera.Type.PERSPECTIVE);
 		scene.camera().setPosition(new PVector(-30,-30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		scene.showAll();
+		*/
 		
+		/**
 		float [][] coef = new float [6][4];		
 		coef = scene.camera().getFrustumEquations();
 		
 		for (int i=0; i<6; i++)
 			for (int j=0; j<4; j++)				
 				println("coef[" + i + "]" + "[" + j + "] = " + coef[i][j]);
+		*/
 		
 		
 		/**

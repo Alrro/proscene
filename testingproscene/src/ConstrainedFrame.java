@@ -4,7 +4,7 @@ import processing.core.PVector;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
-public class ConstrainedFrame extends PApplet  {
+public class ConstrainedFrame extends PApplet {
 	Scene scene;
 	PFont myFont;
 	private int transDir;
@@ -21,6 +21,10 @@ public class ConstrainedFrame extends PApplet  {
 		textMode(SCREEN);
 		
 		scene = new Scene(this);
+		// press 'i' to switch the interaction between the camera frame and the interactive frame
+		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		// press 'f' to display frame selection hints
+		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setAxisIsDrawn(true);
 		

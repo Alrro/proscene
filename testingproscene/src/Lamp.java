@@ -2,10 +2,12 @@ import processing.core.*;
 import remixlab.proscene.*;
 
 public class Lamp {
+	Scene scene;
 	PApplet parent;
 	InteractiveFrame [] frameArray;
 	
 	Lamp(Scene s) {
+		scene =  s;
 		parent = s.parent;
 		frameArray = new InteractiveFrame[4];
 		for (int i=0; i<4; ++i) {
@@ -108,7 +110,7 @@ public class Lamp {
 	
 	public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
 		parent.translate(0.0f, 0.0f, zMin);
-		DrawingUtils.cone(parent, nbSub, 0, 0, r1, r2, zMax-zMin);
+		scene.cone(nbSub, 0, 0, r1, r2, zMax-zMin);
 		parent.translate(0.0f, 0.0f, -zMin);
 	}
 	

@@ -1,5 +1,3 @@
-import java.awt.Point;
-
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;

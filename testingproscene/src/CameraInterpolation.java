@@ -39,10 +39,37 @@ public class CameraInterpolation extends PApplet {
 		
 		scene.setCameraPathsAreDrawn(true);
 	}
+	
+	public void keyPressed() {
+		KeyFrameInterpolator kfi = scene.camera().keyFrameInterpolator(scene.path('1'));
+		if (kfi == null)
+			return;
+		
+		if( key == 'u' || key == 'v' ) {
+			if ( key == 'u')
+				kfi.setInterpolationSpeed(kfi.interpolationSpeed()-0.25f);
+			if ( key == 'v')
+				kfi.setInterpolationSpeed(kfi.interpolationSpeed()+0.25f);
+			println("interpolation speed = " + kfi.interpolationSpeed());
+		}
+		
+		if( key == 'l' ) { //toggle  loop
+			if( kfi.loopInterpolation() ) {
+				kfi.setLoopInterpolation(false);
+				println("interpolation is played only once (no loop)");
+			}
+			else {
+				kfi.setLoopInterpolation(true);
+				println("interpolation is played within a loop");
+			}
+		}
+	}
 
 	public void draw() {		
 		fill(204, 102, 0);
 		box(20, 30, 50);
+		
+		//scene.camera().playPath(arg0);
 	}
 	
 	public static void main(String args[]) {

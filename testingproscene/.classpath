@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing-1.1/core.jar">
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing/core.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/home/pierre/Fun/src/processing/build/javadoc/core/"/>
 		</attributes>
@@ -17,9 +17,12 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/projects/workspace/native_libs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/proscene.jar" sourcepath="/home/pierre/Fun/downloads/bin/processing-1.0.9/libraries/proscene/library"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing-1.0.9/opengl.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/guicomponents.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/3rd_party/napplet.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/proscene.jar" sourcepath="/home/pierre/projects/workspace/proscene/distribution/proscene-1.0.1-pre11.02.11/download/proscene-1.0.1-pre11.02.11.zip"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/processing/opengl.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/napplet.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/GLGraphics.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/procontroll.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/hemesh.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/javolution-5.5.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

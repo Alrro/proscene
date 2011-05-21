@@ -13,7 +13,6 @@ public class Luxo extends PApplet {
 		scene = new Scene(this);
 		scene.setRadius(100);
 		scene.showAll();
-		scene.setHelpIsDrawn(false);
 		scene.setFrameSelectionHintIsDrawn(true);
 		lamp = new Lamp(scene);
 	}

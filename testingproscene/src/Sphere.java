@@ -2,12 +2,14 @@ import processing.core.*;
 import remixlab.proscene.*;
 
 public class Sphere {
+	Scene scene;
 	PApplet parent;
 	InteractiveFrame iFrame;
 	float r;
 	int c;
 	
 	Sphere(Scene scn) {
+		scene = scn;
 		parent = scn.parent;
 		iFrame = new InteractiveFrame(scn);
 		setRadius(10);
@@ -22,7 +24,8 @@ public class Sphere {
 		iFrame.applyTransformation(parent);
 		
 		if(drawAxis)
-			DrawingUtils.drawAxis(parent, radius()*1.3f);
+			//DrawingUtils.drawAxis(parent, radius()*1.3f);
+		     scene.drawAxis(radius()*1.3f);
 		if (iFrame.grabsMouse()) {
 			parent.fill(255, 0, 0);
 			parent.sphere(radius()*1.2f);

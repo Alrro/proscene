@@ -2,12 +2,14 @@ import processing.core.*;
 import remixlab.proscene.*;
 
 public class Box {
+	Scene scene;
 	PApplet parent;
 	InteractiveFrame iFrame;
 	float w, h, d;
 	int c;
 	
 	Box(Scene scn) {
+		scene = scn;
 		parent = scn.parent;
 		iFrame = new InteractiveFrame(scn);
 		setSize();
@@ -27,7 +29,8 @@ public class Box {
 		iFrame.applyTransformation(parent);
 		
 		if(drawAxis)
-			DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
+			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
+			scene.drawAxis(PApplet.max(w,h,d)*1.3f);
 		parent.noStroke();
 		if (iFrame.grabsMouse())
 			parent.fill(255,0,0);

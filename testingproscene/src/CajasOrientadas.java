@@ -11,11 +11,13 @@ public class CajasOrientadas extends PApplet {
 	
 	public void setup()	{
 		size(640, 360, P3D);
-		scene = new Scene(this);	
+		scene = new Scene(this);
+		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setGridIsDrawn(true);		
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setRadius(160);		
 		scene.showAll();
+		//scene.disableBackgroundHanddling();
 		
 		esfera = new Sphere(scene);
 		esfera.setPosition(new PVector(0.0f, 1.4f, 0.0f));
@@ -31,6 +33,13 @@ public class CajasOrientadas extends PApplet {
 		for (int i = 0; i < cajas.length; i++) {
 			cajas[i].setOrientation(esfera.getPosition());
 			cajas[i].draw(true);
+		}
+	}
+	
+	public void keyPressed() {
+		if ((key == 'x') || (key == 'x')) {
+			scene.toggleMouseTracking();
+			println(scene.hasMouseTracking());
 		}
 	}
 		
