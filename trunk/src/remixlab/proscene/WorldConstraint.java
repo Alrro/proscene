@@ -39,6 +39,7 @@ public class WorldConstraint extends AxisPlaneConstraint {
 	 * translation to be along an axis or limited to a plane defined in the Frame
 	 * world coordinate system by {@link #translationConstraintDirection()}.
 	 */
+	@Override
 	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
 		PVector proj;
@@ -47,21 +48,17 @@ public class WorldConstraint extends AxisPlaneConstraint {
 			break;
 		case PLANE:
 			if (frame.referenceFrame() != null) {
-				proj = frame.referenceFrame().transformOf(
-						translationConstraintDirection());
+				proj = frame.referenceFrame().transformOf(translationConstraintDirection());
 				res = MathUtils.projectVectorOnPlane(translation, proj);
 			} else
-				res = MathUtils.projectVectorOnPlane(translation,
-						translationConstraintDirection());
+				res = MathUtils.projectVectorOnPlane(translation,	translationConstraintDirection());
 			break;
 		case AXIS:
 			if (frame.referenceFrame() != null) {
-				proj = frame.referenceFrame().transformOf(
-						translationConstraintDirection());
+				proj = frame.referenceFrame().transformOf(translationConstraintDirection());
 				res = MathUtils.projectVectorOnAxis(translation, proj);
 			} else
-				res = MathUtils.projectVectorOnAxis(translation,
-						translationConstraintDirection());
+				res = MathUtils.projectVectorOnAxis(translation, translationConstraintDirection());
 			break;
 		case FORBIDDEN:
 			res = new PVector(0.0f, 0.0f, 0.0f);
@@ -75,6 +72,7 @@ public class WorldConstraint extends AxisPlaneConstraint {
 	 * rotation} to be a rotation around an axis whose direction is defined in the
 	 * Frame world coordinate system by {@link #rotationConstraintDirection()}.
 	 */
+	@Override
 	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
 		Quaternion res = new Quaternion(rotation);
 		switch (rotationConstraintType()) {

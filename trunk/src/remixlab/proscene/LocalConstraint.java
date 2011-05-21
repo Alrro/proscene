@@ -41,6 +41,7 @@ public class LocalConstraint extends AxisPlaneConstraint {
 	 * translation to be along an axis or limited to a plane defined in the Frame
 	 * local coordinate system by {@link #translationConstraintDirection()}.
 	 */
+	@Override
 	public PVector constrainTranslation(PVector translation, Frame frame) {
 		PVector res = new PVector(translation.x, translation.y, translation.z);
 		PVector proj;
@@ -67,6 +68,7 @@ public class LocalConstraint extends AxisPlaneConstraint {
 	 * rotation} to be a rotation around an axis whose direction is defined in the
 	 * Frame local coordinate system by {@link #rotationConstraintDirection()}.
 	 */
+	@Override
 	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
 		Quaternion res = new Quaternion(rotation);
 		switch (rotationConstraintType()) {

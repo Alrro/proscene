@@ -41,8 +41,7 @@ import processing.core.*;
  * expressed.
  */
 
-public class AxisPlaneConstraint extends Constraint {
-
+public abstract class AxisPlaneConstraint extends Constraint {
 	/**
 	 * Type lists the different types of translation and rotation constraints that
 	 * are available.
