@@ -57,10 +57,12 @@ void draw() {
   stroke(183,67,158,127);
   noFill();
   beginShape();
-  for (int i = 0; i < points.size(); i++)
-    vertex(scene.xCoord((float) ((Point) points.get(i)).x ),
-           scene.yCoord((float) ((Point) points.get(i)).y ), scene.zCoord());
-  endShape();
+  PVector p = new PVector();
+  for (int i = 0; i < points.size(); i++) {
+    p.set(scene.coords(new Point((float) ((Point) points.get(i)).x, (float) ((Point) points.get(i)).y)));
+    vertex(p.x, p.y, p.z);
+  }
+  endShape();  
   popStyle();
   scene.endScreenDrawing();
 }
