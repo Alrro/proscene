@@ -114,7 +114,7 @@ void feed(HIDevice d) {
 }
 
 void draw() {
-  scene.background(0);
+  background(0);
 
   GLGraphics renderer = (GLGraphics)g;
   renderer.beginGL();   

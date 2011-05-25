@@ -93,10 +93,6 @@ import java.util.TimerTask;
  * to {@code true} each time an animated frame is triggered (and to {@code false}
  * otherwise), which is useful to notify the outside world when an animation event
  * occurs. See the example <i>Flock</i>.
- * </ol>
- * <b>Attention:</b> To set the PApplet's background you should call one of the
- * {@code Scene.background()} versions instead of any of the {@code
- * PApplet.background()} ones. The background is set to black by default.
  */
 public class Scene implements PConstants {
 	// proscene version
@@ -396,14 +392,6 @@ public class Scene implements PConstants {
     // */
 	}
 
-	/**
-	 * This enum defines the papplet background mode which should be set by
-	 * proscene.
-	 */
-	public enum BackgroundMode {
-		RGB, RGB_ALPHA, GRAY, GRAY_ALPHA, XYZ, XYZ_ALPHA, PIMAGE
-	}
-
 	// K E Y F R A M E S
 	protected Bindings<Integer, Integer> pathKeys;
 	protected Modifier addKeyFrameKeyboardModifier;
@@ -418,39 +406,32 @@ public class Scene implements PConstants {
 	private CameraProfile currentCameraProfile;
 
 	// mouse actions
-	boolean arpFlag;
-	boolean pupFlag;
-	PVector pupVec;
-
-	// background
-	private BackgroundMode backgroundMode;
-	private boolean enableBackground;
-	int rgb;
-	float gray, alpha, x, y, z;
-	PImage image;
+	protected boolean arpFlag;
+	protected boolean pupFlag;
+	protected PVector pupVec;
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
 	public PGraphics3D pg3d;
-	int width, height;// size
-	boolean offscreen;
+	protected int width, height;// size
+	protected boolean offscreen;
 	protected Frame tmpFrame;
 
 	// O B J E C T S
 	protected DesktopEvents dE;
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
-	boolean interactiveFrameIsDrivable;
+	protected boolean interactiveFrameIsDrivable;
 	// boolean interactiveFrameIsAnAvatar;
-	boolean iFrameIsDrwn;
+	protected boolean iFrameIsDrwn;
 	protected Trackable trck;
-	boolean avatarIsInteractiveDrivableFrame;
-	boolean avatarIsInteractiveAvatarFrame;
+	protected boolean avatarIsInteractiveDrivableFrame;
+	protected boolean avatarIsInteractiveAvatarFrame;
 
 	// S C R E E N C O O R D I N A T E S
-	float halfWidthSpace;
-	float halfHeightSpace;
-	float zC;
+	protected float halfWidthSpace;
+	protected float halfHeightSpace;
+	protected float zC;
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
@@ -458,19 +439,19 @@ public class Scene implements PConstants {
 
 	// M o u s e G r a b b e r
 	protected List<MouseGrabbable> MouseGrabberPool;
-	MouseGrabbable mouseGrbbr;
-	boolean mouseGrabberIsAnIFrame;
-	boolean mouseGrabberIsADrivableFrame;
-	boolean mouseTrckn;
+	protected MouseGrabbable mouseGrbbr;
+	protected boolean mouseGrabberIsAnIFrame;
+	protected boolean mouseGrabberIsADrivableFrame;
+	protected boolean mouseTrckn;
 
 	// D I S P L A Y F L A G S
-	boolean axisIsDrwn; // world axis
-	boolean gridIsDrwn; // world XY grid
-	boolean frameSelectionHintIsDrwn;
-	boolean cameraPathsAreDrwn;
+	private boolean axisIsDrwn; // world axis
+	private boolean gridIsDrwn; // world XY grid
+	private boolean frameSelectionHintIsDrwn;
+	private boolean cameraPathsAreDrwn;
 
 	// C O N S T R A I N T S
-	boolean withConstraint;
+	private boolean withConstraint;
 
 	// K E Y B O A R D A N D M O U S E
 	protected boolean mouseHandling;
@@ -509,8 +490,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
-	 * objects...) are set to their default values. The PApplet background is set
-	 * to black. See the associated documentation.
+	 * objects...) are set to their default values. See the associated documentation.
 	 */	
 	public Scene(PApplet p) {
 		this(p, (PGraphics3D) p.g);
@@ -518,13 +498,9 @@ public class Scene implements PConstants {
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
-	 * objects...) are set to their default values. The PApplet background is set
-	 * to black. See the associated documentation. A custom renderer can be
-	 * specified as well, and if it is different from the PApplet's renderer,
-	 * this will result in an offscreen Scene.
-	 * <p>
-	 * <b>Attention:</b> If the Scene is in offscreen mode, mouse tracking and
-	 * screen rendering are completely disabled.  
+	 * objects...) are set to their default values. See the associated documentation.
+	 * A custom renderer can be specified as well, and if it is different from the
+	 * PApplet's renderer, this will result in an offscreen Scene.  
 	 */
 	public Scene(PApplet p, PGraphics3D renderer) {
 		parent = p;
@@ -558,8 +534,8 @@ public class Scene implements PConstants {
   	// This scene is offscreen if the provided renderer is
 		// different from the main PApplet renderer.
 		offscreen = renderer != p.g;
-		beginOffScreenDrawingCalls = 0;
-		setMouseTracking(!offscreen);
+		beginOffScreenDrawingCalls = 0;		
+		setMouseTracking(true);
 		setMouseGrabber(null);
 		
 		mouseGrabberIsAnIFrame = false;
@@ -588,9 +564,6 @@ public class Scene implements PConstants {
 		// E X C E P T I O N H A N D L I N G
 		startCoordCalls = 0;
 
-		enableBackgroundHanddling();
-		image = null;
-		background(0);
 		parent.registerPre(this);
 		parent.registerDraw(this);
 		// parent.registerPost(this);
@@ -842,13 +815,8 @@ public class Scene implements PConstants {
 	
 	/**
 	 * Sets the {@link #hasMouseTracking()} value.
-	 * <p>
-	 * <b>Attention:</b> If {@code enable} is {@code true} and the Scene is in offscreen
-	 * mode the call has no effect (i.e., it is silently ignored).
 	 */
-	public void setMouseTracking(boolean enable) {
-		if( enable && offscreen )
-			return;
+	public void setMouseTracking(boolean enable) {		
 		if(!enable) {
 			if( mouseGrabber() != null )
 				mouseGrabber().setGrabsMouse(false);
@@ -867,40 +835,6 @@ public class Scene implements PConstants {
 	// 4. State of the viewer
 
 	/**
-	 * Enables background handling in the Scene (see the different {@code
-	 * background} functions), otherwise the background should be set with the
-	 * corresponding PApplet functions.
-	 * 
-	 * @see #toggleBackgroundHanddling()
-	 * @see #backgroundIsHandled()
-	 */
-	public void enableBackgroundHanddling() {
-		enableBackground = true;
-	}
-
-	/**
-	 * Disables background handling by the Scene. Hence the background should be
-	 * set with the corresponding PApplet functions.
-	 * 
-	 * @see #toggleBackgroundHanddling()
-	 * @see #backgroundIsHandled()
-	 */
-	public void disableBackgroundHanddling() {
-		enableBackground = false;
-	}
-
-	/**
-	 * Returns {@code true} if the background is handled by the Scene and {@code
-	 * false} otherwise.
-	 * 
-	 * @see #enableBackgroundHanddling()
-	 * @see #disableBackgroundHanddling()
-	 */
-	public boolean backgroundIsHandled() {
-		return enableBackground;
-	}
-
-	/**
 	 * Returns {@code true} if this Scene is associated to an offscreen 
 	 * renderer and {@code false} otherwise.
 	 * 
@@ -911,184 +845,6 @@ public class Scene implements PConstants {
 		return offscreen;
 	}
 	
-	/**
-	 * Toggles the state of the {@link #backgroundIsHandled()}.
-	 * 
-	 * @see #enableBackgroundHanddling()
-	 * @see #disableBackgroundHanddling()
-	 */
-	public void toggleBackgroundHanddling() {
-		if (backgroundIsHandled())
-			disableBackgroundHanddling();
-		else
-			enableBackgroundHanddling();
-	}
-
-	/**
-	 * Internal use only. Call the proper PApplet background function at the
-	 * beginning of {@link #pre()}.
-	 * 
-	 * @see #pre()
-	 * @see #background(float)
-	 * @see #background(int)
-	 * @see #background(PImage)
-	 * @see #background(float, float)
-	 * @see #background(int, float)
-	 * @see #background(float, float, float)
-	 * @see #background(float, float, float, float)
-	 */
-	protected void setBackground() {
-		switch (backgroundMode) {
-		case RGB:
-			pg3d.background(rgb);
-			break;
-		case RGB_ALPHA:
-			pg3d.background(rgb, alpha);
-			break;
-		case GRAY:
-			pg3d.background(gray);
-			break;
-		case GRAY_ALPHA:
-			pg3d.background(gray, alpha);
-			break;
-		case XYZ:
-			pg3d.background(x, y, z);
-			break;
-		case XYZ_ALPHA:
-			pg3d.background(x, y, z, alpha);
-			break;
-		case PIMAGE:
-			pg3d.background(image);
-			break;
-		}
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the color used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 */
-	public void background(int my_rgb) {
-		rgb = my_rgb;
-		backgroundMode = BackgroundMode.RGB;
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the color used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 */
-	public void background(int my_rgb, float my_alpha) {
-		rgb = my_rgb;
-		alpha = my_alpha;
-		backgroundMode = BackgroundMode.RGB_ALPHA;
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the color used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 */
-	public void background(float my_gray) {
-		gray = my_gray;
-		backgroundMode = BackgroundMode.GRAY;
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the color used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 */
-	public void background(float my_gray, float my_alpha) {
-		gray = my_gray;
-		alpha = my_alpha;
-		backgroundMode = BackgroundMode.GRAY_ALPHA;
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the color used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 */
-	public void background(float my_x, float my_y, float my_z) {
-		x = my_x;
-		y = my_y;
-		z = my_z;
-		backgroundMode = BackgroundMode.XYZ;
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the color used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 */
-	public void background(float my_x, float my_y, float my_z, float my_a) {
-		x = my_x;
-		y = my_y;
-		z = my_z;
-		alpha = my_a;
-		backgroundMode = BackgroundMode.XYZ_ALPHA;
-	}
-
-	/**
-	 * Wrapper function for the {@code PApplet.background()} function with the
-	 * same signature. Sets the PImage used for the background of the Processing
-	 * window. The default background is black. See the processing documentation
-	 * for details.
-	 * <p>
-	 * The {@code PApplet.background()} is automatically called at the beginning
-	 * of the {@link #pre()} method (Hence you can call this function from where
-	 * ever you want) and is used to clear the display window.
-	 * <p>
-	 * <b>Attention:</b> If the sizes of the {@code img} and the PApplet differ,
-	 * the {@code img} will be resized to accommodate the size of the PApplet.
-	 */
-	public void background(PImage img) {
-		image = img;
-		if ((image.width != pg3d.width) || (image.height != pg3d.height))
-			image.resize(pg3d.width, pg3d.height);
-		backgroundMode = BackgroundMode.PIMAGE;
-	}
-
-	/**
-	 * Returns the background image if any.
-	 * 
-	 * @return image
-	 */
-	public PImage backgroundImage() {
-		return image;
-	}
-
 	/**
 	 * Returns {@code true} if automatic update of the camera frustum plane
 	 * equations is enabled and {@code false} otherwise. Computation of the
@@ -1401,7 +1157,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
-	 * or {@link #draw()} depending on the {@link #backgroundIsHandled()} state.
+	 * or {@link #draw()}.
 	 */
 	private void displayVisualHints() {		
 		if (frameSelectionHintIsDrawn())
@@ -1429,10 +1185,9 @@ public class Scene implements PConstants {
 	 * method. This method is registered at the PApplet and hence you don't need
 	 * to call it.
 	 * <p>
-	 * First sets the background (see {@link #setBackground()}) and then sets the
-	 * processing camera parameters from {@link #camera()} and displays axis,
-	 * grid, interactive frames' selection hints and camera paths, accordingly to
-	 * user flags.
+	 * Sets the processing camera parameters from {@link #camera()} and update
+	 * the frustum planes equations if {@link #enableFrustumEquationsUpdate(boolean)}
+	 * has been set to {@code true}.
 	 */
 	public void pre() {
 		if (isOffscreen()) return;
@@ -1441,8 +1196,6 @@ public class Scene implements PConstants {
 		// weird: we need to bypass the handling of a resize event when running the
 		// applet from eclipse		
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
-			if (backgroundIsHandled() && (backgroundMode == BackgroundMode.PIMAGE))
-				this.background(this.image);
 			if ((width != pg3d.width) || (height != pg3d.height)) {
 				width = pg3d.width;
 				height = pg3d.height;
@@ -1486,60 +1239,48 @@ public class Scene implements PConstants {
 
 		if (frustumEquationsUpdateIsEnable())
 			camera().updateFrustumEquations();
-
-		if (backgroundIsHandled()) {
-			setBackground();
-			if (gridIsDrawn())
-				drawGrid(camera().sceneRadius());
-			if (axisIsDrawn())
-				drawAxis(camera().sceneRadius());
-			//displayVisualHints();//TODO experimental
-		}
 	}
 
 	/**
 	 * Paint method which is called just after your {@code PApplet.draw()} method.
 	 * This method is registered at the PApplet and hence you don't need to call
-	 * it.
-	 * <p>
-	 * First calls {@link #proscenium()} which is the main drawing method that
-	 * could be overloaded. then, if there's an additional drawing method
-	 * registered at the Scene, calls it (see
-	 * {@link #addDrawHandler(Object, String)}). Finally, displays the
-	 * {@link #displayGlobalHelp()} and some visual hints (such {@link #drawZoomWindowHint()},
-	 * {@link #drawScreenRotateLineHint()} and
-	 * {@link #drawArcballReferencePointHint()}) according to user interaction and
-	 * flags.
+	 * it. Calls {@link #drawCommon()}.
 	 * 
-	 * @see #proscenium()
-	 * @see #addDrawHandler(Object, String)
+	 * @see #drawCommon()
 	 */
 	public void draw() {
 		if (isOffscreen()) return;
 		drawCommon();
-		
-	  displayVisualHints(); //TODO experimental
-		// Try to draw what should have been drawn in the pre()
-		if (!backgroundIsHandled()) {
-			if (gridIsDrawn())
-				drawGrid(camera().sceneRadius());
-			if (axisIsDrawn())
-				drawAxis(camera().sceneRadius());
-			displayVisualHints();
-		}
 	}
 	
 	/**
 	 * Internal method. Called by {@link #draw()} and {@link #beginDraw()}.
+	 * <p>
+	 * First performs any scheduled animation, then calls {@link #proscenium()}
+	 * which is the main drawing method that could be overloaded. Then, if
+	 * there's an additional drawing method registered at the Scene, calls it (see
+	 * {@link #addDrawHandler(Object, String)}). Finally, displays the
+	 * {@link #displayGlobalHelp()}, the axis, the grid, the interactive frames' selection
+	 * hints and camera paths, and some visual hints (such {@link #drawZoomWindowHint()},
+	 * {@link #drawScreenRotateLineHint()} and {@link #drawArcballReferencePointHint()})
+	 * according to user interaction and flags.
+	 * 
+	 * @see #proscenium()
+	 * @see #addDrawHandler(Object, String)
+	 * @see #gridIsDrawn()
+	 * @see #axisIsDrwn
+	 * @see #addDrawHandler(Object, String)
+	 * @see #addAnimationHandler(Object, String)
 	 */
 	protected void drawCommon() {
+		// 1. Animation
 		if( animationIsStarted() )
 			performAnimation();
 		
-		// 1. Alternative use only
+		// 2. Alternative use only
 		proscenium();
 
-		// 2. Draw external registered method
+		// 3. Draw external registered method
 		if (drawHandlerObject != null) {
 			try {
 				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
@@ -1549,9 +1290,18 @@ public class Scene implements PConstants {
 			}
 		}
 		
-		// 3. HIDevices
+		// 4. HIDevices
 		for (HIDevice device : devices)
 			device.handle();
+		
+		// 5. Grid and axis drawing
+		if (gridIsDrawn())
+			drawGrid(camera().sceneRadius());
+		if (axisIsDrawn())
+			drawAxis(camera().sceneRadius());
+		
+		// 6. Display visual hints
+		displayVisualHints();
 	}
 	
 	/**
@@ -1565,11 +1315,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * This method should be called when using offscreen rendering 
-	 * right after renderer.beginDraw(), and it sets the background 
-	 * and display the grid and the axis if necessary.
-	 * <p>
-	 * <b>Attention:</b> All visual hints that use on screen rendering,
-	 * are completely disabled in offscreen mode.
+	 * right after renderer.beginDraw().
    */	
 	public void beginDraw() {
 		if (isOffscreen()) {
@@ -1590,24 +1336,15 @@ public class Scene implements PConstants {
 			setPModelViewMatrix();
 
 			if (frustumEquationsUpdateIsEnable())
-				camera().updateFrustumEquations();
-
-			setBackground();
-			
-			drawCommon();
-			
-			//in this mode on-screen visual hints should not be drawn
-			if (gridIsDrawn())
-				drawGrid(camera().sceneRadius());
-			if (axisIsDrawn())
-				drawAxis(camera().sceneRadius());			
+				camera().updateFrustumEquations();	
 		}
 	}
 
 	/**
 	 * This method should be called when using offscreen rendering 
-	 * right before renderer.endDraw(). It currently does nothing though,
-	 * just for code consistency. 
+	 * right before renderer.endDraw(). Calls {@link #drawCommon()}.
+	 * 
+	 * @see #drawCommon() 
    */		
 	public void endDraw() {
 		beginOffScreenDrawingCalls--;
@@ -1616,6 +1353,8 @@ public class Scene implements PConstants {
 			throw new RuntimeException(
 					"There should be exactly one beginDraw() call followed by a "
 							+ "endDraw() and they cannot be nested. Check your implementation!");
+		
+		drawCommon();
 	}
 	
 	// 4. Scene dimensions
@@ -2481,10 +2220,6 @@ public class Scene implements PConstants {
 	 * @see #drawArcballReferencePointHint()
 	 */
 	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
-		if (isOffscreen()) {
-			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
-			return;
-		}
 		beginScreenDrawing();
 		PVector p1 = coords(new Point(px - size, py));
 		PVector p2 = coords(new Point(px + size, py));
@@ -2518,10 +2253,6 @@ public class Scene implements PConstants {
 	 * @see #endScreenDrawing()
 	 */
 	public void drawFilledCircle(int color, PVector center, float radius) {
-		if (isOffscreen()) {
-			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
-			return;
-		}
 		float x = center.x;
 		float y = center.y;
 		float angle, x2, y2;
@@ -2558,10 +2289,6 @@ public class Scene implements PConstants {
 	 * @see #endScreenDrawing()
 	 */
 	public void drawFilledSquare(int color, PVector center, float edge) {
-		if (isOffscreen()) {
-			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
-			return;
-		}
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
@@ -2595,10 +2322,6 @@ public class Scene implements PConstants {
 	 *          Stroke weight
 	 */
 	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {
-		if (isOffscreen()) {
-			PApplet.println("Warning: Nothing drawn. Off-screen rendering disables screen rendering.");
-			return;
-		}
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
@@ -2667,9 +2390,6 @@ public class Scene implements PConstants {
 	 * @see #coords(Point)
 	 */
 	public void beginScreenDrawing() {
-		if (isOffscreen())
-			throw new RuntimeException("Screen rendering is not allowed in off-screen rendering mode!");
-
 		if (startCoordCalls != 0)
 			throw new RuntimeException(
 					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
@@ -2686,26 +2406,11 @@ public class Scene implements PConstants {
 			pg3d.matrixMode(MODELVIEW);
 			pg3d.pushMatrix();
 		  // Camera needs to be reset!
-			pg3d.camera();  
+			pg3d.camera();
+			zC = 0.0f;
 		}
 		else {
 			zC = 0.1f;
-			/**
-			float threshold = 0.03f;
-			zC = camera().zNear() + threshold * (camera().zFar() - camera().zNear());
-			if (camera().type() == Camera.Type.PERSPECTIVE) {
-				halfWidthSpace = PApplet.tan(camera().horizontalFieldOfView() / 2) * zC;
-				halfHeightSpace = PApplet.tan(camera().fieldOfView() / 2) * zC;
-				}
-			else {
-				float wh[] = camera().getOrthoWidthHeight();
-				halfWidthSpace = wh[0];
-				halfHeightSpace = wh[1];
-			}
-			pg3d.pushMatrix();
-			if (camera().frame() != null)
-				camera().frame().applyTransformation(pg3d);
-			// */
 		}
 	}
 
@@ -2722,16 +2427,12 @@ public class Scene implements PConstants {
 					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
 							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
 
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
-		//if ( pg3d instanceof processing.core.PGraphics3D ) {
+		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {		
 			pg3d.matrixMode(PROJECTION);
 			pg3d.popMatrix();
 			pg3d.matrixMode(MODELVIEW);  
 			pg3d.popMatrix();		  
 			pg3d.hint(ENABLE_DEPTH_TEST);
-		}
-		else {
-			//pg3d.popMatrix();
 		}
 	}
 	

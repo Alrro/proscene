@@ -21,8 +21,6 @@ void setup() {
 
 // Make sure to define the draw() method, even if it's empty.
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
 }
 
 class MyScene extends Scene {
@@ -39,6 +37,7 @@ class MyScene extends Scene {
 
   //Define here what is actually going to be drawn.
   public void proscenium() {
+    background(0);
     fill(204, 102, 0);
     box(20, 30, 50);
   }

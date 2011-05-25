@@ -220,8 +220,6 @@ public class Camera implements Cloneable {
    */
 	public int lastFrameUpdate = 0;
 	protected int lastFPCoeficientsUpdateIssued = -1;
-	//TODO
-	public int fpComputationCount = 0;
 
 	// A t t a c h e d S c e n e
 	private boolean attachedToPCam;
@@ -1335,9 +1333,7 @@ public class Camera implements Cloneable {
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
 	 */
 	public void updateFrustumEquations() {
-		if( lastFrameUpdate != lastFPCoeficientsUpdateIssued )	{
-		  //TODO
-			//PApplet.println("frustum eq issued at: " + lastUpdatedFrame);
+		if( lastFrameUpdate != lastFPCoeficientsUpdateIssued )	{		  
 			computeFrustumEquations(fpCoefficients);
 			lastFPCoeficientsUpdateIssued = lastFrameUpdate;		  
 		}
@@ -1426,10 +1422,6 @@ public class Camera implements Cloneable {
 	 * @see #computeFrustumEquations()
 	 */
 	public float[][] computeFrustumEquations(float[][] coef) {		
-	  //TODO
-		//PApplet.println("frustum eq computed at: " + scene.parent.frameCount);
-		fpComputationCount++;
-		//end
 		// soft check:
 		if (coef == null || (coef.length == 0))
 			coef = new float[6][4];
@@ -1585,7 +1577,7 @@ public class Camera implements Cloneable {
 	 * Convenience function that simply returns {@code coneIsBackFacing(cone.axis(), cone.angle())}.
 	 * 
 	 * @see #coneIsBackFacing(PVector, float)
-	 * @see #faceIsBackFacing(PVector)
+	 * @see #faceIsBackFacing(PVector, PVector, PVector)
 	 */
 	public boolean coneIsBackFacing(Cone cone) {
 		return coneIsBackFacing(cone.axis(), cone.angle());
@@ -1621,7 +1613,7 @@ public class Camera implements Cloneable {
 	 * @param angle cone angle
 	 * 
 	 * @see #coneIsBackFacing(Cone)
-	 * @see #faceIsBackFacing(PVector)
+	 * @see #faceIsBackFacing(PVector, PVector, PVector)
 	 */
 	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {		
 		if( angle < PApplet.HALF_PI ) {			
@@ -1633,37 +1625,26 @@ public class Camera implements Cloneable {
 			return true;
 		}
 		return false;
-	}	
-	
-	/**
-	 * Convinience funtion that simply returns
-	 * {@code faceIsBackFacing(viewDirection(), axis)}.
-	 * <p>
-	 * Non-cached version of {@link #faceIsBackFacing(PVector, PVector)}.
-	 */
-	public boolean faceIsBackFacing(PVector axis) {
-		return faceIsBackFacing(viewDirection(), axis);
 	}
 	
 	/**
 	 * Returns {@code true} if the given face is back facing the camera.
-	 * Otherwise returns {@code false}. Same as {@code coneIsBackFacing(axis, 0)}.
-	 * <p> 
+	 * Otherwise returns {@code false}.
+	 * <p>
+	 * <b>Attention:</b> This method is not computationally optimized.
+	 * If you call it several times with no change in the matrices, you should
+	 * buffer the matrices (modelview, projection and then viewport) to speed-up the
+	 * queries.
 	 * 
-	 * @param viewDirection cached camera view direction.
-	 * @param axis normalized face axis. If the camera is in perspective mode, the normal
-	 * should be given in projection space (otherwise it could be given in the world
-	 * coodinate system).
-	 * 
-	 * @see #coneIsBackFacing(PVector, float)
-	 * @see #coneIsBackFacing(Cone)
+	 * @param a first face vertex
+	 * @param b second face vertex
+	 * @param c third face vertex
 	 */
-	public boolean faceIsBackFacing(PVector viewDirection, PVector axis) {
-		float phi = PApplet.acos ( PVector.dot(axis, viewDirection ) );
-		if( phi <= PApplet.HALF_PI )
-			return true;
-		return false;
-	}
+  public boolean faceIsBackFacing(PVector a, PVector b, PVector c) {
+  	PVector v1 = PVector.sub(projectedCoordinatesOf(a), projectedCoordinatesOf(b));
+    PVector v2 = PVector.sub(projectedCoordinatesOf(b), projectedCoordinatesOf(c));
+    return v1.cross(v2).z <= 0;
+  }
 
 	// 4. SCENE RADIUS AND CENTER
 
@@ -1879,6 +1860,11 @@ public class Camera implements Cloneable {
 	public final void setFrame(InteractiveCameraFrame icf) {
 		if (icf == null)
 			return;
+		
+	  // TODO hack that needs to be fixed in a future release!
+		if( frm != null )
+			if( frm.isInMouseGrabberPool() )
+				frm.removeFromMouseGrabberPool();
 
 		frm = icf;
 		frm.setCamera(this);

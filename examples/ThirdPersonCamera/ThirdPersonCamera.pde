@@ -52,9 +52,7 @@ void setup() {
 }
 
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
-  // Save the current model view matrix
+  background(0);
   pushMatrix();
   // Multiply matrix to get in the frame coordinate system.
   // applyMatrix(scene.interactiveFrame().matrix()) is possible but inefficient

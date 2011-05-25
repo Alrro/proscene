@@ -24,10 +24,10 @@ public class WeirdCameraProfile extends CameraProfile {
    setFrameMouseBinding((Scene.Button.RIGHT.ID | Scene.Modifier.SHIFT.ID), Scene.MouseAction.SCREEN_TRANSLATE);
    // 4. Configure some click actions:
    // double click + button left = align frame with world
-   setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_FRAME);
+   setClickBinding(Scene.Button.LEFT, 2, Scene.ClickAction.ALIGN_FRAME);
    // single click + middle button + SHIFT + ALT = interpolate to show all the scene
-   setClickBinding((Scene.Modifier.SHIFT.ID | Scene.Modifier.ALT.ID), Scene.Button.MIDDLE, ClickAction.ZOOM_TO_FIT);
+   setClickBinding((Scene.Modifier.SHIFT.ID | Scene.Modifier.ALT.ID), Scene.Button.MIDDLE, Scene.ClickAction.ZOOM_TO_FIT);
    // double click + button right = align camera with world
-   setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ALIGN_CAMERA);
+   setClickBinding(Scene.Button.RIGHT, 2, Scene.ClickAction.ALIGN_CAMERA);
   }
 }

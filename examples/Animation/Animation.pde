@@ -30,10 +30,8 @@ void setup() {
   scene = new MyScene(this);
 }
 
-// Make sure to define the draw() method, even if it's empty.
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
+  background(0);
 }
 
 void keyPressed() {

@@ -27,6 +27,7 @@ void setup() {
 }
 
 void draw() {
+  background(0);
   lights(); // lights on
   // create some lights to make the board look cool
   directionalLight(50, 50, 50, scene.camera().orientation().x - scene.camera().position().x, scene.camera().orientation().y - scene.camera().position().y, scene.camera().orientation().z - scene.camera().position().z);

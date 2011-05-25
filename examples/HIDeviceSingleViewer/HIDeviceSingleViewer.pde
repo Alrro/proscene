@@ -126,7 +126,7 @@ void feed(HIDevice d) {
 }
 
 void draw() {
-  scene.background(33, 170, 170);
+  background(33, 170, 170);
   noStroke();
   // draw scene:		
   fill(204, 102, 0);

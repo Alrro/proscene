@@ -6,9 +6,6 @@
  * a MouseGrabber which can enable complex mouse interactions.
  */
 
-import remixlab.proscene.*;
-import remixlab.proscene.Scene.Button;
-
 public class Button2D extends MouseGrabber {
   String myText;
   PFont myFont;

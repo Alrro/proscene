@@ -77,8 +77,7 @@ void setup() {
 }
 
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
+  background(0);
   fill(204, 102, 0);
   box(20, 30, 50);
 
