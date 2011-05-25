@@ -87,7 +87,7 @@ void draw() {
   GLGraphics renderer = (GLGraphics)g;
   renderer.beginGL();  
 
-  scene.background(0);
+  background(0);
 
   // Disabling depth masking to properly render semitransparent
   // particles without need of depth-sorting them.    

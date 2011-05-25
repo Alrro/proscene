@@ -33,15 +33,14 @@ void setup() {
   scene = new Scene(this, canvas);  
 }
 
-void draw() {
-  background(255);
-  
+void draw() {  
   // Offscreen rendering of the scene. The
   // beginDraw/endDraw calls are required. Note
   // the order: beginDraw of canvas first, then
   // beginDraw of scene.
   canvas.beginDraw();
-  scene.beginDraw(); 
+  scene.beginDraw();
+  background(0);
   canvas.fill(204, 102, 0);
   canvas.box(20, 30, 50);
   scene.endDraw();

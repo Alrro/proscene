@@ -39,8 +39,7 @@ void setup() {
 }
 
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
+  background(0);
   // A. 3D drawing
   for (int i = 0; i < boxes.length; i++)
     boxes[i].draw();

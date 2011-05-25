@@ -42,12 +42,13 @@ void setup() {
   auxScene.showAll();	
 
   handleMouse();
-}	
+}
 
 void draw() {
   handleMouse();
   canvas.beginDraw();
   scene.beginDraw();
+  canvas.background(0);
   Root.drawIfAllChildrenAreVisible(scene.renderer(), scene.camera());
   scene.endDraw();
   canvas.endDraw();
@@ -55,6 +56,7 @@ void draw() {
 
   auxCanvas.beginDraw();
   auxScene.beginDraw();
+  auxCanvas.background(0);
   Root.drawIfAllChildrenAreVisible(auxScene.renderer(), scene.camera());
   auxScene.drawCamera(scene.camera());
   auxScene.endDraw();

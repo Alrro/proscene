@@ -56,8 +56,7 @@ void setup() {
 }
 
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
+  background(0);
   pushMatrix();
   kfi.frame().applyTransformation(this);
   scene.drawAxis(30);

@@ -142,7 +142,7 @@ void feed(HIDevice d) {
 }
 
 void mainDrawing(Scene s) {
-  s.background(33, 170, 170);
+  s.renderer().background(33, 170, 170);
   s.renderer().noStroke();
   // draw scene:		
   s.renderer().fill(204, 102, 0);
@@ -166,7 +166,7 @@ void mainDrawing(Scene s) {
 }
 
 void auxiliarDrawing(Scene s) {
-  s.background(33, 170, 170);
+  s.renderer().background(33, 170, 170);
   s.renderer().noStroke();
   // draw scene:		
   s.renderer().fill(204, 102, 0);

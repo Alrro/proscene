@@ -71,9 +71,7 @@ void setup() {
 }
 
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead
-  //(which can be called in the setup or here at the beginning of your drawing).  
+  background(0);  
   ambientLight(128,128,128);
   directionalLight(255, 255, 255, 0, 1, -100);
   noFill();

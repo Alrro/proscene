@@ -38,8 +38,7 @@ void setup() {
 }
 
 void draw() {
-  //Proscene sets the background to black by default. If you need to change
-  //it, don't call background() directly but use scene.background() instead.
+  background(0);
   esfera.draw();
   for (int i = 0; i < cajas.length; i++) {
     // orient the boxes according to the sphere position

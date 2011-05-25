@@ -88,8 +88,11 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * 
 	 * @see #modified()
 	 */
-	protected void setCamera(Camera cam) {
-		camera = cam;
+	protected void setCamera(Camera cam) {		
+		camera = cam;		
+		// TODO hack that needs to be fixed in a future release!
+		if( camera.isDetachedFromPCamera() )
+				addInMouseGrabberPool();
 	}
 	
 	/**

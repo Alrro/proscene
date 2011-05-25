@@ -51,6 +51,7 @@ void setup() {
 
 void mainDrawing(Scene s) {		
   PGraphics3D p = s.renderer();
+  p.background(0);
   p.noStroke();
   // the main viewer camera is used to cull the sphere object against its
   // frustum
