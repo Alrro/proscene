@@ -32,6 +32,7 @@ public class ThirdPerson extends PApplet {
 	}
 
 	public void draw() {
+		background(0);
 		// Save the current model view matrix
 		pushMatrix();
 		// Multiply matrix to get in the frame coordinate system.

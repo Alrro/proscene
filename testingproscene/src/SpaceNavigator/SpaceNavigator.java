@@ -76,7 +76,7 @@ public class SpaceNavigator extends PApplet {
 	}
 
 	public void draw() {
-		scene.background(33, 170, 170);
+		background(33, 170, 170);
 		
 		updateScene();
 		

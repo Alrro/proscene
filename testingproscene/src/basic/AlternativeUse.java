@@ -28,6 +28,7 @@ public class AlternativeUse extends PApplet {
 		}
 		
 		public void proscenium() {
+			background(0);
 			fill(204, 102, 0);
 			box(20, 30, 50);
 		}

@@ -20,6 +20,7 @@ public class BasicFrustum extends PApplet {
 	}
 
 	public void draw() {
+		background(0);
 		Root.drawIfAllChildrenAreVisible(this, scene.camera());
 	}
 	

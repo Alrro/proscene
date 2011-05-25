@@ -219,6 +219,7 @@ public class TestingAPI extends PApplet {
 	}
 
 	public void draw() {
+		background(0);
 		fill(204, 102, 0);
 		box(20f, 30f, 50f);
 	}

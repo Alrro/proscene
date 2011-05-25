@@ -51,7 +51,7 @@ public class BasicUse extends PApplet {
 		//PVector eulerAngles = scene.camera().orientation().eulerAngles();
 		//println(eulerAngles);
 		//scene.background(b);		
-		//background(0);
+		background(0);
 		//scene.displayGlobalHelp(false);
 		//scene.displayCurrentCameraProfileHelp(false);
 		if(frame != null) {

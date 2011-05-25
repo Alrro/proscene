@@ -19,8 +19,8 @@ public class CameraCrane extends PApplet {
 		scene.setGridIsDrawn(false);
 		// the drawing function is shared among the two scenes
 		scene.addDrawHandler(this, "drawing");
-		// press 'i' to switch the interaction between the camera frame and the interactive frame
-		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		// press 'f' to display frame selection hints
+		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		auxCanvas = createGraphics(width, (height - canvas.height), P3D);
 		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
 		auxScene.setRadius(50);
@@ -30,7 +30,6 @@ public class CameraCrane extends PApplet {
 		
 		//robot stuff
 		robot = new RobotArm(scene);
-		scene.setInteractiveFrame(robot.frame(0));
 		auxScene.setCamera(robot.cam);
 	}
 
@@ -71,6 +70,7 @@ public class CameraCrane extends PApplet {
 	// the actual drawing function, shared by the two scenes
 	public void drawing(Scene scn) {
 		PGraphics3D pg3d = scn.renderer();
+		pg3d.background(0);
 		if(enabledLights)
 			pg3d.lights();
 		// 1. draw the robot
@@ -101,8 +101,6 @@ public class CameraCrane extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if(key == 'x')
-			robot.nextIFrame();
 		if(key == 'l') {
 			enabledLights = !enabledLights;
 			if(enabledLights)
@@ -110,7 +108,7 @@ public class CameraCrane extends PApplet {
 			else
 				println("camera spot light disabled");
 		}
-		if(key == 'f') {
+		if(key == 'x') {
 			drawRobotCamFrustum = !drawRobotCamFrustum;
 			if(drawRobotCamFrustum)
 				println("draw robot camera frustum");

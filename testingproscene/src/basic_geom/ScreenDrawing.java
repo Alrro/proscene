@@ -24,7 +24,8 @@ public class ScreenDrawing extends PApplet {
 			boxes[i] = new Box(scene);
 	}
 
-	public void draw() {		
+	public void draw() {	
+		background(0);
 		for (int i = 0; i < boxes.length; i++)			
 			boxes[i].draw();
 		
@@ -35,8 +36,11 @@ public class ScreenDrawing extends PApplet {
 		stroke(183,67,158,127);
 		noFill();
 		beginShape();
-		for (int i=0; i<index; i++)
-			vertex(scene.xCoord( points[i].x ), scene.yCoord( points[i].y ), scene.zCoord());
+		PVector p = new PVector();
+		for (int i=0; i<index; i++) {
+			p.set(scene.coords(new Point(points[i].x, points[i].y)));
+			vertex(p.x, p.y, p.z);
+		}
 		endShape();
 		popStyle();		
 		scene.endScreenDrawing();

@@ -31,6 +31,7 @@ public class TestVFCGL extends PApplet {
 	}
 
 	public void draw() {
+		background(0);
 		renderedCubes = 0;
 		for (int i = 0; i < cajas.length; i++) {
 			cajas[i].draw(this, scene.camera(), drawBoundingVolumes);

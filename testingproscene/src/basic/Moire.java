@@ -17,6 +17,7 @@ Scene scene;
 	}
 
 	public void draw() {		
+		background(0);
 		final float nbLines = 50.0f;
 		
 		beginShape(LINES);		

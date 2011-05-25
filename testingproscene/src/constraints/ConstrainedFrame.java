@@ -82,6 +82,7 @@ public class ConstrainedFrame extends PApplet {
 	}
 
 	public void draw() {		
+		background(0);
 		pushMatrix();
 		//applyMatrix( frame.pMatrix() );
 		//Same as the previous commented line, but a lot more efficient:

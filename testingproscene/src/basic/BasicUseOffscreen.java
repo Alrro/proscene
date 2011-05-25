@@ -35,6 +35,7 @@ public class BasicUseOffscreen extends PApplet {
 	  // beginDraw of scene.
 	  canvas.beginDraw();
 	  scene.beginDraw(); 
+	  canvas.background(0);
 	  canvas.fill(204, 102, 0);
 	  canvas.box(20, 30, 50);
 	  scene.endDraw();

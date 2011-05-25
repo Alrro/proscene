@@ -56,6 +56,7 @@ public class PDBview extends PApplet {
 	}
 
 	public void draw() {
+	  background(0);
 	  GLGraphics renderer = (GLGraphics)g;
 	  renderer.beginGL(); 
 

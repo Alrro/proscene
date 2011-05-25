@@ -19,6 +19,7 @@ public class Luxo extends PApplet {
 	}
 	
 	public void draw() {
+		background(0);
 		lights();
 		lamp.draw();
 		//draw the ground

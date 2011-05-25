@@ -17,11 +17,8 @@ public class RobotArm {
 		frameArray = new InteractiveFrame[4];
 		for (int i = 0; i < 4; ++i) {
 			// last frame should be a camera frame:
-			if(i == 3) {				
-				frameArray[i] = new InteractiveCameraFrame(scene);
-				// ... so we set it as the cam frame
-				cam.setFrame((InteractiveCameraFrame)frameArray[i]);
-			}
+			if(i == 3)				
+				frameArray[i] = cam.frame();			
 			else
 				frameArray[i] = new InteractiveFrame(scene);
 			// Creates a hierarchy of frames
@@ -60,24 +57,24 @@ public class RobotArm {
 		
 		pg3d.pushMatrix();
 		frame(0).applyTransformation(pg3d);
-		setColor(scn, frame(0).equals(scene.interactiveFrame()) );
+		setColor(scn, frame(0).grabsMouse() );
 		drawBase(scn);
 
 		pg3d.pushMatrix();
 		frame(1).applyTransformation(pg3d);
-		setColor(scn, frame(1).equals(scene.interactiveFrame()) );
+		setColor(scn, frame(1).grabsMouse() );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
 		frame(2).applyTransformation(pg3d);
-		setColor( scn, frame(2).equals(scene.interactiveFrame()) );
+		setColor( scn, frame(2).grabsMouse() );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
 		frame(3).applyTransformation(pg3d);
-		setColor( scn, frame(3).equals(scene.interactiveFrame()) );
+		setColor( scn, frame(3).grabsMouse() );
 		drawHead(scn);
 
 		// Add light if the flag enables it
@@ -138,30 +135,13 @@ public class RobotArm {
 		scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
 		pg3d.translate(0.0f, 0.0f, -zMin);
 	}
-
+	
 	public void setColor(Scene scn, boolean selected) {
 		PGraphics3D pg3d = scn.renderer();
 		if (selected)
 			pg3d.fill(200, 200, 0);
 		else
 			pg3d.fill(200, 200, 200);
-	}
-	
-	// set the scene.interactiveFrame() to the next frame in the robot scene hierarchy
-	public void nextIFrame() {
-		if( scene.interactiveFrame() == null )
-			scene.setInteractiveFrame(frame(0));
-		else  {
-			for (int i = 0; i < 4; ++i) {
-				if( frame(i).equals(scene.interactiveFrame()) ) {
-					if(i==3)
-						scene.setInteractiveFrame(frame(0));
-					else
-						scene.setInteractiveFrame(frame(i+1));
-					break;
-				}
-			}
-		}
 	}
 
 	public InteractiveFrame frame(int i) {

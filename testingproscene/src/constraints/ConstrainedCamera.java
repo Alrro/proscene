@@ -72,6 +72,7 @@ public class ConstrainedCamera extends PApplet  {
 	}
 
 	public void draw() {
+		background(0);
 		fill(204, 102, 0);
 		box(20, 30, 50);
 		fill(0, 0, 255);

@@ -87,7 +87,7 @@ public class BFCulling extends PApplet {
 	}
 
 	public void draw() {
-		scene.background(120);
+		background(120);
 		lights();
 		fill(255);
 		noStroke();

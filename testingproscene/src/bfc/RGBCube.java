@@ -107,6 +107,7 @@ public class RGBCube extends PApplet {
 	public void mainDrawing(Scene s) {
 		//s.background(0.0f);
 		PGraphics3D p = s.renderer();
+		p.background(0);
 		drawScene(p);
 	}
 
