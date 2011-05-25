@@ -99,11 +99,13 @@ public class BFCulling extends PApplet {
 		while( it.hasNext() ) {
 			nC = it.next();
 			if(bfc) {
-				//if( scene.camera().coneIsBackFacing( nC.cone ) ) {
+				/**	
+				// pending			
 				if( scene.camera().faceIsBackFacing( nC.p5normal ) ) {
 					cage.drawFace( nC.face.key() );
 					renderedFaces++;
-				}		
+				}	
+				*/	
 			}
 			else {
 				cage.drawFace( nC.face.key() );
