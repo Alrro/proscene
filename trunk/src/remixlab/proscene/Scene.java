@@ -2236,10 +2236,22 @@ public class Scene implements PConstants {
 		pg3d.popStyle();
 		endScreenDrawing();
 	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code drawFilledCircle(40, color, center, radius)}.
+	 * 
+	 * @see #drawFilledCircle(int, int, PVector, float)
+	 */
+	public void drawFilledCircle(int color, PVector center, float radius) {
+		drawFilledCircle(40, color, center, radius);
+	}
 
 	/**
 	 * Draws a filled circle using screen coordinates.
 	 * 
+	 * @param subdivisions
+	 *          Number of triangles aproximating the circle. 
 	 * @param color
 	 *          Color used to fill the circle.
 	 * @param center
@@ -2249,8 +2261,9 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
-	 */
-	public void drawFilledCircle(int color, PVector center, float radius) {
+	 */	
+	public void drawFilledCircle(int subdivisions, int color, PVector center, float radius) {
+		float precision = TWO_PI/subdivisions;
 		float x = center.x;
 		float y = center.y;
 		float angle, x2, y2;
@@ -2262,7 +2275,7 @@ public class Scene implements PConstants {
 		PVector c = coords(new Point(x, y));
 		pg3d.vertex(c.x, c.y, c.z);
 		PVector aux = new PVector();
-		for (angle = 0.0f; angle <= TWO_PI; angle += 0.157f) {			
+		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
 			x2 = x + PApplet.sin(angle) * radius;
 			y2 = y + PApplet.cos(angle) * radius;
 			aux.set(coords(new Point(x2, y2)));
