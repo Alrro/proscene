@@ -6,9 +6,14 @@
  * 
  * All screen drawing should be enclosed between Scene.beginScreenDrawing() and
  * Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
- * (defined between beginShape() and endShape()). Just note that the (x,y) vertex
- * screen coordinates should be specified as:
- * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
+ * (defined between beginShape() and endShape()). Just note that to specify a
+ * (x,y) vertex screen coordinate you should first call:
+ * PVector p = coords(new Point(x, y)), then do your drawing as:
+ * vertex(p.x, p.y, p.z).
+ *
+ * In addition, if you want your screen drawing to appear on top of your 3d scene
+ * then draw first all your 3d before doing any call to a beginScreenDrawing()
+ * and endScreenDrawing()} pair.
  * 
  * Press 'x' to toggle the screen drawing.
  * Press 'y' to clean your screen drawing.
@@ -44,12 +49,13 @@ void draw() {
   for (int i = 0; i < boxes.length; i++)
     boxes[i].draw();
     
-  // B. 2D drawing
+  // B. 2D drawing on top of the 3d scene 
   // All screen drawing should be enclosed between Scene.beginScreenDrawing() and
   // Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
-  // (defined between beginShape() and endShape()). Just note that the (x,y) vertex
-  // screen coordinates should be specified as:
-  // vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
+  // (defined between beginShape() and endShape()). Just note that to specify a
+  // (x,y) vertex screen coordinate you should first call:
+  // PVector p = coords(new Point(x, y)), then do your drawing as:
+  // vertex(p.x, p.y, p.z).
   scene.beginScreenDrawing();
   pushStyle();
   strokeWeight(8);
