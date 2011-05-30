@@ -6,9 +6,8 @@
  * 
  * All screen drawing should be enclosed between Scene.beginScreenDrawing() and
  * Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
- * (defined between beginShape() and endShape()). Just note that the (x,y) vertex
- * screen coordinates should be specified as:
- * vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
+ * (defined between beginShape() and endShape()) using screen coordinates with
+ * a z coordinate value of 0.
  * 
  * Press 'x' to toggle the screen drawing.
  * Press 'y' to clean your screen drawing.
@@ -46,21 +45,18 @@ void draw() {
     
   // B. 2D drawing
   // All screen drawing should be enclosed between Scene.beginScreenDrawing() and
-  // Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
-  // (defined between beginShape() and endShape()). Just note that the (x,y) vertex
-  // screen coordinates should be specified as:
-  // vertex(Scene.xCoord(x), Scene.yCoord(y), Scene.zCoord()).
+  // Scene.endScreenDrawing().  Then you can just begin drawing your screen shapes
+  // (defined between beginShape() and endShape()) using screen coordinates with
+  // a z coordinate value of 0.
   scene.beginScreenDrawing();
   pushStyle();
   strokeWeight(8);
   stroke(183,67,158,127);
   noFill();
   beginShape();
-  PVector p = new PVector();
-  for (int i = 0; i < points.size(); i++) {
-    p.set(scene.coords(new Point((float) ((Point) points.get(i)).x, (float) ((Point) points.get(i)).y)));
-    vertex(p.x, p.y, p.z);
-  }
+  for (int i = 0; i < points.size(); i++)
+    // x and y are screen coordinates; the z coordinate should be 0.
+    vertex(((Point) points.get(i)).x, ((Point) points.get(i)).y, 0);
   endShape();  
   popStyle();
   scene.endScreenDrawing();

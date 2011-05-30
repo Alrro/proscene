@@ -96,7 +96,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.0.7";
+	public static final String version = "1.0.8";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -427,11 +427,6 @@ public class Scene implements PConstants {
 	protected Trackable trck;
 	protected boolean avatarIsInteractiveDrivableFrame;
 	protected boolean avatarIsInteractiveAvatarFrame;
-
-	// S C R E E N C O O R D I N A T E S
-	protected float halfWidthSpace;
-	protected float halfHeightSpace;
-	protected float zC;
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
@@ -1185,7 +1180,7 @@ public class Scene implements PConstants {
 	 * method. This method is registered at the PApplet and hence you don't need
 	 * to call it.
 	 * <p>
-	 * Sets the processing camera parameters from {@link #camera()} and update
+	 * Sets the processing camera parameters from {@link #camera()} and updates
 	 * the frustum planes equations if {@link #enableFrustumEquationsUpdate(boolean)}
 	 * has been set to {@code true}.
 	 */
@@ -2102,10 +2097,10 @@ public class Scene implements PConstants {
 		float p2x = (float) dE.lCorner.getX();
 		float p2y = (float) dE.lCorner.getY();
 		beginScreenDrawing();
-		PVector p1 = coords(new Point(p1x, p1y));
-		PVector p2 = coords(new Point(p2x, p2y));
-		PVector p3 = coords(new Point(p2x, p1y));
-		PVector p4 = coords(new Point(p1x, p2y));
+		PVector p1 = new PVector(p1x, p1y, 0);
+		PVector p2 = new PVector(p2x, p2y, 0);
+		PVector p3 = new PVector(p2x, p1y, 0);
+		PVector p4 = new PVector(p1x, p2y, 0);
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
@@ -2129,15 +2124,13 @@ public class Scene implements PConstants {
 		float p1y = (float) dE.fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
-		PVector p1s = coords(new Point(p1x, p1y));
-		PVector p2s = coords(new Point(p2.x, p2.y));
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
 		pg3d.noFill();
 		pg3d.beginShape(LINE);
-		pg3d.vertex(p1s.x, p1s.y, p1s.z);
-		pg3d.vertex(p2s.x, p2s.y, p2s.z);
+		pg3d.vertex(p1x, p1y, 0);
+		pg3d.vertex(p2.x, p2.y, 0);
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -2221,10 +2214,10 @@ public class Scene implements PConstants {
 	 */
 	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
 		beginScreenDrawing();
-		PVector p1 = coords(new Point(px - size, py));
-		PVector p2 = coords(new Point(px + size, py));
-		PVector p3 = coords(new Point(px, py - size));
-		PVector p4 = coords(new Point(px, py + size));
+		PVector p1 = new PVector(px - size, py, 0);
+		PVector p2 = new PVector(px + size, py, 0);
+		PVector p3 = new PVector(px, py - size, 0);
+		PVector p4 = new PVector(px, py + size, 0);
 		pg3d.pushStyle();
 		pg3d.stroke(color);
 		pg3d.strokeWeight(strokeWeight);
@@ -2260,15 +2253,12 @@ public class Scene implements PConstants {
 		pg3d.pushStyle();
 		pg3d.noStroke();
 		pg3d.fill(color);
-		pg3d.beginShape(TRIANGLE_FAN);
-		PVector c = coords(new Point(x, y));
-		pg3d.vertex(c.x, c.y, c.z);
-		PVector aux = new PVector();
+		pg3d.beginShape(TRIANGLE_FAN);		
+		pg3d.vertex(x, y, 0);		
 		for (angle = 0.0f; angle <= TWO_PI; angle += 0.157f) {			
 			x2 = x + PApplet.sin(angle) * radius;
 			y2 = y + PApplet.cos(angle) * radius;
-			aux.set(coords(new Point(x2, y2)));
-			pg3d.vertex(aux.x, aux.y, aux.z);
+			pg3d.vertex(x2, y2, 0);
 		}
 		pg3d.endShape();
 		pg3d.popStyle();
@@ -2292,10 +2282,10 @@ public class Scene implements PConstants {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
-		PVector p1 = coords(new Point(x - edge, y + edge));
-		PVector p2 = coords(new Point(x + edge, y + edge));
-		PVector p3 = coords(new Point(x + edge, y - edge));
-		PVector p4 = coords(new Point(x - edge, y - edge));
+		PVector p1 = new PVector(x - edge, y + edge, 0);
+		PVector p2 = new PVector(x + edge, y + edge, 0);
+		PVector p3 = new PVector(x + edge, y - edge, 0);
+		PVector p4 = new PVector(x - edge, y - edge, 0);
 		pg3d.pushStyle();
 		pg3d.noStroke();
 		pg3d.fill(color);
@@ -2325,18 +2315,18 @@ public class Scene implements PConstants {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
-		PVector p1 = coords(new Point((x - length), (y - length) + (0.6f * length)));
-		PVector p2 = coords(new Point((x - length), (y - length)));
-		PVector p3 = coords(new Point((x - length) + (0.6f * length), (y - length)));
-		PVector p4 = coords(new Point(((x + length) - (0.6f * length)), (y - length)));
-		PVector p5 = coords(new Point((x + length), (y - length)));
-		PVector p6 = coords(new Point((x + length), ((y - length) + (0.6f * length))));
-		PVector p7 = coords(new Point((x + length), ((y + length) - (0.6f * length))));
-		PVector p8 = coords(new Point((x + length), (y + length)));
-		PVector p9 = coords(new Point(((x + length) - (0.6f * length)), (y + length)));
-		PVector p10 = coords(new Point(((x - length) + (0.6f * length)), (y + length)));
-		PVector p11 = coords(new Point((x - length), (y + length)));
-		PVector p12 = coords(new Point((x - length), ((y + length) - (0.6f * length))));
+		PVector p1 = new PVector((x - length), (y - length) + (0.6f * length), 0);
+		PVector p2 = new PVector((x - length), (y - length), 0);
+		PVector p3 = new PVector((x - length) + (0.6f * length), (y - length), 0);
+		PVector p4 = new PVector(((x + length) - (0.6f * length)), (y - length), 0);
+		PVector p5 = new PVector((x + length), (y - length), 0);
+		PVector p6 = new PVector((x + length), ((y - length) + (0.6f * length)), 0);
+		PVector p7 = new PVector((x + length), ((y + length) - (0.6f * length)), 0);
+		PVector p8 = new PVector((x + length), (y + length), 0);
+		PVector p9 = new PVector(((x + length) - (0.6f * length)), (y + length), 0);
+		PVector p10 = new PVector(((x - length) + (0.6f * length)), (y + length), 0);
+		PVector p11 = new PVector((x - length), (y + length), 0);
+		PVector p12 = new PVector((x - length), ((y + length) - (0.6f * length)), 0);
 		
 		pg3d.pushStyle();
 
@@ -2384,80 +2374,53 @@ public class Scene implements PConstants {
 	 * PApplet.endShape()}).
 	 * <p>
 	 * <b>Note:</b> The (x,y) vertex screen coordinates should be specified as:
-	 * {@code vertex(xCoord(x), yCoord(y), Scene.zCoord())}.
+	 * {@code vertex(x, y, 0)}.
+	 * <p>
+	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
+	 * 3d scene then draw first all your 3d before doing any call to a 
+	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.   
 	 * 
 	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
 	 */
 	public void beginScreenDrawing() {
 		if (startCoordCalls != 0)
-			throw new RuntimeException(
-					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
-							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 		
 		startCoordCalls++;
 		
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
-		//if ( pg3d instanceof processing.core.PGraphics3D ) {
-			pg3d.hint(DISABLE_DEPTH_TEST);
-			pg3d.matrixMode(PROJECTION);
-			pg3d.pushMatrix();
-			pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-			pg3d.matrixMode(MODELVIEW);
-			pg3d.pushMatrix();
-		  // Camera needs to be reset!
-			pg3d.camera();
-			zC = 0.0f;
-		}
-		else {
-			zC = 0.1f;
-		}
+		pg3d.hint(DISABLE_DEPTH_TEST);
+		pg3d.matrixMode(PROJECTION);	
+		pg3d.pushMatrix();
+		// On newer processing versions the following line should be fixed like this.
+		// pg3d.ortho(0, width, 0, height, near, far);
+		// hack in opengl
+		float z = radius() * 2;
+		z = 500;
+		pg3d.ortho(-width/2, width/2, -height/2, height/2, -z, z);
+		pg3d.matrixMode(MODELVIEW);
+		pg3d.pushMatrix();
+		// Camera needs to be reset!
+		pg3d.camera();
 	}
 
 	/**
 	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
 	 * 
 	 * @see #beginScreenDrawing()
-	 * @see #coords(Point)
 	 */
 	public void endScreenDrawing() {
 		startCoordCalls--;
 		if (startCoordCalls != 0)
-			throw new RuntimeException(
-					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
-							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
-
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {		
-			pg3d.matrixMode(PROJECTION);
-			pg3d.popMatrix();
-			pg3d.matrixMode(MODELVIEW);  
-			pg3d.popMatrix();		  
-			pg3d.hint(ENABLE_DEPTH_TEST);
-		}
-	}
-	
-	/**
-	 * Computes the world coordinates of the {@code p} screen Point.
-	 * <p>
-	 * This method is only useful when drawing directly on screen. It should be
-	 * used in conjunction with {@link #beginScreenDrawing()} and
-	 * {@link #endScreenDrawing()} (which may be consulted for details).
-	 * <P>
-	 * The method {@link #beginScreenDrawing()} should be called before, otherwise
-	 * a runtime exception is thrown.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public PVector coords(Point p) {
-		if (startCoordCalls != 1)
-			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class )
-			return new PVector(p.x, p.y, zC);
-		else
-			return camera().unprojectedCoordinatesOf(new PVector(p.x,p.y,zC));
-	}	
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+		
+		pg3d.matrixMode(PROJECTION);
+		pg3d.popMatrix();
+		pg3d.matrixMode(MODELVIEW);
+		pg3d.popMatrix();
+		pg3d.hint(ENABLE_DEPTH_TEST);		
+	}		
 
 	/**
 	 * Called from the timer to stop displaying the point under pixel and arcball
