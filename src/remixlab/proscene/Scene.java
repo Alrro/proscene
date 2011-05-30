@@ -428,9 +428,7 @@ public class Scene implements PConstants {
 	protected boolean avatarIsInteractiveDrivableFrame;
 	protected boolean avatarIsInteractiveAvatarFrame;
 
-	// S C R E E N C O O R D I N A T E S
-	protected float halfWidthSpace;
-	protected float halfHeightSpace;
+	// S C R E E N C O O R D I N A T E S	
 	protected float zC;
 
 	// E X C E P T I O N H A N D L I N G
@@ -1185,7 +1183,7 @@ public class Scene implements PConstants {
 	 * method. This method is registered at the PApplet and hence you don't need
 	 * to call it.
 	 * <p>
-	 * Sets the processing camera parameters from {@link #camera()} and update
+	 * Sets the processing camera parameters from {@link #camera()} and updates
 	 * the frustum planes equations if {@link #enableFrustumEquationsUpdate(boolean)}
 	 * has been set to {@code true}.
 	 */
@@ -2383,17 +2381,21 @@ public class Scene implements PConstants {
 	 * screen shapes (defined between {@code PApplet.beginShape()} and {@code
 	 * PApplet.endShape()}).
 	 * <p>
-	 * <b>Note:</b> The (x,y) vertex screen coordinates should be specified as:
-	 * {@code vertex(xCoord(x), yCoord(y), Scene.zCoord())}.
+	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
+	 * first call {@code PVector p = coords(new Point(x, y))} then do your
+	 * drawing as {@code vertex(p.x, p.y, p.z)}.
+	 * <p>
+	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
+	 * 3d scene then draw first all your 3d before doing any call to a 
+	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.  
 	 * 
 	 * @see #endScreenDrawing()
 	 * @see #coords(Point)
 	 */
 	public void beginScreenDrawing() {
 		if (startCoordCalls != 0)
-			throw new RuntimeException(
-					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
-							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 		
 		startCoordCalls++;
 		
@@ -2423,11 +2425,10 @@ public class Scene implements PConstants {
 	public void endScreenDrawing() {
 		startCoordCalls--;
 		if (startCoordCalls != 0)
-			throw new RuntimeException(
-					"There should be exactly one startScreenCoordinatesSystem() call followed by a "
-							+ "stopScreenCoordinatesSystem() and they cannot be nested. Check your implementation!");
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {		
+		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
 			pg3d.matrixMode(PROJECTION);
 			pg3d.popMatrix();
 			pg3d.matrixMode(MODELVIEW);  
