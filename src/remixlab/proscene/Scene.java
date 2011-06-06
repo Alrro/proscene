@@ -2397,7 +2397,7 @@ public class Scene implements PConstants {
 		// hack in opengl
 		float z = radius() * 2;
 		z = 500;
-		pg3d.ortho(-width/2, width/2, -height/2, height/2, -z, z);
+		pg3d.ortho(0, width, 0, height, -z, z);
 		pg3d.matrixMode(MODELVIEW);
 		pg3d.pushMatrix();
 		// Camera needs to be reset!
