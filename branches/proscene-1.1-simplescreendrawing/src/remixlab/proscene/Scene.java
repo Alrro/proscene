@@ -26,6 +26,8 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.opengl.*;
+import javax.media.opengl.GL;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -427,7 +429,10 @@ public class Scene implements PConstants {
 	protected Trackable trck;
 	protected boolean avatarIsInteractiveDrivableFrame;
 	protected boolean avatarIsInteractiveAvatarFrame;
-
+	
+	// S C R E E N   D R A W I N G
+	float[] projectionFloats;
+	
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
   protected int beginOffScreenDrawingCalls;
@@ -2231,10 +2236,22 @@ public class Scene implements PConstants {
 		pg3d.popStyle();
 		endScreenDrawing();
 	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code drawFilledCircle(40, color, center, radius)}.
+	 * 
+	 * @see #drawFilledCircle(int, int, PVector, float)
+	 */
+	public void drawFilledCircle(int color, PVector center, float radius) {
+		drawFilledCircle(40, color, center, radius);
+	}
 
 	/**
 	 * Draws a filled circle using screen coordinates.
 	 * 
+	 * @param subdivisions
+	 *          Number of triangles aproximating the circle. 
 	 * @param color
 	 *          Color used to fill the circle.
 	 * @param center
@@ -2244,8 +2261,9 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
-	 */
-	public void drawFilledCircle(int color, PVector center, float radius) {
+	 */	
+	public void drawFilledCircle(int subdivisions, int color, PVector center, float radius) {
+		float precision = TWO_PI/subdivisions;
 		float x = center.x;
 		float y = center.y;
 		float angle, x2, y2;
@@ -2253,9 +2271,9 @@ public class Scene implements PConstants {
 		pg3d.pushStyle();
 		pg3d.noStroke();
 		pg3d.fill(color);
-		pg3d.beginShape(TRIANGLE_FAN);		
-		pg3d.vertex(x, y, 0);		
-		for (angle = 0.0f; angle <= TWO_PI; angle += 0.157f) {			
+		pg3d.beginShape(TRIANGLE_FAN);
+		pg3d.vertex(x, y, 0);
+		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {
 			x2 = x + PApplet.sin(angle) * radius;
 			y2 = y + PApplet.cos(angle) * radius;
 			pg3d.vertex(x2, y2, 0);
@@ -2263,7 +2281,7 @@ public class Scene implements PConstants {
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
-	}
+	}	
 
 	/**
 	 * Draws a filled square using screen coordinates.
@@ -2390,14 +2408,12 @@ public class Scene implements PConstants {
 		startCoordCalls++;
 		
 		pg3d.hint(DISABLE_DEPTH_TEST);
-		pg3d.matrixMode(PROJECTION);	
+		pg3d.matrixMode(PROJECTION);
 		pg3d.pushMatrix();
-		// On newer processing versions the following line should be fixed like this.
-		// pg3d.ortho(0, width, 0, height, near, far);
-		// hack in opengl
 		float z = radius() * 2;
-		z = 500;
-		pg3d.ortho(0, width, 0, height, -z, z);
+		pg3d.ortho(-width/2, width/2, -height/2, height/2, -z, z);
+		//processing 0198+ should go:
+		//pg3d.ortho(0, width, 0, height, -z, z);
 		pg3d.matrixMode(MODELVIEW);
 		pg3d.pushMatrix();
 		// Camera needs to be reset!
@@ -2419,8 +2435,49 @@ public class Scene implements PConstants {
 		pg3d.popMatrix();
 		pg3d.matrixMode(MODELVIEW);
 		pg3d.popMatrix();
-		pg3d.hint(ENABLE_DEPTH_TEST);		
-	}		
+		pg3d.hint(ENABLE_DEPTH_TEST);
+		// hack to make it work in opengl
+		if(pg3d.getClass() != processing.core.PGraphics3D.class)
+			updateProjection();
+	}
+		
+	protected void updateProjection() {
+	  PGraphicsOpenGL pgl = (PGraphicsOpenGL) parent.g;
+	  GL gl = pgl.gl;
+	  PMatrix3D projection = pgl.projection;
+	  gl.glMatrixMode(GL.GL_PROJECTION);
+	  
+	  if (projectionFloats == null) {
+	    projectionFloats = new float[] {
+	      projection.m00, projection.m10, projection.m20, projection.m30,
+	      projection.m01, projection.m11, projection.m21, projection.m31,
+	      projection.m02, projection.m12, projection.m22, projection.m32,
+	      projection.m03, projection.m13, projection.m23, projection.m33
+	    };
+	  } else {
+	    projectionFloats[0] = projection.m00;
+	    projectionFloats[1] = projection.m10;
+	    projectionFloats[2] = projection.m20;
+	    projectionFloats[3] = projection.m30;
+
+	    projectionFloats[4] = projection.m01;
+	    projectionFloats[5] = projection.m11;
+	    projectionFloats[6] = projection.m21;
+	    projectionFloats[7] = projection.m31;
+
+	    projectionFloats[8] = projection.m02;
+	    projectionFloats[9] = projection.m12;
+	    projectionFloats[10] = projection.m22;
+	    projectionFloats[11] = projection.m32;
+
+	    projectionFloats[12] = projection.m03;
+	    projectionFloats[13] = projection.m13;
+	    projectionFloats[14] = projection.m23;
+	    projectionFloats[15] = projection.m33;
+	  }
+	  gl.glLoadMatrixf(projectionFloats, 0);
+	  gl.glMatrixMode(GL.GL_MODELVIEW);  
+	}
 
 	/**
 	 * Called from the timer to stop displaying the point under pixel and arcball
