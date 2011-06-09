@@ -4,7 +4,7 @@ import geom.Box;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
-import javax.media.opengl.glu.GLU;
+//import javax.media.opengl.glu.GLU;
 
 import processing.core.*;
 import processing.opengl.*;
@@ -54,13 +54,13 @@ public class PointUnderPixel extends PApplet {
 	class GLCamera extends Camera {
 		protected PGraphicsOpenGL pgl;
 		protected GL gl;
-		protected GLU glu;
+		//protected GLU glu;
 
 		public GLCamera(Scene scn) {
 			super(scn);
 			pgl = (PGraphicsOpenGL) pg3d;
 			gl = pgl.gl;
-			glu = pgl.glu;
+			//glu = pgl.glu;
 		}
 		
 		@Override

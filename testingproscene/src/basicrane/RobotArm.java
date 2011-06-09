@@ -1,4 +1,4 @@
-package crane;
+package basicrane;
 
 import processing.core.*;
 import remixlab.proscene.*;
@@ -18,16 +18,16 @@ public class RobotArm {
 		for (int i = 0; i < 4; ++i) {
 			// last frame should be a camera frame:
 			if(i == 3) {				
-				frameArray[i] = cam.frame();
-				//frameArray[i] = new InteractiveCameraFrame(scene);
-				//cam.setFrame((InteractiveCameraFrame)frameArray[i]);
-			}			
+				frameArray[i] = new InteractiveCameraFrame(scene);
+				// ... so we set it as the cam frame
+				cam.setFrame((InteractiveCameraFrame)frameArray[i]);
+			}
 			else
 				frameArray[i] = new InteractiveFrame(scene);
 			// Creates a hierarchy of frames
 			if (i > 0)
 				frame(i).setReferenceFrame(frame(i - 1));
-		}
+		}	
 
 		// Initialize frames
 		frame(1).setTranslation(0, 0, 8); // Base height
@@ -50,8 +50,8 @@ public class RobotArm {
 		frame(2).setConstraint(XAxis);
 
 		LocalConstraint headConstraint = new LocalConstraint();
-		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-		frame(3).setConstraint(headConstraint);
+		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f,	0.0f));
+		//frame(3).setConstraint(headConstraint);
 	}
 
 	public void draw(Scene scn) {
@@ -60,24 +60,24 @@ public class RobotArm {
 		
 		pg3d.pushMatrix();
 		frame(0).applyTransformation(pg3d);
-		setColor(scn, frame(0).grabsMouse() );
+		setColor(scn, frame(0).equals(scene.interactiveFrame()) );
 		drawBase(scn);
 
 		pg3d.pushMatrix();
 		frame(1).applyTransformation(pg3d);
-		setColor(scn, frame(1).grabsMouse() );
+		setColor(scn, frame(1).equals(scene.interactiveFrame()) );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
 		frame(2).applyTransformation(pg3d);
-		setColor( scn, frame(2).grabsMouse() );
+		setColor( scn, frame(2).equals(scene.interactiveFrame()) );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
 		frame(3).applyTransformation(pg3d);
-		setColor( scn, frame(3).grabsMouse() );
+		setColor( scn, frame(3).equals(scene.interactiveFrame()) );
 		drawHead(scn);
 
 		// Add light if the flag enables it
@@ -138,13 +138,30 @@ public class RobotArm {
 		scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
 		pg3d.translate(0.0f, 0.0f, -zMin);
 	}
-	
+
 	public void setColor(Scene scn, boolean selected) {
 		PGraphics3D pg3d = scn.renderer();
 		if (selected)
 			pg3d.fill(200, 200, 0);
 		else
 			pg3d.fill(200, 200, 200);
+	}
+	
+	// set the scene.interactiveFrame() to the next frame in the robot scene hierarchy
+	public void nextIFrame() {
+		if( scene.interactiveFrame() == null )
+			scene.setInteractiveFrame(frame(0));
+		else  {
+			for (int i = 0; i < 4; ++i) {
+				if( frame(i).equals(scene.interactiveFrame()) ) {
+					if(i==3)
+						scene.setInteractiveFrame(frame(0));
+					else
+						scene.setInteractiveFrame(frame(i+1));
+					break;
+				}
+			}
+		}
 	}
 
 	public InteractiveFrame frame(int i) {

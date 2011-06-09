@@ -40,7 +40,7 @@ public class Lamp {
 		
 		LocalConstraint headConstraint = new LocalConstraint();
 		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f,0.0f,0.0f));
-		frame(3).setConstraint(headConstraint);
+		//frame(3).setConstraint(headConstraint);
 	}
 	
 	public void draw() {

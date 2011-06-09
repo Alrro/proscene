@@ -15,6 +15,8 @@ public class ScreenDrawing extends PApplet {
 	public void setup()	{
 		size(640, 360, P3D);
 		scene = new Scene(this);
+		// press 'f' to display frame selection hints
+		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setRadius(150);
 		scene.showAll();
 		index = 0;
@@ -35,11 +37,9 @@ public class ScreenDrawing extends PApplet {
 		strokeWeight(8);
 		stroke(183,67,158,127);
 		noFill();
-		beginShape();
-		PVector p = new PVector();
-		for (int i=0; i<index; i++) {
-			p.set(scene.coords(new Point(points[i].x, points[i].y)));
-			vertex(p.x, p.y, p.z);
+		beginShape();		
+		for (int i=0; i<index; i++) {			
+			vertex(points[i].x, points[i].y, 0);
 		}
 		endShape();
 		popStyle();		
