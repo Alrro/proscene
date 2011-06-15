@@ -59,18 +59,21 @@ public class GraphicInterface {
         c=new RubikCube(3);
         sequencer=1;
         pickerito=false;
+        sound1=minim.loadSample("1.wav",1024);
       }
       if (mouseX>10 && mouseX<10+inter.width &&
         mouseY>(height/6+10+begin.height) && mouseY<((height/6+10+begin.height)+begin.height)) {
         c=new RubikCube(4);
         sequencer=1;
         pickerito=false;
+        sound1=minim.loadSample("1.wav",1024);
       }
       if (mouseX>10 && mouseX<10+master.width &&
         mouseY>(height/6+10+begin.height+10+inter.height) && mouseY<((height/6+10+begin.height+10+inter.height)+begin.height)) {
         c=new RubikCube(7);
         sequencer=1;
         pickerito=false;
+        sound1=minim.loadSample("1.wav",1024);
       }
     }
     scene.endScreenDrawing();

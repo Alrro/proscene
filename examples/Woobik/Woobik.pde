@@ -11,21 +11,29 @@
  */
 
 import remixlab.proscene.*;
+import ddf.minim.*;
 
+Minim minim;
+AudioSample sound1;
 Scene scene;
 RubikCube c;
 GraphicInterface gi;
 boolean completado,pickerito=false;
 int sequencer=0;
+PImage drag,select,selected;
 
 void setup() {
   size(600, 400, P3D);
   scene=new Scene(this);
+  minim=new Minim(this);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
   smooth();
   c=new RubikCube(3);
   gi=new GraphicInterface();
+  drag=loadImage("drag.png");
+  select=loadImage("select.png");
+  selected=loadImage("selected.png");
 }
 
 void draw() {  
@@ -43,14 +51,15 @@ void draw() {
 void mousePressed() {  
   if(pickerito){
     pickerito=false;
+    c.setSelected();
   }else{
     pickerito=true;
   }
   c.eventTouched();
-  println(pickerito);
 }
 
 void mouseDragged() {
+  c.setSelected();
   pickerito=false;
 }
 

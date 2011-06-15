@@ -9,7 +9,7 @@
  * Mods by:
  * <If you made any modification to source, put your name here>
  */
- 
+
 class RubikCube {
 
   public final static int COLUMN_UP=21;
@@ -21,9 +21,10 @@ class RubikCube {
 
   boolean makingMove;
   int lastDirection;
-  PVector selected,nextSelected;
+  PVector selected, nextSelected;
   float currentPosition;
   float pos=0;
+  int caso, step=0;
   int faces;
   RubikPiece[][][] rubikCube;
 
@@ -76,9 +77,172 @@ class RubikCube {
     }
     rubikCube[(int)selected.x][(int)selected.y][(int)selected.z].setSelected(true);
     scramble();
+    makingMove=false;
   }
 
+  public void setSelected() {
+    for (int i=0;i<rubikCube.length;i++) {
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          if (!rubikCube[i][j][k].isNiggerPiece()) {
+            rubikCube[i][j][k].setSelected(false);
+          }
+        }
+      }
+    }
+  }
+
+  //The animation
   public void makeMove() {
+    switch(caso) {
+
+    case COLUMN_UP:
+      pushMatrix();
+      rotateX(-PI/(4*step));
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          rubikCube[(int)selected.x][j][k].draw(new PVector(10+pos+selected.x*20, 10+pos+j*20, 10+pos+k*20), true);
+        }
+      }
+      popMatrix();
+      for (int i=0;i<rubikCube.length;i++) {
+        for (int j=0;j<rubikCube[0].length;j++) {
+          for (int k=0;k<rubikCube[0][0].length;k++) {
+            if (selected.x != i)
+              rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), true);
+          }
+        }
+      }
+      step++;
+      if (step >= 20-faces*1.5) {
+        makingMove=false;
+        step=0;
+      }
+      return;
+
+    case COLUMN_DOWN:
+      pushMatrix();
+      rotateX(PI/(4*step));
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          rubikCube[(int)selected.x][j][k].draw(new PVector(10+pos+selected.x*20, 10+pos+j*20, 10+pos+k*20), true);
+        }
+      }
+      popMatrix();
+      for (int i=0;i<rubikCube.length;i++) {
+        for (int j=0;j<rubikCube[0].length;j++) {
+          for (int k=0;k<rubikCube[0][0].length;k++) {
+            if (selected.x != i)
+              rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), true);
+          }
+        }
+      }
+      step++;
+      if (step >= 20-faces*1.5) {
+        makingMove=false;
+        step=0;
+      }
+      return;
+
+    case ROW_LEFT:
+      pushMatrix();
+      rotateZ(PI/(4*step));
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          rubikCube[j][k][(int)selected.z].draw(new PVector(10+pos+j*20, 10+pos+k*20, 10+pos+selected.z*20), true);
+        }
+      }
+      popMatrix();
+      for (int i=0;i<rubikCube.length;i++) {
+        for (int j=0;j<rubikCube[0].length;j++) {
+          for (int k=0;k<rubikCube[0][0].length;k++) {
+            if (selected.z != k)
+              rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), true);
+          }
+        }
+      }
+      step++;
+      if (step >= 20-faces*1.5) {
+        makingMove=false;
+        step=0;
+      }
+      return;
+
+    case ROW_RIGHT:
+      pushMatrix();
+      rotateZ(-PI/(4*step));
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          rubikCube[j][k][(int)selected.z].draw(new PVector(10+pos+j*20, 10+pos+k*20, 10+pos+selected.z*20), true);
+        }
+      }
+      popMatrix();
+      for (int i=0;i<rubikCube.length;i++) {
+        for (int j=0;j<rubikCube[0].length;j++) {
+          for (int k=0;k<rubikCube[0][0].length;k++) {
+            if (selected.z != k)
+              rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), true);
+          }
+        }
+      }
+      step++;
+      if (step >= 20-faces*1.5) {
+        makingMove=false;
+        step=0;
+      }
+      return;
+
+    case FLOOR_LEFT:
+      pushMatrix();
+      rotateY(PI/(4*step));
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          rubikCube[j][(int)selected.y][k].draw(new PVector(10+pos+j*20, 10+pos+selected.y*20, 10+pos+k*20), true);
+        }
+      }
+      popMatrix();
+      for (int i=0;i<rubikCube.length;i++) {
+        for (int j=0;j<rubikCube[0].length;j++) {
+          for (int k=0;k<rubikCube[0][0].length;k++) {
+            if (selected.y != j)
+              rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), true);
+          }
+        }
+      }      
+      step++;
+      if (step >= 20-faces*1.5) {
+        makingMove=false;
+        step=0;
+      }
+      return;
+
+    case FLOOR_RIGHT:
+      pushMatrix();
+      rotateY(-PI/(4*step));
+      for (int j=0;j<rubikCube[0].length;j++) {
+        for (int k=0;k<rubikCube[0][0].length;k++) {
+          rubikCube[j][(int)selected.y][k].draw(new PVector(10+pos+j*20, 10+pos+selected.y*20, 10+pos+k*20), true);
+        }
+      }
+      popMatrix();
+      for (int i=0;i<rubikCube.length;i++) {
+        for (int j=0;j<rubikCube[0].length;j++) {
+          for (int k=0;k<rubikCube[0][0].length;k++) {
+            if (selected.y != j)
+              rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), true);
+          }
+        }
+      }
+      step++;
+      if (step >= 20-faces*1.5) {
+        makingMove=false;
+        step=0;
+      }
+      return;
+    }
+    step=0;
+    makingMove=false;
+    //rotate pieces
   }
 
   public void draw() {
@@ -89,7 +253,7 @@ class RubikCube {
     for (int i=0;i<rubikCube.length;i++) {
       for (int j=0;j<rubikCube[0].length;j++) {
         for (int k=0;k<rubikCube[0][0].length;k++) {
-          rubikCube[i][j][k].draw(new PVector(pos+i*20, pos+j*20, pos+k*20));
+          rubikCube[i][j][k].draw(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), false);
         }
       }
     }
@@ -109,7 +273,7 @@ class RubikCube {
     for (int i=0;i<rubikCube.length;i++) {
       for (int j=0;j<rubikCube[0].length;j++) {
         for (int k=0;k<rubikCube[0][0].length;k++) {
-          rubikCube[i][j][k].drawSerial(new PVector(pos+i*20, pos+j*20, pos+k*20), cs);
+          rubikCube[i][j][k].drawSerial(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), cs);
         }
       }
     }
@@ -117,8 +281,8 @@ class RubikCube {
     cs.popMatrix();
     cs.endDraw();
   }
-  
-  public void drawFaceSel(){
+
+  public void drawFaceSel() {
     background(0);
     if (makingMove) {
       makeMove();
@@ -131,7 +295,7 @@ class RubikCube {
     for (int i=0;i<rubikCube.length;i++) {
       for (int j=0;j<rubikCube[0].length;j++) {
         for (int k=0;k<rubikCube[0][0].length;k++) {
-          rubikCube[i][j][k].drawSide(new PVector(pos+i*20, pos+j*20, pos+k*20), fs);
+          rubikCube[i][j][k].drawSide(new PVector(10+pos+i*20, 10+pos+j*20, 10+pos+k*20), fs);
         }
       }
     }
@@ -139,34 +303,25 @@ class RubikCube {
     fs.popMatrix();
     fs.endDraw();
   }
-  
+
   int getFaceClicked(int x, int y) {
     try {
       int colorClicked= scene.renderer().pixels[y*scene.renderer().width+x];
-      println(colorClicked);
-      switch(colorClicked){
-        case #0000FF:
-          println("Right");
-          return RubikPiece.RIGHT;
-        case #00FF00:
-          println("Left");
-         return RubikPiece.LEFT;
-        case #00FFFF:
-          println("Back");
-          return RubikPiece.BACK;
-        case #FF0000:
-          println("Front");
-          return RubikPiece.FRONT;
-        case #FF00FF:
-          println("Bottom");
-          return RubikPiece.BOTTOM;
-        case #FFFF00:
-          println("Top");
-          return RubikPiece.TOP;
-        default:
-          println("No Face Selected");
-          return 0;
-        
+      switch(colorClicked) {
+      case #0000FF:
+        return RubikPiece.RIGHT;
+      case #00FF00:
+        return RubikPiece.LEFT;
+      case #00FFFF:
+        return RubikPiece.BACK;
+      case #FF0000:
+        return RubikPiece.FRONT;
+      case #FF00FF:
+        return RubikPiece.BOTTOM;
+      case #FFFF00:
+        return RubikPiece.TOP;
+      default:
+        return 0;
       }
     }
     catch(ArrayIndexOutOfBoundsException ex) {
@@ -186,20 +341,19 @@ class RubikCube {
   void eventTouched() {
     drawColorSel();
     int a=getColorClicked(mouseX, mouseY);
-    println(a);
     if (a!=0 && a!=-16777216) {
       for (int i=0;i<rubikCube.length;i++) {
         for (int j=0;j<rubikCube[0].length;j++) {
           for (int k=0;k<rubikCube[0][0].length;k++) {
             if (rubikCube[i][j][k].serial==a) {
-              if(pickerito){
-              selected.x=i;
-              selected.y=j;
-              selected.z=k;
-              rubikCube[i][j][k].setSelected(true);
-              drawFaceSel();
-              lastDirection=getFaceClicked(mouseX,mouseY);
-            }
+              if (pickerito) {
+                selected.x=i;
+                selected.y=j;
+                selected.z=k;
+                rubikCube[i][j][k].setSelected(true);
+                drawFaceSel();
+                lastDirection=getFaceClicked(mouseX, mouseY);
+              }
               else
               {
                 nextSelected.x=i;
@@ -214,173 +368,178 @@ class RubikCube {
         }
       }
     }
-    if(!(a!=0 && a!=-16777216))
+    if (!(a!=0 && a!=-16777216))
     {
       pickerito=false;
     }
-    if(!pickerito&&a!=0 && a!=-16777216){
+    if (!pickerito&&a!=0 && a!=-16777216) {
       pickerito=false;
       drawFaceSel();
-      int b=getFaceClicked(mouseX,mouseY);
-      
-      switch(lastDirection){
-        case RubikPiece.FRONT:
-          if(b==RubikPiece.RIGHT){
-            makeMove(FLOOR_RIGHT);
+      int b=getFaceClicked(mouseX, mouseY);
+
+      switch(lastDirection) {
+      case RubikPiece.FRONT:
+        if (b==RubikPiece.RIGHT) {
+          makeMove(FLOOR_RIGHT);
+        }
+        if (b==RubikPiece.LEFT) {
+          makeMove(FLOOR_LEFT);
+        }
+        if (b==RubikPiece.TOP) {
+          makeMove(COLUMN_UP);
+        }
+        if (b==RubikPiece.BOTTOM) {
+          makeMove(COLUMN_DOWN);
+        }
+        if (b==RubikPiece.FRONT) {
+          if (selected.y==nextSelected.y) {
+            int helpy=selected.x>nextSelected.x?FLOOR_LEFT:FLOOR_RIGHT;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.LEFT){
-            makeMove(FLOOR_LEFT);
+          else {
+            int helpy=selected.y>nextSelected.y?COLUMN_UP:COLUMN_DOWN;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.TOP){
-            makeMove(COLUMN_UP);
+        }
+        break;
+
+
+      case RubikPiece.TOP:
+        if (b==RubikPiece.RIGHT) {
+          makeMove(ROW_RIGHT);
+        }
+        if (b==RubikPiece.LEFT) {
+          makeMove(ROW_LEFT);
+        }
+        if (b==RubikPiece.FRONT) {
+          makeMove(COLUMN_DOWN);
+        }
+        if (b==RubikPiece.BACK) {
+          makeMove(COLUMN_UP);
+        }
+        if (b==RubikPiece.TOP) {
+          if (selected.z==nextSelected.z) {
+            int helpy=selected.x>nextSelected.x?ROW_LEFT:ROW_RIGHT;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.BOTTOM){
-            makeMove(COLUMN_DOWN);
+          else {
+            int helpy=selected.z>nextSelected.z?COLUMN_UP:COLUMN_DOWN;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.FRONT){
-            if(selected.y==nextSelected.y){
-              int helpy=selected.x>nextSelected.x?FLOOR_LEFT:FLOOR_RIGHT;
-              makeMove(helpy);
-            }else{
-              int helpy=selected.y>nextSelected.y?COLUMN_UP:COLUMN_DOWN;
-              makeMove(helpy);
-            }
+        }
+        break;
+
+
+
+      case RubikPiece.BACK:
+        if (b==RubikPiece.RIGHT) {
+          makeMove(FLOOR_LEFT);
+        }
+        if (b==RubikPiece.LEFT) {
+          makeMove(FLOOR_RIGHT);
+        }
+        if (b==RubikPiece.TOP) {
+          makeMove(COLUMN_DOWN);
+        }
+        if (b==RubikPiece.BOTTOM) {
+          makeMove(COLUMN_UP);
+        }
+        if (b==RubikPiece.BACK) {
+          if (selected.y==nextSelected.y) {
+            int helpy=selected.x>nextSelected.x?FLOOR_RIGHT:FLOOR_LEFT;
+            makeMove(helpy);
           }
-          break;
-          
-          
-        case RubikPiece.TOP:
-          if(b==RubikPiece.RIGHT){
-            makeMove(ROW_RIGHT);
+          else {
+            int helpy=selected.y>nextSelected.y?COLUMN_DOWN:COLUMN_UP;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.LEFT){
-            makeMove(ROW_LEFT);
+        }
+        break;
+
+
+
+      case RubikPiece.BOTTOM:
+        if (b==RubikPiece.RIGHT) {
+          makeMove(ROW_LEFT);
+        }
+        if (b==RubikPiece.LEFT) {
+          makeMove(ROW_RIGHT);
+        }
+        if (b==RubikPiece.FRONT) {
+          makeMove(COLUMN_UP);
+        }
+        if (b==RubikPiece.BACK) {
+          makeMove(COLUMN_DOWN);
+        }
+        if (b==RubikPiece.BOTTOM) {
+          if (selected.z==nextSelected.z) {
+            int helpy=selected.x>nextSelected.x?ROW_RIGHT:ROW_LEFT;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.FRONT){
-            makeMove(COLUMN_DOWN);
+          else {
+            int helpy=selected.z>nextSelected.z?COLUMN_DOWN:COLUMN_UP;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.BACK){
-            makeMove(COLUMN_UP);
+        }
+        break;
+
+
+      case RubikPiece.LEFT:
+        if (b==RubikPiece.FRONT) {
+          makeMove(FLOOR_RIGHT);
+        }
+        if (b==RubikPiece.BACK) {
+          makeMove(FLOOR_LEFT);
+        }
+        if (b==RubikPiece.TOP) {
+          makeMove(ROW_RIGHT);
+        }
+        if (b==RubikPiece.BOTTOM) {
+          makeMove(ROW_LEFT);
+        }
+        if (b==RubikPiece.LEFT) {
+          if (selected.y==nextSelected.y) {
+            int helpy=selected.z>nextSelected.z?FLOOR_LEFT:FLOOR_RIGHT;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.TOP){
-            if(selected.z==nextSelected.z){
-              int helpy=selected.x>nextSelected.x?ROW_LEFT:ROW_RIGHT;
-              makeMove(helpy);
-            }else{
-              int helpy=selected.z>nextSelected.z?COLUMN_UP:COLUMN_DOWN;
-              makeMove(helpy);
-            }
+          else {
+            int helpy=selected.y>nextSelected.y?ROW_RIGHT:ROW_LEFT;
+            makeMove(helpy);
           }
-          break;
-          
-          
-          
-        case RubikPiece.BACK:
-          if(b==RubikPiece.RIGHT){
-            makeMove(FLOOR_LEFT);
+        }
+        break;
+
+
+      case RubikPiece.RIGHT:
+        if (b==RubikPiece.FRONT) {
+          makeMove(FLOOR_LEFT);
+        }
+        if (b==RubikPiece.BACK) {
+          makeMove(FLOOR_RIGHT);
+        }
+        if (b==RubikPiece.TOP) {
+          makeMove(ROW_LEFT);
+        }
+        if (b==RubikPiece.BOTTOM) {
+          makeMove(ROW_RIGHT);
+        }
+        if (b==RubikPiece.RIGHT) {
+          if (selected.y==nextSelected.y) {
+            int helpy=selected.z>nextSelected.z?FLOOR_RIGHT:FLOOR_LEFT;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.LEFT){
-            makeMove(FLOOR_RIGHT);
+          else {
+            int helpy=selected.y>nextSelected.y?ROW_LEFT:ROW_RIGHT;
+            makeMove(helpy);
           }
-          if(b==RubikPiece.TOP){
-            makeMove(COLUMN_DOWN);
-          }
-          if(b==RubikPiece.BOTTOM){
-            makeMove(COLUMN_UP);
-          }
-          if(b==RubikPiece.BACK){
-            if(selected.y==nextSelected.y){
-              int helpy=selected.x>nextSelected.x?FLOOR_RIGHT:FLOOR_LEFT;
-              makeMove(helpy);
-            }else{
-              int helpy=selected.y>nextSelected.y?COLUMN_DOWN:COLUMN_UP;
-              makeMove(helpy);
-            }
-          }
-          break;
-          
-          
-          
-        case RubikPiece.BOTTOM:
-          if(b==RubikPiece.RIGHT){
-            makeMove(ROW_LEFT);
-          }
-          if(b==RubikPiece.LEFT){
-            makeMove(ROW_RIGHT);
-          }
-          if(b==RubikPiece.FRONT){
-            makeMove(COLUMN_UP);
-          }
-          if(b==RubikPiece.BACK){
-            makeMove(COLUMN_DOWN);
-          }
-          if(b==RubikPiece.BOTTOM){
-            if(selected.z==nextSelected.z){
-              int helpy=selected.x>nextSelected.x?ROW_RIGHT:ROW_LEFT;
-              makeMove(helpy);
-            }else{
-              int helpy=selected.z>nextSelected.z?COLUMN_DOWN:COLUMN_UP;
-              makeMove(helpy);
-            }
-          }
-          break;
-          
-          
-        case RubikPiece.LEFT:
-          if(b==RubikPiece.FRONT){
-            makeMove(FLOOR_RIGHT);
-          }
-          if(b==RubikPiece.BACK){
-            makeMove(FLOOR_LEFT);
-          }
-          if(b==RubikPiece.TOP){
-            makeMove(ROW_RIGHT);
-          }
-          if(b==RubikPiece.BOTTOM){
-            makeMove(ROW_LEFT);
-          }
-          if(b==RubikPiece.LEFT){
-            if(selected.y==nextSelected.y){
-              int helpy=selected.z>nextSelected.z?FLOOR_LEFT:FLOOR_RIGHT;
-              makeMove(helpy);
-            }else{
-              int helpy=selected.y>nextSelected.y?ROW_RIGHT:ROW_LEFT;
-              makeMove(helpy);
-            }
-          }
-          break;
-          
-          
-        case RubikPiece.RIGHT:
-          if(b==RubikPiece.FRONT){
-            makeMove(FLOOR_LEFT);
-          }
-          if(b==RubikPiece.BACK){
-            makeMove(FLOOR_RIGHT);
-          }
-          if(b==RubikPiece.TOP){
-            makeMove(ROW_LEFT);
-          }
-          if(b==RubikPiece.BOTTOM){
-            makeMove(ROW_RIGHT);
-          }
-          if(b==RubikPiece.RIGHT){
-            if(selected.y==nextSelected.y){
-              int helpy=selected.z>nextSelected.z?FLOOR_RIGHT:FLOOR_LEFT;
-              makeMove(helpy);
-            }else{
-              int helpy=selected.y>nextSelected.y?ROW_LEFT:ROW_RIGHT;
-              makeMove(helpy);
-            }
-          }
-          break;
-        
+        }
+        break;
       }
     }
-    
+
     drawFaceSel();
-    int b=getFaceClicked(mouseX,mouseY);
-    
+    int b=getFaceClicked(mouseX, mouseY);
+
     background(0);
     draw();
     return;
@@ -389,6 +548,9 @@ class RubikCube {
 
   public void makeMove( int direction) {
     RubikPiece[] temporal=new RubikPiece[rubikCube.length];
+    if (sound1!=null) {
+      sound1.trigger();
+    }
     switch(direction) {
     case COLUMN_UP:
     case COLUMN_DOWN:
@@ -412,6 +574,7 @@ class RubikCube {
     RubikPiece temp;
     switch(direction) {
     case COLUMN_UP:
+      caso=COLUMN_UP;
       for (int i=0;i<rubikCube.length;i++) {
         rubikCube[(int)selected.x][0][i]=rubikCube[(int)selected.x][i][faces];
       }
@@ -431,6 +594,7 @@ class RubikCube {
       }
       break;
     case COLUMN_DOWN:
+      caso=COLUMN_DOWN;
       for (int i=0;i<rubikCube.length;i++) {
         rubikCube[(int)selected.x][0][i]=rubikCube[(int)selected.x][faces-i][0];
       }
@@ -453,6 +617,7 @@ class RubikCube {
       rubikCube[(int)selected.x][faces][0]=temp;
       break;
     case ROW_LEFT:
+      caso=ROW_LEFT;
       for (int i=0;i<rubikCube.length;i++) {
         rubikCube[i][0][(int)selected.z]=rubikCube[faces][i][(int)selected.z];
       }
@@ -472,6 +637,7 @@ class RubikCube {
       }
       break;
     case ROW_RIGHT:
+      caso=ROW_RIGHT;
       for (int i=0;i<rubikCube.length;i++) {
         rubikCube[i][0][(int)selected.z]=rubikCube[0][faces-i][(int)selected.z];
       }
@@ -495,6 +661,7 @@ class RubikCube {
       break;
 
     case FLOOR_LEFT:
+      caso=FLOOR_LEFT;
       for (int i=0;i<rubikCube.length;i++) {
         rubikCube[i][(int)selected.y][faces]=rubikCube[faces][(int)selected.y][faces-i];
       }
@@ -514,6 +681,7 @@ class RubikCube {
       }
       break;
     case FLOOR_RIGHT:
+      caso=FLOOR_RIGHT;
       for (int i=0;i<rubikCube.length;i++) {
         rubikCube[i][(int)selected.y][faces]=rubikCube[0][(int)selected.y][i];
       }
@@ -532,6 +700,7 @@ class RubikCube {
         }
       }
     }
+    makingMove=true;
   }
 
   public boolean isComplete() {
@@ -608,10 +777,10 @@ class RubikCube {
       makeMove((int)(random(6)+21));
     }
   }
-  
-  public void drawColor(){
+
+  public void drawColor() {
     scene.beginScreenDrawing();
-    image(cs,0,0);
+    image(cs, 0, 0);
     scene.endScreenDrawing();
   }
 }
