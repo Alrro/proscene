@@ -20,7 +20,6 @@ RubikCube c;
 GraphicInterface gi;
 boolean completado,pickerito=false;
 int sequencer=0;
-PImage drag,select,selected;
 
 void setup() {
   size(600, 400, P3D);
@@ -31,9 +30,6 @@ void setup() {
   smooth();
   c=new RubikCube(3);
   gi=new GraphicInterface();
-  drag=loadImage("drag.png");
-  select=loadImage("select.png");
-  selected=loadImage("selected.png");
 }
 
 void draw() {  
