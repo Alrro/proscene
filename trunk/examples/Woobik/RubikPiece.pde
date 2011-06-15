@@ -108,7 +108,17 @@ public class RubikPiece {
     this.selected=selected;
   }
 
-  public void draw(PVector center) {
+  public void draw(PVector center , boolean paintBlackFaces) {
+    if(paintBlackFaces){
+      boolean paintPiece=false;
+      for(int i=0;i<piece.length;i++){
+        if(piece[i]!=NEGRO){
+          paintPiece=true;
+          break;
+        }
+      }
+      if(!paintPiece)return;
+    }
     pushStyle();
     stroke(0);
     strokeWeight(2);
@@ -119,7 +129,7 @@ public class RubikPiece {
 
     beginShape(QUADS);
 
-    if (piece[RIGHT]!=NEGRO) {
+    if (piece[RIGHT]!=NEGRO || paintBlackFaces) {
       fill(piece[RIGHT]);
       vertex(center.x+tamanio, center.y+tamanio, center.z+tamanio);
       vertex(center.x+tamanio, center.y+tamanio, center.z-tamanio);
@@ -127,7 +137,7 @@ public class RubikPiece {
       vertex(center.x+tamanio, center.y-tamanio, center.z+tamanio);
     }
 
-    if (piece[LEFT]!=NEGRO) {
+    if (piece[LEFT]!=NEGRO || paintBlackFaces) {
       fill(piece[LEFT]);
       vertex(center.x-tamanio, center.y+tamanio, center.z+tamanio);
       vertex(center.x-tamanio, center.y+tamanio, center.z-tamanio);
@@ -135,7 +145,7 @@ public class RubikPiece {
       vertex(center.x-tamanio, center.y-tamanio, center.z+tamanio);
     }
 
-    if (piece[BACK]!=NEGRO) {
+    if (piece[BACK]!=NEGRO || paintBlackFaces) {
       fill(piece[BACK]);
       vertex(center.x+tamanio, center.y+tamanio, center.z-tamanio);
       vertex(center.x+tamanio, center.y-tamanio, center.z-tamanio);
@@ -143,7 +153,7 @@ public class RubikPiece {
       vertex(center.x-tamanio, center.y+tamanio, center.z-tamanio);
     }
 
-    if (piece[FRONT]!=NEGRO) {
+    if (piece[FRONT]!=NEGRO || paintBlackFaces) {
       fill(piece[FRONT]);
       vertex(center.x+tamanio, center.y+tamanio, center.z+tamanio);
       vertex(center.x+tamanio, center.y-tamanio, center.z+tamanio);
@@ -151,7 +161,7 @@ public class RubikPiece {
       vertex(center.x-tamanio, center.y+tamanio, center.z+tamanio);
     }
 
-    if (piece[BOTTOM]!=NEGRO) {
+    if (piece[BOTTOM]!=NEGRO || paintBlackFaces) {
       fill(piece[BOTTOM]);
       vertex(center.x+tamanio, center.y+tamanio, center.z+tamanio);
       vertex(center.x+tamanio, center.y+tamanio, center.z-tamanio);
@@ -159,7 +169,7 @@ public class RubikPiece {
       vertex(center.x-tamanio, center.y+tamanio, center.z+tamanio);
     }
     //LEFT
-    if (piece[TOP]!=NEGRO) {
+    if (piece[TOP]!=NEGRO || paintBlackFaces) {
       fill(piece[TOP]);
       vertex(center.x+tamanio, center.y-tamanio, center.z+tamanio);
       vertex(center.x+tamanio, center.y-tamanio, center.z-tamanio);
