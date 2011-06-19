@@ -44,8 +44,8 @@ import java.util.Iterator;
  * Camera matrices can be directly set as references to the processing camera
  * matrices (default), or they can be set as independent PMatrix3D objects
  * (which may be useful for off-screen computations). See
- * {@link #isAttachedToPCamera()}, {@link #attachToPCamera()} and
- * {@link #detachFromPCamera()}.
+ * {@link #isLinkedToP5Camera()}, {@link #linkToP5Camera()} and
+ * {@link #unlinkFromP5Camera()}.
  * <p>
  * There are to {@link #kind()} of Cameras: PROSCENE (default) and STANDARD. The
  * former kind dynamically sets up the {@link #zNear()} and {@link #zFar()}
@@ -222,11 +222,12 @@ public class Camera implements Cloneable {
 	protected int lastFPCoeficientsUpdateIssued = -1;
 
 	// A t t a c h e d S c e n e
-	private boolean attachedToPCam;
+	//private boolean asRef2P5CamMatrices;
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
-	public PGraphics3D pg3d;
+	public Scene mainScene;
+	//public PGraphics3D pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}.
@@ -255,10 +256,16 @@ public class Camera implements Cloneable {
 	 * 
 	 * @see #Camera(Scene)
 	 */
-	public Camera(Scene scn, boolean attachedToScene) {
+	public Camera(Scene scn, boolean asMainSceneCamera) {
 		scene = scn;
-		pg3d = scene.pg3d;
-		attachedToPCam = attachedToScene;
+		
+		// TODO hack in the future all cameras in all cases
+		// will be created with their own independent matrices
+		
+		if(asMainSceneCamera)
+			mainScene = scene; 
+		else
+			mainScene = null;
 		
 		enableFrustumEquationsUpdate(false);
 
@@ -305,11 +312,11 @@ public class Camera implements Cloneable {
 		setIODistance(0.062f);
 		setPhysicalDistanceToScreen(0.5f);
 		setPhysicalScreenWidth(0.4f);
-		// focusDistance is set from setFieldOfView()
-
-		if (isAttachedToPCamera()) {
-			projectionMat = pg3d.projection;
-			modelViewMat = pg3d.modelview;
+		// focusDistance is set from setFieldOfView()		
+	
+		if (isLinkedToP5Camera()) {
+			projectionMat = mainScene.pg3d.projection;
+			modelViewMat = mainScene.pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		} else {
@@ -319,47 +326,56 @@ public class Camera implements Cloneable {
 			computeProjectionMatrix();
 		}
 	}
+	
+	// 0. MAIN SCENE
+	
+	public boolean isVirtual() {
+		return mainScene == null;
+	}
+	
+	public Scene mainScene() {
+		return mainScene;
+	}
+	
+	public void setMainScene(Scene scn) {
+		linkToP5Camera(scn);
+	}
 
 	// 1. ATTACHED PCAMERA MATRICES
 
-	/**
-	 * Convenience function that simply returns {@code !isAttachedToScene()}
-	 * 
-	 * @see #isAttachedToPCamera()
-	 */
-	public boolean isDetachedFromPCamera() {
-		return !isAttachedToPCamera();
+	protected boolean isUnlinkedFromP5Camera() {
+		return mainScene == null;
 	}
-
+	
+	// TODO the following method should be discarded in a future release:
+	// all matrices should be independent of P5 matrices.  
 	/**
 	 * Returns {@code true} if the Camera matrices are set as references to the
 	 * processing camera matrices and {@code false} if not.
 	 * 
-	 * @see #isDetachedFromPCamera()
+	 * @see #references2P5Matrices()
 	 */
-	public boolean isAttachedToPCamera() {
-		return attachedToPCam;
+	protected boolean isLinkedToP5Camera() {
+		return !isUnlinkedFromP5Camera();
 	}
 
 	/**
 	 * Set the Camera matrices as references to the processing camera matrices. If
-	 * the references are already set ({@link #isAttachedToPCamera()}), silently
+	 * the references are already set ({@link #isLinkedToP5Camera()}), silently
 	 * ignores the call.
 	 * <p>
 	 * <b>Note:</b> Since it is only one Scene per PApplet, there's no need to
 	 * specify it.
 	 * 
-	 * @see #detachFromPCamera()
-	 * @see #isAttachedToPCamera()
+	 * @see #unlinkFromP5Camera()
+	 * @see #isLinkedToP5Camera()
 	 */
-	public void attachToPCamera() {
-		if (!isAttachedToPCamera()) {
-			attachedToPCam = true;
-			projectionMat = pg3d.projection;
-			modelViewMat = pg3d.modelview;
-			computeProjectionMatrix();
-			computeModelViewMatrix();
-		}
+	protected void linkToP5Camera(Scene scn) {
+		mainScene = scn;
+		projectionMat = mainScene.pg3d.projection;
+		modelViewMat = mainScene.pg3d.modelview;
+		computeProjectionMatrix();
+		computeModelViewMatrix();		
 	}
 
 	/**
@@ -370,18 +386,16 @@ public class Camera implements Cloneable {
 	 * The values of the newly created matrices are set with
 	 * {@link #computeProjectionMatrix()} and {@link #computeModelViewMatrix()}.
 	 * 
-	 * @see #attachToPCamera()
-	 * @see #isAttachedToPCamera()
+	 * @see #linkToP5Camera()
+	 * @see #isLinkedToP5Camera()
 	 */
-	public void detachFromPCamera() {
-		if (isAttachedToPCamera()) {
-			attachedToPCam = false;
-			modelViewMat = new PMatrix3D();
-			projectionMat = new PMatrix3D();
-			projectionMat.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-			computeProjectionMatrix();
-			computeModelViewMatrix();
-		}
+	protected void unlinkFromP5Camera() {
+		mainScene = null;
+		modelViewMat = new PMatrix3D();
+		projectionMat = new PMatrix3D();
+		projectionMat.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+		computeProjectionMatrix();
+		computeModelViewMatrix();		
 	}
 
 	/**
@@ -404,7 +418,7 @@ public class Camera implements Cloneable {
 				clonedCam.kfi.put(key, kfi.get(key).clone());
 			}
 			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);
-			if (isDetachedFromPCamera()) {
+			if (isUnlinkedFromP5Camera()) {
 				clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
 				clonedCam.projectionMat = new PMatrix3D(projectionMat);
 			}
@@ -1861,10 +1875,8 @@ public class Camera implements Cloneable {
 		if (icf == null)
 			return;
 		
-	  // TODO hack that needs to be fixed in a future release!
-		if( frm != null )
-			if( frm.isInMouseGrabberPool() )
-				frm.removeFromMouseGrabberPool();
+		if((frm != null) && frm.isInMouseGrabberPool() )
+			frm.removeFromMouseGrabberPool();
 
 		frm = icf;
 		frm.setCamera(this);
@@ -1993,7 +2005,7 @@ public class Camera implements Cloneable {
 			info = false;
 		}
 
-		if (editablePath)
+		if (editablePath && (scene == mainScene) )
 			kfi.get(key).addKeyFrame(new InteractiveFrame(scene, frame()));
 		else
 			kfi.get(key).addKeyFrame(frame(), false);
@@ -2195,12 +2207,12 @@ public class Camera implements Cloneable {
 	/**
 	 * Fills the projection matrix with the {@code proj} matrix values.
 	 * <p>
-	 * Only meaningful when the camera {@link #isDetachedFromPCamera()}.
+	 * Only meaningful when the camera {@link #references2P5Matrices()}.
 	 * 
 	 * @see #setModelViewMatrix(PMatrix3D)
 	 */
 	public void setProjectionMatrix(PMatrix3D proj) {
-		if (isDetachedFromPCamera())
+		if (isUnlinkedFromP5Camera())
 			projectionMat.set(proj);
 	}
 
@@ -2287,12 +2299,12 @@ public class Camera implements Cloneable {
 	/**
 	 * Fills the modelview matrix with the {@code modelview} matrix values.
 	 * <p>
-	 * Only meaningful when the camera {@link #isDetachedFromPCamera()}.
+	 * Only meaningful when the camera {@link #references2P5Matrices()}.
 	 * 
 	 * @see #setProjectionMatrix(PMatrix3D)
 	 */
 	public void setModelViewMatrix(PMatrix3D modelview) {
-		if (isDetachedFromPCamera())
+		if (isUnlinkedFromP5Camera())
 			modelViewMat.set(modelview);
 	}
 

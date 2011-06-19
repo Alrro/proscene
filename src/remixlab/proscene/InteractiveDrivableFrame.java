@@ -196,12 +196,17 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		default:
 			break;
 		}
-	}
+	}	
 	
 	/**
-	 * Non-overloaded version of {@link #mouseDragged(Point, Camera)}.
-	 */	
-	protected final void iDrivableMouseDragged(Point eventPoint, Camera camera) {
+	 * Overloading of
+	 * {@link remixlab.proscene.InteractiveFrame#mouseDragged(Point, Camera)}.
+	 * <p>
+	 * Motion depends on mouse binding. The resulting displacements are basically
+	 * the same of those of an InteractiveFrame, but moving forward and backward
+	 * and turning actions are implemented.
+	 */
+	public void mouseDragged(Point eventPoint, Camera camera) {
 		if ((action == Scene.MouseAction.TRANSLATE)
 				|| (action == Scene.MouseAction.ZOOM)
 				|| (action == Scene.MouseAction.SCREEN_ROTATE)
@@ -274,31 +279,12 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			}
 		}
 	}
-	
-	/**
-	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseDragged(Point, Camera)}.
-	 * <p>
-	 * Motion depends on mouse binding. The resulting displacements are basically
-	 * the same of those of an InteractiveFrame, but moving forward and backward
-	 * and turning actions are implemented.
-	 */
-	public void mouseDragged(Point eventPoint, Camera camera) {
-		iDrivableMouseDragged(eventPoint, camera);
-	}
 
 	/**
 	 * Overloading of
 	 * {@link remixlab.proscene.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */
 	public void mouseReleased(Point eventPoint, Camera camera) {
-		iDrivableMouseReleased(eventPoint, camera);
-	}
-	
-	/**
-	 * Non-overloaded version of {@link #mouseReleased(Point, Camera)}.
-	 */	
-	protected final void iDrivableMouseReleased(Point eventPoint, Camera camera) {
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)) {
@@ -323,13 +309,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * #wheelSensitivity() the other two depend on #flySpeed().
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {
-		iDrivableMouseWheelMoved(rotation, camera);
-	}
-
-	/**
-	 * Non-overloaded version of {@link #mouseWheelMoved(int, Camera)}.
-	 */	
-	protected final void iDrivableMouseWheelMoved(int rotation, Camera camera) {
 		switch (action) {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;

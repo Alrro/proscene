@@ -538,8 +538,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		switch (action) {
 		case TRANSLATE: {
 			Point delta = new Point((eventPoint.x - prevPos.x), deltaY);
-			PVector trans = new PVector((int) delta.getX(), (int) -delta.getY(),
-					0.0f);
+			PVector trans = new PVector((int) delta.getX(), (int) -delta.getY(), 0.0f);
 			// Scale to fit the screen mouse displacement
 			switch (camera.type()) {
 			case PERSPECTIVE:
@@ -555,8 +554,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			}
 			}
 			// Transform to world coordinate system.
-			trans = camera.frame().orientation().rotate(
-					PVector.mult(trans, translationSensitivity()));
+			trans = camera.frame().orientation().rotate(PVector.mult(trans, translationSensitivity()));
 			// And then down to frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
@@ -578,8 +576,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		}
 
 		case SCREEN_ROTATE: {
-			// TODO: needs testing to see if it works correctly when left-handed is
-			// set
+			// TODO: needs testing to see if it works correctly when left-handed is set
 			PVector trans = camera.projectedCoordinatesOf(position());
 			float prev_angle = PApplet
 					.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
@@ -602,8 +599,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		}
 
 		case SCREEN_TRANSLATE: {
-			// TODO: needs testing to see if it works correctly when left-handed is
-			// set
+			// TODO: needs testing to see if it works correctly when left-handed is set
 			PVector trans = new PVector();
 			int dir = mouseOriginalDirection(eventPoint);
 			if (dir == 1)
@@ -636,8 +632,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 		case ROTATE: {
 			PVector trans = camera.projectedCoordinatesOf(position());
-			Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,
-					trans.x, trans.y, camera);
+			Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,	trans.x, trans.y, camera);
 			trans.set(-rot.x, -rot.y, -rot.z);
 			trans = camera.frame().orientation().rotate(trans);
 			trans = transformOf(trans);
@@ -813,8 +808,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * positions are projected on a deformed ball, centered on ({@code cx},
 	 * {@code cy}).
 	 */
-	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,
-			Camera camera) {
+	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,	Camera camera) {
 		// Points on the deformed ball
 		float px = rotationSensitivity() * ((int)prevPos.x - cx) / camera.screenWidth();
 		float py = rotationSensitivity() * (cy - (int)prevPos.y) / camera.screenHeight();
@@ -827,8 +821,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		// Should be divided by the projectOnBall size, but it is 1.0
 		PVector axis = p2.cross(p1);
 
-		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis)
-				/ MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
+		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
 
   	//lef-handed coordinate system correction (next two lines)
 	  axis.y = -axis.y;
