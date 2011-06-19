@@ -51,6 +51,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	private Camera camera;
 	private PVector arcballRefPnt;
 	
+	//TODO fix documentation
 	/**
 	 * Default constructor.
 	 * <p>
@@ -61,8 +62,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 */
 	public InteractiveCameraFrame(Scene scn) {
 		super(scn);
-		camera = null;
-		removeFromMouseGrabberPool();
+		//removeFromMouseGrabberPool();
+		camera = null;		
 		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
 	}
 
@@ -91,9 +92,35 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	protected void setCamera(Camera cam) {		
 		camera = cam;		
 		// TODO hack that needs to be fixed in a future release!
-		if( camera.isDetachedFromPCamera() )
+		if (camera != null) {
+			if( camera.isLinkedToP5Camera() && scene == camera.mainScene() )
+				removeFromMouseGrabberPool();
+			// /**
+			else if ( !isInMouseGrabberPool() )
 				addInMouseGrabberPool();
+			// */
+		}
+			
+				/**
+			if( camera.isUnlinkedFromP5Camera() || ((camera.isLinkedToP5Camera() && ( scene != camera.mainScene() ) ) ) )
+				//if( !isInMouseGrabberPool() )
+					addInMouseGrabberPool();
+			else
+				removeFromMouseGrabberPool();
+				*/
 	}
+	
+	protected boolean isVirtual() {
+		if( camera == null )
+			return true;
+		if( camera.isVirtual() )
+			return true;
+		if(Scene.currentDE == null)
+			return true;
+		if( camera.mainScene().dE != Scene.currentDE )
+			return true;
+		return false;
+	}	
 	
 	/**
 	 * Return the camera this interactive frame is attached to.
@@ -123,8 +150,12 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * Rotates the InteractiveCameraFrame around its #arcballReferencePoint()
 	 * instead of its origin.
 	 */
+	@Override
 	public void spin() {
-		rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
+		if( !isVirtual() )
+			rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
+		else
+			super.spin();
 	}
 
 	/**
@@ -170,23 +201,25 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			//int deltaY = (int) (prevPos.y - eventPoint.y);
 			switch (action) {
 			case TRANSLATE: {
-				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
-				PVector trans = new PVector((int) delta.x, (int) -delta.y, 0.0f);
-				// Scale to fit the screen mouse displacement
-				switch (camera.type()) {
-				case PERSPECTIVE:
-					trans.mult(2.0f	* PApplet.tan(camera.fieldOfView() / 2.0f) * PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z)	/ camera.screenHeight());
-					break;
-				case ORTHOGRAPHIC: {
-					float[] wh = camera.getOrthoWidthHeight();
-					trans.x *= 2.0f * wh[0] / camera.screenWidth();
-					trans.y *= 2.0f * wh[1] / camera.screenHeight();
-					break;
-				}
-				}
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
-				prevPos = eventPoint;
+				if( !isVirtual()) {				  
+					Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
+					PVector trans = new PVector((int) delta.x, (int) -delta.y, 0.0f);
+					// Scale to fit the screen mouse displacement
+					switch (camera.type()) {
+					case PERSPECTIVE:
+						trans.mult(2.0f	* PApplet.tan(camera.fieldOfView() / 2.0f) * PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z)	/ camera.screenHeight());
+						break;
+					case ORTHOGRAPHIC: {
+						float[] wh = camera.getOrthoWidthHeight();
+						trans.x *= 2.0f * wh[0] / camera.screenWidth();
+						trans.y *= 2.0f * wh[1] / camera.screenHeight();
+						break;
+						}
+					}
+					translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+					prevPos = eventPoint;					
+				}	else
+					super.mouseDragged(eventPoint, camera);
 				break;
 			}
 
@@ -201,63 +234,70 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			}
 
 			case ROTATE: {
-				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,
-						trans.x, trans.y, camera);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
-				computeMouseSpeed(eventPoint);
-				setSpinningQuaternion(rot);
-				spin();
-				prevPos = eventPoint;
+				if( !isVirtual()) {					
+					PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
+					Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,	trans.x, trans.y, camera);
+					// #CONNECTION# These two methods should go together (spinning detection
+					// and activation)
+					computeMouseSpeed(eventPoint);
+					setSpinningQuaternion(rot);
+					spin();
+					prevPos = eventPoint;
+				}	else
+					super.mouseDragged(eventPoint, camera);		
 				break;
 			}
 
 			case SCREEN_ROTATE: {
-				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
+				if( !isVirtual()) {
+					PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
+					float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
 						- trans.x)
 						- PApplet.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
-				
-  			//lef-handed coordinate system correction
-				angle = -angle;
-				
-				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
-				computeMouseSpeed(eventPoint);
-				setSpinningQuaternion(rot);
-				spin();
-				updateFlyUpVector();
-				prevPos = eventPoint;
+					
+					//lef-handed coordinate system correction
+					angle = -angle;
+					
+					Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
+					// #CONNECTION# These two methods should go together (spinning detection
+					// and activation)
+					computeMouseSpeed(eventPoint);
+					setSpinningQuaternion(rot);
+					spin();
+					updateFlyUpVector();
+					prevPos = eventPoint;
+				}	else
+					super.mouseDragged(eventPoint, camera);
 				break;
 			}
 
 			case SCREEN_TRANSLATE: {
-				PVector trans = new PVector();
-				int dir = mouseOriginalDirection(eventPoint);
-				if (dir == 1)
-					trans.set(((int)prevPos.x - (int)eventPoint.x), 0.0f, 0.0f);
-				else if (dir == -1)
-					trans.set(0.0f, -deltaY, 0.0f);
-				switch (camera.type()) {
-				case PERSPECTIVE:
-					trans.mult(2.0f
-							* PApplet.tan(camera.fieldOfView() / 2.0f)
-							* PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z)
-							/ camera.screenHeight());
-					break;
-				case ORTHOGRAPHIC: {
-					float[] wh = camera.getOrthoWidthHeight();
-					trans.x *= 2.0f * wh[0] / camera.screenWidth();
-					trans.y *= 2.0f * wh[1] / camera.screenHeight();
-					break;
-				}
-				}
-
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
-				prevPos = eventPoint;
+				if( !isVirtual()) {
+					PVector trans = new PVector();
+					int dir = mouseOriginalDirection(eventPoint);
+					if (dir == 1)
+						trans.set(((int)prevPos.x - (int)eventPoint.x), 0.0f, 0.0f);
+					else if (dir == -1)
+						trans.set(0.0f, -deltaY, 0.0f);
+					switch (camera.type()) {
+					case PERSPECTIVE:
+						trans.mult(2.0f
+								* PApplet.tan(camera.fieldOfView() / 2.0f)
+								* PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z)
+								/ camera.screenHeight());
+						break;
+					case ORTHOGRAPHIC: {
+						float[] wh = camera.getOrthoWidthHeight();
+						trans.x *= 2.0f * wh[0] / camera.screenWidth();
+						trans.y *= 2.0f * wh[1] / camera.screenHeight();
+						break;
+					}
+					}
+					
+					translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+					prevPos = eventPoint;			
+			} else
+				super.mouseDragged(eventPoint, camera);
 				break;
 			}
 
@@ -275,7 +315,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	public void mouseReleased(Point eventPoint, Camera camera) {
 		// Added by pierre: #CONNECTION# seems that startAction should always be
 		// called before :)
-		if (action == Scene.MouseAction.ZOOM_ON_REGION) {
+		if ( !isVirtual() &&  (action == Scene.MouseAction.ZOOM_ON_REGION)) {
 			// the rectangle needs to be normalized!
 			int w = PApplet.abs((int)eventPoint.x - (int)pressPos.x);
 			int tlX = (int)pressPos.x < (int)eventPoint.x ? (int)pressPos.x : (int)eventPoint.x;
@@ -306,6 +346,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	public void mouseWheelMoved(int rotation, Camera camera) {
 		switch (action) {
 		case ZOOM: {
+			if( !isVirtual()) {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
 			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
@@ -313,6 +354,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
   		//right_handed coordinate system should go like this:
 			//PVector trans = new PVector(0.0f, 0.0f, coef * rotation * wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
+			} else
+				super.mouseWheelMoved(rotation, camera);
 			break;
 		}
 		case MOVE_FORWARD:

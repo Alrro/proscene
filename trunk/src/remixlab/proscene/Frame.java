@@ -613,8 +613,7 @@ public class Frame implements Cloneable {
 		this.rot.multiply(rotation);
 		this.rot.normalize(); // Prevents numerical drift
 
-		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation
-				.angle());
+		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());
 		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
 		t.sub(trans);
 

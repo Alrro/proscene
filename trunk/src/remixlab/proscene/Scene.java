@@ -421,7 +421,6 @@ public class Scene implements PConstants {
 	protected DesktopEvents dE;
 	protected Camera cam;
 	protected InteractiveFrame glIFrame;
-	protected boolean interactiveFrameIsDrivable;
 	// boolean interactiveFrameIsAnAvatar;
 	protected boolean iFrameIsDrwn;
 	protected Trackable trck;
@@ -438,8 +437,7 @@ public class Scene implements PConstants {
 	// M o u s e G r a b b e r
 	protected List<MouseGrabbable> MouseGrabberPool;
 	protected MouseGrabbable mouseGrbbr;
-	protected boolean mouseGrabberIsAnIFrame;
-	protected boolean mouseGrabberIsADrivableFrame;
+	protected boolean mouseGrabberIsAnIFrame;	
 	protected boolean mouseTrckn;
 
 	// D I S P L A Y F L A G S
@@ -484,7 +482,9 @@ public class Scene implements PConstants {
 	
 	// D E V I C E S
 	
-	protected ArrayList<HIDevice> devices;	
+	protected ArrayList<HIDevice> devices;
+	
+	public static DesktopEvents currentDE;
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -525,7 +525,8 @@ public class Scene implements PConstants {
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
 		cam = new Camera(this);
-		setCamera(camera());// showAll();It is set in setCamera()
+		setCamera(camera());
+		showAll();
 		setInteractiveFrame(null);
 		setAvatar(null);
 		
@@ -537,7 +538,6 @@ public class Scene implements PConstants {
 		setMouseGrabber(null);
 		
 		mouseGrabberIsAnIFrame = false;
-		mouseGrabberIsADrivableFrame = false;
 
 		initDefaultCameraProfiles();
 
@@ -641,12 +641,15 @@ public class Scene implements PConstants {
 
 		camera.setSceneRadius(radius());
 		camera.setSceneCenter(center());
+		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);		
 
-		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);
-
-		cam = camera;
-
-		showAll();
+		cam = camera;	
+		
+		if (cam.isUnlinkedFromP5Camera()) {
+		  // TODO test
+			PApplet.println("linking");
+			cam.linkToP5Camera(this);			
+		}
 	}
 
 	/**
@@ -714,8 +717,7 @@ public class Scene implements PConstants {
 	 * @see #setAvatar(Trackable)
 	 */
 	public void setInteractiveFrame(InteractiveFrame frame) {
-		glIFrame = frame;
-		interactiveFrameIsDrivable = ((interactiveFrame() != camera().frame()) && (interactiveFrame() instanceof InteractiveDrivableFrame));
+		glIFrame = frame;		
 		if (glIFrame == null)
 			iFrameIsDrwn = false;
 		else if (glIFrame instanceof Trackable)
@@ -745,7 +747,6 @@ public class Scene implements PConstants {
 		mouseGrbbr = mouseGrabber;
 
 		mouseGrabberIsAnIFrame = mouseGrabber instanceof InteractiveFrame;
-		mouseGrabberIsADrivableFrame = ((mouseGrabber != camera().frame()) && (mouseGrabber instanceof InteractiveDrivableFrame));
 	}
 	
 	// 3. Mouse grabber handling
@@ -1199,9 +1200,9 @@ public class Scene implements PConstants {
 				height = pg3d.height;
 				// weirdly enough we need to bypass what processing does
 				// to the matrices when a resize event takes place
-				camera().detachFromPCamera();
+				camera().unlinkFromP5Camera();
 				camera().setScreenWidthAndHeight(width, height);
-				camera().attachToPCamera();
+				camera().linkToP5Camera(this);
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 						&& (!camera().anyInterpolationIsStarted())) {
