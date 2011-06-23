@@ -74,7 +74,6 @@ public class DesktopEvents implements MouseWheelListener {
 	public void keyEvent(KeyEvent e) {
 		if( !scene.keyboardIsHandled() )
 			return;
-		Scene.currentDE = this;
 		keyHandled = false;
 		switch (e.getID()) {		
 		case KeyEvent.KEY_PRESSED:
@@ -273,7 +272,6 @@ public class DesktopEvents implements MouseWheelListener {
 	public void mouseEvent(MouseEvent e) {		
 		if ((scene.currentCameraProfile() == null) || (!scene.mouseIsHandled()) )
 			return;
-		Scene.currentDE = this;
 		switch (e.getID()) {
 		case MouseEvent.MOUSE_CLICKED:
 			mouseClicked(e);
@@ -458,7 +456,6 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mousePressed(MouseEvent)
 	 */
 	public void mouseWheelMoved(MouseWheelEvent event) {
-		Scene.currentDE = this;
 		if(!scene.mouseIsHandled())
 			return;
 		if (scene.mouseGrabber() != null) {

@@ -66,7 +66,7 @@ class GLCamera extends Camera {
     
   public GLCamera(Scene scn) {
     super(scn);
-    pgl = (PGraphicsOpenGL) scene.pg3d;
+    pgl = (PGraphicsOpenGL) pg3d;
     gl = pgl.gl;
     glu = pgl.glu;
   }
