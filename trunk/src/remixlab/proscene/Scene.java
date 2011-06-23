@@ -483,8 +483,6 @@ public class Scene implements PConstants {
 	// D E V I C E S
 	
 	protected ArrayList<HIDevice> devices;
-	
-	public static DesktopEvents currentDE;
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -641,15 +639,12 @@ public class Scene implements PConstants {
 
 		camera.setSceneRadius(radius());
 		camera.setSceneCenter(center());
-		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);		
 
-		cam = camera;	
-		
-		if (cam.isUnlinkedFromP5Camera()) {
-		  // TODO test
-			PApplet.println("linking");
-			cam.linkToP5Camera(this);			
-		}
+		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);
+
+		cam = camera;
+
+		//showAll();
 	}
 
 	/**
@@ -1200,9 +1195,9 @@ public class Scene implements PConstants {
 				height = pg3d.height;
 				// weirdly enough we need to bypass what processing does
 				// to the matrices when a resize event takes place
-				camera().unlinkFromP5Camera();
+				camera().detachFromPCamera();
 				camera().setScreenWidthAndHeight(width, height);
-				camera().linkToP5Camera(this);
+				camera().attachToPCamera();
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 						&& (!camera().anyInterpolationIsStarted())) {
