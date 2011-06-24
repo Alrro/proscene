@@ -1195,9 +1195,9 @@ public class Scene implements PConstants {
 				height = pg3d.height;
 				// weirdly enough we need to bypass what processing does
 				// to the matrices when a resize event takes place
-				camera().detachFromPCamera();
+				camera().detachFromP5Camera();
 				camera().setScreenWidthAndHeight(width, height);
-				camera().attachToPCamera();
+				camera().attachToP5Camera();
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 						&& (!camera().anyInterpolationIsStarted())) {

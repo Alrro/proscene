@@ -44,8 +44,8 @@ import java.util.Iterator;
  * Camera matrices can be directly set as references to the processing camera
  * matrices (default), or they can be set as independent PMatrix3D objects
  * (which may be useful for off-screen computations). See
- * {@link #isAttachedToPCamera()}, {@link #attachToPCamera()} and
- * {@link #detachFromPCamera()}.
+ * {@link #isAttachedToP5Camera()}, {@link #attachToP5Camera()} and
+ * {@link #detachFromP5Camera()}.
  * <p>
  * There are to {@link #kind()} of Cameras: PROSCENE (default) and STANDARD. The
  * former kind dynamically sets up the {@link #zNear()} and {@link #zFar()}
@@ -307,7 +307,7 @@ public class Camera implements Cloneable {
 		setPhysicalScreenWidth(0.4f);
 		// focusDistance is set from setFieldOfView()
 
-		if (isAttachedToPCamera()) {
+		if (isAttachedToP5Camera()) {
 			projectionMat = pg3d.projection;
 			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
@@ -325,35 +325,35 @@ public class Camera implements Cloneable {
 	/**
 	 * Convenience function that simply returns {@code !isAttachedToScene()}
 	 * 
-	 * @see #isAttachedToPCamera()
+	 * @see #isAttachedToP5Camera()
 	 */
-	public boolean isDetachedFromPCamera() {
-		return !isAttachedToPCamera();
+	public boolean isDetachedFromP5Camera() {
+		return !isAttachedToP5Camera();
 	}
 
 	/**
 	 * Returns {@code true} if the Camera matrices are set as references to the
 	 * processing camera matrices and {@code false} if not.
 	 * 
-	 * @see #isDetachedFromPCamera()
+	 * @see #isDetachedFromP5Camera()
 	 */
-	public boolean isAttachedToPCamera() {
+	public boolean isAttachedToP5Camera() {
 		return attachedToPCam;
 	}
 
 	/**
 	 * Set the Camera matrices as references to the processing camera matrices. If
-	 * the references are already set ({@link #isAttachedToPCamera()}), silently
+	 * the references are already set ({@link #isAttachedToP5Camera()}), silently
 	 * ignores the call.
 	 * <p>
 	 * <b>Note:</b> Since it is only one Scene per PApplet, there's no need to
 	 * specify it.
 	 * 
-	 * @see #detachFromPCamera()
-	 * @see #isAttachedToPCamera()
+	 * @see #detachFromP5Camera()
+	 * @see #isAttachedToP5Camera()
 	 */
-	public void attachToPCamera() {
-		if (!isAttachedToPCamera()) {
+	public void attachToP5Camera() {
+		if (!isAttachedToP5Camera()) {
 			attachedToPCam = true;
 			projectionMat = pg3d.projection;
 			modelViewMat = pg3d.modelview;
@@ -370,11 +370,11 @@ public class Camera implements Cloneable {
 	 * The values of the newly created matrices are set with
 	 * {@link #computeProjectionMatrix()} and {@link #computeModelViewMatrix()}.
 	 * 
-	 * @see #attachToPCamera()
-	 * @see #isAttachedToPCamera()
+	 * @see #attachToP5Camera()
+	 * @see #isAttachedToP5Camera()
 	 */
-	public void detachFromPCamera() {
-		if (isAttachedToPCamera()) {
+	public void detachFromP5Camera() {
+		if (isAttachedToP5Camera()) {
 			attachedToPCam = false;
 			modelViewMat = new PMatrix3D();
 			projectionMat = new PMatrix3D();
@@ -404,7 +404,7 @@ public class Camera implements Cloneable {
 				clonedCam.kfi.put(key, kfi.get(key).clone());
 			}
 			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);
-			if (isDetachedFromPCamera()) {
+			if (isDetachedFromP5Camera()) {
 				clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
 				clonedCam.projectionMat = new PMatrix3D(projectionMat);
 			}
@@ -1150,7 +1150,7 @@ public class Camera implements Cloneable {
 	 * {@code vertex(v.x, v.y, v.z);}<br>
 	 * {@code endShape();}<br>
 	 */
-	public float pixelPRatio(PVector position) {
+	public float pixelP5Ratio(PVector position) {
 		switch (type()) {
 		case PERSPECTIVE:
 			return 2.0f * PApplet.abs((frame().coordinatesOf(position)).z)
@@ -1856,10 +1856,10 @@ public class Camera implements Cloneable {
 	 */
 	public final void setFrame(InteractiveCameraFrame icf) {
 		if (icf == null)
-			return;	  
-
+			return;	
+		
 		frm = icf;
-		interpolationKfi.setFrame(frame());
+		interpolationKfi.setFrame(frame());			
 	}
 
 	/**
@@ -2186,12 +2186,12 @@ public class Camera implements Cloneable {
 	/**
 	 * Fills the projection matrix with the {@code proj} matrix values.
 	 * <p>
-	 * Only meaningful when the camera {@link #isDetachedFromPCamera()}.
+	 * Only meaningful when the camera {@link #isDetachedFromP5Camera()}.
 	 * 
 	 * @see #setModelViewMatrix(PMatrix3D)
 	 */
 	public void setProjectionMatrix(PMatrix3D proj) {
-		if (isDetachedFromPCamera())
+		if (isDetachedFromP5Camera())
 			projectionMat.set(proj);
 	}
 
@@ -2278,12 +2278,12 @@ public class Camera implements Cloneable {
 	/**
 	 * Fills the modelview matrix with the {@code modelview} matrix values.
 	 * <p>
-	 * Only meaningful when the camera {@link #isDetachedFromPCamera()}.
+	 * Only meaningful when the camera {@link #isDetachedFromP5Camera()}.
 	 * 
 	 * @see #setProjectionMatrix(PMatrix3D)
 	 */
 	public void setModelViewMatrix(PMatrix3D modelview) {
-		if (isDetachedFromPCamera())
+		if (isDetachedFromP5Camera())
 			modelViewMat.set(modelview);
 	}
 
@@ -2636,8 +2636,7 @@ public class Camera implements Cloneable {
 		}
 		}
 
-		frame().setPositionWithConstraint(
-				PVector.sub(newCenter, PVector.mult(vd, distance)));
+		frame().setPositionWithConstraint(PVector.sub(newCenter, PVector.mult(vd, distance)));
 	}
 
 	/**
@@ -2699,11 +2698,10 @@ public class Camera implements Cloneable {
 		tempFrame.setOrientation(new Quaternion(frame().orientation()));
 		setFrame(tempFrame);
 		fitScreenRegion(rectangle);
-		setFrame(originalFrame);
+		setFrame(originalFrame); 	
 
 		interpolationKfi.addKeyFrame(tempFrame, false);
-
-		interpolationKfi.startInterpolation();
+		interpolationKfi.startInterpolation();		
 	}
 
 	/**
@@ -2752,8 +2750,7 @@ public class Camera implements Cloneable {
 		setFrame(originalFrame);
 
 		interpolationKfi.addKeyFrame(tempFrame, 1.0f, false);
-
-		interpolationKfi.startInterpolation();
+		interpolationKfi.startInterpolation();		
 
 		return target;
 	}
@@ -2782,15 +2779,13 @@ public class Camera implements Cloneable {
 		// without modifying frame
 		tempFrame = new InteractiveCameraFrame(this);
 		InteractiveCameraFrame originalFrame = frame();
-		tempFrame.setPosition(new PVector(frame().position().x,
-				frame().position().y, frame().position().z));
+		tempFrame.setPosition(new PVector(frame().position().x,	frame().position().y, frame().position().z));
 		tempFrame.setOrientation(new Quaternion(frame().orientation()));
 		setFrame(tempFrame);
 		showEntireScene();
 		setFrame(originalFrame);
 
 		interpolationKfi.addKeyFrame(tempFrame, false);
-
 		interpolationKfi.startInterpolation();
 	}
 
