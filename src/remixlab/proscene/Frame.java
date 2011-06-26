@@ -43,10 +43,83 @@ import processing.core.*;
  * which can useful for some off-screen scenes.
  */
 public class Frame implements Cloneable {
-	protected PVector trans;
-	protected Quaternion rot;
-	protected Frame refFrame;
-	protected Constraint constr;
+	
+	public class FrameKernel implements Cloneable {
+		protected PVector trans;
+		protected Quaternion rot;
+		protected Frame refFrame;
+		protected Constraint constr;
+		
+		public FrameKernel() {
+			trans = new PVector(0, 0, 0);
+			rot = new Quaternion();
+			refFrame = null;
+			constr = null;
+		}
+		
+		public FrameKernel(PVector p, Quaternion r) {
+			trans = new PVector(p.x, p.y, p.z);
+			rot = new Quaternion(r);
+			refFrame = null;
+			constr = null;
+		}
+		
+		protected FrameKernel(FrameKernel other) {
+			trans = new PVector(other.translation().x, other.translation().y, other.translation().z);
+			rot = new Quaternion(other.rotation());
+			refFrame = other.referenceFrame();
+			constr = other.constraint();
+		}
+		
+		public FrameKernel copy() {
+			return new FrameKernel(this);
+		}
+		
+		public FrameKernel clone() {
+			try {
+				FrameKernel clonedFrameKernel = (FrameKernel) super.clone();
+				clonedFrameKernel.trans = new PVector(translation().x, translation().y,	translation().z);
+				clonedFrameKernel.rot = new Quaternion(rotation());				
+				return clonedFrameKernel;
+			} catch (CloneNotSupportedException e) {
+				throw new Error("Something went wrong when cloning the FrameKernel");
+			}
+		}
+		
+		public final PVector translation() {
+			return trans;
+		}
+		
+		public final void setTranslation(PVector t) {
+			trans = t;			
+		}
+		
+		public final Quaternion rotation() {
+			return rot;
+		}
+		
+		public final void setRotation(Quaternion r) {
+			rot = r;
+		}
+		
+		public Constraint constraint() {
+			return constr;
+		}
+		
+		public final Frame referenceFrame() {
+			return refFrame;
+		}
+		
+		public final void setReferenceFrame(Frame rFrame) {
+			refFrame = rFrame;
+		}
+		
+		public void setConstraint(Constraint c) {
+			constr = c;
+		}
+	}	
+
+	protected FrameKernel krnl;
 	protected List<KeyFrameInterpolator> list;
 	protected List<Frame> linkedFramesList;
 	protected Frame srcFrame;
@@ -59,10 +132,7 @@ public class Frame implements Cloneable {
 	 * {@link #constraint()} are {@code null}.
 	 */
 	public Frame() {
-		trans = new PVector(0, 0, 0);
-		rot = new Quaternion();
-		refFrame = null;
-		constr = null;
+		krnl = new FrameKernel();
 		list = new ArrayList<KeyFrameInterpolator>();
 		linkedFramesList = new ArrayList<Frame>();
 		srcFrame = null;
@@ -79,10 +149,7 @@ public class Frame implements Cloneable {
 	 * associated {@link #constraint()}.
 	 */
 	public Frame(PVector p, Quaternion r) {
-		trans = new PVector(p.x, p.y, p.z);
-		rot = new Quaternion(r);
-		refFrame = null;
-		constr = null;
+		krnl = new FrameKernel(p, r);
 		list = new ArrayList<KeyFrameInterpolator>();
 		linkedFramesList = new ArrayList<Frame>();
 		srcFrame = null;
@@ -95,10 +162,7 @@ public class Frame implements Cloneable {
 	 *          the Frame containing the object to be copied
 	 */
 	protected Frame(Frame other) {
-		trans = new PVector(other.translation().x, other.translation().y, other.translation().z);
-		rot = new Quaternion(other.rotation());
-		refFrame = other.referenceFrame();
-		constr = other.constraint();
+		krnl = new FrameKernel( other.kernel() );
 		list = new ArrayList<KeyFrameInterpolator>();
 		Iterator<KeyFrameInterpolator> it = other.listeners().iterator();
 		while (it.hasNext())
@@ -133,8 +197,7 @@ public class Frame implements Cloneable {
 	public Frame clone() {
 		try {
 			Frame clonedFrame = (Frame) super.clone();
-			clonedFrame.trans = new PVector(translation().x, translation().y,	translation().z);
-			clonedFrame.rot = new Quaternion(rotation());
+			clonedFrame.krnl = new FrameKernel(kernel());			
 			clonedFrame.list = new ArrayList<KeyFrameInterpolator>();
 			Iterator<KeyFrameInterpolator> it = listeners().iterator();
 			while (it.hasNext())
@@ -142,12 +205,19 @@ public class Frame implements Cloneable {
 			clonedFrame.linkedFramesList = new ArrayList<Frame>();
 			Iterator<Frame> iterator = linkedFramesList.iterator();
 			while (iterator.hasNext())
-				clonedFrame.linkedFramesList.add(iterator.next());
-			clonedFrame.srcFrame = srcFrame;
+				clonedFrame.linkedFramesList.add(iterator.next());			
 			return clonedFrame;
 		} catch (CloneNotSupportedException e) {
 			throw new Error("Something went wrong when cloning the Frame");
 		}
+	}
+	
+	public FrameKernel kernel() {
+		return krnl;
+	}
+	
+	public void setKernel(FrameKernel k) {
+		krnl = k;
 	}
 
 	/**
@@ -162,7 +232,7 @@ public class Frame implements Cloneable {
 	 * @see #setTranslationWithConstraint(PVector)
 	 */
 	public final PVector translation() {
-		return trans;
+		return kernel().translation();
 	}
 
 	/**
@@ -177,7 +247,7 @@ public class Frame implements Cloneable {
 	 * @see #setRotationWithConstraint(Quaternion)
 	 */
 	public final Quaternion rotation() {
-		return rot;
+		return kernel().rotation();
 	}
 
 	/**
@@ -205,7 +275,7 @@ public class Frame implements Cloneable {
 	 * and their inverse functions.
 	 */
 	public final Frame referenceFrame() {
-		return refFrame;
+		return kernel().referenceFrame();
 	}
 
 	/**
@@ -217,7 +287,7 @@ public class Frame implements Cloneable {
 	 * See the Constraint class documentation for details.
 	 */
 	public Constraint constraint() {
-		return constr;
+		return kernel().constraint();
 	}
 
 	/**
@@ -292,7 +362,6 @@ public class Frame implements Cloneable {
 	 * @see #unlink()
 	 * @see #isLinked()
 	 * @see #areLinkedTogether(Frame)
-	 * @see #updateLinks()
 	 */
 	public boolean linkTo(Frame sourceFrame) {
 		// avoid loops		
@@ -301,10 +370,7 @@ public class Frame implements Cloneable {
 		
 		if(sourceFrame.linkedFramesList.add(this)) {
 			srcFrame = sourceFrame;
-			setTranslation( srcFrame.translation() );
-			setRotation( srcFrame.rotation() );
-			setReferenceFrame( srcFrame.referenceFrame() );
-			setConstraint( srcFrame.constraint() );
+			setKernel(srcFrame.kernel());
 			return true;
 		}
 		
@@ -320,17 +386,13 @@ public class Frame implements Cloneable {
 	 * @see #linkTo(Frame)
 	 * @see #isLinked()
 	 * @see #areLinkedTogether(Frame)
-	 * @see #updateLinks()
 	 */
 	public boolean unlink() {
 		boolean result = false;
 		if(srcFrame != null) {
 			result = srcFrame.linkedFramesList.remove(this);
 			if(result) {
-				setTranslation( srcFrame.translation().x, srcFrame.translation().y, srcFrame.translation().z );
-				setRotation( new Quaternion ( srcFrame.rotation()) );
-				setReferenceFrame( null );
-				setConstraint( null );
+				setKernel(new FrameKernel(srcFrame.translation(), srcFrame.rotation()));
 				srcFrame = null;
 			}
 		}
@@ -360,7 +422,6 @@ public class Frame implements Cloneable {
 	 * @see #linkTo(Frame)
 	 * @see #unlink()
 	 * @see #areLinkedTogether(Frame)
-	 * @see #updateLinks()
 	 */
 	public boolean isLinked() {
 		if ((srcFrame != null) || (!linkedFramesList.isEmpty()) )
@@ -386,37 +447,6 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	 * Updates the linking between frames (if there's such a link). You should
-	 * probably have no need to call this method unless you call
-	 * {@link #setTranslation(PVector)}, {@link #setRotation(Quaternion)},
-	 * {@link #setReferenceFrame(Frame)} or {@link #setConstraint(Constraint)}
-	 * on this frame or on {@code frame} and the two frames
-	 * {@link #areLinkedTogether(Frame)}. In this case you should call
-	 * immediately {@link #updateLinks()} to restore the linking between them.
-	 * 
-	 * @see #linkTo(Frame)
-	 * @see #unlink()
-	 * @see #isLinked()
-	 * @see #areLinkedTogether(Frame) 
-	 */
-	public void updateLinks() {
-		if(srcFrame != null) {
-			srcFrame.setTranslation( translation() );
-			srcFrame.setRotation( rotation() );
-			srcFrame.setReferenceFrame( referenceFrame() );
-			srcFrame.setConstraint( constraint() );
-		}
-		Iterator<Frame> iterator = linkedFramesList.iterator();
-		while (iterator.hasNext()) {
-			Frame frame = iterator.next();
-			frame.setTranslation( translation() );
-			frame.setRotation( rotation() );
-			frame.setReferenceFrame( referenceFrame() );
-			frame.setConstraint( constraint() );
-		}			
-	}
-	
-	/**
 	 * Sets the {@link #translation()} of the frame, locally defined with respect
 	 * to the {@link #referenceFrame()}. Calls {@link #modified()}.
 	 * <p>
@@ -425,7 +455,7 @@ public class Frame implements Cloneable {
 	 * take into account the potential {@link #constraint()} of the Frame.
 	 */
 	public final void setTranslation(PVector t) {
-		this.trans = t;
+		kernel().setTranslation(t);
 		modified();
 	}
 
@@ -475,7 +505,7 @@ public class Frame implements Cloneable {
 	 * @see #setTranslation(PVector)
 	 */
 	public final void setRotation(Quaternion r) {
-		this.rot = r;
+		kernel().setRotation(r);
 		modified();
 	}
 
@@ -502,7 +532,7 @@ public class Frame implements Cloneable {
 		deltaQ.normalize(); // Prevent numerical drift
 
 		rotation().multiply(deltaQ);
-		rot.normalize();
+		rotation().normalize();
 		// rotation.x = this.rotation().x;
 		// rotation.y = this.rotation().y;
 		// rotation.z = this.rotation().z;
@@ -531,8 +561,8 @@ public class Frame implements Cloneable {
 		if (settingAsReferenceFrameWillCreateALoop(rFrame))
 			PApplet.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
 		else {
-			boolean identical = (this.refFrame == rFrame);
-			this.refFrame = rFrame;
+			boolean identical = (kernel().referenceFrame() == rFrame);
+			kernel().setReferenceFrame(rFrame);
 			if (!identical)
 				modified();
 		}
@@ -544,7 +574,7 @@ public class Frame implements Cloneable {
 	 * A {@code null} value means no constraint.
 	 */
 	public void setConstraint(Constraint c) {
-		this.constr = c;
+		kernel().setConstraint(c);
 	}
 
 	/**
@@ -593,7 +623,6 @@ public class Frame implements Cloneable {
 			setTranslation(referenceFrame().coordinatesOf(p));
 		else
 			setTranslation(p);
-		updateLinks();
 	}
 
 	/**
@@ -632,7 +661,6 @@ public class Frame implements Cloneable {
 			setRotation(Quaternion.multiply(referenceFrame().orientation().inverse(),	q));
 		else
 			setRotation(q);
-		updateLinks();
 	}
 
 	/**
@@ -678,9 +706,9 @@ public class Frame implements Cloneable {
 	 */
 	public final void translate(PVector t) {
 		if (constraint() != null)
-			trans.add(constraint().constrainTranslation(t, this));
+			kernel().translation().add(constraint().constrainTranslation(t, this));
 		else
-			trans.add(t);
+			kernel().translation().add(t);
 		modified();
 	}
 
@@ -708,7 +736,7 @@ public class Frame implements Cloneable {
 				t.z = o.z;
 			}
 		}
-		trans.add(o);
+		kernel().translation().add(o);
 		modified();
 	}
 
@@ -727,11 +755,11 @@ public class Frame implements Cloneable {
 	 */
 	public final void rotate(Quaternion q) {
 		if (constraint() != null)
-			rot.multiply(constraint().constrainRotation(q, this));
+			kernel().rotation().multiply(constraint().constrainRotation(q, this));
 		else
-			rot.multiply(q);
+			kernel().rotation().multiply(q);
 
-		rot.normalize(); // Prevents numerical drift
+		kernel().rotation().normalize(); // Prevents numerical drift
 		modified();
 	}
 
@@ -760,9 +788,9 @@ public class Frame implements Cloneable {
 				q.w = o.w;
 			}
 		}
-		rot.multiply(o);
+		kernel().rotation().multiply(o);
 
-		rot.normalize(); // Prevents numerical drift
+		kernel().rotation().normalize(); // Prevents numerical drift
 		modified();
 	}
 
@@ -782,17 +810,17 @@ public class Frame implements Cloneable {
 		if (constraint() != null)
 			rotation = constraint().constrainRotation(rotation, this);
 
-		this.rot.multiply(rotation);
-		this.rot.normalize(); // Prevents numerical drift
+		this.kernel().rotation().multiply(rotation);
+		this.kernel().rotation().normalize(); // Prevents numerical drift
 
 		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());
 		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
-		t.sub(trans);
+		t.sub(kernel().translation());
 
 		if (constraint() != null)
-			trans.add(constraint().constrainTranslation(t, this));
+			kernel().translation().add(constraint().constrainTranslation(t, this));
 		else
-			trans.add(t);
+			kernel().translation().add(t);
 		modified();
 	}
 
@@ -833,17 +861,17 @@ public class Frame implements Cloneable {
 				rotation.w = q.w;
 			}
 		}
-		this.rot.multiply(q);
-		this.rot.normalize(); // Prevents numerical drift
+		this.kernel().rotation().multiply(q);
+		this.kernel().rotation().normalize(); // Prevents numerical drift
 
 		q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());
 		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
-		t.sub(trans);
+		t.sub(kernel().translation());
 
 		if (constraint() != null)
-			trans.add(constraint().constrainTranslation(t, this));
+			kernel().translation().add(constraint().constrainTranslation(t, this));
 		else
-			trans.add(t);
+			kernel().translation().add(t);
 		modified();
 	}
 
@@ -1344,11 +1372,11 @@ public class Frame implements Cloneable {
 	public final PMatrix3D matrix() {
 		PMatrix3D pM = new PMatrix3D();
 
-		pM = rot.matrix();
+		pM = kernel().rotation().matrix();
 
-		pM.m03 = trans.x;
-		pM.m13 = trans.y;
-		pM.m23 = trans.z;
+		pM.m03 = kernel().translation().x;
+		pM.m13 = kernel().translation().y;
+		pM.m23 = kernel().translation().z;
 
 		return pM;
 	}
@@ -1480,9 +1508,9 @@ public class Frame implements Cloneable {
 			return;
 		}
 
-		trans.x = pM.m03 / pM.m33;
-		trans.y = pM.m13 / pM.m33;
-		trans.z = pM.m23 / pM.m33;
+		kernel().translation().x = pM.m03 / pM.m33;
+		kernel().translation().y = pM.m13 / pM.m33;
+		kernel().translation().z = pM.m23 / pM.m33;
 
 		float[][] r = new float[3][3];
 
@@ -1496,7 +1524,7 @@ public class Frame implements Cloneable {
 		r[2][1] = pM.m21 / pM.m33;
 		r[2][2] = pM.m22 / pM.m33;
 
-		rot.fromRotationMatrix(r);
+		kernel().rotation().fromRotationMatrix(r);
 		modified();
 	}
 
@@ -1521,8 +1549,7 @@ public class Frame implements Cloneable {
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 */
 	public final Frame inverse() {
-		Frame fr = new Frame(PVector.mult(rot.inverseRotate(trans), -1), rot
-				.inverse());
+		Frame fr = new Frame(PVector.mult(kernel().rotation().inverseRotate(kernel().translation()), -1), kernel().rotation().inverse());
 		fr.setReferenceFrame(referenceFrame());
 		return fr;
 	}

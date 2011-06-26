@@ -523,8 +523,7 @@ public class Scene implements PConstants {
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
 		cam = new Camera(this);
-		setCamera(camera());
-		showAll();
+		setCamera(camera());//calls showAll();
 		setInteractiveFrame(null);
 		setAvatar(null);
 		
@@ -644,7 +643,7 @@ public class Scene implements PConstants {
 
 		cam = camera;
 
-		//showAll();
+		showAll();
 	}
 
 	/**
