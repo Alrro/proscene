@@ -36,6 +36,11 @@ import processing.core.*;
  * an {@link #orientation()}. The order of these transformations is important:
  * the Frame is first translated and then rotated around the new translated
  * origin.
+ * <p>
+ * In rare situations a frame can be {@link #linkTo(Frame)}, meaning that it
+ * will share its {@link #translation()}, {@link #rotation()},
+ * {@link #referenceFrame()}, and {@link #constraint()} with the other frame,
+ * which can useful for some off-screen scenes.
  */
 public class Frame implements Cloneable {
 	protected PVector trans;
@@ -43,6 +48,8 @@ public class Frame implements Cloneable {
 	protected Frame refFrame;
 	protected Constraint constr;
 	protected List<KeyFrameInterpolator> list;
+	protected List<Frame> linkedFramesList;
+	protected Frame srcFrame;
 
 	/**
 	 * Creates a default Frame.
@@ -57,6 +64,8 @@ public class Frame implements Cloneable {
 		refFrame = null;
 		constr = null;
 		list = new ArrayList<KeyFrameInterpolator>();
+		linkedFramesList = new ArrayList<Frame>();
+		srcFrame = null;
 	}
 
 	/**
@@ -75,6 +84,8 @@ public class Frame implements Cloneable {
 		refFrame = null;
 		constr = null;
 		list = new ArrayList<KeyFrameInterpolator>();
+		linkedFramesList = new ArrayList<Frame>();
+		srcFrame = null;
 	}
 
 	/**
@@ -84,8 +95,7 @@ public class Frame implements Cloneable {
 	 *          the Frame containing the object to be copied
 	 */
 	protected Frame(Frame other) {
-		trans = new PVector(other.translation().x, other.translation().y, other
-				.translation().z);
+		trans = new PVector(other.translation().x, other.translation().y, other.translation().z);
 		rot = new Quaternion(other.rotation());
 		refFrame = other.referenceFrame();
 		constr = other.constraint();
@@ -93,6 +103,11 @@ public class Frame implements Cloneable {
 		Iterator<KeyFrameInterpolator> it = other.listeners().iterator();
 		while (it.hasNext())
 			list.add(it.next());
+		linkedFramesList = new ArrayList<Frame>();
+		Iterator<Frame> iterator = other.linkedFramesList.iterator();
+		while (iterator.hasNext())
+			linkedFramesList.add(iterator.next());
+		srcFrame = other.srcFrame;
 	}
 
 	/**
@@ -118,13 +133,17 @@ public class Frame implements Cloneable {
 	public Frame clone() {
 		try {
 			Frame clonedFrame = (Frame) super.clone();
-			clonedFrame.trans = new PVector(translation().x, translation().y,
-					translation().z);
+			clonedFrame.trans = new PVector(translation().x, translation().y,	translation().z);
 			clonedFrame.rot = new Quaternion(rotation());
 			clonedFrame.list = new ArrayList<KeyFrameInterpolator>();
 			Iterator<KeyFrameInterpolator> it = listeners().iterator();
 			while (it.hasNext())
 				clonedFrame.list.add(it.next());
+			clonedFrame.linkedFramesList = new ArrayList<Frame>();
+			Iterator<Frame> iterator = linkedFramesList.iterator();
+			while (iterator.hasNext())
+				clonedFrame.linkedFramesList.add(iterator.next());
+			clonedFrame.srcFrame = srcFrame;
 			return clonedFrame;
 		} catch (CloneNotSupportedException e) {
 			throw new Error("Something went wrong when cloning the Frame");
@@ -214,7 +233,7 @@ public class Frame implements Cloneable {
 	}
 
 	/**
-	 * Adds {@code kfi} Returns the list of KeyFrameInterpolators that are
+	 * Adds {@code kfi} to the list of KeyFrameInterpolators that are
 	 * currently listening this frame.
 	 */
 	public void addListener(KeyFrameInterpolator kfi) {
@@ -243,7 +262,160 @@ public class Frame implements Cloneable {
 			it.next().invalidateValues();
 		}
 	}
-
+	
+	/**
+	 * Links this frame to another {@code sourceFrame}
+	 * meaning that it will share its {@link #translation()}, {@link #rotation()},
+	 * {@link #referenceFrame()}, and {@link #constraint()} with the other frame,
+	 * which can useful for some off-screen scenes, e.g., to link a frame defined
+	 * in one scene to the camera frame defined in other scene
+	 * (see the CameraCrane example).
+	 * <p>
+	 * <b>Note:</b> Linking frames has the following properties:
+	 * <ol>
+   * <li>A frame can be linked only to another frame (referred to as the source
+   * frame).</li> 
+   * <li>A source frame can be linked by many frames.</li>
+   * <li>A source frame can't be linked to another (source) frame, i.e., it
+   * can only receive links form other frames.</li>
+   * </ol> 
+	 * <p>
+	 * <b>Attention:</b> if you call {@link #setTranslation(PVector)},
+	 * {@link #setRotation(Quaternion)}, {@link #setReferenceFrame(Frame)} or
+	 * {@link #setConstraint(Constraint)} on this frame or on {@code frame}
+	 * and the two frames {@link #areLinkedTogether(Frame)}, you should call
+	 * immediately {@link #updateLinks()} to restore the linking between them.
+	 * 
+	 * @param sourceFrame the frame to link this frame with.
+	 * @return true if this frame can successfully being linked to the frame.
+	 * 
+	 * @see #unlink()
+	 * @see #isLinked()
+	 * @see #areLinkedTogether(Frame)
+	 * @see #updateLinks()
+	 */
+	public boolean linkTo(Frame sourceFrame) {
+		// avoid loops		
+		if( (!linkedFramesList.isEmpty()) || sourceFrame.linkedFramesList.contains(this) || (sourceFrame == this) )
+			return false;		
+		
+		if(sourceFrame.linkedFramesList.add(this)) {
+			srcFrame = sourceFrame;
+			setTranslation( srcFrame.translation() );
+			setRotation( srcFrame.rotation() );
+			setReferenceFrame( srcFrame.referenceFrame() );
+			setConstraint( srcFrame.constraint() );
+			return true;
+		}
+		
+		return false;
+	}	
+	
+	/**
+	 * Unlinks this frame from a source frame. Does nothing if this frame is not
+	 * linked with another frame.
+	 * 
+	 * @return true if succeeded otherwise returns false.
+	 * 
+	 * @see #linkTo(Frame)
+	 * @see #isLinked()
+	 * @see #areLinkedTogether(Frame)
+	 * @see #updateLinks()
+	 */
+	public boolean unlink() {
+		boolean result = false;
+		if(srcFrame != null) {
+			result = srcFrame.linkedFramesList.remove(this);
+			if(result) {
+				setTranslation( srcFrame.translation().x, srcFrame.translation().y, srcFrame.translation().z );
+				setRotation( new Quaternion ( srcFrame.rotation()) );
+				setReferenceFrame( null );
+				setConstraint( null );
+				srcFrame = null;
+			}
+		}
+		return result;
+	}
+	
+	/**
+	public boolean unlink(Frame frame) {
+		boolean result = false;
+		if ( (srcFrame == null) && (frame != this) ) {
+			result = linkedFramesList.remove(frame);
+			if (result) {
+				frame.setTranslation( translation().x, translation().y, translation().z );
+				frame.setRotation( new Quaternion ( rotation()) );
+				frame.setReferenceFrame( null );
+				frame.setConstraint( null );
+			}
+		}
+		return result;
+	}
+	*/
+	
+	/**
+	 * Returns true if this frame is linked to a source frame or if this frame
+	 * acts as the source frame of other frames. Otherwise returns false.
+	 * 
+	 * @see #linkTo(Frame)
+	 * @see #unlink()
+	 * @see #areLinkedTogether(Frame)
+	 * @see #updateLinks()
+	 */
+	public boolean isLinked() {
+		if ((srcFrame != null) || (!linkedFramesList.isEmpty()) )
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Returns true if this frame is linked with {@code sourceFrame}. Otherwise
+	 * returns false.
+	 * 
+	 * @see #linkTo(Frame)
+	 * @see #unlink()
+	 * @see #isLinked()
+	 * @see #updateLinks() 
+	 */
+	public boolean areLinkedTogether(Frame sourceFrame) {
+		if (sourceFrame == srcFrame)			
+			return true;
+		if (linkedFramesList.contains(sourceFrame))
+			return true;
+		return false;
+	}
+	
+	/**
+	 * Updates the linking between frames (if there's such a link). You should
+	 * probably have no need to call this method unless you call
+	 * {@link #setTranslation(PVector)}, {@link #setRotation(Quaternion)},
+	 * {@link #setReferenceFrame(Frame)} or {@link #setConstraint(Constraint)}
+	 * on this frame or on {@code frame} and the two frames
+	 * {@link #areLinkedTogether(Frame)}. In this case you should call
+	 * immediately {@link #updateLinks()} to restore the linking between them.
+	 * 
+	 * @see #linkTo(Frame)
+	 * @see #unlink()
+	 * @see #isLinked()
+	 * @see #areLinkedTogether(Frame) 
+	 */
+	public void updateLinks() {
+		if(srcFrame != null) {
+			srcFrame.setTranslation( translation() );
+			srcFrame.setRotation( rotation() );
+			srcFrame.setReferenceFrame( referenceFrame() );
+			srcFrame.setConstraint( constraint() );
+		}
+		Iterator<Frame> iterator = linkedFramesList.iterator();
+		while (iterator.hasNext()) {
+			Frame frame = iterator.next();
+			frame.setTranslation( translation() );
+			frame.setRotation( rotation() );
+			frame.setReferenceFrame( referenceFrame() );
+			frame.setConstraint( constraint() );
+		}			
+	}
+	
 	/**
 	 * Sets the {@link #translation()} of the frame, locally defined with respect
 	 * to the {@link #referenceFrame()}. Calls {@link #modified()}.
@@ -278,7 +450,7 @@ public class Frame implements Cloneable {
 		if (constraint() != null)
 			deltaT = constraint().constrainTranslation(deltaT, this);
 
-		setTranslation(PVector.add(this.translation(), deltaT));
+		translation().add(deltaT);
 
 		/**
 		 * translation.x = this.translation().x; translation.y =
@@ -323,14 +495,13 @@ public class Frame implements Cloneable {
 	 * @see #setOrientationWithConstraint(Quaternion)
 	 */
 	public final void setRotationWithConstraint(Quaternion rotation) {
-		Quaternion deltaQ = Quaternion
-				.multiply(this.rotation().inverse(), rotation);
+		Quaternion deltaQ = Quaternion.multiply(this.rotation().inverse(), rotation);
 		if (constraint() != null)
 			deltaQ = constraint().constrainRotation(deltaQ, this);
 
 		deltaQ.normalize(); // Prevent numerical drift
 
-		setRotation(Quaternion.multiply(this.rotation(), deltaQ));
+		rotation().multiply(deltaQ);
 		rot.normalize();
 		// rotation.x = this.rotation().x;
 		// rotation.y = this.rotation().y;
@@ -422,6 +593,7 @@ public class Frame implements Cloneable {
 			setTranslation(referenceFrame().coordinatesOf(p));
 		else
 			setTranslation(p);
+		updateLinks();
 	}
 
 	/**
@@ -457,10 +629,10 @@ public class Frame implements Cloneable {
 	 */
 	public final void setOrientation(Quaternion q) {
 		if (referenceFrame() != null)
-			setRotation(Quaternion.multiply(referenceFrame().orientation().inverse(),
-					q));
+			setRotation(Quaternion.multiply(referenceFrame().orientation().inverse(),	q));
 		else
 			setRotation(q);
+		updateLinks();
 	}
 
 	/**
