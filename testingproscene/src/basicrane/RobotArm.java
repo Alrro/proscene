@@ -18,7 +18,7 @@ public class RobotArm {
 		for (int i = 0; i < 4; ++i) {
 			// last frame should be a camera frame:
 			if(i == 3) {				
-				frameArray[i] = new InteractiveCameraFrame(scene);
+				frameArray[i] = new InteractiveCameraFrame(cam);
 				// ... so we set it as the cam frame
 				cam.setFrame((InteractiveCameraFrame)frameArray[i]);
 			}

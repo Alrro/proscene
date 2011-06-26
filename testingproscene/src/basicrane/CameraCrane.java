@@ -36,7 +36,7 @@ public class CameraCrane extends PApplet {
 
 	// off-screen rendering
 	// don't edit this unless you know what you're doing!
-	public void draw() {
+	public void draw() {		
 		handleMouse();
 		canvas.beginDraw();
 		// the actual scene drawing (defined by the "drawing" function below)
@@ -71,6 +71,7 @@ public class CameraCrane extends PApplet {
 	// the actual drawing function, shared by the two scenes
 	public void drawing(Scene scn) {
 		PGraphics3D pg3d = scn.renderer();
+		pg3d.background(0);
 		if(enabledLights)
 			pg3d.lights();
 		// 1. draw the robot

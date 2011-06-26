@@ -6,26 +6,20 @@ import remixlab.proscene.*;
 public class RobotArm {
 	Scene scene;
 	//camera located at the robot's head
-	Camera cam;
+	//Camera cam;
 	InteractiveFrame[] frameArray;
 
 	RobotArm(Scene mainScn) {
 		scene = mainScn;
 		// the instantiated cam is detached from the scene meaning
 		// that its matrices are independent from those of processing
-		cam = new Camera(scene, false);
+		//cam = new Camera(scene, false);
 		frameArray = new InteractiveFrame[4];
 		for (int i = 0; i < 4; ++i) {
-			// last frame should be a camera frame:
-			if(i == 3) {				
-				frameArray[i] = cam.frame();
-				//frameArray[i] = new InteractiveCameraFrame(scene);
-				//cam.setFrame((InteractiveCameraFrame)frameArray[i]);
-			}			
-			else
-				frameArray[i] = new InteractiveFrame(scene);
+			frameArray[i] = new InteractiveFrame(scene);
 			// Creates a hierarchy of frames
-			if (i > 0)
+			if (i > 0 && i < 3 )
+			//if (i > 0)
 				frame(i).setReferenceFrame(frame(i - 1));
 		}
 
@@ -35,7 +29,7 @@ public class RobotArm {
 		frame(3).setTranslation(0, 0, 50); // Arm length
 		frame(1).setRotation(new Quaternion(new PVector(1.0f, 0.0f, 0.0f), 0.6f));
 		frame(2).setRotation(new Quaternion(new PVector(1.0f, 0.0f, 0.0f), -2.0f));		
-		frame(3).setRotation(new Quaternion(new PVector(1.0f, -0.3f, 0.0f), 1.7f));
+		frame(3).setRotation(new Quaternion(new PVector(1.0f, -0.3f, 0.0f), 1.7f));		
 
 		// Set frame constraints
 		WorldConstraint baseConstraint = new WorldConstraint();
@@ -49,9 +43,11 @@ public class RobotArm {
 		frame(1).setConstraint(XAxis);
 		frame(2).setConstraint(XAxis);
 
+		// /**
 		LocalConstraint headConstraint = new LocalConstraint();
 		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-		frame(3).setConstraint(headConstraint);
+		//frame(3).setConstraint(headConstraint);
+		// */
 	}
 
 	public void draw(Scene scn) {
@@ -75,16 +71,18 @@ public class RobotArm {
 		drawCylinder(scn);
 		drawArm(scn);
 
+		/**
 		pg3d.pushMatrix();
 		frame(3).applyTransformation(pg3d);
 		setColor( scn, frame(3).grabsMouse() );
 		drawHead(scn);
+		// */
 
 		// Add light if the flag enables it
 		if( ( (CameraCrane) scene.parent).enabledLights )
 			pg3d.spotLight(155, 255, 255, 0, 0, 0, 0, 0, -1, PApplet.THIRD_PI, 1);
 
-		pg3d.popMatrix();// frame(3)
+		//pg3d.popMatrix();// frame(3)
 
 		pg3d.popMatrix();// frame(2)
 
@@ -93,11 +91,21 @@ public class RobotArm {
 		// totally necessary
 		pg3d.popMatrix();// frame(0)
 		
+		// /** //testing		
+		pg3d.pushMatrix();
+		frame(3).applyTransformation(pg3d);
+		setColor( scn, frame(3).grabsMouse() );
+		drawHead(scn);
+		pg3d.popMatrix();// frame(0)
+		//end
+		// */
+		
 		// Scene.drawCamera takes into account the whole scene hierarchy above
 		// the camera iFrame. Thus, we call it after restoring the gl state.
 		// Calling it before the first push matrix above, should do it too.
-		if( ( (CameraCrane)scene.parent).drawRobotCamFrustum && scn.equals( scene) )
-			scn.drawCamera(cam);
+		
+		if( ((CameraCrane)scene.parent).drawRobotCamFrustum && scn.equals(scene) )
+			scn.drawCamera( ((CameraCrane)scene.parent).auxScene.camera() );
 	}
 
 	public void drawBase(Scene scn) {
@@ -118,7 +126,7 @@ public class RobotArm {
 
 	public void drawHead(Scene scn) {
 		if( ( (CameraCrane)scene.parent).drawRobotCamFrustum && scn.equals( scene) )
-			scn.drawAxis( cam.sceneRadius() * 1.2f );	
+			scn.drawAxis( ((CameraCrane)scene.parent).auxScene.camera().sceneRadius() * 1.2f );	
 		drawCone(scn, 2, -6, 4, 4, 30);
 		drawCone(scn, -6, -15, 4, 17, 30);
 		drawCone(scn, -15, -17, 17, 17, 30);

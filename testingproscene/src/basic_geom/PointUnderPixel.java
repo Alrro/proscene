@@ -58,7 +58,7 @@ public class PointUnderPixel extends PApplet {
 
 		public GLCamera(Scene scn) {
 			super(scn);
-			pgl = (PGraphicsOpenGL) pg3d;
+			pgl = (PGraphicsOpenGL) scene.pg3d;
 			gl = pgl.gl;
 			//glu = pgl.glu;
 		}

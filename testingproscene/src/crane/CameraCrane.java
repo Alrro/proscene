@@ -10,7 +10,7 @@ public class CameraCrane extends PApplet {
 	RobotArm robot;
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
-	int mainWinHeight = 400; // should be less than the papplet height
+	int mainWinHeight = 360; // should be less than the papplet height
 
 	public void setup() {
 		size(640, 720, P3D);
@@ -18,19 +18,33 @@ public class CameraCrane extends PApplet {
 		scene = new Scene(this, (PGraphics3D) canvas);
 		scene.setGridIsDrawn(false);
 		// the drawing function is shared among the two scenes
-		scene.addDrawHandler(this, "drawing");
+		//scene.addDrawHandler(this, "drawing");
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		auxCanvas = createGraphics(width, (height - canvas.height), P3D);
 		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+		//auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, (height - canvas.height));
 		auxScene.setRadius(50);
 		auxScene.setGridIsDrawn(false);
 		// same drawing function which is defined below
-		auxScene.addDrawHandler(this, "drawing");
+		//auxScene.addDrawHandler(this, "drawing");
+		
+		// press 'f' to display frame selection hints
+		auxScene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		
 		//robot stuff
 		robot = new RobotArm(scene);
-		auxScene.setCamera(robot.cam);
+		//link robot head frame with auxScene camera frame
+		auxScene.camera().frame().linkTo(robot.frame(3));
+		//auxScene.camera().bindFrame(robot.frame(3));
+		
+		/**
+		auxScene.camera().unbindFrame();
+		if( auxScene.camera().boundFrame() == null )
+			println("null");
+		
+		auxScene.camera().bindFrame(robot.frame(3));
+		// */
 	}
 
 	// off-screen rendering
@@ -41,6 +55,7 @@ public class CameraCrane extends PApplet {
 		// the actual scene drawing (defined by the "drawing" function below)
 		// is magically called by the draw handler
 		scene.beginDraw();		
+		drawing(scene);
 		scene.endDraw();
 		canvas.endDraw();
 		image(canvas, 0, 0);
@@ -48,6 +63,7 @@ public class CameraCrane extends PApplet {
 		auxCanvas.beginDraw();
 		// same here with the auxScene
 		auxScene.beginDraw();
+		drawing(auxScene);
 		auxScene.endDraw();
 		auxCanvas.endDraw();
 		image(auxCanvas, 0, canvas.height);

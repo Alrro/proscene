@@ -7,14 +7,36 @@ public class Lamp {
 	PApplet parent;
 	InteractiveFrame [] frameArray;
 	
+	Camera cam;
+	
 	Lamp(Scene s) {
 		scene =  s;
 		parent = s.parent;
 		frameArray = new InteractiveFrame[4];
+		
+		/**
 		for (int i=0; i<4; ++i) {
 			frameArray[i] = new InteractiveFrame(s);
 			// Creates a hierarchy of frames.
 			if (i>0) frame(i).setReferenceFrame(frame(i-1));
+		}
+		*/
+		
+		cam = new Camera(scene, false);
+		
+		for (int i = 0; i < 4; ++i) {
+			// last frame should be a camera frame:
+			if(i == 3) {
+				frameArray[i] = cam.frame();
+				//frameArray[i] = new InteractiveCameraFrame(scene);								
+				//cam.setFrame((InteractiveCameraFrame)frameArray[i]);
+				//frameArray[i] = new InteractiveDrivableFrame(scene);
+			}			
+			else
+				frameArray[i] = new InteractiveFrame(scene);
+			// Creates a hierarchy of frames
+			if (i > 0)
+				frame(i).setReferenceFrame(frame(i - 1));
 		}
 		
 		// Initialize frames
@@ -111,6 +133,7 @@ public class Lamp {
 	
 	public void drawCone(float zMin, float zMax, float r1, float r2, int nbSub) {
 		parent.translate(0.0f, 0.0f, zMin);
+		//DrawingUtils.cone(parent, nbSub, 0, 0, r1, r2, zMax-zMin);
 		scene.cone(nbSub, 0, 0, r1, r2, zMax-zMin);
 		parent.translate(0.0f, 0.0f, -zMin);
 	}

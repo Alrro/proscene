@@ -22,5 +22,6 @@
 	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/GLGraphics.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/procontroll.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/hemesh.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/projects/workspace/libs/all/OBJLoader.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
