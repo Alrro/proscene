@@ -334,32 +334,28 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	 * Links this frame to another {@code sourceFrame}
-	 * meaning that it will share its {@link #translation()}, {@link #rotation()},
-	 * {@link #referenceFrame()}, and {@link #constraint()} with the other frame,
-	 * which can useful for some off-screen scenes, e.g., to link a frame defined
-	 * in one scene to the camera frame defined in other scene
+	 * Links this frame (referred to as the requested frame) to {@code sourceFrame},
+	 * meaning that this frame will take (and share by reference) the {@link #translation()},
+	 * {@link #rotation()}, {@link #referenceFrame()}, and {@link #constraint()} from the
+	 * {@code sourceFrame}. This can useful for some off-screen scenes, e.g., to link a
+	 * frame defined in one scene to the camera frame defined in other scene
 	 * (see the CameraCrane example).
 	 * <p>
 	 * <b>Note:</b> Linking frames has the following properties:
 	 * <ol>
    * <li>A frame can be linked only to another frame (referred to as the source
    * frame).</li> 
-   * <li>A source frame can be linked by many frames.</li>
+   * <li>A source frame can be linked by from many (requested) frames.</li>
    * <li>A source frame can't be linked to another (source) frame, i.e., it
    * can only receive links form other frames.</li>
-   * </ol> 
-	 * <p>
-	 * <b>Attention:</b> if you call {@link #setTranslation(PVector)},
-	 * {@link #setRotation(Quaternion)}, {@link #setReferenceFrame(Frame)} or
-	 * {@link #setConstraint(Constraint)} on this frame or on {@code frame}
-	 * and the two frames {@link #areLinkedTogether(Frame)}, you should call
-	 * immediately {@link #updateLinks()} to restore the linking between them.
+   * </ol>
 	 * 
 	 * @param sourceFrame the frame to link this frame with.
-	 * @return true if this frame can successfully being linked to the frame.
+	 * @return true if this frame can successfully being linked to the frame. False otherwise.
 	 * 
+	 * @see #linkFrom(Frame)
 	 * @see #unlink()
+	 * @see #unlinkFrom(Frame)
 	 * @see #isLinked()
 	 * @see #areLinkedTogether(Frame)
 	 */
@@ -378,12 +374,44 @@ public class Frame implements Cloneable {
 	}	
 	
 	/**
-	 * Unlinks this frame from a source frame. Does nothing if this frame is not
-	 * linked with another frame.
+	 * Attempts to link the {@code requestedFrame} to this frame.
+	 * <p>
+	 * See {@link #linkTo(Frame)} for the rules and terminology applying to the linking process.
+	 * 
+	 * @param requestedFrame the frame that is requesting a link to this frame.
+	 * @return true if the requested frame can successfully being linked to this frame. False otherwise.
+	 * 
+	 * @see #linkTo(Frame)
+	 * @see #unlink()
+	 * @see #unlinkFrom(Frame)
+	 * @see #isLinked()
+	 * @see #areLinkedTogether(Frame)
+	 */
+	public boolean linkFrom(Frame requestedFrame) {
+	  // avoid loops		
+		if( (!requestedFrame.linkedFramesList.isEmpty()) || linkedFramesList.contains(this) || (requestedFrame == this) )
+			return false;		
+		
+		if(linkedFramesList.add(requestedFrame)) {
+			requestedFrame.srcFrame = this;
+			requestedFrame.setKernel(kernel());
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Unlinks this frame from its source frame. Does nothing if this frame is not
+	 * linked to another frame.
+	 * <p>
+	 * See {@link #linkTo(Frame)} for the rules and terminology applying to the linking process.
 	 * 
 	 * @return true if succeeded otherwise returns false.
 	 * 
 	 * @see #linkTo(Frame)
+	 * @see #linkFrom(Frame) 
+	 * @see #unlinkFrom(Frame)
 	 * @see #isLinked()
 	 * @see #areLinkedTogether(Frame)
 	 */
@@ -400,27 +428,41 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	public boolean unlink(Frame frame) {
+	 * Unlinks the requested frame from this frame. Does nothing if the frames are
+	 * not linked together ({@link #areLinkedTogether(Frame)}).
+	 * <p>
+	 * See {@link #linkTo(Frame)} for the rules and terminology applying to the linking process.
+	 * 
+	 * @return true if succeeded otherwise returns false.
+	 * 
+	 * @see #linkTo(Frame)
+	 * @see #linkFrom(Frame)
+	 * @see #unlink()
+	 * @see #isLinked()
+	 * @see #areLinkedTogether(Frame)
+	 */
+	public boolean unlinkFrom(Frame requestedFrame) {
 		boolean result = false;
-		if ( (srcFrame == null) && (frame != this) ) {
-			result = linkedFramesList.remove(frame);
+		if ( (srcFrame == null) && (requestedFrame != this) ) {
+			result = linkedFramesList.remove(requestedFrame);
 			if (result) {
-				frame.setTranslation( translation().x, translation().y, translation().z );
-				frame.setRotation( new Quaternion ( rotation()) );
-				frame.setReferenceFrame( null );
-				frame.setConstraint( null );
+				requestedFrame.setKernel(new FrameKernel(translation(), rotation()));
+				requestedFrame.srcFrame = null;
 			}
 		}
 		return result;
 	}
-	*/
 	
 	/**
 	 * Returns true if this frame is linked to a source frame or if this frame
 	 * acts as the source frame of other frames. Otherwise returns false.
+	 * <p>
+	 * See {@link #linkTo(Frame)} for the rules and terminology applying to the linking process.
 	 * 
 	 * @see #linkTo(Frame)
+	 * @see #linkFrom(Frame)
 	 * @see #unlink()
+	 * @see #unlinkFrom(Frame)
 	 * @see #areLinkedTogether(Frame)
 	 */
 	public boolean isLinked() {
@@ -432,11 +474,14 @@ public class Frame implements Cloneable {
 	/**
 	 * Returns true if this frame is linked with {@code sourceFrame}. Otherwise
 	 * returns false.
+	 * <p>
+	 * See {@link #linkTo(Frame)} for the rules and terminology applying to the linking process.
 	 * 
 	 * @see #linkTo(Frame)
+	 * @see #linkFrom(Frame)
 	 * @see #unlink()
-	 * @see #isLinked()
-	 * @see #updateLinks() 
+	 * @see #unlinkFrom(Frame)
+	 * @see #isLinked() 
 	 */
 	public boolean areLinkedTogether(Frame sourceFrame) {
 		if (sourceFrame == srcFrame)			
