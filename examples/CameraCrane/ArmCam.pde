@@ -33,17 +33,13 @@ public class ArmCam {
     frame(0).setConstraint(baseConstraint);
 
     LocalConstraint rotor = new LocalConstraint();
-    rotor.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, 
-    new PVector(0.0f, 0.0f, 1.0f));
-    rotor.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(
-    0.0f, 0.0f, 1.0f));
+    rotor.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 1.0f));
+    rotor.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f, 0.0f, 1.0f));
     frame(1).setConstraint(rotor);
 
     LocalConstraint XAxis = new LocalConstraint();
-    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, 
-    new PVector(0.0f, 0.0f, 0.0f));
-    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(
-    1.0f, 0.0f, 0.0f));
+    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
+    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(1.0f, 0.0f, 0.0f));
     frame(2).setConstraint(XAxis);
 
     LocalConstraint freeBarMove = new LocalConstraint();
@@ -165,7 +161,7 @@ public class ArmCam {
 
   public void drawHead(Scene scn) {
     if( drawRobotCamFrustum && scn.equals( mainScene) )
-	scn.drawAxis( armScene.camera().sceneRadius() * 1.2f );
+      scn.drawAxis( armScene.camera().sceneRadius() * 1.2f );
     drawCone(scn, 9, 12, 7, 0, 6);
     drawCone(scn, 8, 9, 6, 7, 6);
     drawCone(scn, 5, 8, 8, 6, 30);
@@ -182,8 +178,7 @@ public class ArmCam {
     pg3d.popMatrix();
   }
 
-  public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, 
-  int nbSub) {
+  public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, int nbSub) {
     PGraphics3D pg3d = scn.renderer();
     pg3d.translate(0.0f, 0.0f, zMin);
     scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
