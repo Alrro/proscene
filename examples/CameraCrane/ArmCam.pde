@@ -29,8 +29,7 @@ public class ArmCam {
     baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, 
     new PVector(0.0f, 0.0f, 1.0f));
     baseConstraint.setRotationConstraint(
-    AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 
-    1.0f));
+    AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 1.0f));
     frame(0).setConstraint(baseConstraint);
 
     LocalConstraint rotor = new LocalConstraint();
@@ -60,6 +59,7 @@ public class ArmCam {
     camBase.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, 
     new PVector(0.0f, 0.0f, 1.0f));
     frame(4).setConstraint(camBase);
+    frame(4).rotate(new Quaternion(new PVector(0,0,1), -HALF_PI));
 
     LocalConstraint headConstraint = new LocalConstraint();
     headConstraint.setTranslationConstraint(
@@ -94,15 +94,11 @@ public class ArmCam {
 
     // here goes the movement constraint that keeps the camera holder
     // attached to the rails
-    if (frame(3).localInverseCoordinatesOf(
-    frame(3).coordinatesOf(frame(3).position())).z < -55) {
+    if (frame(3).localInverseCoordinatesOf(frame(3).coordinatesOf(frame(3).position())).z < -55)
       frame(3).setTranslation(0, 0, -55);
-    }
 
-    if (frame(3).localInverseCoordinatesOf(
-    frame(3).coordinatesOf(frame(3).position())).z > -4) {
+    if (frame(3).localInverseCoordinatesOf(frame(3).coordinatesOf(frame(3).position())).z > -4)
       frame(3).setTranslation(0, 0, -4);
-    }
     frame(3).applyTransformation(pg3d);
     drawHolder(scn);
 
