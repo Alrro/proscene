@@ -9,6 +9,9 @@
  * referenceFrame(), and constraint() properties. Here we link a specific
  * camera crane frame to the auxiliary off-screen scene camera frame.
  *
+ * This example requires the saito objloader library which is available here:
+ * http://code.google.com/p/saitoobjloader/
+ *
  * Press 'f' to display frame selection hints.
  * Press 'l' to enable lighting.
  * Press 'x' to draw the camera frustum volumes.
@@ -51,9 +54,8 @@ void setup() {
   heliScene.setRadius(50);
   heliScene.setGridIsDrawn(false);
   model.scale(0.5);
-  //model.scale(3);
 
-  // armCam stuff
+  // Frame linking
   armCam = new ArmCam(60, -60, 2);
   armScene.camera().frame().linkTo(armCam.frame(5));
 
@@ -130,10 +132,7 @@ public void drawing(Scene scn) {
 
   // 2. draw the scene
 
-  // The OBJ is drawn earning points that form part of each side of the
-  // model.
-  // Then, sides are drawn using beginShape and endShape.
-
+  // Rendering of the OBJ model
   pg3d.noStroke();
   pg3d.fill(24, 184, 199);
   pg3d.pushMatrix();
@@ -141,13 +140,9 @@ public void drawing(Scene scn) {
   pg3d.rotateX(-HALF_PI);  
   for (int k = 0; k < model.getFaceCount(); k++) {
     PVector[] faceVertices = model.getFaceVertices(k);
-    //pg3d.beginShape(TRIANGLE_FAN);
-    //pg3d.beginShape(TRIANGLE_STRIP);
     pg3d.beginShape(TRIANGLES);
-    for (int i = 0; i < faceVertices.length; i++) {
-      pg3d.vertex(faceVertices[i].x, faceVertices[i].y, 
-      faceVertices[i].z);
-    }
+    for (int i = 0; i < faceVertices.length; i++)
+      pg3d.vertex(faceVertices[i].x, faceVertices[i].y, faceVertices[i].z);
     pg3d.endShape();
   }
   pg3d.popMatrix();
