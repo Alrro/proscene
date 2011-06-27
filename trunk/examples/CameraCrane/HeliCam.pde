@@ -186,8 +186,7 @@ public class HeliCam {
     pg3d.popMatrix();
   }
 
-  public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, 
-  int nbSub) {
+  public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, int nbSub) {
     PGraphics3D pg3d = scn.renderer();
     pg3d.translate(0.0f, 0.0f, zMin);
     scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
