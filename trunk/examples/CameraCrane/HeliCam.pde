@@ -36,17 +36,14 @@ public class HeliCam {
     frame(0).setConstraint(baseConstraint);
 
     LocalConstraint XAxis = new LocalConstraint();
-    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, 
-    new PVector(0.0f, 0.0f, 0.0f));
-    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(
-    1.0f, 0.0f, 0.0f));
+    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
+    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(1.0f, 0.0f, 0.0f));
     frame(1).setConstraint(XAxis);
     frame(2).setConstraint(XAxis);
 
     LocalConstraint headConstraint = new LocalConstraint();
     headConstraint.setTranslationConstraint(
-    AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 
-    0.0f));
+    AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
     frame(3).setConstraint(headConstraint);
 
     LocalConstraint rotor = new LocalConstraint();
