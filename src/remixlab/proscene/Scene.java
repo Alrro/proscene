@@ -415,6 +415,7 @@ public class Scene implements PConstants {
 	public PGraphics3D pg3d;
 	protected int width, height;// size
 	protected boolean offscreen;
+	protected Point upperLeftCorner;
 	protected Frame tmpFrame;
 
 	// O B J E C T S
@@ -491,6 +492,10 @@ public class Scene implements PConstants {
 	public Scene(PApplet p) {
 		this(p, (PGraphics3D) p.g);
 	}
+	
+	public Scene(PApplet p, PGraphics3D renderer) {
+		this(p, renderer, 0, 0);
+	}
 
 	/**
 	 * All viewer parameters (display flags, scene parameters, associated
@@ -498,7 +503,7 @@ public class Scene implements PConstants {
 	 * A custom renderer can be specified as well, and if it is different from the
 	 * PApplet's renderer, this will result in an offscreen Scene.  
 	 */
-	public Scene(PApplet p, PGraphics3D renderer) {
+	public Scene(PApplet p, PGraphics3D renderer, int x, int y) {
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
@@ -530,6 +535,7 @@ public class Scene implements PConstants {
   	// This scene is offscreen if the provided renderer is
 		// different from the main PApplet renderer.
 		offscreen = renderer != p.g;
+		upperLeftCorner = new Point(x, y);
 		beginOffScreenDrawingCalls = 0;		
 		setMouseTracking(true);
 		setMouseGrabber(null);
