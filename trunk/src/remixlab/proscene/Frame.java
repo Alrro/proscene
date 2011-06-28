@@ -43,7 +43,10 @@ import processing.core.*;
  * which can useful for some off-screen scenes.
  */
 public class Frame implements Cloneable {
-	
+	/**
+	 * Internal class that holds the main frame attributes. This class is useful
+	 * to linking frames (i.e., to share these attributes).
+	 */
 	public class FrameKernel implements Cloneable {
 		protected PVector trans;
 		protected Quaternion rot;
