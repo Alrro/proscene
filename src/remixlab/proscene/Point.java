@@ -41,7 +41,7 @@ public class Point {
 	public int y;
 
 	/**
-	 * Constructs and initializes a point at the specified (x,y) location in the
+	 * Constructs and initializes a point at the (0,0) location in the
 	 * coordinate space.
 	 */
 	public Point() {
