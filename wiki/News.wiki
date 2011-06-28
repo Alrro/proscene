@@ -27,7 +27,7 @@ The main goal of this release has been to add support for Human Interface Device
  * A *RELATIVE HIDevice* (default configuration) has a neutral position that the device holds when it is not being manipulated. Examples of such devices are the [http://en.wikipedia.org/wiki/Space_navigator 3d space navigator] and the [http://en.wikipedia.org/wiki/Joystick joystick].
  * An *ABSOLUTE HIDevice* has no such neutral position. Examples of ABSOLUTE devices are the [http://en.wikipedia.org/wiki/Wii wii] and the [http://en.wikipedia.org/wiki/Kinect kinect].
 
-
+Learn [HIDevice how to use an HIDevice...]
 
 =14/12/2010 Release of *Proscene v-1.0.0*=
 
