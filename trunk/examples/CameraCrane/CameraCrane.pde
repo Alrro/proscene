@@ -6,8 +6,9 @@
  * cranes which defines two auxiliary point of views of the same scene.
  * 
  * By linking two frames they will share their translation(), rotation(),
- * referenceFrame(), and constraint() properties. Here we link a specific
- * camera crane frame to the auxiliary off-screen scene camera frame.
+ * referenceFrame(), and constraint() properties. Here we link each
+ * auxiliary off-screen scene camera frame to a specific frame found
+ * at each crane.
  *
  * This example requires the saito objloader library which is available here:
  * http://code.google.com/p/saitoobjloader/
@@ -29,7 +30,7 @@ ArmCam armCam;
 HeliCam heliCam;
 PGraphics canvas, armCanvas, heliCanvas;
 Scene mainScene, armScene, heliScene;
-int mainWinHeight = 400; // should be less than the papplet height
+int mainWinHeight = 400; // should be less than the PApplet height
 OBJModel model;
 
 void setup() {
@@ -46,13 +47,19 @@ void setup() {
   mainScene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 
   armCanvas = createGraphics(width / 2, (height - canvas.height), P3D);
-  armScene = new Scene(this, (PGraphics3D) armCanvas);
+  // Note that we pass the upper left corner coordinates where the scene
+  // is to be drawn (see drawing code below) to its constructor.  
+  armScene = new Scene(this, (PGraphics3D) armCanvas, 0, canvas.height);  
   armScene.setRadius(50);
   armScene.setGridIsDrawn(false);
+  armScene.setAxisIsDrawn(false);
   heliCanvas = createGraphics(width / 2, (height - canvas.height), P3D);
-  heliScene = new Scene(this, (PGraphics3D) heliCanvas);
+  // Note that we pass the upper left corner coordinates where the scene
+  // is to be drawn (see drawing code below) to its constructor.
+  heliScene = new Scene(this, (PGraphics3D) heliCanvas, canvas.width / 2, canvas.height);
   heliScene.setRadius(50);
   heliScene.setGridIsDrawn(false);
+  heliScene.setAxisIsDrawn(false);
   model.scale(0.5);
 
   // Frame linking
@@ -78,14 +85,16 @@ void draw() {
   armScene.beginDraw();
   armScene.endDraw();
   armCanvas.endDraw();
-  image(armCanvas, 0, canvas.height);
+  // We retrieve the scene upper left coordinates defined above.
+  image(armCanvas, armScene.upperLeftCorner.x, armScene.upperLeftCorner.y);
 
   heliCanvas.beginDraw();
   drawing(heliScene);
   heliScene.beginDraw();
   heliScene.endDraw();
   heliCanvas.endDraw();
-  image(heliCanvas, canvas.width / 2, canvas.height);
+  // We retrieve the scene upper left coordinates defined above.
+  image(heliCanvas, heliScene.upperLeftCorner.x, heliScene.upperLeftCorner.y);
   heliCanvas.beginDraw();
 }
 

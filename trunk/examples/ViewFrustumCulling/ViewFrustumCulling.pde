@@ -34,7 +34,9 @@ void setup() {
   scene.setGridIsDrawn(false);
 
   auxCanvas = createGraphics(640, 360, P3D);
-  auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+  // Note that we pass the upper left corner coordinates where the scene
+  // is to be drawn (see drawing code below) to its constructor.
+  auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, 360);
   auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
   auxScene.setAxisIsDrawn(false);
   auxScene.setGridIsDrawn(false);
@@ -61,7 +63,8 @@ void draw() {
   auxScene.drawCamera(scene.camera());
   auxScene.endDraw();
   auxCanvas.endDraw();
-  image(auxCanvas, 0, 360);
+  // We retrieve the scene upper left coordinates defined above.
+  image(auxCanvas, auxScene.upperLeftCorner.x, auxScene.upperLeftCorner.y);
 }
 
 void handleMouse() {

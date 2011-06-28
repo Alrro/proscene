@@ -415,7 +415,7 @@ public class Scene implements PConstants {
 	public PGraphics3D pg3d;
 	protected int width, height;// size
 	protected boolean offscreen;
-	protected Point upperLeftCorner;
+	public Point upperLeftCorner;
 	protected Frame tmpFrame;
 
 	// O B J E C T S
