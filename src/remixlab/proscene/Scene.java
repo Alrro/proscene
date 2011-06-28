@@ -39,9 +39,10 @@ import java.util.TimerTask;
 /**
  * A 3D interactive Processing scene.
  * <p>
- * A Scene has a full reach Camera, an two means to manipulate objects: an
- * {@link #interactiveFrame()} single instance (which by default is null) and a
- * {@link #mouseGrabber()} pool.
+ * A Scene has a full reach Camera, it can be used for on-screen or off-screen
+ * rendering purposes (see the different constructors), and it has two means to
+ * manipulate objects: an {@link #interactiveFrame()} single instance (which by
+ * default is null) and a {@link #mouseGrabber()} pool.
  * <h3>Usage</h3>
  * To use a Scene you have three choices:
  * <ol>
@@ -486,22 +487,51 @@ public class Scene implements PConstants {
 	protected ArrayList<HIDevice> devices;
 
 	/**
-	 * All viewer parameters (display flags, scene parameters, associated
-	 * objects...) are set to their default values. See the associated documentation.
+	 * Constructor that defines an on-screen Scene (the one that most likely
+	 * would just fulfill all of your needs). All viewer parameters (display flags,
+	 * scene parameters, associated objects...) are set to their default values.
+	 * See the associated documentation. This is actually just a convenience
+	 * function that simply calls {@code this(p, (PGraphics3D) p.g)}. Call any
+	 * other constructor by yourself to possibly define an off-screen Scene.
+	 * 
+	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphics3D, int, int)
 	 */	
 	public Scene(PApplet p) {
 		this(p, (PGraphics3D) p.g);
 	}
 	
+	/**
+	 * This constructor is typically used to define an off-screen Scene. This is
+	 * accomplished simply by specifying a custom {@code renderer}, different
+	 * from the PApplet's renderer. All viewer parameters (display flags, scene
+	 * parameters, associated objects...) are set to their default values. This
+	 * is actually just a convenience function that simply calls
+	 * {@code this(p, renderer, 0, 0)}. If you plan to define an on-screen Scene,
+	 * call {@link #Scene(PApplet)} instead.
+	 * 
+	 * @see #Scene(PApplet)
+	 * @see #Scene(PApplet, PGraphics3D, int, int)
+	 */
 	public Scene(PApplet p, PGraphics3D renderer) {
 		this(p, renderer, 0, 0);
 	}
 
 	/**
-	 * All viewer parameters (display flags, scene parameters, associated
-	 * objects...) are set to their default values. See the associated documentation.
-	 * A custom renderer can be specified as well, and if it is different from the
-	 * PApplet's renderer, this will result in an offscreen Scene.  
+	 * This constructor is typically used to define an off-screen Scene. This is
+	 * accomplished simply by specifying a custom {@code renderer}, different
+	 * from the PApplet's renderer. All viewer parameters (display flags, scene
+	 * parameters, associated objects...) are set to their default values. The
+	 * {@code x} and {@code y} parameters define the position of the upper-left
+	 * corner where the off-screen Scene is expected to be displayed, e.g., for
+	 * instance with a call to the Processing built-in {@code image(img, x, y)}
+	 * function. If {@link #isOffscreen()} returns {@code false} (i.e.,
+	 * {@link #renderer()} equals the PApplet's renderer), the values of x and y
+	 * are meaningless (both are set to 0 to be taken as dummy values). If you
+	 * plan to define an on-screen Scene, call {@link #Scene(PApplet)} instead. 
+	 * 
+	 * @see #Scene(PApplet)
+	 * @see #Scene(PApplet, PGraphics3D)
 	 */
 	public Scene(PApplet p, PGraphics3D renderer, int x, int y) {
 		parent = p;
@@ -535,7 +565,10 @@ public class Scene implements PConstants {
   	// This scene is offscreen if the provided renderer is
 		// different from the main PApplet renderer.
 		offscreen = renderer != p.g;
-		upperLeftCorner = new Point(x, y);
+		if(offscreen)
+			upperLeftCorner = new Point(x, y);
+		else
+			upperLeftCorner = new Point(0, 0);
 		beginOffScreenDrawingCalls = 0;		
 		setMouseTracking(true);
 		setMouseGrabber(null);
