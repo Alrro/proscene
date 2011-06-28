@@ -1,5 +1,18 @@
 #summary Wiki page containing all the project news.
 
+=25/05/2011 Release of *Proscene v-1.1.0-beta1 (a.k.a. v-1.0.7)*=
+
+This is the first (and hopefully last) beta release of the next version of *proscene* targeted at testers that wish to give us some feedback (download it [http://proscene.googlecode.com/files/proscene-1.0.7.zip here]).
+
+Changelog (respect to the [News previous alpha release]):
+
+ # Screen drawing (i.e., drawing of 2d primitives on top of a 3d scene) has been completely rewritten based on the new `matrixMode` introduced in *Processing-1.5.x*, which means:
+   * This version of *proscene* only works with *Processing-1.5.x*.
+   * The [http://code.google.com/p/proscene/issues/detail?id=1 flickering issue] with screen drawing has been fixed.
+   * The background is no longer handled by *proscene*. Use the *Processing's* built-in [http://processing.org/reference/background_.html background()] method instead (as it is expected in the first place).
+   * Screen drawing works best in *P3D* since there's an [http://code.google.com/p/processing/issues/detail?id=691 issue with it and the OPENGL renderer]. Actually, the screen drawing *OPENGL* implementation is based on a different approach which uses `camera().unprojectedCoordinatesOf` (and it is not computationally optimized) .
+ # Off-screen rendering mode has been further improved and now it supports mouse tracking and screen drawing.
+
 =20/04/2011 Release of *Proscene v-1.1.0-alpha1 (a.k.a. v-1.0.6)*=
 
 This is the first alpha release of the next version of *proscene* targeted at testers and early enthusiasts that wish to give us some feedback (download it [http://proscene.googlecode.com/files/proscene-1.0.6.zip here]). Development has been focused in the following arenas:
