@@ -1,4 +1,4 @@
-#Describes how to use an *HIDevice*
+#summary Describes how to use an *HIDevice*
 
 =How to use an *HIDevice*?=
 
