@@ -1,4 +1,4 @@
-#summary Describes how to use an [http://en.wikipedia.org/wiki/Human_interface_device HIDevice]
+#summary Describes how to use an HIDevice
 
 =How to use an [http://en.wikipedia.org/wiki/Human_interface_device HIDevice]?=
 
