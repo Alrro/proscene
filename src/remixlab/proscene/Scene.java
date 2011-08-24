@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.0)      
+ *                     ProScene (version 1.2.0)      
  *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -26,15 +26,16 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import remixlab.util.*;
+//import remixlab.util.awttimer.AWTTimerPool;
+import remixlab.util.protimer.Timer;
+import remixlab.util.protimer.TimerPool;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * A 3D interactive Processing scene.
@@ -97,7 +98,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.0";
+	public static final String version = "1.2.0";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -410,6 +411,7 @@ public class Scene implements PConstants {
 	protected boolean arpFlag;
 	protected boolean pupFlag;
 	protected PVector pupVec;
+	protected AbstractTimerJob timerFx;
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
@@ -435,6 +437,9 @@ public class Scene implements PConstants {
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
   protected int beginOffScreenDrawingCalls;
+  
+  // T i m e r P o o l
+	protected AbstractTimerPool timerPool;
 
 	// M o u s e G r a b b e r
 	protected List<MouseGrabbable> MouseGrabberPool;
@@ -542,11 +547,21 @@ public class Scene implements PConstants {
 		tmpFrame = new Frame();
 		
 		//event handler
-		dE = new DesktopEvents(this);
+		dE = new DesktopEvents(this);		
+		
+   	//timer pool
+		timerFx = new AbstractTimerJob() {
+			public void execute() {
+				unSetTimerFlag();
+			}
+		};		
+		timerPool = new TimerPool();
+		timerPool.register(this, timerFx);
 		
 		//mouse grabber pool
-		MouseGrabberPool = new ArrayList<MouseGrabbable>();
+		MouseGrabberPool = new ArrayList<MouseGrabbable>();		
 		
+		//devices
 		devices = new ArrayList<HIDevice>();
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
@@ -579,8 +594,8 @@ public class Scene implements PConstants {
 
 		//animation		
 		animationStarted = false;
-		setFrameRate(60, false);
-		setAnimationPeriod(1000/60, false); // 60Hz
+		setFrameRate(100, false);
+		setAnimationPeriod(40, false); // 25Hz
 		stopAnimation();
 		
 		arpFlag = false;
@@ -659,6 +674,10 @@ public class Scene implements PConstants {
 	 */
 	public List<MouseGrabbable> mouseGrabberPool() {
 		return MouseGrabberPool;
+	}
+	
+	public AbstractTimerPool timerPool() {
+		return timerPool;
 	}
 
 	/**
@@ -1211,6 +1230,16 @@ public class Scene implements PConstants {
 			drawCross(v.x, v.y);
 		}
 	}
+	
+	private void handleTimers() {
+		if( timerPool.needInit() )
+			timerPool.init(this);
+		
+		if(timerPool instanceof TimerPool)
+			for (List<AbstractTimerJob> list : timerPool.timerPool().values())
+				for ( AbstractTimerJob tJob  : list )
+					((Timer)tJob.timer()).execute();
+	}
 
 	/**
 	 * Paint method which is called just before your {@code PApplet.draw()}
@@ -1223,6 +1252,8 @@ public class Scene implements PConstants {
 	 */
 	public void pre() {
 		if (isOffscreen()) return;
+		
+		handleTimers();
 		
 		// handle possible resize events
 		// weird: we need to bypass the handling of a resize event when running the
@@ -1354,9 +1385,11 @@ public class Scene implements PConstants {
 			if (beginOffScreenDrawingCalls != 0)
 				throw new RuntimeException(
 						"There should be exactly one beginDraw() call followed by a "
-								+ "endDraw() and they cannot be nested. Check your implementation!");
-			
+								+ "endDraw() and they cannot be nested. Check your implementation!");			
 			beginOffScreenDrawingCalls++;
+			
+			handleTimers();
+			
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 					&& (!camera().anyInterpolationIsStarted())) {
 				camera().setPosition(avatar().cameraPosition());
@@ -3261,25 +3294,17 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				Timer timer=new Timer();
-				TimerTask timerTask = new TimerTask() {
-					public void run() {
-						unSetTimerFlag();
-					}
-				};
-				timer.schedule(timerTask, 1000);
+				if( timerFx.timer() != null )
+					timerFx.timer().runOnce(1000);
+					//((Timer)timerFx.timer()).runOnce(1000, true);
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			Timer timer=new Timer();
-			TimerTask timerTask = new TimerTask() {
-				public void run() {
-					unSetTimerFlag();
-				}
-			};
-			timer.schedule(timerTask, 1000);
+			if( timerFx.timer() != null )
+				timerFx.timer().runOnce(1000);
+				//((Timer)timerFx.timer()).runOnce(1000, true);
 			break;
 		case GLOBAL_HELP:
 			displayGlobalHelp();
@@ -3319,13 +3344,9 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					Timer timer=new Timer();
-					TimerTask timerTask = new TimerTask() {
-						public void run() {
-							unSetTimerFlag();
-						}
-					};
-					timer.schedule(timerTask, 1000);
+					if( timerFx.timer() != null )
+						timerFx.timer().runOnce(1000);
+						//((Timer)timerFx.timer()).runOnce(1000, true);
 				}
 			}
 			break;
@@ -3670,7 +3691,6 @@ public class Scene implements PConstants {
 	/**
 	 * Disables Proscene mouse handling.
 	 * 
-	 * 
 	 * @see #mouseIsHandled()
 	 */
 	public void disableMouseHandling() {
@@ -3703,13 +3723,9 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					Timer timer=new Timer();
-					TimerTask timerTask = new TimerTask() {
-						public void run() {
-							unSetTimerFlag();
-						}
-					};
-					timer.schedule(timerTask, 1000);
+					if( timerFx.timer() != null )
+						timerFx.timer().runOnce(1000);
+						//((Timer)timerFx.timer()).runOnce(1000, true);
 				}
 			}
 			break;
@@ -3722,25 +3738,17 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				Timer timer=new Timer();
-				TimerTask timerTask = new TimerTask() {
-					public void run() {
-						unSetTimerFlag();
-					}
-				};
-				timer.schedule(timerTask, 1000);
+				if( timerFx.timer() != null )
+					timerFx.timer().runOnce(1000);
+					//((Timer)timerFx.timer()).runOnce(1000, true);
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			Timer timer=new Timer();
-			TimerTask timerTask = new TimerTask() {
-				public void run() {
-					unSetTimerFlag();
-				}
-			};
-			timer.schedule(timerTask, 1000);
+			if( timerFx.timer() != null )
+				timerFx.timer().runOnce(1000);
+				//((Timer)timerFx.timer()).runOnce(1000, true);
 			break;
 		case CENTER_FRAME:
 			if (interactiveFrame() != null)

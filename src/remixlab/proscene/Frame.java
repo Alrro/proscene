@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.0)      
+ *                     ProScene (version 1.2.0)      
  *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -48,6 +48,7 @@ public class Frame implements Cloneable {
 	 * to linking frames (i.e., to share these attributes).
 	 */
 	public class FrameKernel implements Cloneable {
+		// TODO move Frame.modified() here?
 		protected PVector trans;
 		protected Quaternion rot;
 		protected Frame refFrame;
@@ -215,6 +216,7 @@ public class Frame implements Cloneable {
 		}
 	}
 	
+	// TODO document me
 	public FrameKernel kernel() {
 		return krnl;
 	}
