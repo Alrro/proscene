@@ -1134,7 +1134,7 @@ public class Camera implements Cloneable {
 	 * Returns the ratio between pixel and processing scene units at {@code
 	 * position}.
 	 * <p>
-	 * A line of {@code n * pixelPRatio()} processing scene units, located at
+	 * A line of {@code n * pixelP5Ratio()} processing scene units, located at
 	 * {@code position} in the world coordinates system, will be projected with a
 	 * length of {@code n} pixels on screen.
 	 * <p>
@@ -1146,7 +1146,7 @@ public class Camera implements Cloneable {
 	 * {@code beginShape(LINES);}<br>
 	 * {@code vertex(sceneCenter().x, sceneCenter().y, sceneCenter().z);}<br>
 	 * {@code PVector v = PVector.add(sceneCenter(), PVector.mult(upVector(), 20 *
-	 * pixelPRatio(sceneCenter())));}<br>
+	 * pixelP5Ratio(sceneCenter())));}<br>
 	 * {@code vertex(v.x, v.y, v.z);}<br>
 	 * {@code endShape();}<br>
 	 */
