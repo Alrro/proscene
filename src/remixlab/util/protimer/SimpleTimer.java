@@ -53,13 +53,13 @@ public class SimpleTimer implements Timable {
 		}
 		else {
 			if( (timerFrameRate > scene.parent.frameRate) ) {
-				timerFrameRate = scene.parent.frameRate;
-				timerPeriod = 1000f/timerFrameRate;		
 				PApplet.println("Your current frame rate (~" + scene.parent.frameRate + " fps) is not enough " +
-						            "to run the timer and reach the specified " + period + " ms period, " + timerPeriod
-						            + " ms period will be used instead. If you want to sustain a higher " +
-						            "period, either define a higher frame rate (minimum of " + timerFrameRate + " fps) " +
-						            "before running the timer or turn on the 'force' option of the timer's run method.");
+            "to run the timer and reach the specified " + period + " ms period, " + timerPeriod
+            + " ms period will be used instead. If you want to sustain a higher " +
+            "period, either define a higher frame rate (minimum of " + timerFrameRate + " fps) " +
+            "before running the timer or turn on the 'force' option of the timer's run method.");
+				timerFrameRate = scene.parent.frameRate;
+				timerPeriod = 1000f/timerFrameRate;				
 				return;
 			}
 		}

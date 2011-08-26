@@ -28,6 +28,7 @@ package remixlab.proscene;
 import processing.core.*;
 import remixlab.util.*;
 //import remixlab.util.awttimer.AWTTimerPool;
+import remixlab.util.protimer.SimpleTimer;
 import remixlab.util.protimer.Timer;
 import remixlab.util.protimer.TimerPool;
 
@@ -461,15 +462,10 @@ public class Scene implements PConstants {
 	protected boolean keyboardHandling;
 	
 	// A N I M A T I O N
-	protected float targetFrameRate;
-	protected float animationFrameRate;
-	private long initialDrawingFrameWhenAnimationStarted;
-	private long currentAnimationFrame;
-	private float animationToFrameRateRatio;
-	//private int framesInBetween;
-	private boolean animationStarted;
+	protected SimpleTimer animationTimer;
+	protected boolean animationStarted;
 	public boolean animatedFrameWasTriggered;
-	private float animationPeriod;
+	protected long animationPeriod;
 
 	// R E G I S T E R   D R A W   A N D   A N I M A T I O N   M E T H O D S
 	// Draw
@@ -548,15 +544,15 @@ public class Scene implements PConstants {
 		
 		//event handler
 		dE = new DesktopEvents(this);		
-		
-   	//timer pool
+				
+   	//drawing timer pool
 		timerFx = new AbstractTimerJob() {
 			public void execute() {
 				unSetTimerFlag();
 			}
 		};		
 		timerPool = new TimerPool();
-		timerPool.register(this, timerFx);
+		timerPool.register(this, timerFx);		
 		
 		//mouse grabber pool
 		MouseGrabberPool = new ArrayList<MouseGrabbable>();		
@@ -592,9 +588,8 @@ public class Scene implements PConstants {
 
 		initDefaultCameraProfiles();
 
-		//animation		
-		animationStarted = false;
-		setFrameRate(100, false);
+		//animation
+		animationTimer = new SimpleTimer(this);
 		setAnimationPeriod(40, false); // 25Hz
 		stopAnimation();
 		
@@ -674,7 +669,7 @@ public class Scene implements PConstants {
 	 */
 	public List<MouseGrabbable> mouseGrabberPool() {
 		return MouseGrabberPool;
-	}
+	}	
 	
 	public AbstractTimerPool timerPool() {
 		return timerPool;
@@ -1231,13 +1226,15 @@ public class Scene implements PConstants {
 		}
 	}
 	
-	private void handleTimers() {
+	private void initTimers() {
 		if( timerPool.needInit() )
 			timerPool.init(this);
-		
+	}
+	
+	private void handleTimers() {		
 		if(timerPool instanceof TimerPool)
 			for (List<AbstractTimerJob> list : timerPool.timerPool().values())
-				for ( AbstractTimerJob tJob  : list )
+				for ( AbstractTimerJob tJob : list )
 					((Timer)tJob.timer()).execute();
 	}
 
@@ -1253,7 +1250,7 @@ public class Scene implements PConstants {
 	public void pre() {
 		if (isOffscreen()) return;
 		
-		handleTimers();
+		initTimers();
 		
 		// handle possible resize events
 		// weird: we need to bypass the handling of a resize event when running the
@@ -1336,6 +1333,9 @@ public class Scene implements PConstants {
 	 * @see #addAnimationHandler(Object, String)
 	 */
 	protected void drawCommon() {
+		// 0. timers
+		handleTimers();
+		
 		// 1. Animation
 		if( animationIsStarted() )
 			performAnimation();
@@ -1388,7 +1388,7 @@ public class Scene implements PConstants {
 								+ "endDraw() and they cannot be nested. Check your implementation!");			
 			beginOffScreenDrawingCalls++;
 			
-			handleTimers();
+			initTimers();
 			
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 					&& (!camera().anyInterpolationIsStarted())) {
@@ -3295,16 +3295,14 @@ public class Scene implements PConstants {
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				if( timerFx.timer() != null )
-					timerFx.timer().runOnce(1000);
-					//((Timer)timerFx.timer()).runOnce(1000, true);
+					timerFx.timer().runOnce(1000);					
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
 			if( timerFx.timer() != null )
-				timerFx.timer().runOnce(1000);
-				//((Timer)timerFx.timer()).runOnce(1000, true);
+				timerFx.timer().runOnce(1000);				
 			break;
 		case GLOBAL_HELP:
 			displayGlobalHelp();
@@ -3345,8 +3343,7 @@ public class Scene implements PConstants {
 					pupVec = wP.point;
 					pupFlag = true;
 					if( timerFx.timer() != null )
-						timerFx.timer().runOnce(1000);
-						//((Timer)timerFx.timer()).runOnce(1000, true);
+						timerFx.timer().runOnce(1000);						
 				}
 			}
 			break;
@@ -3724,8 +3721,7 @@ public class Scene implements PConstants {
 					pupVec = wP.point;
 					pupFlag = true;
 					if( timerFx.timer() != null )
-						timerFx.timer().runOnce(1000);
-						//((Timer)timerFx.timer()).runOnce(1000, true);
+						timerFx.timer().runOnce(1000);						
 				}
 			}
 			break;
@@ -3739,16 +3735,14 @@ public class Scene implements PConstants {
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				if( timerFx.timer() != null )
-					timerFx.timer().runOnce(1000);
-					//((Timer)timerFx.timer()).runOnce(1000, true);
+					timerFx.timer().runOnce(1000);					
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
 			if( timerFx.timer() != null )
-				timerFx.timer().runOnce(1000);
-				//((Timer)timerFx.timer()).runOnce(1000, true);
+				timerFx.timer().runOnce(1000);				
 			break;
 		case CENTER_FRAME:
 			if (interactiveFrame() != null)
@@ -3852,41 +3846,6 @@ public class Scene implements PConstants {
 	// 11. Animation
 	
 	/**
-	 * Returns the target frame rate.
-	 * 
-	 * @see #setFrameRate(float, boolean)
-	 */
-	public float frameRate() {
-		return targetFrameRate;
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code setFrameRate(fRate, true)}.
-	 * 
-	 * @see #setFrameRate(float, boolean)
-	 */
-	public void setFrameRate(float fRate) {
-		setFrameRate(fRate, true);
-	}
-	
-	/**
-	 * Specifies the number of frames to be displayed every second. If the processor
-	 * is not fast enough to maintain the specified rate, it will not be achieved.
-	 * <p>
-	 * For example, the function call setFrameRate(30) will attempt to refresh 30 times
-	 * a second. It is recommended to set the frame rate within setup(). If restart is {@code true}
-	 * and {@link #animationIsStarted()} then {@link #restartAnimation()} is called.
-	 * <p>
-	 * The default rate is 60 frames per second.
-	 */
-	public void setFrameRate(float fRate, boolean restart) {
-		targetFrameRate = fRate;
-		parent.frameRate(targetFrameRate);
-		if(animationIsStarted() && restart)
-			restartAnimation();
-	}
-	
-	/**
 	 * Return {@code true} when the animation loop is started.
 	 * <p>
 	 * Proscene animation loop relies on processing drawing loop. The {@link #draw()} function will
@@ -3933,7 +3892,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #setAnimationPeriod(float, boolean)
 	 */
-	public float animationPeriod() {
+	public long animationPeriod() {
 		return animationPeriod;
 	}
 	
@@ -3942,7 +3901,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #setAnimationPeriod(float, boolean)
 	 */
-	public void setAnimationPeriod(float period) {
+	public void setAnimationPeriod(long period) {
 		setAnimationPeriod(period, true);
 	}
 	
@@ -3955,10 +3914,9 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #startAnimation()
 	 */
-	public void setAnimationPeriod(float period, boolean restart) {
+	public void setAnimationPeriod(long period, boolean restart) {
 		if(period>0) {
 			animationPeriod = period;
-			animationFrameRate = 1000f/animationPeriod;
 			if(animationIsStarted() && restart)				
 				restartAnimation();
 		}
@@ -3975,7 +3933,7 @@ public class Scene implements PConstants {
 	public void stopAnimation()	{
 		animationStarted = false;
 		animatedFrameWasTriggered = false;
-		setFrameRate(targetFrameRate, false);
+		this.animationTimer.stop();
 	}
 	
 	/**
@@ -3993,18 +3951,8 @@ public class Scene implements PConstants {
 	 * @see #animationIsStarted()
 	 */
 	public void startAnimation() {
-		animationStarted = true;		
-		//sync with processing drawing method:		
-		currentAnimationFrame = -1;
-		animatedFrameWasTriggered = false;
-		if( (animationFrameRate > targetFrameRate) )
-			parent.frameRate( animationFrameRate ); //bypass setFrameRate()
-		else {
-			parent.frameRate( targetFrameRate ); //same as setFrameRate(targetFrameRate, false)
-			initialDrawingFrameWhenAnimationStarted = parent.frameCount;
-			currentAnimationFrame = 0;
-			animationToFrameRateRatio = animationFrameRate/targetFrameRate;
-		}
+		animationStarted = true;	
+		animationTimer.run(animationPeriod, true);
 	}
 	
 	/**
@@ -4028,15 +3976,12 @@ public class Scene implements PConstants {
 	 * @see #animationPeriod()
 	 * @see #startAnimation()
 	 */
-	protected void performAnimation() {		
-		if( currentAnimationFrame >= 0 ) {
-			long previousAnimationFrame = currentAnimationFrame;
-			currentAnimationFrame = PApplet.round( (parent.frameCount - initialDrawingFrameWhenAnimationStarted) * animationToFrameRateRatio );
-			if(currentAnimationFrame == previousAnimationFrame) {
-				animatedFrameWasTriggered = false;
-				return;
-			}				
-		}		
+	protected void performAnimation() {
+		if( !animationTimer.isTrigggered() ) {
+			animatedFrameWasTriggered = false;
+			return;
+		}
+		
 		animatedFrameWasTriggered = true;		
 		if (animateHandlerObject != null) {
 			try {
