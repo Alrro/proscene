@@ -48,6 +48,7 @@ public class Frame implements Cloneable {
 	 * to linking frames (i.e., to share these attributes).
 	 */
 	public class FrameKernel implements Cloneable {
+		// TODO move Frame.modified() here?
 		protected PVector trans;
 		protected Quaternion rot;
 		protected Frame refFrame;
@@ -215,6 +216,7 @@ public class Frame implements Cloneable {
 		}
 	}
 	
+	// TODO document me
 	public FrameKernel kernel() {
 		return krnl;
 	}

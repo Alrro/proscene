@@ -547,6 +547,7 @@ public class Scene implements PConstants {
 		//mouse grabber pool
 		MouseGrabberPool = new ArrayList<MouseGrabbable>();
 		
+		//devices
 		devices = new ArrayList<HIDevice>();
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
@@ -3669,7 +3670,6 @@ public class Scene implements PConstants {
 
 	/**
 	 * Disables Proscene mouse handling.
-	 * 
 	 * 
 	 * @see #mouseIsHandled()
 	 */
