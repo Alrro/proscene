@@ -26,9 +26,13 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import remixlab.util.AbstractTimerJob;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
 /**
  * The InteractiveDrivableFrame represents an InteractiveFrame that can "fly" in
@@ -40,9 +44,39 @@ import java.util.TimerTask;
  * {@link Scene.MouseAction#MOVE_FORWARD} and
  * {@link Scene.MouseAction#MOVE_BACKWARD}.
  */
-public class InteractiveDrivableFrame extends InteractiveFrame {
+public class InteractiveDrivableFrame extends InteractiveFrame implements Copyable {
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).		
+		append(drvSpd).
+		append(flyDisp).
+		append(flySpd).
+		append(flyUpVec).
+    toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InteractiveDrivableFrame other = (InteractiveDrivableFrame) obj;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(drvSpd,other.drvSpd)
+		.append(flyDisp,other.flyDisp)
+		.append(flySpd,other.flySpd)
+		.append(flyUpVec,other.flyUpVec)
+		.isEquals();
+	}
+	
 	protected float flySpd;
 	protected float drvSpd;
+	protected AbstractTimerJob flyTimerJob;
+	//TODO delete
 	protected Timer flyTimer;
 	protected PVector flyUpVec;
 	protected PVector flyDisp;
@@ -61,24 +95,48 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 		setFlySpeed(0.0f);
 
-    flyTimer = new Timer();
+		flyTimerJob = new AbstractTimerJob() {
+			public void execute() {
+				flyUpdate();
+			}
+		};		
+		scene.timerPool.register(this, flyTimerJob);		
+		
+    flyTimer = new Timer();    
 	}
-
+	
 	/**
-	 * Implementation of the clone method.
-	 * <p>
-	 * Calls {@link remixlab.proscene.InteractiveFrame#clone()} and makes a deep
-	 * copy of the remaining object attributes.
+	 * Copy constructor
 	 * 
-	 * @see remixlab.proscene.InteractiveFrame#clone()
+	 * @param otherFrame the other interactive drivable frame
 	 */
-	public InteractiveDrivableFrame clone() {
-		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super
-				.clone();
-		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
-		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
-    clonedIAvtrFrame.flyTimer = new Timer();
-		return clonedIAvtrFrame;
+	protected InteractiveDrivableFrame(InteractiveDrivableFrame otherFrame) {		
+		super(otherFrame);
+		this.drvSpd = otherFrame.drvSpd;
+		this.flyUpVec = new PVector();
+		this.flyUpVec.set(otherFrame.flyUpVector());
+		this.flyDisp = new PVector();
+		this.flyDisp.set(otherFrame.flyDisp);
+		this.setFlySpeed( otherFrame.flySpeed() );
+		
+		this.flyTimerJob = new AbstractTimerJob() {
+			public void execute() {
+				flyUpdate();
+			}
+		};		
+		scene.timerPool.register(this, this.flyTimerJob);		
+		
+		this.flyTimer = new Timer();
+	}
+	
+	/**
+	 * Calls {@link #InteractiveDrivableFrame(InteractiveDrivableFrame)} (which is protected)
+	 * and returns a copy of {@code this} object.
+	 * 
+	 * @see #InteractiveDrivableFrame(InteractiveDrivableFrame)
+	 */
+	public InteractiveDrivableFrame getCopy() {
+		return new InteractiveDrivableFrame(this);
 	}
 
 	/**

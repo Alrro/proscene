@@ -31,6 +31,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 /**
  * A perspective or orthographic camera.
  * <p>
@@ -54,7 +57,92 @@ import java.util.Iterator;
  * and {@link #setStandardZFar(float)}).
  * 
  */
-public class Camera implements Cloneable {
+public class Camera implements Copyable {
+	@Override
+	public int hashCode() {	
+    return new HashCodeBuilder(17, 37).
+    append(attachedToPCam).
+    append(fpCoefficientsUpdate).
+    append(lastFrameUpdate).
+    append(lastFPCoeficientsUpdateIssued).
+    append(zClippingCoef).
+		append(IODist).
+		append(dist).
+		append(fldOfView).
+		append(focusDist).
+		append(fpCoefficients).
+		append(frm).
+		append(interpolationKfi).
+		append(knd).
+		append(modelViewMat).
+		append(normal).
+		append(orthoCoef).
+		append(orthoSize).
+		append(physicalDist2Scrn).
+		append(physicalScrnWidth).
+		append(projectionMat).
+		append(scnCenter).
+		append(scnRadius).
+		append(scrnHeight).
+		append(scrnWidth).
+		append(stdZFar).
+		append(stdZNear).
+		append(tempFrame).
+		append(tp).
+		append(viewport).
+		append(zClippingCoef).
+		append(zNearCoef).
+    toHashCode();
+
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Camera other = (Camera) obj;
+		
+	   return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+    .append(attachedToPCam, other.attachedToPCam)
+    .append(fpCoefficientsUpdate, other.fpCoefficientsUpdate)
+    .append(lastFrameUpdate, other.lastFrameUpdate)
+    .append(lastFPCoeficientsUpdateIssued, other.lastFPCoeficientsUpdateIssued)
+    .append(zClippingCoef, other.zClippingCoef)
+		.append(IODist,other.IODist)
+		.append(dist,other.dist)
+		.append(fldOfView,other.fldOfView)
+		.append(focusDist,other.focusDist)
+		.append(fpCoefficients,other.fpCoefficients)
+		.append(frm,other.frm)
+		.append(interpolationKfi,other.interpolationKfi)
+		.append(knd,other.knd)
+		.append(modelViewMat,other.modelViewMat)
+		.append(normal,other.normal)
+		.append(orthoCoef,other.orthoCoef)
+		.append(orthoSize,other.orthoSize)
+		.append(physicalDist2Scrn,other.physicalDist2Scrn)
+		.append(physicalScrnWidth,other.physicalScrnWidth)
+		.append(projectionMat,other.projectionMat)
+		.append(scnCenter,other.scnCenter)
+		.append(scnRadius,other.scnRadius)
+		.append(scrnHeight,other.scrnHeight)
+		.append(scrnWidth,other.scrnWidth)
+		.append(stdZFar,other.stdZFar)
+		.append(stdZNear,other.stdZNear)
+		.append(tempFrame,other.tempFrame)
+		.append(tp,other.tp)
+		.append(viewport,other.viewport)
+		.append(zClippingCoef,other.zClippingCoef)
+		.append(zNearCoef,other.zNearCoef)
+		.isEquals();
+	}
+	
+	
 	/**
 	 * Internal class that represents/holds a cone of normals.
 	 * Typically needed to perform bfc.
@@ -319,6 +407,68 @@ public class Camera implements Cloneable {
 			computeProjectionMatrix();
 		}
 	}
+	
+	/**
+	 * Copy constructor 
+	 * 
+	 * @param oCam the camera object to be copied
+	 */
+	protected Camera(Camera oCam) {
+		this.scene = oCam.scene;
+		this.pg3d = oCam.pg3d;
+		this.attachedToPCam = oCam.attachedToPCam;
+		
+		this.fpCoefficientsUpdate = oCam.fpCoefficientsUpdate;
+		
+		for (int i = 0; i < normal.length; i++)
+			this.normal[i] = new PVector(oCam.normal[i].x, oCam.normal[i].y, oCam.normal[i].z );
+		
+		this.fldOfView = oCam.fldOfView;
+		
+		this.fpCoefficients = new float[6][4];
+		for (int i=0; i<6; i++)
+			for (int j=0; j<4; j++)
+				this.fpCoefficients[i][j] = oCam.fpCoefficients[i][j];
+				
+		this.frm = oCam.frame().getCopy();		
+		this.interpolationKfi = oCam.interpolationKfi.getCopy();
+		
+		this.kfi = new HashMap<Integer, KeyFrameInterpolator>();
+		
+		itrtr = oCam.kfi.keySet().iterator();
+		while (itrtr.hasNext()) {
+			Integer key = itrtr.next();
+			this.kfi.put(new Integer(key.intValue()), oCam.kfi.get(key).getCopy());
+		}
+		
+		this.setSceneRadius(oCam.sceneRadius());
+		this.orthoCoef = oCam.orthoCoef;
+		this.setSceneCenter( oCam.sceneCenter() );
+		this.setKind(oCam.kind());
+		this.orthoSize = oCam.orthoSize;
+		this.setStandardZNear(oCam.standardZNear());
+		this.setStandardZFar(oCam.standardZFar());
+		this.setType(oCam.type());
+		this.setZNearCoefficient(oCam.zNearCoefficient());
+		this.setZClippingCoefficient(oCam.zClippingCoefficient());
+		this.setScreenWidthAndHeight(oCam.screenWidth(), oCam.screenHeight());
+		this.setIODistance( oCam.IODistance() );
+		this.setPhysicalDistanceToScreen(oCam.physicalDistanceToScreen());
+		this.setPhysicalScreenWidth( oCam.physicalScreenWidth() );		
+		
+		this.modelViewMat = new PMatrix3D(oCam.modelViewMat);
+		this.projectionMat = new PMatrix3D(oCam.projectionMat);
+	}
+	
+	/**
+	 * Calls {@link #Camera(Camera)} (which is protected) and returns a copy of
+	 * {@code this} object.
+	 * 
+	 * @see #Camera(Camera)
+	 */	
+	public Camera getCopy() {
+		return new Camera(this);
+	}
 
 	// 1. ATTACHED PCAMERA MATRICES
 
@@ -382,38 +532,7 @@ public class Camera implements Cloneable {
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		}
-	}
-
-	/**
-	 * Implementation of the clone method.
-	 * <p>
-	 * Calls {@link remixlab.proscene.Frame#clone()} and makes a deep copy of the
-	 * remaining object attributes except for {@code prevConstraint} (which is
-	 * shallow copied).
-	 * 
-	 * @see remixlab.proscene.Frame#clone()
-	 */
-	public Camera clone() {
-		try {
-			Camera clonedCam = (Camera) super.clone();
-			clonedCam.interpolationKfi = interpolationKfi.clone();
-			clonedCam.kfi = new HashMap<Integer, KeyFrameInterpolator>();
-			itrtr = kfi.keySet().iterator();
-			while (itrtr.hasNext()) {
-				Integer key = itrtr.next();
-				clonedCam.kfi.put(key, kfi.get(key).clone());
-			}
-			clonedCam.scnCenter = new PVector(scnCenter.x, scnCenter.y, scnCenter.z);
-			if (isDetachedFromP5Camera()) {
-				clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
-				clonedCam.projectionMat = new PMatrix3D(projectionMat);
-			}
-			clonedCam.frm = frm.clone();
-			return clonedCam;
-		} catch (CloneNotSupportedException e) {
-			throw new Error("Something went wrong when cloning the Camera");
-		}
-	}
+	}	
 
 	// 2. POSITION AND ORIENTATION
 

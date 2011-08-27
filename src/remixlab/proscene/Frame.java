@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 import processing.core.*;
 
 /**
@@ -42,12 +45,68 @@ import processing.core.*;
  * {@link #referenceFrame()}, and {@link #constraint()} with the other frame,
  * which can useful for some off-screen scenes.
  */
-public class Frame implements Cloneable {
+public class Frame implements Copyable {	
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).		
+		append(krnl).
+		append(list).
+		append(linkedFramesList).
+		append(srcFrame).
+    toHashCode();		
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Frame other = (Frame) obj;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(krnl, other.krnl)
+		.append(list, other.list)
+		.append(linkedFramesList, other.linkedFramesList)
+		.append(srcFrame, other.srcFrame)
+		.isEquals();
+	}
+	
 	/**
 	 * Internal class that holds the main frame attributes. This class is useful
 	 * to linking frames (i.e., to share these attributes).
 	 */
-	public class FrameKernel implements Cloneable {
+	public class FrameKernel implements Copyable {
+		@Override
+		public int hashCode() {
+	    return new HashCodeBuilder(17, 37).		
+			append(trans).
+			append(rot).
+			append(refFrame).
+			append(constr).
+	    toHashCode();		
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj)
+				return true;
+			if (!super.equals(obj))
+				return false;
+			if (getClass() != obj.getClass())
+				return false;
+			FrameKernel other = (FrameKernel) obj;
+		  return new EqualsBuilder()
+	    .appendSuper(super.equals(obj))		
+			.append(trans, other.trans)
+			.append(rot, other.rot)
+			.append(refFrame, other.refFrame)
+			.append(constr, other.constr)
+			.isEquals();
+		}		
+
 		// TODO move Frame.modified() here?
 		protected PVector trans;
 		protected Quaternion rot;
@@ -75,20 +134,9 @@ public class Frame implements Cloneable {
 			constr = other.constraint();
 		}
 		
-		public FrameKernel copy() {
+		public FrameKernel getCopy() {
 			return new FrameKernel(this);
-		}
-		
-		public FrameKernel clone() {
-			try {
-				FrameKernel clonedFrameKernel = (FrameKernel) super.clone();
-				clonedFrameKernel.trans = new PVector(translation().x, translation().y,	translation().z);
-				clonedFrameKernel.rot = new Quaternion(rotation());				
-				return clonedFrameKernel;
-			} catch (CloneNotSupportedException e) {
-				throw new Error("Something went wrong when cloning the FrameKernel");
-			}
-		}
+		}		
 		
 		public final PVector translation() {
 			return trans;
@@ -120,7 +168,7 @@ public class Frame implements Cloneable {
 		
 		public void setConstraint(Constraint c) {
 			constr = c;
-		}
+		}		
 	}	
 
 	protected FrameKernel krnl;
@@ -184,36 +232,8 @@ public class Frame implements Cloneable {
 	 * 
 	 * @see #Frame(Frame)
 	 */
-	public Frame copy() {
+	public Frame getCopy() {
 		return new Frame(this);
-	}
-
-	/**
-	 * Implementation of the clone method.
-	 * <p>
-	 * The method performs a deep copy of the {@link #translation()} and
-	 * {@link #rotation()} objects of the Frame, and a shallow copy of its
-	 * {@link #referenceFrame()} and {@link #constraint()} objects.
-	 * 
-	 * @see #copy()
-	 */
-	// public Frame clone() throws CloneNotSupportedException {
-	public Frame clone() {
-		try {
-			Frame clonedFrame = (Frame) super.clone();
-			clonedFrame.krnl = new FrameKernel(kernel());			
-			clonedFrame.list = new ArrayList<KeyFrameInterpolator>();
-			Iterator<KeyFrameInterpolator> it = listeners().iterator();
-			while (it.hasNext())
-				clonedFrame.list.add(it.next());
-			clonedFrame.linkedFramesList = new ArrayList<Frame>();
-			Iterator<Frame> iterator = linkedFramesList.iterator();
-			while (iterator.hasNext())
-				clonedFrame.linkedFramesList.add(iterator.next());			
-			return clonedFrame;
-		} catch (CloneNotSupportedException e) {
-			throw new Error("Something went wrong when cloning the Frame");
-		}
 	}
 	
 	// TODO document me
@@ -1004,8 +1024,9 @@ public class Frame implements Cloneable {
 			}
 		}
 
-		// Frame old = new Frame(this);
-		Frame old = this.clone();
+		//Frame old = new Frame(this);
+		Frame old = this.getCopy();
+		//Frame old = this.clone();
 
 		vec.set(directions[0][index[0]]);
 		float coef = vec.dot(directions[1][index[1]]);

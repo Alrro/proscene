@@ -27,6 +27,10 @@ package remixlab.proscene;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 import processing.core.*;
 
 /**
@@ -47,7 +51,31 @@ import processing.core.*;
  * <b>Note:</b> The InteractiveCameraFrame is not added to the
  * {@link remixlab.proscene.Scene#mouseGrabberPool()} upon creation.
  */
-public class InteractiveCameraFrame extends InteractiveDrivableFrame {
+public class InteractiveCameraFrame extends InteractiveDrivableFrame implements Copyable {
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).		
+		append(camera).
+		append(arcballRefPnt).
+    toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InteractiveCameraFrame other = (InteractiveCameraFrame) obj;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(camera,other.camera)
+		.append(arcballRefPnt, other.arcballRefPnt)
+		.isEquals();
+	}	
+	
 	protected Camera camera;
 	protected PVector arcballRefPnt;
 
@@ -65,20 +93,28 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		removeFromMouseGrabberPool();
 		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
 	}
-
+	
 	/**
-	 * Implementation of the clone method.
-	 * <p>
-	 * Calls {@link remixlab.proscene.InteractiveFrame#clone()} and makes a deep
-	 * copy of the remaining object attributes.
+	 * Copy constructor
 	 * 
-	 * @see remixlab.proscene.InteractiveFrame#clone()
+	 * @param otherFrame the other interactive camera frame
 	 */
-	public InteractiveCameraFrame clone() {
-		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
-		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
-		return clonedICamFrame;
+	protected InteractiveCameraFrame(InteractiveCameraFrame otherFrame) {
+		super(otherFrame);
+		this.camera = otherFrame.camera;
+		this.arcballRefPnt = new PVector();
+		this.arcballRefPnt.set(otherFrame.arcballRefPnt );
 	}
+	
+	/**
+	 * Calls {@link #InteractiveCameraFrame(InteractiveCameraFrame)} (which is protected)
+	 * and returns a copy of {@code this} object.
+	 * 
+	 * @see #InteractiveCameraFrame(InteractiveCameraFrame)
+	 */
+	public InteractiveCameraFrame getCopy() {
+		return new InteractiveCameraFrame(this);
+	}	
 
 	/**
 	 * Updates the {@link remixlab.proscene.Camera#lastFrameUpdate} variable when

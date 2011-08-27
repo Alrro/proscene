@@ -25,6 +25,9 @@
 
 package remixlab.proscene;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 import processing.core.*;
 
 /**
@@ -33,7 +36,35 @@ import processing.core.*;
  * 
  */
 
-public class Quaternion implements PConstants {
+public class Quaternion implements PConstants, Copyable {
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).
+    append(w).
+    append(x).
+    append(y).
+    append(z).    
+    toHashCode();    
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Quaternion other = (Quaternion) obj;
+		return new EqualsBuilder()
+		.appendSuper(super.equals(obj))
+		.append(w,  other.w)
+		.append(x,  other.x)
+		.append(y,  other.y)
+		.append(z,  other.z)
+		.isEquals();						
+	}
+	
 	/**
 	 * The x coordinate, i.e., the x coordinate of the vector part of the
 	 * Quaternion.
@@ -159,8 +190,18 @@ public class Quaternion implements PConstants {
 	 * @param q1
 	 *          the Quaternion containing the initialization x y z w data
 	 */
-	public Quaternion(Quaternion q1) {
+	protected Quaternion(Quaternion q1) {
 		set(q1);
+	}
+	
+	/**
+	 * Calls {@link #Quaternion(Quaternion)} (which is protected) and returns a copy of
+	 * {@code this} object.
+	 * 
+	 * @see #Quaternion(Quaternion)
+	 */	
+	public Quaternion getCopy() {
+		return new Quaternion(this);
 	}
 
 	/**
