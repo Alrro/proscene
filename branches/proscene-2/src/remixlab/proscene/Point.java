@@ -25,10 +25,36 @@
 
 package remixlab.proscene;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 /**
  * Point class that provides a quick replacement for the java.awt.Point.
  */
 public class Point {
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).		
+		append(x).
+		append(y).
+    toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Point other = (Point) obj;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(x, other.x)
+		.append(y, other.y)
+		.isEquals();
+	}
 	
 	/**
 	 * The X coordinate of this Point.

@@ -25,6 +25,9 @@
 
 package remixlab.proscene;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 /**
  * This class represents keyboard shortcuts.
  * <p>
@@ -34,40 +37,33 @@ package remixlab.proscene;
 public final class KeyboardShortcut {
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((key == null) ? 0 : key.hashCode());
-		result = prime * result + ((mask == null) ? 0 : mask.hashCode());
-		result = prime * result + ((vKey == null) ? 0 : vKey.hashCode());
-		return result;
+    return new HashCodeBuilder(17, 37).		
+		append(mask).
+		append(vKey).
+		append(key).
+    toHashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		KeyboardShortcut other = (KeyboardShortcut) obj;
-		if (key == null) {
-			if (other.key != null)
-				return false;
-		} else if (!key.equals(other.key))
-			return false;
-		if (mask == null) {
-			if (other.mask != null)
-				return false;
-		} else if (!mask.equals(other.mask))
-			return false;
-		if (vKey == null) {
-			if (other.vKey != null)
-				return false;
-		} else if (!vKey.equals(other.vKey))
-			return false;
-		return true;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(mask, other.mask)
+		.append(vKey, other.vKey)
+		.append(key, other.key)
+		.isEquals();
 	}
+	
+	private final Integer mask;
+	private final Integer vKey;
+	private final Character key;
 
 	/**
 	 * Defines a keyboard shortcut from the given character.
@@ -117,9 +113,5 @@ public final class KeyboardShortcut {
 				description = DesktopEvents.getModifiersExText(mask) + "+" + DesktopEvents.getKeyText(vKey);
 		}			
 		return description;
-	}
-
-	private final Integer mask;
-	private final Integer vKey;
-	private final Character key;		
+	}			
 }

@@ -27,10 +27,8 @@ package remixlab.proscene;
 
 import processing.core.*;
 import remixlab.util.*;
-//import remixlab.util.awttimer.AWTTimerPool;
-import remixlab.util.protimer.SimpleTimer;
-import remixlab.util.protimer.Timer;
-import remixlab.util.protimer.TimerPool;
+import remixlab.util.awttimer.*;
+import remixlab.util.protimer.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -551,7 +549,8 @@ public class Scene implements PConstants {
 				unSetTimerFlag();
 			}
 		};		
-		timerPool = new TimerPool();
+		//timerPool = new TimerPool();
+		timerPool = new AWTTimerPool();
 		timerPool.register(this, timerFx);		
 		
 		//mouse grabber pool
@@ -2737,7 +2736,7 @@ public class Scene implements PConstants {
 				// perform small animation ;)
 				if (camera().anyInterpolationIsStarted())
 					camera().stopAllInterpolations();
-				Camera cm = camera().clone();
+				Camera cm = camera().getCopy();
 				cm.setPosition(avatar().cameraPosition());
 				cm.setUpVector(avatar().upVector());
 				cm.lookAt(avatar().target());

@@ -25,6 +25,9 @@
 
 package remixlab.proscene;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 /**
  * This class represents mouse click shortcuts.
  * <p>
@@ -35,41 +38,33 @@ package remixlab.proscene;
 public class ClickBinding {	
 	@Override
 	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((button == null) ? 0 : button.hashCode());
-		result = prime * result + ((mask == null) ? 0 : mask.hashCode());
-		result = prime * result
-				+ ((numberOfClicks == null) ? 0 : numberOfClicks.hashCode());
-		return result;
+    return new HashCodeBuilder(17, 37).		
+		append(mask).
+		append(numberOfClicks).
+		append(button).
+    toHashCode();
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (obj == null)
+		if (!super.equals(obj))
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		ClickBinding other = (ClickBinding) obj;
-		if (button == null) {
-			if (other.button != null)
-				return false;
-		} else if (!button.equals(other.button))
-			return false;
-		if (mask == null) {
-			if (other.mask != null)
-				return false;
-		} else if (!mask.equals(other.mask))
-			return false;
-		if (numberOfClicks == null) {
-			if (other.numberOfClicks != null)
-				return false;
-		} else if (!numberOfClicks.equals(other.numberOfClicks))
-			return false;
-		return true;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(mask, other.mask)
+		.append(numberOfClicks, other.numberOfClicks)
+		.append(button, other.button)
+		.isEquals();
 	}
+	
+	private final Integer mask;
+	private final Integer numberOfClicks;
+	private final Scene.Button button;
 
 	/**
 	 * Defines a mouse single click shortcut from the given mouse button. 
@@ -144,9 +139,5 @@ public class ClickBinding {
 		else
 			description += " + " + numberOfClicks.toString() + " clicks";
 		return description;
-	}
-	
-	private final Integer mask;
-	private final Integer numberOfClicks;
-	private final Scene.Button button;
+	}	
 }

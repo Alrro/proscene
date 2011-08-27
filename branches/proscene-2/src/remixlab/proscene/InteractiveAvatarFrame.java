@@ -25,6 +25,9 @@
 
 package remixlab.proscene;
 
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
+
 import processing.core.*;
 
 /**
@@ -37,8 +40,33 @@ import processing.core.*;
  * {@link #trackingDistance()}) respect to the {@link #position()} (which
  * defines its {@link #target()}) of the InteractiveAvatarFrame.
  */
-public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements
-		Trackable {
+public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements	Trackable, Copyable {
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).		
+		append(q).
+		append(trackingDist).
+		append(camRelPos).
+    toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InteractiveAvatarFrame other = (InteractiveAvatarFrame) obj;
+	  return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+		.append(q, other.q)
+		.append(trackingDist, other.trackingDist)
+		.append(camRelPos, other.camRelPos)
+		.isEquals();
+	}
+	
 	private Quaternion q;
 	private float trackingDist;
 	private PVector camRelPos;
@@ -57,6 +85,29 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements
 		q.fromTaitBryan(PApplet.QUARTER_PI, 0, 0);
 		camRelPos = new PVector();
 		setTrackingDistance(scene.radius() / 5);
+	}
+	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param otherFrame the other interactive avatar frame
+	 */
+	protected InteractiveAvatarFrame(InteractiveAvatarFrame otherFrame) {
+		super(otherFrame);
+		this.q = otherFrame.q.getCopy();
+		this.camRelPos = new PVector();
+		this.camRelPos.set( otherFrame.camRelPos );
+		this.setTrackingDistance(otherFrame.trackingDistance());
+	}
+	
+	/**
+	 * Calls {@link #InteractiveAvatarFrame(InteractiveAvatarFrame)} (which is protected)
+	 * and returns a copy of {@code this} object.
+	 * 
+	 * @see #InteractiveAvatarFrame(InteractiveAvatarFrame)
+	 */
+	public InteractiveAvatarFrame getCopy() {
+		return new InteractiveAvatarFrame(this);
 	}
 
 	/**

@@ -26,8 +26,12 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import remixlab.util.AbstractTimerJob;
 
 import java.util.*;
+
+import com.flipthebird.gwthashcodeequals.EqualsBuilder;
+import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
 /**
  * A InteractiveFrame is a Frame that can be rotated and translated using the
@@ -43,7 +47,63 @@ import java.util.*;
  * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
  */
 
-public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable {
+public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable {
+	@Override
+	public int hashCode() {
+    return new HashCodeBuilder(17, 37).
+		append(action).
+		append(delay).
+		append(dirIsFixed).
+		append(grabsMouseThreshold).
+		append(grbsMouse).
+		append(horiz).
+		append(isInCamPath).
+		append(isSpng).
+		append(keepsGrabbingMouse).
+		append(mouseSpeed).
+		append(pressPos).
+		append(prevPos).
+		append(rotSensitivity).
+		append(spngQuat).
+		append(spngSensitivity).
+		append(startedTime).
+		append(transSensitivity).
+		append(wheelSensitivity).
+    toHashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (!super.equals(obj))
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		InteractiveFrame other = (InteractiveFrame) obj;
+		 return new EqualsBuilder()
+    .appendSuper(super.equals(obj))		
+    .append(action,other.action != null)
+		.append(delay , other.delay)
+		.append(dirIsFixed , other.dirIsFixed)
+		.append(grabsMouseThreshold , other.grabsMouseThreshold)
+		.append(grbsMouse , other.grbsMouse)	
+		.append(horiz , other.horiz)
+		.append(isInCamPath , other.isInCamPath)
+		.append(isSpng , other.isSpng)
+		.append(keepsGrabbingMouse , other.keepsGrabbingMouse)
+		.append(mouseSpeed,other.mouseSpeed)
+		.append(pressPos,other.pressPos )
+		.append(prevPos ,other.prevPos )
+		.append(rotSensitivity, other.rotSensitivity)
+		.append(spngQuat,other.spngQuat)
+		.append(spngSensitivity,other.spngSensitivity)
+		.append(startedTime , other.startedTime)
+		.append(transSensitivity ,other.transSensitivity)
+		.append(wheelSensitivity ,other.wheelSensitivity)
+		.isEquals();
+	}
+	
 	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
 	private int grabsMouseThreshold;
 	private float rotSensitivity;
@@ -55,6 +115,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private float mouseSpeed;
 	// spinning stuff:
 	private boolean isSpng;
+	private AbstractTimerJob timerFx1;
+	// TODO delete spngTimer
 	private Timer spngTimer;
 	private int startedTime;
 	private int delay;
@@ -95,8 +157,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
 	 */
 	public InteractiveFrame(Scene scn) {
-		scene = scn;
-
+		scene = scn;		
+		
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
 
@@ -114,8 +176,70 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isSpng = false;
 		prevConstraint = null;
 		startedTime = 0;
+		
+		timerFx1 = new AbstractTimerJob() {
+			public void execute() {
+				spin();
+			}
+		};		
+		scene.timerPool.register(this, timerFx1);
+		
 		// delay = 10;
 		spngTimer = new Timer();
+	}
+	
+	/**
+	 * Copy constructor.
+	 * 
+	 * @param otherFrame the other interactive frame
+	 */
+	protected InteractiveFrame(InteractiveFrame otherFrame) {
+		super(otherFrame);
+		this.scene = otherFrame.scene;
+		this.action = otherFrame.action;
+		this.horiz = otherFrame.horiz;
+		
+		this.addInMouseGrabberPool();
+		this.isInCamPath = otherFrame.isInCamPath;
+		this.grbsMouse = otherFrame.grbsMouse;
+		
+		if(this.isInCamPath) {
+			this.list = new ArrayList<KeyFrameInterpolator>();
+			Iterator<KeyFrameInterpolator> it = otherFrame.listeners().iterator();
+			while (it.hasNext())
+				this.list.add(it.next());
+		}
+
+		this.setGrabsMouseThreshold( otherFrame.grabsMouseThreshold()  );
+		this.setRotationSensitivity( otherFrame.rotationSensitivity() );
+		this.setTranslationSensitivity( otherFrame.translationSensitivity() );
+		this.setSpinningSensitivity( otherFrame.spinningSensitivity() );
+		this.setWheelSensitivity( otherFrame.wheelSensitivity() );
+
+		this.keepsGrabbingMouse = otherFrame.keepsGrabbingMouse;
+		this.isSpng = otherFrame.isSpng;
+		this.prevConstraint = otherFrame.prevConstraint; 
+		this.startedTime = otherFrame.startedTime;
+		
+		this.timerFx1 = new AbstractTimerJob() {
+			public void execute() {
+				spin();
+			}
+		};		
+		scene.timerPool.register(this, this.timerFx1);
+		
+		// 2.
+		this.spngTimer = new Timer();
+	}
+  
+	/**
+	 * Calls {@link #InteractiveFrame(InteractiveFrame)} (which is protected) and returns a copy of
+	 * {@code this} object.
+	 * 
+	 * @see #InteractiveFrame(InteractiveFrame)
+	 */
+	public InteractiveFrame getCopy() {
+		return new InteractiveFrame(this);
 	}
 
 	/**
@@ -158,6 +282,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
 		while (it.hasNext())
 			list.add(it.next());
+				
+		timerFx1 = new AbstractTimerJob() {
+			public void execute() {
+				spin();
+			}
+		};		
+		scene.timerPool.register(this, timerFx1);
 	}
 
 	/**
@@ -178,22 +309,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public boolean isInCameraPath() {
 		return isInCamPath;
 	}
-
-	/**
-	 * Implementation of the clone method.
-	 * <p>
-	 * Calls {@link remixlab.proscene.Frame#clone()} and makes a deep copy of the
-	 * remaining object attributes except for {@link #prevConstraint} (which is
-	 * shallow copied).
-	 * 
-	 * @see remixlab.proscene.Frame#clone()
-	 */
-	public InteractiveFrame clone() {
-		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
-		clonedIFrame.spngTimer = new Timer();
-		return clonedIFrame;
-	}
-
+	
 	/**
 	 * Returns the grabs mouse threshold which is used by this interactive frame to
 	 * {@link #checkIfGrabsMouse(int, int, Camera)}.
