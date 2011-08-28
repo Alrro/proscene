@@ -306,7 +306,7 @@ public class KeyFrameInterpolator implements Copyable {
 				update();
 			}
 		};		
-		scene.timerPool.register(this, interpolationTimerJob);
+		scene.registerInTimerPool(this, interpolationTimerJob);
 	}	
 	
 	protected KeyFrameInterpolator(KeyFrameInterpolator otherKFI) {
@@ -349,7 +349,7 @@ public class KeyFrameInterpolator implements Copyable {
 				update();
 			}
 		};		
-		scene.timerPool.register(this, this.interpolationTimerJob);		
+		scene.registerInTimerPool(this, this.interpolationTimerJob);		
 	}
 	
 	public KeyFrameInterpolator getCopy() {
@@ -595,8 +595,7 @@ public class KeyFrameInterpolator implements Copyable {
 			if ((interpolationSpeed() < 0.0)
 					&& (interpolationTime() <= keyFr.get(0).time()))
 				setInterpolationTime(keyFr.get(keyFr.size() - 1).time());
-			if( interpolationTimerJob.timer() != null )
-				interpolationTimerJob.timer().run(interpolationPeriod());
+			interpolationTimerJob.run(interpolationPeriod());
 			interpolationStrt = true;
 			update();
 		}
@@ -607,8 +606,7 @@ public class KeyFrameInterpolator implements Copyable {
 	 * {@link #interpolationIsStarted()} and {@link #toggleInterpolation()}.
 	 */
 	public void stopInterpolation() {
-		if( interpolationTimerJob.timer() != null )
-			interpolationTimerJob.timer().cancel();
+		interpolationTimerJob.cancel();
 		interpolationStrt = false;
 	}
 

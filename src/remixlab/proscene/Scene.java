@@ -551,7 +551,7 @@ public class Scene implements PConstants {
 		};		
 		//timerPool = new TimerPool();
 		timerPool = new AWTTimerPool();
-		timerPool.register(this, timerFx);		
+		registerInTimerPool(this, timerFx);		
 		
 		//mouse grabber pool
 		MouseGrabberPool = new ArrayList<MouseGrabbable>();		
@@ -670,8 +670,13 @@ public class Scene implements PConstants {
 		return MouseGrabberPool;
 	}	
 	
+	// TODO doc me!
 	public AbstractTimerPool timerPool() {
 		return timerPool;
+	}
+	
+	public void registerInTimerPool(Object o, AbstractTimerJob t) {
+		timerPool.register(o, t);
 	}
 
 	/**
@@ -3293,15 +3298,13 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				if( timerFx.timer() != null )
-					timerFx.timer().runOnce(1000);					
+				timerFx.runOnce(1000);					
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			if( timerFx.timer() != null )
-				timerFx.timer().runOnce(1000);				
+			timerFx.runOnce(1000);				
 			break;
 		case GLOBAL_HELP:
 			displayGlobalHelp();
@@ -3341,8 +3344,7 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					if( timerFx.timer() != null )
-						timerFx.timer().runOnce(1000);						
+					timerFx.runOnce(1000);						
 				}
 			}
 			break;
@@ -3719,8 +3721,7 @@ public class Scene implements PConstants {
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
-					if( timerFx.timer() != null )
-						timerFx.timer().runOnce(1000);						
+					timerFx.runOnce(1000);						
 				}
 			}
 			break;
@@ -3733,15 +3734,13 @@ public class Scene implements PConstants {
 								+ "See the Point Under Pixel example!");
 			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
-				if( timerFx.timer() != null )
-					timerFx.timer().runOnce(1000);					
+				timerFx.runOnce(1000);					
 			}
 			break;
 		case RESET_ARP:
 			camera().setArcballReferencePoint(new PVector(0, 0, 0));
 			arpFlag = true;
-			if( timerFx.timer() != null )
-				timerFx.timer().runOnce(1000);				
+			timerFx.runOnce(1000);				
 			break;
 		case CENTER_FRAME:
 			if (interactiveFrame() != null)
