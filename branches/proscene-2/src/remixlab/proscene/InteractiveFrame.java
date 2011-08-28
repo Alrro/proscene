@@ -81,7 +81,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		if (getClass() != obj.getClass())
 			return false;
 		InteractiveFrame other = (InteractiveFrame) obj;
-		 return new EqualsBuilder()
+		return new EqualsBuilder()
     .appendSuper(super.equals(obj))		
     .append(action,other.action != null)
 		.append(delay , other.delay)
@@ -115,9 +115,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	private float mouseSpeed;
 	// spinning stuff:
 	private boolean isSpng;
-	private AbstractTimerJob timerFx1;
-	// TODO delete spngTimer
-	private Timer spngTimer;
+	private AbstractTimerJob spinningTimerJob;
 	private int startedTime;
 	private int delay;
 
@@ -177,15 +175,14 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		prevConstraint = null;
 		startedTime = 0;
 		
-		timerFx1 = new AbstractTimerJob() {
+		spinningTimerJob = new AbstractTimerJob() {
 			public void execute() {
 				spin();
 			}
-		};		
-		scene.timerPool.register(this, timerFx1);
+		};	
+		scene.timerPool.register(this, spinningTimerJob);
 		
 		// delay = 10;
-		spngTimer = new Timer();
 	}
 	
 	/**
@@ -221,15 +218,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		this.prevConstraint = otherFrame.prevConstraint; 
 		this.startedTime = otherFrame.startedTime;
 		
-		this.timerFx1 = new AbstractTimerJob() {
+		this.spinningTimerJob = new AbstractTimerJob() {
 			public void execute() {
 				spin();
 			}
 		};		
-		scene.timerPool.register(this, this.timerFx1);
-		
-		// 2.
-		this.spngTimer = new Timer();
+		scene.timerPool.register(this, this.spinningTimerJob);
 	}
   
 	/**
@@ -283,12 +277,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		while (it.hasNext())
 			list.add(it.next());
 				
-		timerFx1 = new AbstractTimerJob() {
+		spinningTimerJob = new AbstractTimerJob() {
 			public void execute() {
 				spin();
 			}
 		};		
-		scene.timerPool.register(this, timerFx1);
+		scene.timerPool.register(this, spinningTimerJob);
 	}
 
 	/**
@@ -557,11 +551,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 * Stops the spinning motion started using {@link #startSpinning(int)}.
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 */
-	public final void stopSpinning() {
-		if(spngTimer!=null) {
-			spngTimer.cancel();
-			spngTimer.purge();
-		}
+	public final void stopSpinning() {		
+		if( spinningTimerJob.timer() != null )
+			spinningTimerJob.timer().cancel();
 		isSpng = false;
 	}
 
@@ -574,19 +566,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 */
 	public void startSpinning(int updateInterval) {
 		isSpng = true;
-		if(updateInterval>0) {
-			if(spngTimer!=null) {
-				spngTimer.cancel();
-				spngTimer.purge();
-			}
-			spngTimer=new Timer();
-			TimerTask timerTask = new TimerTask() {
-				public void run() {
-					spin();
-				}
-			};
-			spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
-		}
+		if(updateInterval>0)
+			if( spinningTimerJob.timer() != null )
+				spinningTimerJob.timer().run(updateInterval);
 	}
 
 	/**

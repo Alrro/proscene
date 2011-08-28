@@ -25,9 +25,6 @@
 
 package remixlab.proscene;
 
-import com.flipthebird.gwthashcodeequals.EqualsBuilder;
-import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
-
 /**
  * This class represents keyboard shortcuts.
  * <p>
@@ -35,13 +32,54 @@ import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
  * 2. Virtual keys (e.g., right arrow key); or, 3. Key combinations (e.g., 'a' + CTRL key).
  */
 public final class KeyboardShortcut {
+	// /**
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((key == null) ? 0 : key.hashCode());
+		result = prime * result + ((mask == null) ? 0 : mask.hashCode());
+		result = prime * result + ((vKey == null) ? 0 : vKey.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		KeyboardShortcut other = (KeyboardShortcut) obj;
+		if (key == null) {
+			if (other.key != null)
+				return false;
+		} else if (!key.equals(other.key))
+			return false;
+		if (mask == null) {
+			if (other.mask != null)
+				return false;
+		} else if (!mask.equals(other.mask))
+			return false;
+		if (vKey == null) {
+			if (other.vKey != null)
+				return false;
+		} else if (!vKey.equals(other.vKey))
+			return false;
+		return true;
+	}
+	// */
+	
+	/**
+	// TODO the following code doesn't work (no keyboardshortcut works)
 	@Override
 	public int hashCode() {
     return new HashCodeBuilder(17, 37).		
 		append(mask).
 		append(vKey).
 		append(key).
-    toHashCode();
+    toHashCode();		
 	}
 
 	@Override
@@ -60,6 +98,7 @@ public final class KeyboardShortcut {
 		.append(key, other.key)
 		.isEquals();
 	}
+	*/
 	
 	private final Integer mask;
 	private final Integer vKey;

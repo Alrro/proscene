@@ -25,9 +25,6 @@
 
 package remixlab.proscene;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
@@ -54,8 +51,7 @@ import processing.core.*;
 public class InteractiveCameraFrame extends InteractiveDrivableFrame implements Copyable {
 	@Override
 	public int hashCode() {
-    return new HashCodeBuilder(17, 37).		
-		append(camera).
+    return new HashCodeBuilder(17, 37).
 		append(arcballRefPnt).
     toHashCode();
 	}
@@ -71,10 +67,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		InteractiveCameraFrame other = (InteractiveCameraFrame) obj;
 	  return new EqualsBuilder()
     .appendSuper(super.equals(obj))		
-		.append(camera,other.camera)
 		.append(arcballRefPnt, other.arcballRefPnt)
 		.isEquals();
-	}	
+	}
 	
 	protected Camera camera;
 	protected PVector arcballRefPnt;
@@ -358,17 +353,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		int finalDrawAfterWheelEventDelay = 400;
 
 		// Starts (or prolungates) the timer.
-		if (flyTimer != null) {
-			flyTimer.cancel();
-			flyTimer.purge();
-		}
-		flyTimer = new Timer();
-		TimerTask timerTask = new TimerTask() {
-			public void run() {
-				flyUpdate();
-			}
-		};
-		flyTimer.schedule(timerTask, finalDrawAfterWheelEventDelay);
+		if( flyTimerJob.timer() != null )
+			flyTimerJob.timer().runOnce(finalDrawAfterWheelEventDelay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}

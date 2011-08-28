@@ -239,8 +239,7 @@ public class KeyFrameInterpolator implements Copyable {
 	private Frame myFrame;// needed for drawPath
 
 	// R h y t h m
-	private AbstractTimerJob timerFx1;
-	private Timer timer;
+	private AbstractTimerJob interpolationTimerJob;
 	private int period;
 	private float interpolationTm;
 	private float interpolationSpd;
@@ -302,14 +301,12 @@ public class KeyFrameInterpolator implements Copyable {
 		currentFrame2 = keyFr.listIterator();
 		currentFrame3 = keyFr.listIterator();
 		
-		timerFx1 = new AbstractTimerJob() {
+		interpolationTimerJob = new AbstractTimerJob() {
 			public void execute() {
 				update();
 			}
 		};		
-		scene.timerPool.register(this, timerFx1);
-		
-		timer = new Timer();
+		scene.timerPool.register(this, interpolationTimerJob);
 	}	
 	
 	protected KeyFrameInterpolator(KeyFrameInterpolator otherKFI) {
@@ -347,12 +344,12 @@ public class KeyFrameInterpolator implements Copyable {
 		this.currentFrame2 = keyFr.listIterator(otherKFI.currentFrame2.nextIndex());
 		this.currentFrame3 = keyFr.listIterator(otherKFI.currentFrame3.nextIndex());
 		
-		this.timerFx1 = new AbstractTimerJob() {
+		this.interpolationTimerJob = new AbstractTimerJob() {
 			public void execute() {
 				update();
 			}
 		};		
-		scene.timerPool.register(this, this.timerFx1);		
+		scene.timerPool.register(this, this.interpolationTimerJob);		
 	}
 	
 	public KeyFrameInterpolator getCopy() {
@@ -598,18 +595,8 @@ public class KeyFrameInterpolator implements Copyable {
 			if ((interpolationSpeed() < 0.0)
 					&& (interpolationTime() <= keyFr.get(0).time()))
 				setInterpolationTime(keyFr.get(keyFr.size() - 1).time());
-			if(timer != null) {
-				timer.cancel();
-				timer.purge();
-			}
-			timer=new Timer();
-			TimerTask timerTask = new TimerTask() {
-				public void run() {
-					update();
-				}
-			};
-			timer.scheduleAtFixedRate(timerTask, 0, interpolationPeriod());
-
+			if( interpolationTimerJob.timer() != null )
+				interpolationTimerJob.timer().run(interpolationPeriod());
 			interpolationStrt = true;
 			update();
 		}
@@ -620,10 +607,8 @@ public class KeyFrameInterpolator implements Copyable {
 	 * {@link #interpolationIsStarted()} and {@link #toggleInterpolation()}.
 	 */
 	public void stopInterpolation() {
-		if(timer != null) {
-			timer.cancel();
-			timer.purge();
-		}
+		if( interpolationTimerJob.timer() != null )
+			interpolationTimerJob.timer().cancel();
 		interpolationStrt = false;
 	}
 
