@@ -95,7 +95,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 				flyUpdate();
 			}
 		};		
-		scene.timerPool.register(this, flyTimerJob);    
+		scene.registerInTimerPool(this, flyTimerJob);    
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 				flyUpdate();
 			}
 		};		
-		scene.timerPool.register(this, this.flyTimerJob);
+		scene.registerInTimerPool(this, this.flyTimerJob);
 	}
 	
 	/**
@@ -230,8 +230,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
-			if( flyTimerJob.timer() != null )
-				flyTimerJob.timer().run(10);
+			flyTimerJob.run(10);
 			break;
 		default:
 			break;
@@ -328,8 +327,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)) {
-			if( flyTimerJob.timer() != null )
-				flyTimerJob.timer().cancel();
+			flyTimerJob.cancel();
 		}
 
 		super.mouseReleased(eventPoint, camera);
@@ -379,8 +377,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 		int finalDrawAfterWheelEventDelay = 400;
 		
 	  // Starts (or prolungates) the timer.
-		if( flyTimerJob.timer() != null )
-			flyTimerJob.timer().runOnce(finalDrawAfterWheelEventDelay);
+		flyTimerJob.runOnce(finalDrawAfterWheelEventDelay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}

@@ -180,7 +180,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};	
-		scene.timerPool.register(this, spinningTimerJob);
+		scene.registerInTimerPool(this, spinningTimerJob);
 		
 		// delay = 10;
 	}
@@ -223,7 +223,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};		
-		scene.timerPool.register(this, this.spinningTimerJob);
+		scene.registerInTimerPool(this, this.spinningTimerJob);
 	}
   
 	/**
@@ -282,7 +282,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};		
-		scene.timerPool.register(this, spinningTimerJob);
+		scene.registerInTimerPool(this, spinningTimerJob);
 	}
 
 	/**
@@ -552,8 +552,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 */
 	public final void stopSpinning() {		
-		if( spinningTimerJob.timer() != null )
-			spinningTimerJob.timer().cancel();
+		spinningTimerJob.cancel();
 		isSpng = false;
 	}
 
@@ -567,8 +566,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	public void startSpinning(int updateInterval) {
 		isSpng = true;
 		if(updateInterval>0)
-			if( spinningTimerJob.timer() != null )
-				spinningTimerJob.timer().run(updateInterval);
+			spinningTimerJob.run(updateInterval);
 	}
 
 	/**
