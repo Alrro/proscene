@@ -349,7 +349,7 @@ public class KeyFrameInterpolator implements Copyable {
 				update();
 			}
 		};		
-		scene.registerInTimerPool(this, this.interpolationTimerJob);		
+		scene.registerInTimerPool(this, interpolationTimerJob);		
 	}
 	
 	public KeyFrameInterpolator getCopy() {
@@ -606,7 +606,7 @@ public class KeyFrameInterpolator implements Copyable {
 	 * {@link #interpolationIsStarted()} and {@link #toggleInterpolation()}.
 	 */
 	public void stopInterpolation() {
-		interpolationTimerJob.cancel();
+		interpolationTimerJob.stop();
 		interpolationStrt = false;
 	}
 

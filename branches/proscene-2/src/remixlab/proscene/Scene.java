@@ -549,8 +549,8 @@ public class Scene implements PConstants {
 				unSetTimerFlag();
 			}
 		};		
-		//timerPool = new TimerPool();
-		timerPool = new AWTTimerPool();
+		timerPool = new TimerPool(this);
+		//timerPool = new AWTTimerPool(this);
 		registerInTimerPool(this, timerFx);		
 		
 		//mouse grabber pool
@@ -1232,14 +1232,15 @@ public class Scene implements PConstants {
 	
 	private void initTimers() {
 		if( timerPool.needInit() )
-			timerPool.init(this);
+			timerPool.init();
 	}
 	
 	private void handleTimers() {		
 		if(timerPool instanceof TimerPool)
 			for (List<AbstractTimerJob> list : timerPool.timerPool().values())
 				for ( AbstractTimerJob tJob : list )
-					((Timer)tJob.timer()).execute();
+					if (tJob.timer() != null)
+						((Timer)tJob.timer()).execute();
 	}
 
 	/**

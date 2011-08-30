@@ -29,6 +29,14 @@ public abstract class AbstractTimerJob implements Taskable {
 	}
 	
 	//TODO new: wrappers
+	/**
+	public void execute() {
+		// TODO check hot to set the rest of variables
+		if(timer()!=null)
+			timer().execute();
+	}
+	*/
+	
 	public void run(long period) {
 		if(timer()!=null) {
 			timer().run(period);
@@ -48,6 +56,12 @@ public abstract class AbstractTimerJob implements Taskable {
 			pndng = true;
 			rOnce = true;
 			prd = period;
+		}
+	}
+	
+	public void stop() {
+		if(timer()!=null) {
+			timer().stop();
 		}
 	}
 	
