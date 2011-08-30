@@ -25,9 +25,6 @@
 
 package remixlab.proscene;
 
-import com.flipthebird.gwthashcodeequals.EqualsBuilder;
-import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
-
 /**
  * This class represents mouse click shortcuts.
  * <p>
@@ -35,33 +32,45 @@ import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
  * and can be of one out of two forms: 1. A mouse button; and, 2. A mouse
  * button plus a key-modifier (such as the CTRL key).
  */
-public class ClickBinding {	
+public class ClickBinding {		
 	@Override
 	public int hashCode() {
-    return new HashCodeBuilder(17, 37).		
-		append(mask).
-		append(numberOfClicks).
-		append(button).
-    toHashCode();
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((button == null) ? 0 : button.hashCode());
+		result = prime * result + ((mask == null) ? 0 : mask.hashCode());
+		result = prime * result
+				+ ((numberOfClicks == null) ? 0 : numberOfClicks.hashCode());
+		return result;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		if (!super.equals(obj))
+		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
 		ClickBinding other = (ClickBinding) obj;
-	  return new EqualsBuilder()
-    .appendSuper(super.equals(obj))		
-		.append(mask, other.mask)
-		.append(numberOfClicks, other.numberOfClicks)
-		.append(button, other.button)
-		.isEquals();
+		if (button == null) {
+			if (other.button != null)
+				return false;
+		} else if (!button.equals(other.button))
+			return false;
+		if (mask == null) {
+			if (other.mask != null)
+				return false;
+		} else if (!mask.equals(other.mask))
+			return false;
+		if (numberOfClicks == null) {
+			if (other.numberOfClicks != null)
+				return false;
+		} else if (!numberOfClicks.equals(other.numberOfClicks))
+			return false;
+		return true;
 	}
-	
+
 	private final Integer mask;
 	private final Integer numberOfClicks;
 	private final Scene.Button button;
