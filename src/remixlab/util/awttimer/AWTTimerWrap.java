@@ -2,20 +2,23 @@ package remixlab.util.awttimer;
 
 import java.util.*;
 
+import remixlab.proscene.Scene;
 import remixlab.util.*;
 
 public class AWTTimerWrap implements Timable {
+	Scene scene;
 	Timer timer;
 	TimerTask timerTask;
 	Taskable caller;
 	
-	public AWTTimerWrap(Taskable o) {
+	public AWTTimerWrap(Scene scn, Taskable o) {
+		scene = scn;
 		caller = o;
 		create();
 	}	
 	
 	public void create() {
-		cancel();
+		stop();
 		timer = new Timer();
 		timerTask = new TimerTask() {
 			public void run() {
@@ -35,6 +38,10 @@ public class AWTTimerWrap implements Timable {
   }
   
   public void cancel() {
+  	scene.timerPool().unregister(this);
+  }
+  
+  public void stop() {
   	if(timer != null) {
 			timer.cancel();
 			timer.purge();

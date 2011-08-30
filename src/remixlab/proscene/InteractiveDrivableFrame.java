@@ -117,7 +117,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 				flyUpdate();
 			}
 		};		
-		scene.registerInTimerPool(this, this.flyTimerJob);
+		scene.registerInTimerPool(this, flyTimerJob);
 	}
 	
 	/**
@@ -327,7 +327,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)) {
-			flyTimerJob.cancel();
+			flyTimerJob.stop();
 		}
 
 		super.mouseReleased(eventPoint, camera);

@@ -5,6 +5,40 @@ import remixlab.proscene.*;
 import remixlab.util.*;
 
 public class SimpleTimer implements Timable {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (active ? 1231 : 1237);
+		result = prime * result + (int) (currentFrame ^ (currentFrame >>> 32));
+		result = prime * result + (forced ? 1231 : 1237);
+		result = prime * result + (int) (magicFrame ^ (magicFrame >>> 32));
+		result = prime * result + (runOnlyOnce ? 1231 : 1237);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SimpleTimer other = (SimpleTimer) obj;
+		if (active != other.active)
+			return false;
+		if (currentFrame != other.currentFrame)
+			return false;
+		if (forced != other.forced)
+			return false;
+		if (magicFrame != other.magicFrame)
+			return false;
+		if (runOnlyOnce != other.runOnlyOnce)
+			return false;
+		return true;
+	}
+
 	Scene scene;
 	boolean active;
 	boolean runOnlyOnce;
@@ -18,7 +52,7 @@ public class SimpleTimer implements Timable {
 	public SimpleTimer(Scene scn) {
 		scene = scn;
 		create();
-	}
+	}	
 	
 	/**
 	 * activates the timer
@@ -130,6 +164,9 @@ public class SimpleTimer implements Timable {
   	return active;
   }
   
+  /**
+   * Warning unregisters the timer!
+   */
   public void cancel() {
   	scene.timerPool().unregister(this);
   }

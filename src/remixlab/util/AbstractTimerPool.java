@@ -7,10 +7,12 @@ import java.util.HashMap;
 import remixlab.proscene.Scene;
 
 public abstract class AbstractTimerPool {
+	protected Scene scene;
 	public HashMap<Object, List<AbstractTimerJob>> timerPool;
 	protected boolean needInit;
 	
-	public AbstractTimerPool() {
+	public AbstractTimerPool(Scene scn) {
+		scene = scn;
 		timerPool = new HashMap<Object, List<AbstractTimerJob>>();
 		needInit = false;
 	}
@@ -63,6 +65,17 @@ public abstract class AbstractTimerPool {
 		}
 	}
 	
+	public void unregister(Timable t) {
+		for (List<AbstractTimerJob> list : timerPool.values()) {
+			for( AbstractTimerJob job : list ) {
+				if( job.timer().equals(t) ) {
+					list.remove(job);
+					return;
+				}
+			}
+		}
+	}
+	
 	public boolean isRegistered(Object o, AbstractTimerJob t) {
 		if ( timerPool.get(o).contains(t) )
 			return true;
@@ -81,5 +94,5 @@ public abstract class AbstractTimerPool {
 		timerPool().clear();
 	}
 	
-	public abstract void init(Scene scn);
+	public abstract void init();
 }

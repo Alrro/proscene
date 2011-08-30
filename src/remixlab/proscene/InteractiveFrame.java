@@ -223,7 +223,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};		
-		scene.registerInTimerPool(this, this.spinningTimerJob);
+		scene.registerInTimerPool(this, spinningTimerJob);
 	}
   
 	/**
@@ -552,7 +552,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 */
 	public final void stopSpinning() {		
-		spinningTimerJob.cancel();
+		spinningTimerJob.stop();
 		isSpng = false;
 	}
 
