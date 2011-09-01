@@ -1,10 +1,12 @@
-package remixlab.util;
+package remixlab.util.protimer;
 
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import remixlab.proscene.Scene;
+import remixlab.util.AbstractTimerJob;
+import remixlab.util.Timable;
 
 public class TimerPool {
 	protected Scene scene;
