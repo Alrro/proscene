@@ -27,8 +27,9 @@ package remixlab.proscene;
 
 import processing.core.*;
 import remixlab.util.*;
-import remixlab.util.awttimer.*;
-import remixlab.util.protimer.*;
+import remixlab.util.awttimer.AWTTimerWrap;
+import remixlab.util.protimer.SimpleTimer;
+import remixlab.util.protimer.Timer;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -439,7 +440,8 @@ public class Scene implements PConstants {
   protected int beginOffScreenDrawingCalls;
   
   // T i m e r P o o l
-	protected AbstractTimerPool timerPool;
+  protected boolean prosceneTimers;
+	protected TimerPool timerPool;
 
 	// M o u s e G r a b b e r
 	protected List<MouseGrabbable> MouseGrabberPool;
@@ -549,9 +551,9 @@ public class Scene implements PConstants {
 			public void execute() {
 				unSetTimerFlag();
 			}
-		};		
+		};
+		prosceneTimers = false;
 		timerPool = new TimerPool(this);
-		//timerPool = new AWTTimerPool(this);
 		registerInTimerPool(this, timerFx);		
 		
 		//mouse grabber pool
@@ -672,18 +674,18 @@ public class Scene implements PConstants {
 	}	
 	
 	// TODO doc me!
-	public AbstractTimerPool timerPool() {
+	public TimerPool timerPool() {
 		return timerPool;
 	}
 	
 	public void registerInTimerPool(Object o, AbstractTimerJob job) {
-		if (timerPool instanceof TimerPool) {			
+		if (prosceneTimers) {			
 			job.setTimer(new Timer(this, job));
 			timerPool.register(o, job);
 		}
 		else {
 			job.setTimer(new AWTTimerWrap(this, job));
-			timerPool.register(o, job);
+			//timerPool.register(o, job);
 		}
 	}
 
@@ -1243,7 +1245,7 @@ public class Scene implements PConstants {
 	}
 	
 	private void handleTimers() {		
-		if(timerPool instanceof TimerPool)
+		if(prosceneTimers)
 			for (List<AbstractTimerJob> list : timerPool.timerPool().values())
 				for ( AbstractTimerJob tJob : list )
 					if (tJob.timer() != null)
