@@ -415,6 +415,7 @@ public class Scene implements PConstants {
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
 	public PGraphics3D pg3d;
+	public float frameRate;
 	protected int width, height;// size
 	protected boolean offscreen;
 	public Point upperLeftCorner;
@@ -675,8 +676,15 @@ public class Scene implements PConstants {
 		return timerPool;
 	}
 	
-	public void registerInTimerPool(Object o, AbstractTimerJob t) {
-		timerPool.register(o, t);
+	public void registerInTimerPool(Object o, AbstractTimerJob job) {
+		if (timerPool instanceof TimerPool) {			
+			job.setTimer(new Timer(this, job));
+			timerPool.register(o, job);
+		}
+		else {
+			job.setTimer(new AWTTimerWrap(this, job));
+			timerPool.register(o, job);
+		}
 	}
 
 	/**
@@ -1231,8 +1239,7 @@ public class Scene implements PConstants {
 	}
 	
 	private void initTimers() {
-		if( timerPool.needInit() )
-			timerPool.init();
+		frameRate = parent.frameRate;
 	}
 	
 	private void handleTimers() {		
@@ -3951,7 +3958,7 @@ public class Scene implements PConstants {
 	 */
 	public void startAnimation() {
 		animationStarted = true;	
-		animationTimer.run(animationPeriod, true);
+		animationTimer.run(animationPeriod);
 	}
 	
 	/**
