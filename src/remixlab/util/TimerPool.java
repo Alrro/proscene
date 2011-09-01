@@ -6,11 +6,11 @@ import java.util.HashMap;
 
 import remixlab.proscene.Scene;
 
-public class AbstractTimerPool {
+public class TimerPool {
 	protected Scene scene;
 	public HashMap<Object, List<AbstractTimerJob>> timerPool;
 	
-	public AbstractTimerPool(Scene scn) {
+	public TimerPool(Scene scn) {
 		scene = scn;
 		timerPool = new HashMap<Object, List<AbstractTimerJob>>();
 	}	
