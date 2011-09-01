@@ -27,9 +27,8 @@ package remixlab.proscene;
 
 import processing.core.*;
 import remixlab.util.*;
-import remixlab.util.awttimer.AWTTimerWrap;
-import remixlab.util.protimer.SimpleTimer;
-import remixlab.util.protimer.Timer;
+import remixlab.util.awttimer.*;
+import remixlab.util.protimer.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -552,7 +551,7 @@ public class Scene implements PConstants {
 				unSetTimerFlag();
 			}
 		};
-		prosceneTimers = false;
+		prosceneTimers = true;
 		timerPool = new TimerPool(this);
 		registerInTimerPool(this, timerFx);		
 		
