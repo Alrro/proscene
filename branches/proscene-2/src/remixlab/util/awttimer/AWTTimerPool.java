@@ -10,24 +10,4 @@ public class AWTTimerPool extends AbstractTimerPool {
 	public AWTTimerPool(Scene scn) {
 		super(scn);
 	}
-
-	/**
-	 * Instantiates all null timers.
-	 */
-	@Override
-	public void init() {
-		for (List<AbstractTimerJob> list : timerPool.values()) {
-			for ( AbstractTimerJob e : list ) {
-				if ( e.timer() == null )
-					e.setTimer(new AWTTimerWrap(scene, e));
-				if( e.pending() ) {
-					if( e.isSchedule2RunOnce() )
-						e.runOnce(e.period());
-					else
-						e.run(e.period());
-				}
-			}
-		}
-		needInit = false;
-	}
 }
