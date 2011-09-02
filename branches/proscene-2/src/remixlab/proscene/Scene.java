@@ -551,7 +551,7 @@ public class Scene implements PConstants {
 				unSetTimerFlag();
 			}
 		};
-		prosceneTimers = false;
+		prosceneTimers = true;
 		registerInTimerPool(timerFx);
 		
 		//mouse grabber pool
