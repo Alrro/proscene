@@ -1,8 +1,7 @@
-package remixlab.util.protimer;
+package remixlab.util;
 
 import processing.core.PApplet;
 import remixlab.proscene.*;
-import remixlab.util.*;
 
 /**
  * this timer should belong to all P5 versions. Don't know yet if it
@@ -46,9 +45,9 @@ public class SimpleTimer implements Timable {
 		return true;
 	}
 
-	Scene scene;
-	boolean active;
-	boolean runOnlyOnce;
+	protected Scene scene;
+	protected boolean active;
+	protected boolean runOnlyOnce;
 	private long counter;
 	private long period;
 	private long startTime;	
