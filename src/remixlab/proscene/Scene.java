@@ -415,7 +415,6 @@ public class Scene implements PConstants {
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
 	public PGraphics3D pg3d;
-	public float frameRate;
 	protected int width, height;// size
 	protected boolean offscreen;
 	public Point upperLeftCorner;
@@ -440,7 +439,7 @@ public class Scene implements PConstants {
   
   // T i m e r P o o l
   protected boolean prosceneTimers;
-	protected TimerPool timerPool;
+	protected ArrayList<AbstractTimerJob> timerPool;
 
 	// M o u s e G r a b b e r
 	protected List<MouseGrabbable> MouseGrabberPool;
@@ -546,14 +545,14 @@ public class Scene implements PConstants {
 		dE = new DesktopEvents(this);		
 				
    	//drawing timer pool
+		timerPool = new ArrayList<AbstractTimerJob>();
 		timerFx = new AbstractTimerJob() {
 			public void execute() {
 				unSetTimerFlag();
 			}
 		};
-		prosceneTimers = true;
-		timerPool = new TimerPool(this);
-		registerInTimerPool(this, timerFx);		
+		prosceneTimers = false;
+		registerInTimerPool(timerFx);
 		
 		//mouse grabber pool
 		MouseGrabberPool = new ArrayList<MouseGrabbable>();		
@@ -671,21 +670,25 @@ public class Scene implements PConstants {
 	public List<MouseGrabbable> mouseGrabberPool() {
 		return MouseGrabberPool;
 	}	
-	
-	// TODO doc me!
-	public TimerPool timerPool() {
-		return timerPool;
-	}
-	
-	public void registerInTimerPool(Object o, AbstractTimerJob job) {
+		
+	public void registerInTimerPool(AbstractTimerJob job) {
 		if (prosceneTimers) {			
 			job.setTimer(new Timer(this, job));
-			timerPool.register(o, job);
+			timerPool.add(job);
 		}
 		else {
 			job.setTimer(new AWTTimerWrap(this, job));
-			//timerPool.register(o, job);
 		}
+	}
+	
+	public void unregisterFromTimerPool(AbstractTimerJob job) {
+		if (prosceneTimers) {			
+			timerPool.remove(job);
+		}
+	}
+	
+	public void unregisterFromTimerPool(Timer t) {			
+			timerPool.remove( t.timerJob() );
 	}
 
 	/**
@@ -1237,18 +1240,13 @@ public class Scene implements PConstants {
 			PVector v = camera().projectedCoordinatesOf(pupVec);
 			drawCross(v.x, v.y);
 		}
-	}
-	
-	private void initTimers() {
-		frameRate = parent.frameRate;
-	}
+	}	
 	
 	private void handleTimers() {		
 		if(prosceneTimers)
-			for (List<AbstractTimerJob> list : timerPool.timerPool().values())
-				for ( AbstractTimerJob tJob : list )
-					if (tJob.timer() != null)
-						((Timer)tJob.timer()).execute();
+			for ( AbstractTimerJob tJob : timerPool )
+				if (tJob.timer() != null)
+					((Timer)tJob.timer()).execute();
 	}
 
 	/**
@@ -1261,9 +1259,7 @@ public class Scene implements PConstants {
 	 * has been set to {@code true}.
 	 */
 	public void pre() {
-		if (isOffscreen()) return;
-		
-		initTimers();
+		if (isOffscreen()) return;	
 		
 		// handle possible resize events
 		// weird: we need to bypass the handling of a resize event when running the
@@ -1400,9 +1396,7 @@ public class Scene implements PConstants {
 						"There should be exactly one beginDraw() call followed by a "
 								+ "endDraw() and they cannot be nested. Check your implementation!");			
 			beginOffScreenDrawingCalls++;
-			
-			initTimers();
-			
+						
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 					&& (!camera().anyInterpolationIsStarted())) {
 				camera().setPosition(avatar().cameraPosition());
@@ -3940,7 +3934,7 @@ public class Scene implements PConstants {
 	public void stopAnimation()	{
 		animationStarted = false;
 		animatedFrameWasTriggered = false;
-		this.animationTimer.stop();
+		animationTimer.stop();
 	}
 	
 	/**

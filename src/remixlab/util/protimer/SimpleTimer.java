@@ -4,23 +4,63 @@ import processing.core.PApplet;
 import remixlab.proscene.*;
 import remixlab.util.*;
 
+/**
+ * this timer should belong to all P5 versions. Don't know yet if it
+ * should belong to jogl too.
+ * 
+ * @author pierre
+ *
+ */
 public class SimpleTimer implements Timable {
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (active ? 1231 : 1237);
+		result = prime * result + (int) (counter ^ (counter >>> 32));
+		result = prime * result + (int) (period ^ (period >>> 32));
+		result = prime * result + (runOnlyOnce ? 1231 : 1237);
+		result = prime * result + (int) (startTime ^ (startTime >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SimpleTimer other = (SimpleTimer) obj;
+		if (active != other.active)
+			return false;
+		if (counter != other.counter)
+			return false;
+		if (period != other.period)
+			return false;
+		if (runOnlyOnce != other.runOnlyOnce)
+			return false;
+		if (startTime != other.startTime)
+			return false;
+		return true;
+	}
+
 	Scene scene;
 	boolean active;
 	boolean runOnlyOnce;
 	private long counter;
 	private long period;
-	private long startTime;
-	private long startFrame;
+	private long startTime;	
 	
 	public SimpleTimer(Scene scn) {
 		scene = scn;
 		create();
 	}
-
+	
 	public void cancel() {
-		scene.timerPool().unregister(this);		
-	}
+		stop();
+	}	
 
 	public void create() {
 		inactivate();		
@@ -47,7 +87,6 @@ public class SimpleTimer implements Timable {
   	runOnlyOnce = rOnce;
   	
   	startTime = System.currentTimeMillis();
-  	startFrame = scene.parent.frameCount;
 	}
 
 	public void stop() {
@@ -70,7 +109,7 @@ public class SimpleTimer implements Timable {
   	  	
   	long elapsedTime = System.currentTimeMillis() - startTime;  	
   	
-  	float timePerFrame = (1 / scene.frameRate) * 1000;  	
+  	float timePerFrame = (1 / scene.parent.frameRate) * 1000;  	
   	long threshold = counter * period;  	
   	
   	boolean result = false;

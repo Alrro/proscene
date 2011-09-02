@@ -306,7 +306,7 @@ public class KeyFrameInterpolator implements Copyable {
 				update();
 			}
 		};		
-		scene.registerInTimerPool(this, interpolationTimerJob);
+		scene.registerInTimerPool(interpolationTimerJob);
 	}	
 	
 	protected KeyFrameInterpolator(KeyFrameInterpolator otherKFI) {
@@ -349,7 +349,7 @@ public class KeyFrameInterpolator implements Copyable {
 				update();
 			}
 		};		
-		scene.registerInTimerPool(this, interpolationTimerJob);		
+		scene.registerInTimerPool(interpolationTimerJob);		
 	}
 	
 	public KeyFrameInterpolator getCopy() {

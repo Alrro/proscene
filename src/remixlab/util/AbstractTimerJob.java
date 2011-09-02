@@ -11,7 +11,7 @@ public abstract class AbstractTimerJob implements Taskable {
 		tmr = t;
 	}
 	
-	//TODO new: wrappers	
+	//Wrappers	
 	
 	public void run(long period) {
 		if(timer()!=null) {

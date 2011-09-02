@@ -38,7 +38,7 @@ public class AWTTimerWrap implements Timable {
   }
   
   public void cancel() {
-  	scene.timerPool().unregister(this);
+  	stop();
   }
   
   public void stop() {
