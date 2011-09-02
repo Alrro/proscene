@@ -28,6 +28,7 @@ void setup() {
   size(640, 360, P3D);
   // We instantiate our MyScene class defined below
   scene = new MyScene(this);
+  frameRate(100);
 }
 
 void draw() {

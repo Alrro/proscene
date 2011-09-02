@@ -51,6 +51,8 @@ void setup() {
   scene.setAxisIsDrawn(false);
   scene.addAnimationHandler(this, "animateScene");  
   scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);
+  
+  frameRate(100);
 
   model = new GLModel(this, numPoints, GLModel.POINT_SPRITES, GLModel.DYNAMIC);
   model.initColors();

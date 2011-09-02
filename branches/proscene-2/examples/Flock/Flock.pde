@@ -57,6 +57,7 @@ void setup() {
   scene.setGridIsDrawn(false);
   scene.setBoundingBox(new PVector(0,0,0), new PVector(flockWidth,flockHeight,flockDepth));
   scene.showAll();
+  frameRate(100);
   // create and fill the list of boids
   flock = new ArrayList();
   for (int i = 0; i < initBoidNum; i++)
@@ -113,9 +114,9 @@ void draw() {
 
 void adjustFrameRate() {
   if(scene.currentCameraProfile().equals(thirdPersonCP))
-    scene.setFrameRate(1000/scene.animationPeriod());//restarts animation
+    frameRate(1000/scene.animationPeriod());
   else
-    scene.setFrameRate(60);//restarts animation
+    frameRate(100);
 }
 
 void keyPressed() {
@@ -127,11 +128,11 @@ void keyPressed() {
     avoidWalls = !avoidWalls;
     break;
   case 'x':
-    scene.setAnimationPeriod(scene.animationPeriod()-2, false);
+    scene.setAnimationPeriod(scene.animationPeriod()-2);//restarts animation
     adjustFrameRate();
     break;
   case 'y':
-    scene.setAnimationPeriod(scene.animationPeriod()+2, false);
+    scene.setAnimationPeriod(scene.animationPeriod()+2);//restarts animation
     adjustFrameRate();
     break;
   }

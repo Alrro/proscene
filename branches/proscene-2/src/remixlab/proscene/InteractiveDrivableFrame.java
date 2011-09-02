@@ -95,7 +95,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 				flyUpdate();
 			}
 		};		
-		scene.registerInTimerPool(this, flyTimerJob);    
+		scene.registerInTimerPool(flyTimerJob);    
 	}
 	
 	/**
@@ -117,7 +117,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 				flyUpdate();
 			}
 		};		
-		scene.registerInTimerPool(this, flyTimerJob);
+		scene.registerInTimerPool(flyTimerJob);
 	}
 	
 	/**
@@ -230,7 +230,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
-			flyTimerJob.run(10);
+			flyTimerJob.run(20);
 			break;
 		default:
 			break;

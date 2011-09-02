@@ -180,7 +180,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};	
-		scene.registerInTimerPool(this, spinningTimerJob);
+		scene.registerInTimerPool(spinningTimerJob);
 		
 		// delay = 10;
 	}
@@ -223,7 +223,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};		
-		scene.registerInTimerPool(this, spinningTimerJob);
+		scene.registerInTimerPool(spinningTimerJob);
 	}
   
 	/**
@@ -282,7 +282,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				spin();
 			}
 		};		
-		scene.registerInTimerPool(this, spinningTimerJob);
+		scene.registerInTimerPool(spinningTimerJob);
 	}
 
 	/**
