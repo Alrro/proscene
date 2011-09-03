@@ -28,7 +28,6 @@ package remixlab.proscene;
 import java.awt.event.*;
 import java.util.Map.Entry;
 
-import processing.core.PApplet;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
@@ -399,10 +398,10 @@ public class CameraProfile {
 		MouseAction camMouseAction = cameraMouseBinding( e.getModifiersEx() );
 		//debug
 		/**
-		PApplet.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
-		PApplet.println( "getMouseModifiersText: " + MouseEvent.getMouseModifiersText(e.getModifiersEx()) );
+		System.out.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
+		System.out.println( "getMouseModifiersText: " + MouseEvent.getMouseModifiersText(e.getModifiersEx()) );
 		if (camMouseAction == null) {
-			PApplet.println("no mouse action!");
+			System.out.println("no mouse action!");
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		}
 		*/
@@ -530,7 +529,7 @@ public class CameraProfile {
 	public void setShortcut(Character key, CameraKeyboardAction action) {
 		if ( isKeyInUse(key) ) {
 			CameraKeyboardAction a = shortcut(key);
-			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
+			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		keyboard.setBinding(new KeyboardShortcut(key), action);
 	}
@@ -564,7 +563,7 @@ public class CameraProfile {
 	public void setShortcut(Integer mask, Integer vKey, CameraKeyboardAction action) {
 		if ( isKeyInUse(mask, vKey) ) {
 			CameraKeyboardAction a = shortcut(mask, vKey);
-			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
+			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		keyboard.setBinding(new KeyboardShortcut(mask, vKey), action);
 	}
@@ -579,7 +578,7 @@ public class CameraProfile {
 	public void setShortcut(Integer vKey, CameraKeyboardAction action) {
 		if ( isKeyInUse(vKey) ) {
 			CameraKeyboardAction a = shortcut(vKey);
-			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
+			System.out.println("Warning: overwritting shortcut which was previously binded to " + a);
 		}
 		keyboard.setBinding(new KeyboardShortcut(vKey), action);
 	}
@@ -780,7 +779,7 @@ public class CameraProfile {
 	public void setCameraMouseBinding(Integer mask,	Scene.MouseAction action) {
 		if ( isCameraMouseBindingInUse(mask) ) {
 			MouseAction a = cameraMouseBinding(mask);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		cameraActions.setBinding(mask, action);
 	}
@@ -840,7 +839,7 @@ public class CameraProfile {
 	public void setFrameMouseBinding(Integer mask, Scene.MouseAction action) {
 		if ( isFrameMouseBindingInUse(mask) ) {
 			MouseAction a = frameMouseBinding(mask);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		frameActions.setBinding(mask, action);
 	}
@@ -928,7 +927,7 @@ public class CameraProfile {
 	public void setClickBinding(Scene.Button button, Scene.ClickAction action) {
 		if ( isClickBindingInUse(button) ) {
 			ClickAction a = clickBinding(button);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(button), action);
 	}
@@ -946,7 +945,7 @@ public class CameraProfile {
 	public void setClickBinding(Integer mask, Scene.Button button, Scene.ClickAction action) {
 		if ( isClickBindingInUse(mask, button) ) {
 			ClickAction a = clickBinding(mask, button);
-			PApplet.println("Warning: overwritting bindings which was previously associated to " + a);
+			System.out.println("Warning: overwritting bindings which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(mask, button), action);
 	}
@@ -961,7 +960,7 @@ public class CameraProfile {
 	public void setClickBinding(Scene.Button button, Integer nc, Scene.ClickAction action) {
 		if ( isClickBindingInUse(button, nc) ) {
 			ClickAction a = clickBinding(button, nc);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(button, nc), action);
 	}
@@ -980,7 +979,7 @@ public class CameraProfile {
 	public void setClickBinding(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
 		if ( isClickBindingInUse(mask, button, nc) ) {
 			ClickAction a = clickBinding(mask, button, nc);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		clickActions.setBinding(new ClickBinding(mask, button, nc), action);
 	}
@@ -1115,7 +1114,7 @@ public class CameraProfile {
 	public void setCameraWheelBinding(Integer mask, Scene.MouseAction action) {
 		if ( isCameraWheelBindingInUse(mask) ) {
 			MouseAction a = cameraWheelBinding(mask);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		cameraWheelActions.setBinding(mask, action);
 	}
@@ -1209,7 +1208,7 @@ public class CameraProfile {
 	public void setFrameWheelBinding(Integer mask, Scene.MouseAction action) {
 		if ( isFrameWheelBindingInUse(mask) ) {
 			MouseAction a = frameWheelBinding(mask);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
 		frameWheelActions.setBinding(mask, action);
 	}

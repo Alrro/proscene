@@ -36,7 +36,7 @@ import processing.core.*;
  * 
  */
 
-public class Quaternion implements PConstants, Copyable {
+public class Quaternion implements Constants, Copyable {
 	@Override
 	public int hashCode() {
     return new HashCodeBuilder(17, 37).
@@ -63,7 +63,7 @@ public class Quaternion implements PConstants, Copyable {
 		.append(y,  other.y)
 		.append(z,  other.z)
 		.isEquals();						
-	}
+	}	
 	
 	/**
 	 * The x coordinate, i.e., the x coordinate of the vector part of the
@@ -126,7 +126,7 @@ public class Quaternion implements PConstants, Copyable {
 	 */
 	public Quaternion(float x, float y, float z, float w, boolean normalize) {
 		if (normalize) {
-			float mag = PApplet.sqrt(x * x + y * y + z * z + w * w);
+			float mag = (float) Math.sqrt(x * x + y * y + z * z + w * w);
 			if (mag > 0.0f) {
 				this.x = x / mag;
 				this.y = y / mag;
@@ -163,7 +163,7 @@ public class Quaternion implements PConstants, Copyable {
 	 */
 	public Quaternion(float[] q, boolean normalize) {
 		if (normalize) {
-			float mag = PApplet.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3]
+			float mag = (float) Math.sqrt(q[0] * q[0] + q[1] * q[1] + q[2] * q[2] + q[3]
 					* q[3]);
 			if (mag > 0.0f) {
 				this.x = q[0] / mag;
@@ -472,7 +472,7 @@ public class Quaternion implements PConstants, Copyable {
 	 * norm}.
 	 */
 	public final float normalize() {
-		float norm = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
+		float norm = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z + this.w * this.w);
 		if (norm > 0.0f) {
 			this.x /= norm;
@@ -550,11 +550,11 @@ public class Quaternion implements PConstants, Copyable {
 			this.z = 0.0f;
 			this.w = 1.0f;
 		} else {
-			float sin_half_angle = PApplet.sin(angle / 2.0f);
+			float sin_half_angle = (float) Math.sin(angle / 2.0f);
 			this.x = sin_half_angle * axis.x / norm;
 			this.y = sin_half_angle * axis.y / norm;
 			this.z = sin_half_angle * axis.z / norm;
-			this.w = PApplet.cos(angle / 2.0f);
+			this.w = (float) Math.cos(angle / 2.0f);
 		}
 	}
 
@@ -639,23 +639,23 @@ public class Quaternion implements PConstants, Copyable {
 		float roll, pitch, yaw;
 		float test = x * y + z * w;
 		if (test > 0.499) { // singularity at north pole
-			pitch = 2 * PApplet.atan2(x, w);
-			yaw = PApplet.PI / 2;
+			pitch = 2 * (float) Math.atan2(x, w);
+			yaw = PI / 2;
 			roll = 0;
 			return new PVector(roll, pitch, yaw);
 		}
 		if (test < -0.499) { // singularity at south pole
-			pitch = -2 * PApplet.atan2(x, w);
-			yaw = -PApplet.PI / 2;
+			pitch = -2 * (float) Math.atan2(x, w);
+			yaw = - PI / 2;
 			roll = 0;
 			return new PVector(roll, pitch, yaw);
 		}
 		float sqx = x * x;
 		float sqy = y * y;
 		float sqz = z * z;
-		pitch = PApplet.atan2(2 * y * w - 2 * x * z, 1 - 2 * sqy - 2 * sqz);
-		yaw = PApplet.asin(2 * test);
-		roll = PApplet.atan2(2 * x * w - 2 * y * z, 1 - 2 * sqx - 2 * sqz);
+		pitch = (float) Math.atan2(2 * y * w - 2 * x * z, 1 - 2 * sqy - 2 * sqz);
+		yaw = (float) Math.asin(2 * test);
+		roll = (float) Math.atan2(2 * x * w - 2 * y * z, 1 - 2 * sqx - 2 * sqz);
 		return new PVector(roll, pitch, yaw);
 	}
 
@@ -704,7 +704,7 @@ public class Quaternion implements PConstants, Copyable {
 			if (axisSqNorm < 1E-10f)
 				axis = MathUtils.orthogonalVector(from);
 
-			float angle = PApplet.asin(PApplet.sqrt(axisSqNorm
+			float angle = (float) Math.asin((float) Math.sqrt(axisSqNorm
 					/ (fromSqNorm * toSqNorm)));
 
 			if (from.dot(to) < 0.0)
@@ -733,7 +733,7 @@ public class Quaternion implements PConstants, Copyable {
 
 		if (onePlusTrace > 1E-5f) {
 			// Direct computation
-			float s = PApplet.sqrt(onePlusTrace) * 2.0f;
+			float s = (float) Math.sqrt(onePlusTrace) * 2.0f;
 			this.x = (m[2][1] - m[1][2]) / s;
 			this.y = (m[0][2] - m[2][0]) / s;
 			this.z = (m[1][0] - m[0][1]) / s;
@@ -741,19 +741,19 @@ public class Quaternion implements PConstants, Copyable {
 		} else {
 			// Computation depends on major diagonal term
 			if ((m[0][0] > m[1][1]) & (m[0][0] > m[2][2])) {
-				float s = PApplet.sqrt(1.0f + m[0][0] - m[1][1] - m[2][2]) * 2.0f;
+				float s = (float) Math.sqrt(1.0f + m[0][0] - m[1][1] - m[2][2]) * 2.0f;
 				this.x = 0.25f * s;
 				this.y = (m[0][1] + m[1][0]) / s;
 				this.z = (m[0][2] + m[2][0]) / s;
 				this.w = (m[1][2] - m[2][1]) / s;
 			} else if (m[1][1] > m[2][2]) {
-				float s = PApplet.sqrt(1.0f + m[1][1] - m[0][0] - m[2][2]) * 2.0f;
+				float s = (float) Math.sqrt(1.0f + m[1][1] - m[0][0] - m[2][2]) * 2.0f;
 				this.x = (m[0][1] + m[1][0]) / s;
 				this.y = 0.25f * s;
 				this.z = (m[1][2] + m[2][1]) / s;
 				this.w = (m[0][2] - m[2][0]) / s;
 			} else {
-				float s = PApplet.sqrt(1.0f + m[2][2] - m[0][0] - m[1][1]) * 2.0f;
+				float s = (float) Math.sqrt(1.0f + m[2][2] - m[0][0] - m[1][1]) * 2.0f;
 				this.x = (m[0][2] + m[2][0]) / s;
 				this.y = (m[1][2] + m[2][1]) / s;
 				this.z = 0.25f * s;
@@ -818,7 +818,7 @@ public class Quaternion implements PConstants, Copyable {
 		float sinus = res.mag();
 		if (sinus > 1E-8f)
 			res.div(sinus);
-		if (PApplet.acos(this.w) <= HALF_PI)
+		if ((float) Math.acos(this.w) <= HALF_PI)
 			return res;
 		else {
 			res.x = -res.x;
@@ -838,7 +838,7 @@ public class Quaternion implements PConstants, Copyable {
 	 * @see #axis()
 	 */
 	public final float angle() {
-		float angle = 2.0f * PApplet.acos(this.w);
+		float angle = 2.0f * (float) Math.acos(this.w);
 		return (angle <= PI) ? angle : 2.0f * PI - angle;
 	}
 
@@ -931,13 +931,13 @@ public class Quaternion implements PConstants, Copyable {
 	 */
 	public final Quaternion log() {
 		// Warning: this method should not normalize the Quaternion
-		float len = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
+		float len = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z);
 
 		if (len < 1E-6f)
 			return new Quaternion(this.x, this.y, this.z, 0.0f, false);
 		else {
-			float coef = PApplet.acos(this.w) / len;
+			float coef = (float) Math.acos(this.w) / len;
 			return new Quaternion(this.x * coef, this.y * coef, this.z * coef, 0.0f,
 					false);
 		}
@@ -949,15 +949,15 @@ public class Quaternion implements PConstants, Copyable {
 	 * @see #log()
 	 */
 	public final Quaternion exp() {
-		float theta = PApplet.sqrt(this.x * this.x + this.y * this.y + this.z
+		float theta = (float) Math.sqrt(this.x * this.x + this.y * this.y + this.z
 				* this.z);
 
 		if (theta < 1E-6f)
-			return new Quaternion(this.x, this.y, this.z, PApplet.cos(theta));
+			return new Quaternion(this.x, this.y, this.z, (float) Math.cos(theta));
 		else {
-			float coef = PApplet.sin(theta) / theta;
+			float coef = (float) Math.sin(theta) / theta;
 			return new Quaternion(this.x * coef, this.y * coef, this.z * coef,
-					PApplet.cos(theta));
+					(float) Math.cos(theta));
 		}
 	}
 
@@ -972,14 +972,13 @@ public class Quaternion implements PConstants, Copyable {
 	 */
 	public final static Quaternion randomQuaternion() {
 		float seed = (float) Math.random();
-		float r1 = PApplet.sqrt(1.0f - seed);
-		float r2 = PApplet.sqrt(seed);
+		float r1 = (float) Math.sqrt(1.0f - seed);
+		float r2 = (float) Math.sqrt(seed);
 		float t1 = 2.0f * PI * (float) Math.random();
 		float t2 = 2.0f * PI * (float) Math.random();
 
-		return new Quaternion(PApplet.sin(t1) * r1, PApplet.cos(t1) * r1, PApplet
-				.sin(t2)
-				* r2, PApplet.cos(t2) * r2);
+		return new Quaternion((float) Math.sin(t1) * r1, (float) Math.cos(t1) * r1, (float) Math.sin(t2)
+				* r2, (float) Math.cos(t2) * r2);
 	}
 
 	/**
@@ -1018,15 +1017,15 @@ public class Quaternion implements PConstants, Copyable {
 
 		float c1, c2;
 		// Linear interpolation for close orientations
-		if ((1.0 - PApplet.abs(cosAngle)) < 0.01) {
+		if ((1.0 - (float) Math.abs(cosAngle)) < 0.01) {
 			c1 = 1.0f - t;
 			c2 = t;
 		} else {
 			// Spherical interpolation
-			float angle = PApplet.acos(PApplet.abs(cosAngle));
-			float sinAngle = PApplet.sin(angle);
-			c1 = PApplet.sin(angle * (1.0f - t)) / sinAngle;
-			c2 = PApplet.sin(angle * t) / sinAngle;
+			float angle = (float) Math.acos(Math.abs(cosAngle));
+			float sinAngle = (float) Math.sin(angle);
+			c1 = (float) Math.sin(angle * (1.0f - t)) / sinAngle;
+			c2 = (float) Math.sin(angle * t) / sinAngle;
 		}
 
 		// Use the shortest path

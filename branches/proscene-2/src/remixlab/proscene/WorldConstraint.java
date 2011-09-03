@@ -84,7 +84,7 @@ public class WorldConstraint extends AxisPlaneConstraint {
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
 			PVector axis = frame.transformOf(rotationConstraintDirection());
 			quat = MathUtils.projectVectorOnAxis(quat, axis);
-			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
+			res = new Quaternion(quat, 2.0f * (float) Math.acos(rotation.w));
 			break;
 		}
 		case FORBIDDEN:

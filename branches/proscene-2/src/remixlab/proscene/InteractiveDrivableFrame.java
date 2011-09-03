@@ -295,7 +295,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 			}
 
 			case ROLL: {
-				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x)
+				float angle = (float) Math.PI * ((int)eventPoint.x - (int)prevPos.x)
 						/ camera.screenWidth();
 				
 			  //lef-handed coordinate system correction

@@ -182,8 +182,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 				switch (camera.type()) {
 				case PERSPECTIVE:
 					trans.mult(2.0f
-							* PApplet.tan(camera.fieldOfView() / 2.0f)
-							* PApplet.abs((camera.frame()
+							* (float) Math.tan(camera.fieldOfView() / 2.0f)
+							* Math.abs((camera.frame()
 									.coordinatesOf(arcballReferencePoint())).z)
 							/ camera.screenHeight());
 					break;
@@ -202,7 +202,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 
 			case ZOOM: {
 				// #CONNECTION# wheelEvent() ZOOM case
-				float coef = PApplet.max(PApplet.abs((camera.frame()
+				float coef = Math.max(Math.abs((camera.frame()
 						.coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera
 						.sceneRadius());
 				// Warning: same for left and right CoordinateSystemConvention:
@@ -228,9 +228,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 
 			case SCREEN_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				float angle = PApplet.atan2((int) eventPoint.y - trans.y,
+				float angle = (float) Math.atan2((int) eventPoint.y - trans.y,
 						(int) eventPoint.x - trans.x)
-						- PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x
+						- (float) Math.atan2((int) prevPos.y - trans.y, (int) prevPos.x
 								- trans.x);
 
 				// lef-handed coordinate system correction
@@ -257,8 +257,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 				switch (camera.type()) {
 				case PERSPECTIVE:
 					trans.mult(2.0f
-							* PApplet.tan(camera.fieldOfView() / 2.0f)
-							* PApplet.abs((camera.frame()
+							* (float) Math.tan(camera.fieldOfView() / 2.0f)
+							* Math.abs((camera.frame()
 									.coordinatesOf(arcballReferencePoint())).z)
 							/ camera.screenHeight());
 					break;
@@ -292,10 +292,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		// called before :)
 		if (action == Scene.MouseAction.ZOOM_ON_REGION) {
 			// the rectangle needs to be normalized!
-			int w = PApplet.abs((int) eventPoint.x - (int) pressPos.x);
+			int w = Math.abs((int) eventPoint.x - (int) pressPos.x);
 			int tlX = (int) pressPos.x < (int) eventPoint.x ? (int) pressPos.x
 					: (int) eventPoint.x;
-			int h = PApplet.abs((int) eventPoint.y - (int) pressPos.y);
+			int h = Math.abs((int) eventPoint.y - (int) pressPos.y);
 			int tlY = (int) pressPos.y < (int) eventPoint.y ? (int) pressPos.y
 					: (int) eventPoint.y;
 
@@ -326,7 +326,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
-			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera
+			float coef = Math.max(Math.abs((camera.frame().coordinatesOf(camera
 					.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
 			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation)
 					* wheelSensitivity() * wheelSensitivityCoef);

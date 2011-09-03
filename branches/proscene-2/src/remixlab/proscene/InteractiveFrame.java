@@ -340,7 +340,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 */
 	public void checkIfGrabsMouse(int x, int y, Camera camera) {
 		PVector proj = camera.projectedCoordinatesOf(position());
-		setGrabsMouse(keepsGrabbingMouse || ((PApplet.abs(x - proj.x) < grabsMouseThreshold()) && (PApplet.abs(y - proj.y) < grabsMouseThreshold())));
+		setGrabsMouse(keepsGrabbingMouse || ((Math.abs(x - proj.x) < grabsMouseThreshold()) && (Math.abs(y - proj.y) < grabsMouseThreshold())));
 	}
 
 	/**
@@ -638,8 +638,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 			// Scale to fit the screen mouse displacement
 			switch (camera.type()) {
 			case PERSPECTIVE:
-				trans.mult(2.0f * PApplet.tan(camera.fieldOfView() / 2.0f)
-						* PApplet.abs((camera.frame().coordinatesOf(position())).z)
+				trans.mult(2.0f * (float) Math.tan(camera.fieldOfView() / 2.0f)
+						* Math.abs((camera.frame().coordinatesOf(position())).z)
 						/ camera.screenHeight());
 				break;
 			case ORTHOGRAPHIC: {
@@ -676,7 +676,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 			PVector trans = camera.projectedCoordinatesOf(position());
 			float prev_angle = PApplet
 					.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
-			float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
+			float angle = (float) Math.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
 					- trans.x);
 			PVector axis = transformOf(camera.frame().inverseTransformOf(
 					new PVector(0.0f, 0.0f, -1.0f)));
@@ -704,8 +704,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 				trans.set(0.0f, -deltaY, 0.0f);
 			switch (camera.type()) {
 			case PERSPECTIVE:
-				trans.mult(PApplet.tan(camera.fieldOfView() / 2.0f)
-						* PApplet.abs((camera.frame().coordinatesOf(position())).z)
+				trans.mult((float) Math.tan(camera.fieldOfView() / 2.0f)
+						* Math.abs((camera.frame().coordinatesOf(position())).z)
 						/ camera.screenHeight());
 				break;
 			case ORTHOGRAPHIC: {
@@ -886,8 +886,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		if (!dirIsFixed) {
 			Point delta = new Point((eventPoint.x - pressPos.x),
 					(eventPoint.y - pressPos.y));
-			dirIsFixed = PApplet.abs((int)delta.x) != PApplet.abs((int)delta.y);
-			horiz = PApplet.abs((int)delta.x) > PApplet.abs((int)delta.y);
+			dirIsFixed = Math.abs((int)delta.x) != Math.abs((int)delta.y);
+			horiz = Math.abs((int)delta.x) > Math.abs((int)delta.y);
 		}
 
 		if (dirIsFixed)
@@ -917,7 +917,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		// Should be divided by the projectOnBall size, but it is 1.0
 		PVector axis = p2.cross(p1);
 
-		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
+		float angle = 2.0f * (float) Math.asin((float) Math.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
 
   	//lef-handed coordinate system correction (next two lines)
 	  axis.y = -axis.y;
@@ -940,6 +940,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 		float size_limit = size2 * 0.5f;
 
 		float d = x * x + y * y;
-		return d < size_limit ? PApplet.sqrt(size2 - d) : size_limit	/ PApplet.sqrt(d);
+		return d < size_limit ? (float) Math.sqrt(size2 - d) : size_limit	/ (float) Math.sqrt(d);
 	}
 }

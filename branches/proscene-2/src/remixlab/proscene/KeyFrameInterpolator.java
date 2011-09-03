@@ -683,7 +683,7 @@ public class KeyFrameInterpolator implements Copyable {
 			interpolationTm = time;
 
 		if ((!keyFr.isEmpty()) && (keyFr.get(keyFr.size() - 1).time() > time))
-			PApplet.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
+			System.out.println("Error in KeyFrameInterpolator.addKeyFrame: time is not monotone");
 		else
 			keyFr.add(new KeyFrame(frame, time, setRef));
 

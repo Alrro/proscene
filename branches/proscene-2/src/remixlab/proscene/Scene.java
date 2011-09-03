@@ -1583,8 +1583,8 @@ public class Scene implements PConstants {
 
 		pg3d.beginShape(QUAD_STRIP);
 		for (float i = 0; i < 13; i++) {
-			px = PApplet.cos(PApplet.radians(i * 30)) * w;
-			py = PApplet.sin(PApplet.radians(i * 30)) * w;
+			px = (float) Math.cos(PApplet.radians(i * 30)) * w;
+			py = (float) Math.sin(PApplet.radians(i * 30)) * w;
 			pg3d.vertex(px, py, 0);
 			pg3d.vertex(px, py, h);
 		}
@@ -1593,8 +1593,8 @@ public class Scene implements PConstants {
 		pg3d.beginShape(TRIANGLE_FAN);
 		pg3d.vertex(0, 0, 0);
 		for (float i = 12; i > -1; i--) {
-			px = PApplet.cos(PApplet.radians(i * 30)) * w;
-			py = PApplet.sin(PApplet.radians(i * 30)) * w;
+			px = (float) Math.cos(PApplet.radians(i * 30)) * w;
+			py = (float) Math.sin(PApplet.radians(i * 30)) * w;
 			pg3d.vertex(px, py, 0);
 		}
 		pg3d.endShape();
@@ -1602,8 +1602,8 @@ public class Scene implements PConstants {
 		pg3d.beginShape(TRIANGLE_FAN);
 		pg3d.vertex(0, 0, h);
 		for (float i = 0; i < 13; i++) {
-			px = PApplet.cos(PApplet.radians(i * 30)) * w;
-			py = PApplet.sin(PApplet.radians(i * 30)) * w;
+			px = (float) Math.cos(PApplet.radians(i * 30)) * w;
+			py = (float) Math.sin(PApplet.radians(i * 30)) * w;
 			pg3d.vertex(px, py, h);
 		}
 		pg3d.endShape();
@@ -1986,7 +1986,7 @@ public class Scene implements PConstants {
 
 		switch (camera.type()) {
 		case PERSPECTIVE: {
-			points[0].y = points[0].z * PApplet.tan(camera.fieldOfView() / 2.0f);
+			points[0].y = points[0].z * (float) Math.tan(camera.fieldOfView() / 2.0f);
 			points[0].x = points[0].y * camera.aspectRatio();
 			float ratio = points[1].z / points[0].z;
 			points[1].y = ratio * points[0].y;
@@ -2103,7 +2103,7 @@ public class Scene implements PConstants {
 	public void drawKFICamera(int color, float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;
-		float dist = halfHeight / PApplet.tan(PApplet.PI / 8.0f);
+		float dist = halfHeight / (float) Math.tan(PI / 8.0f);
 
 		float arrowHeight = 1.5f * halfHeight;
 		float baseHeight = 1.2f * halfHeight;
@@ -2350,8 +2350,8 @@ public class Scene implements PConstants {
 		pg3d.vertex(c.x, c.y, c.z);
 		PVector aux = new PVector();
 		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
-			x2 = x + PApplet.sin(angle) * radius;
-			y2 = y + PApplet.cos(angle) * radius;
+			x2 = x + (float) Math.sin(angle) * radius;
+			y2 = y + (float) Math.cos(angle) * radius;
 			aux.set(coords(new Point(x2, y2)));
 			pg3d.vertex(aux.x, aux.y, aux.z);
 		}
@@ -3406,28 +3406,28 @@ public class Scene implements PConstants {
 				if (avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame) avatar())
 							.setAzimuth(((InteractiveAvatarFrame) avatar()).azimuth()
-									+ PApplet.PI / 64);
+									+ PI / 64);
 			break;
 		case DECREASE_AZYMUTH:
 			if (avatar() != null)
 				if (avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame) avatar())
 							.setAzimuth(((InteractiveAvatarFrame) avatar()).azimuth()
-									- PApplet.PI / 64);
+									- PI / 64);
 			break;
 		case INCREASE_INCLINATION:
 			if (avatar() != null)
 				if (avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame) avatar())
 							.setInclination(((InteractiveAvatarFrame) avatar()).inclination()
-									+ PApplet.PI / 64);
+									+ PI / 64);
 			break;
 		case DECREASE_INCLINATION:
 			if (avatar() != null)
 				if (avatarIsInteractiveAvatarFrame)
 					((InteractiveAvatarFrame) avatar())
 							.setInclination(((InteractiveAvatarFrame) avatar()).inclination()
-									- PApplet.PI / 64);
+									- PI / 64);
 			break;
 		case INCREASE_TRACKING_DISTANCE:
 			if (avatar() != null)

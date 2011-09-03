@@ -76,11 +76,11 @@ public class MathUtils /**implements PConstants*/ {
 	 */
 	public static PVector orthogonalVector(PVector v) {
 		// Find smallest component. Keep equal case for null values.
-		if ((PApplet.abs(v.y) >= 0.9f * PApplet.abs(v.x))
-				&& (PApplet.abs(v.z) >= 0.9f * PApplet.abs(v.x)))
+		if ((Math.abs(v.y) >= 0.9f * Math.abs(v.x))
+				&& (Math.abs(v.z) >= 0.9f * Math.abs(v.x)))
 			return new PVector(0.0f, -v.z, v.y);
-		else if ((PApplet.abs(v.x) >= 0.9f * PApplet.abs(v.y))
-				&& (PApplet.abs(v.z) >= 0.9f * PApplet.abs(v.y)))
+		else if ((Math.abs(v.x) >= 0.9f * Math.abs(v.y))
+				&& (Math.abs(v.z) >= 0.9f * Math.abs(v.y)))
 			return new PVector(-v.z, 0.0f, v.x);
 		else
 			return new PVector(-v.y, v.x, 0.0f);
