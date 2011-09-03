@@ -3,7 +3,7 @@ package remixlab.util.protimer;
 import remixlab.proscene.*;
 import remixlab.util.*;
 
-public class Timer extends SimpleTimer {
+public class Timer extends SingleThreadedTimer {
 	Taskable caller;
 	
 	public Timer(Scene scn, Taskable t) {

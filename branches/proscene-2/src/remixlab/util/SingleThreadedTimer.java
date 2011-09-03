@@ -9,7 +9,7 @@ import remixlab.proscene.*;
  * @author pierre
  *
  */
-public class SimpleTimer implements Timable {
+public class SingleThreadedTimer implements Timable {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -30,7 +30,7 @@ public class SimpleTimer implements Timable {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		SimpleTimer other = (SimpleTimer) obj;
+		SingleThreadedTimer other = (SingleThreadedTimer) obj;
 		if (active != other.active)
 			return false;
 		if (counter != other.counter)
@@ -51,7 +51,7 @@ public class SimpleTimer implements Timable {
 	private long period;
 	private long startTime;	
 	
-	public SimpleTimer(Scene scn) {
+	public SingleThreadedTimer(Scene scn) {
 		scene = scn;
 		create();
 	}
