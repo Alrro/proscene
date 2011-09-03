@@ -401,7 +401,7 @@ public class HIDevice {
 			handlerObject = obj;
 			handlerMethodName = methodName;
 		} catch (Exception e) {
-			  PApplet.println("Something went wrong when registering your " + methodName + " method");
+			  System.out.println("Something went wrong when registering your " + methodName + " method");
 			  e.printStackTrace();
 		}
 	}
@@ -426,7 +426,7 @@ public class HIDevice {
 			try {
 				handlerMethod.invoke(handlerObject, new Object[] { this });
 			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ handlerMethodName + " method");
+				System.out.println("Something went wrong when invoking your "	+ handlerMethodName + " method");
 				e.printStackTrace();
 			}
 		}
@@ -642,7 +642,7 @@ public class HIDevice {
   	camMode = cMode;
   	if( camMode == CameraMode.GOOGLE_EARTH )
   		camera.interpolateToFitScene(); 
-  	PApplet.println( camMode.description() );
+  	System.out.println( camMode.description() );
   }
   
   /**
@@ -703,7 +703,7 @@ public class HIDevice {
    */
   public void setIFrameMode(IFrameMode iMode) {
   	iFrameMode = iMode; 
-  	PApplet.println( iFrameMode.description() );
+  	System.out.println( iFrameMode.description() );
   }
   
   /**

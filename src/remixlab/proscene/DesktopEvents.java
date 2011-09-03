@@ -27,8 +27,6 @@ package remixlab.proscene;
 
 import java.awt.event.*;
 
-import processing.core.PApplet;
-
 import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
@@ -47,7 +45,6 @@ import remixlab.proscene.Scene.MouseAction;
  */
 public class DesktopEvents implements MouseWheelListener {
 	protected Scene scene;
-	protected PApplet parent;
 	protected MouseAction camMouseAction;
 	protected boolean keyHandled;
   //Z O O M _ O N _ R E G I O N
@@ -56,7 +53,6 @@ public class DesktopEvents implements MouseWheelListener {
 	
 	public DesktopEvents(Scene s) {
 		scene = s;
-		parent = s.parent;
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		keyHandled = false;
 		fCorner = new Point();

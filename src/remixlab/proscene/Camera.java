@@ -57,7 +57,7 @@ import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
  * and {@link #setStandardZFar(float)}).
  * 
  */
-public class Camera implements Copyable {
+public class Camera implements Constants, Copyable {
 	@Override
 	public int hashCode() {	
     return new HashCodeBuilder(17, 37).
@@ -213,7 +213,7 @@ public class Camera implements Copyable {
 			
 			angle = 0;        
 			for(int i=0; i<normals.length; i++ )		
-				angle = PApplet.max( angle, PApplet.acos( PVector.dot(n[i], axis)));		
+				angle = Math.max( angle, (float) Math.acos( PVector.dot(n[i], axis)));		
 		}	
 	}
 	
@@ -353,7 +353,7 @@ public class Camera implements Copyable {
 		for (int i = 0; i < normal.length; i++)
 			normal[i] = new PVector();
 
-		fldOfView = Quaternion.PI / 4.0f;
+		fldOfView = (float) Math.PI / 4.0f;
 
 		fpCoefficients = new float[6][4];
 
@@ -367,7 +367,7 @@ public class Camera implements Copyable {
 		setSceneRadius(100);
 
 		// Initial value (only scaled after this)
-		orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
+		orthoCoef = (float) Math.tan(fieldOfView() / 2.0f);
 
 		// Also defines the arcballReferencePoint(), which changes orthoCoef.
 		setSceneCenter(new PVector(0.0f, 0.0f, 0.0f));
@@ -384,7 +384,7 @@ public class Camera implements Copyable {
 		setType(Camera.Type.PERSPECTIVE);
 
 		setZNearCoefficient(0.005f);
-		setZClippingCoefficient(PApplet.sqrt(3.0f));
+		setZClippingCoefficient((float) Math.sqrt(3.0f));
 
 		// Dummy values
 		setScreenWidthAndHeight(600, 400);
@@ -709,7 +709,7 @@ public class Camera implements Copyable {
 		// TODO: need check.
 		PVector axis = new PVector(0.0f, 1.0f, 0.0f);
 		Quaternion rot1 = new Quaternion(axis, theta);
-		axis.set(-PApplet.cos(theta), 0.0f, PApplet.sin(theta));
+		axis.set(-(float) Math.cos(theta), 0.0f, (float) Math.sin(theta));
 		Quaternion rot2 = new Quaternion(axis, phi);
 		setOrientation(Quaternion.multiply(rot1, rot2));
 	}
@@ -854,7 +854,7 @@ public class Camera implements Copyable {
 		if( type != type() )
 			lastFrameUpdate = scene.parent.frameCount;
 		if ((type == Camera.Type.ORTHOGRAPHIC) && (type() == Camera.Type.PERSPECTIVE))
-			orthoCoef = PApplet.tan(fieldOfView() / 2.0f);
+			orthoCoef = (float) Math.tan(fieldOfView() / 2.0f);
 
 		this.tp = type;
 	}
@@ -886,7 +886,7 @@ public class Camera implements Copyable {
 	 */
 	public void setFieldOfView(float fov) {
 		fldOfView = fov;
-		setFocusDistance(sceneRadius() / PApplet.tan(fov / 2.0f));
+		setFocusDistance(sceneRadius() / (float) Math.tan(fov / 2.0f));
 	}
 
 	/**
@@ -921,10 +921,10 @@ public class Camera implements Copyable {
 	 * resolution, although it may miss some parts of the scene.
 	 */
 	public void setFOVToFitScene() {
-		if (distanceToSceneCenter() > PApplet.sqrt(2.0f) * sceneRadius())
-			setFieldOfView(2.0f * PApplet.asin(sceneRadius() / distanceToSceneCenter()));
+		if (distanceToSceneCenter() > (float) Math.sqrt(2.0f) * sceneRadius())
+			setFieldOfView(2.0f * (float) Math.asin(sceneRadius() / distanceToSceneCenter()));
 		else
-			setFieldOfView(Quaternion.PI / 2.0f);
+			setFieldOfView((float) Math.PI / 2.0f);
 	}
 
 	/**
@@ -971,7 +971,7 @@ public class Camera implements Copyable {
 			target[1] = dist * ((aspectRatio() < 1.0f) ? 1.0f / aspectRatio() : 1.0f);
 		} else {
 			float dist = orthoCoef
-					* PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
+					* Math.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 			// #CONNECTION# fitScreenRegion
 			// 1. halfWidth
 			target[0] = dist * ((aspectRatio() < 1.0f) ? 1.0f : aspectRatio());
@@ -991,7 +991,7 @@ public class Camera implements Copyable {
 	 * aspectRatio() )}.
 	 */
 	public float horizontalFieldOfView() {
-		return 2.0f * PApplet.atan(PApplet.tan(fieldOfView() / 2.0f) * aspectRatio());
+		return 2.0f * (float) Math.atan((float) Math.tan(fieldOfView() / 2.0f) * aspectRatio());
 	}
 
 	/**
@@ -1003,7 +1003,7 @@ public class Camera implements Copyable {
 	 * call to {@link #horizontalFieldOfView()} returns the expected value.
 	 */
 	public void setHorizontalFieldOfView(float hfov) {
-		setFieldOfView(2.0f * PApplet.atan(PApplet.tan(hfov / 2.0f) / aspectRatio()));
+		setFieldOfView(2.0f * (float) Math.atan((float) Math.tan(hfov / 2.0f) / aspectRatio()));
 	}
 
 	/**
@@ -1272,8 +1272,8 @@ public class Camera implements Copyable {
 	public float pixelP5Ratio(PVector position) {
 		switch (type()) {
 		case PERSPECTIVE:
-			return 2.0f * PApplet.abs((frame().coordinatesOf(position)).z)
-					* PApplet.tan(fieldOfView() / 2.0f) / screenHeight();
+			return 2.0f * Math.abs((frame().coordinatesOf(position)).z)
+					* (float) Math.tan(fieldOfView() / 2.0f) / screenHeight();
 		case ORTHOGRAPHIC: {
 			float[] wh = getOrthoWidthHeight();
 			return 2.0f * wh[1] / screenHeight();
@@ -1307,7 +1307,7 @@ public class Camera implements Copyable {
 	 */
 	public float distanceToFrustumPlane(int index, PVector pos) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		PVector myVec = new PVector(fpCoefficients[index][0],
@@ -1335,7 +1335,7 @@ public class Camera implements Copyable {
 	 */
 	public boolean pointIsVisible(PVector point) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		for (int i = 0; i < 6; ++i)
@@ -1367,7 +1367,7 @@ public class Camera implements Copyable {
 	 */
 	public Visibility sphereIsVisible(PVector center, float radius) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		boolean allInForAllPlanes = true;
@@ -1406,7 +1406,7 @@ public class Camera implements Copyable {
 	 */
 	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
+			System.out.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		boolean allInForAllPlanes = true;
@@ -1486,7 +1486,7 @@ public class Camera implements Copyable {
 	 */
 	public float[][] getFrustumEquations() {
 		if (!scene.frustumEquationsUpdateIsEnable())
-			PApplet.println("The camera frustum plane equations may be outdated. Please "
+			System.out.println("The camera frustum plane equations may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
 		return fpCoefficients;
@@ -1557,8 +1557,8 @@ public class Camera implements Copyable {
 		switch (type()) {
 		case PERSPECTIVE: {
 			float hhfov = horizontalFieldOfView() / 2.0f;
-			float chhfov = PApplet.cos(hhfov);
-			float shhfov = PApplet.sin(hhfov);
+			float chhfov = (float) Math.cos(hhfov);
+			float shhfov = (float) Math.sin(hhfov);
 			normal[0] = PVector.mult(viewDir, -shhfov);
 			normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
 			normal[0] = PVector.add(normal[0], PVector.mult(right, -chhfov));
@@ -1566,8 +1566,8 @@ public class Camera implements Copyable {
 			normal[3] = viewDir;
 
 			float hfov = fieldOfView() / 2.0f;
-			float chfov = PApplet.cos(hfov);
-			float shfov = PApplet.sin(hfov);
+			float chfov = (float) Math.cos(hfov);
+			float shfov = (float) Math.sin(hfov);
 			normal[4] = PVector.mult(viewDir, -shfov);
 			normal[5] = PVector.add(normal[4], PVector.mult(up, -chfov));
 			normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
@@ -1735,11 +1735,11 @@ public class Camera implements Copyable {
 	 * @see #faceIsBackFacing(PVector, PVector, PVector)
 	 */
 	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {		
-		if( angle < PApplet.HALF_PI ) {			
-			float phi = PApplet.acos ( PVector.dot(axis, viewDirection ) );
-			if(phi >= PApplet.HALF_PI)
+		if( angle < HALF_PI ) {			
+			float phi = (float) Math.acos ( PVector.dot(axis, viewDirection ) );
+			if(phi >= HALF_PI)
 				return false;
-			if( (phi+angle) >= PApplet.HALF_PI)
+			if( (phi+angle) >= HALF_PI)
 				return false;
 			return true;
 		}
@@ -1794,13 +1794,13 @@ public class Camera implements Copyable {
 	 */
 	public void setSceneRadius(float radius) {
 		if (radius <= 0.0f) {
-			PApplet.println("Warning: Scene radius must be positive - Ignoring value");
+			System.out.println("Warning: Scene radius must be positive - Ignoring value");
 			return;
 		}
 		
 		scnRadius = radius;
 
-		setFocusDistance(sceneRadius() / PApplet.tan(fieldOfView() / 2.0f));
+		setFocusDistance(sceneRadius() / (float) Math.tan(fieldOfView() / 2.0f));
 
 		setFlySpeed(0.01f * sceneRadius());
 
@@ -1850,7 +1850,7 @@ public class Camera implements Copyable {
 	 * Used by {@link #zNear()} and {@link #zFar()} to optimize the Z range.
 	 */
 	public float distanceToSceneCenter() {
-		return PApplet.abs((frame().coordinatesOf(sceneCenter())).z);
+		return Math.abs((frame().coordinatesOf(sceneCenter())).z);
 	}
 
 	/**
@@ -1883,7 +1883,7 @@ public class Camera implements Copyable {
 	 * world coordinate system).
 	 */
 	public void setArcballReferencePoint(PVector rap) {
-		float prevDist = PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
+		float prevDist = Math.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 
 		frame().setArcballReferencePoint(rap);
 
@@ -1891,7 +1891,7 @@ public class Camera implements Copyable {
 		// arcballReferencePoint, so that the image does
 		// not change when the arcballReferencePoint is changed in ORTHOGRAPHIC
 		// mode.
-		float newDist = PApplet.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
+		float newDist = Math.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 		// Prevents division by zero when rap is set to camera position
 		if ((prevDist > 1E-9) && (newDist > 1E-9))
 			orthoCoef *= prevDist / newDist;
@@ -2099,7 +2099,7 @@ public class Camera implements Copyable {
 		boolean info = true;
 		if (!kfi.containsKey(key)) {
 			setKeyFrameInterpolator(key, new KeyFrameInterpolator(scene, frame()));
-			PApplet.println("Position " + key + " saved");
+			System.out.println("Position " + key + " saved");
 			info = false;
 		}
 
@@ -2109,7 +2109,7 @@ public class Camera implements Copyable {
 			kfi.get(key).addKeyFrame(frame(), false);
 
 		if (info)
-			PApplet.println("Path " + key + ", position "
+			System.out.println("Path " + key + ", position "
 					+ kfi.get(key).numberOfKeyFrames() + " added");
 	}
 
@@ -2128,12 +2128,12 @@ public class Camera implements Copyable {
 		if (kfi.containsKey(key)) {
 			if (kfi.get(key).interpolationIsStarted()) {
 				kfi.get(key).stopInterpolation();
-				PApplet.println("Path " + key + " stopped");
+				System.out.println("Path " + key + " stopped");
 			} else {
 				if (anyInterpolationIsStarted())
 					stopAllInterpolations();
 				kfi.get(key).startInterpolation();
-				PApplet.println("Path " + key + " started");
+				System.out.println("Path " + key + " started");
 			}
 		}
 	}
@@ -2149,7 +2149,7 @@ public class Camera implements Copyable {
 			kfi.get(key).stopInterpolation();
 			kfi.get(key).deletePath();
 			kfi.remove(key);
-			PApplet.println("Path " + key + " deleted");
+			System.out.println("Path " + key + " deleted");
 		}
 	}
 
@@ -2277,7 +2277,7 @@ public class Camera implements Copyable {
 		case PERSPECTIVE: {
 			// #CONNECTION# all non null coefficients were set to 0.0 in
 			// constructor.
-			float f = 1.0f / PApplet.tan(fieldOfView() / 2.0f);
+			float f = 1.0f / (float) Math.tan(fieldOfView() / 2.0f);
 			projectionMat.m00 = f / aspectRatio();
 			projectionMat.m11 = f;
 			projectionMat.m22 = (ZNear + ZFar) / (ZNear - ZFar);
@@ -2458,9 +2458,9 @@ public class Camera implements Copyable {
 		case PERSPECTIVE:
 			orig.set(position());
 			dir.set(new PVector(((2.0f * (int)pixel.x / screenWidth()) - 1.0f)
-					* PApplet.tan(fieldOfView() / 2.0f) * aspectRatio(),
+					* (float) Math.tan(fieldOfView() / 2.0f) * aspectRatio(),
 					((2.0f * (screenHeight() - (int)pixel.y) / screenHeight()) - 1.0f)
-							* PApplet.tan(fieldOfView() / 2.0f), -1.0f));
+							* (float) Math.tan(fieldOfView() / 2.0f), -1.0f));
 			dir.set(PVector.sub(worldCoordinatesOf(dir), orig));
 			dir.normalize();
 			break;
@@ -2670,9 +2670,9 @@ public class Camera implements Copyable {
 		float distance = 0.0f;
 		switch (type()) {
 		case PERSPECTIVE: {
-			float yview = radius / PApplet.sin(fieldOfView() / 2.0f);
-			float xview = radius / PApplet.sin(horizontalFieldOfView() / 2.0f);
-			distance = PApplet.max(xview, yview);
+			float yview = radius / (float) Math.sin(fieldOfView() / 2.0f);
+			float xview = radius / (float) Math.sin(horizontalFieldOfView() / 2.0f);
+			distance = Math.max(xview, yview);
 			break;
 		}
 		case ORTHOGRAPHIC: {
@@ -2693,8 +2693,8 @@ public class Camera implements Copyable {
 	 * {@link #fitSphere(PVector, float)}.
 	 */
 	public void fitBoundingBox(PVector min, PVector max) {
-		float diameter = PApplet.max(PApplet.abs(max.y - min.y), PApplet.abs(max.x - min.x));
-		diameter = PApplet.max(PApplet.abs(max.z - min.z), diameter);
+		float diameter = Math.max(Math.abs(max.y - min.y), Math.abs(max.x - min.x));
+		diameter = Math.max(Math.abs(max.z - min.z), diameter);
 		fitSphere(PVector.mult(PVector.add(min, max), 0.5f), 0.5f * diameter);
 	}
 
@@ -2734,11 +2734,11 @@ public class Camera implements Copyable {
 		switch (type()) {
 		case PERSPECTIVE: {
 			final float distX = PVector.dist(pointX, newCenter)
-					/ PApplet.sin(horizontalFieldOfView() / 2.0f);
+					/ (float) Math.sin(horizontalFieldOfView() / 2.0f);
 			final float distY = PVector.dist(pointY, newCenter)
-					/ PApplet.sin(fieldOfView() / 2.0f);
+					/ (float) Math.sin(fieldOfView() / 2.0f);
 
-			distance = PApplet.max(distX, distY);
+			distance = Math.max(distX, distY);
 			break;
 		}
 		case ORTHOGRAPHIC: {
@@ -2749,7 +2749,7 @@ public class Camera implements Copyable {
 			final float distY = PVector.dist(pointY, newCenter) / orthoCoef
 					/ ((aspectRatio() < 1.0) ? 1.0f / aspectRatio() : 1.0f);
 
-			distance = dist + PApplet.max(distX, distY);
+			distance = dist + Math.max(distX, distY);
 
 			break;
 		}

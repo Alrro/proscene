@@ -40,7 +40,7 @@ import processing.core.*;
  * {@link #trackingDistance()}) respect to the {@link #position()} (which
  * defines its {@link #target()}) of the InteractiveAvatarFrame.
  */
-public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements	Trackable, Copyable {
+public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements	Constants, Trackable, Copyable {
 	@Override
 	public int hashCode() {
     return new HashCodeBuilder(17, 37).		
@@ -82,7 +82,7 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements	
 	public InteractiveAvatarFrame(Scene scn) {
 		super(scn);
 		q = new Quaternion();
-		q.fromTaitBryan(PApplet.QUARTER_PI, 0, 0);
+		q.fromTaitBryan(QUARTER_PI, 0, 0);
 		camRelPos = new PVector();
 		setTrackingDistance(scene.radius() / 5);
 	}

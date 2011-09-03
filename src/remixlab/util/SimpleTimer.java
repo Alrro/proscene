@@ -1,6 +1,5 @@
 package remixlab.util;
 
-import processing.core.PApplet;
 import remixlab.proscene.*;
 
 /**
@@ -127,7 +126,7 @@ public class SimpleTimer implements Timable {
   	if(result) {
   		counter++;
   		if( period < timePerFrame )
-  		PApplet.println("Your current frame rate (~" + scene.parent.frameRate + " fps) is not high enough " +
+  		System.out.println("Your current frame rate (~" + scene.parent.frameRate + " fps) is not high enough " +
           "to run the timer and reach the specified " + period + " ms period, " + timePerFrame
           + " ms period will be used instead. If you want to sustain a lower timer " +
           "period, define a higher frame rate (minimum of " + 1000f/period + " fps) " +

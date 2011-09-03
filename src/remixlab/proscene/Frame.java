@@ -629,7 +629,7 @@ public class Frame implements Copyable {
 	 */
 	public final void setReferenceFrame(Frame rFrame) {
 		if (settingAsReferenceFrameWillCreateALoop(rFrame))
-			PApplet.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
+			System.out.println("Frame.setReferenceFrame would create a loop in Frame hierarchy");
 		else {
 			boolean identical = (kernel().referenceFrame() == rFrame);
 			kernel().setReferenceFrame(rFrame);
@@ -1015,7 +1015,7 @@ public class Frame implements Copyable {
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 3; ++j) {
 				vec.set(directions[0][i]);
-				proj = PApplet.abs(vec.dot(directions[1][j]));
+				proj = Math.abs(vec.dot(directions[1][j]));
 				if ((proj) >= maxProj) {
 					index[0] = (short) i;
 					index[1] = (short) j;
@@ -1031,10 +1031,10 @@ public class Frame implements Copyable {
 		vec.set(directions[0][index[0]]);
 		float coef = vec.dot(directions[1][index[1]]);
 
-		if (PApplet.abs(coef) >= threshold) {
+		if (Math.abs(coef) >= threshold) {
 			vec.set(directions[0][index[0]]);
 			PVector axis = vec.cross(directions[1][index[1]]);
-			float angle = PApplet.asin(axis.mag());
+			float angle = (float) Math.asin(axis.mag());
 			if (coef >= 0.0)
 				angle = -angle;
 			// setOrientation(Quaternion(axis, angle) * orientation());
@@ -1052,7 +1052,7 @@ public class Frame implements Copyable {
 			float max = 0.0f;
 			for (int i = 0; i < 3; ++i) {
 				vec.set(directions[0][i]);
-				proj = PApplet.abs(vec.dot(dir));
+				proj = Math.abs(vec.dot(dir));
 				if (proj > max) {
 					index[0] = (short) i;
 					max = proj;
@@ -1062,7 +1062,7 @@ public class Frame implements Copyable {
 			if (max >= threshold) {
 				vec.set(directions[0][index[0]]);
 				axis = vec.cross(dir);
-				angle = PApplet.asin(axis.mag());
+				angle = (float) Math.asin(axis.mag());
 				vec.set(directions[0][index[0]]);
 				if (vec.dot(dir) >= 0.0)
 					angle = -angle;
@@ -1574,8 +1574,8 @@ public class Frame implements Copyable {
 	 */
 	public final void fromMatrix(PMatrix3D pM) {
 		// m should be of size [4][4]
-		if (PApplet.abs(pM.m33) < 1E-8) {
-			PApplet.println("Doing nothing: pM.m33 should be non-zero!");
+		if (Math.abs(pM.m33) < 1E-8) {
+			System.out.println("Doing nothing: pM.m33 should be non-zero!");
 			return;
 		}
 

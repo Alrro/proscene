@@ -80,7 +80,7 @@ public class LocalConstraint extends AxisPlaneConstraint {
 			PVector axis = rotationConstraintDirection();
 			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
 			quat = MathUtils.projectVectorOnAxis(quat, axis);
-			res = new Quaternion(quat, 2.0f * PApplet.acos(rotation.w));
+			res = new Quaternion(quat, 2.0f * (float) Math.acos(rotation.w));
 		}
 			break;
 		case FORBIDDEN:
