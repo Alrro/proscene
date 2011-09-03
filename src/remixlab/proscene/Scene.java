@@ -461,7 +461,7 @@ public class Scene implements PConstants {
 	protected boolean keyboardHandling;
 	
 	// A N I M A T I O N
-	protected SimpleTimer animationTimer;
+	protected SingleThreadedTimer animationTimer;
 	protected boolean animationStarted;
 	public boolean animatedFrameWasTriggered;
 	protected long animationPeriod;
@@ -589,7 +589,7 @@ public class Scene implements PConstants {
 		initDefaultCameraProfiles();
 
 		//animation
-		animationTimer = new SimpleTimer(this);
+		animationTimer = new SingleThreadedTimer(this);
 		setAnimationPeriod(40, false); // 25Hz
 		stopAnimation();
 		
