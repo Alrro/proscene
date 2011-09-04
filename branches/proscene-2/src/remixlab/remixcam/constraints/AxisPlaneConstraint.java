@@ -26,7 +26,6 @@
 package remixlab.remixcam.constraints;
 
 import processing.core.*;
-import remixlab.remixcam.core.Frame;
 import remixlab.remixcam.geom.Quaternion;
 
 /**
