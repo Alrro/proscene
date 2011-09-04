@@ -26,9 +26,21 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import remixlab.util.*;
-import remixlab.util.awttimer.*;
-import remixlab.util.protimer.*;
+import remixlab.proscenejs.Timer;
+import remixlab.remixcam.core.Camera;
+import remixlab.remixcam.core.Frame;
+import remixlab.remixcam.core.InteractiveAvatarFrame;
+import remixlab.remixcam.core.InteractiveDrivableFrame;
+import remixlab.remixcam.core.InteractiveFrame;
+import remixlab.remixcam.core.MouseGrabbable;
+import remixlab.remixcam.core.Trackable;
+import remixlab.remixcam.devices.Bindings;
+import remixlab.remixcam.devices.HIDevice;
+import remixlab.remixcam.geom.Point;
+import remixlab.remixcam.geom.Quaternion;
+import remixlab.remixcam.util.*;
+import remixlab.remixcam.util.awttimer.*;
+import remixlab.remixcam.util.protimer.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -427,7 +439,7 @@ public class Scene implements PConstants {
 	// boolean interactiveFrameIsAnAvatar;
 	protected boolean iFrameIsDrwn;
 	protected Trackable trck;
-	protected boolean avatarIsInteractiveDrivableFrame;
+	public boolean avatarIsInteractiveDrivableFrame;
 	protected boolean avatarIsInteractiveAvatarFrame;
 
 	// S C R E E N C O O R D I N A T E S	
@@ -660,8 +672,8 @@ public class Scene implements PConstants {
 	 * Returns a list containing references to all the active MouseGrabbers.
 	 * <p>
 	 * Used to parse all the MouseGrabbers and to check if any of them
-	 * {@link remixlab.proscene.MouseGrabbable#grabsMouse()} using
-	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}.
+	 * {@link remixlab.remixcam.core.MouseGrabbable#grabsMouse()} using
+	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}.
 	 * <p>
 	 * You should not have to directly use this list. Use
 	 * {@link #removeFromMouseGrabberPool(MouseGrabbable)} and
@@ -791,7 +803,7 @@ public class Scene implements PConstants {
 	 * Returns the current MouseGrabber, or {@code null} if none currently grabs
 	 * mouse events.
 	 * <p>
-	 * When {@link remixlab.proscene.MouseGrabbable#grabsMouse()}, the different
+	 * When {@link remixlab.remixcam.core.MouseGrabbable#grabsMouse()}, the different
 	 * mouse events are sent to it instead of their usual targets (
 	 * {@link #camera()} or {@link #interactiveFrame()}).
 	 */
@@ -803,7 +815,7 @@ public class Scene implements PConstants {
 	 * Directly defines the {@link #mouseGrabber()}.
 	 * <p>
 	 * You should not call this method directly as it bypasses the
-	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
+	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
 	 * test performed by {@link #mouseMoved(MouseEvent)}.
 	 */
 	protected void setMouseGrabber(MouseGrabbable mouseGrabber) {
@@ -818,7 +830,7 @@ public class Scene implements PConstants {
 	 * Returns true if the mouseGrabber is currently in the {@link #mouseGrabberPool()} list.
 	 * <p>
 	 * When set to false using {@link #removeFromMouseGrabberPool(MouseGrabbable)}, the Scene no longer
-	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)} on this mouseGrabber.
+	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)} on this mouseGrabber.
 	 * Use {@link #addInMouseGrabberPool(MouseGrabbable)} to insert it back.
 	 */
 	public boolean isInMouseGrabberPool(MouseGrabbable mouseGrabber) {
@@ -834,7 +846,7 @@ public class Scene implements PConstants {
 	 * <p>
 	 * Use {@link #removeFromMouseGrabberPool(MouseGrabbable)} to remove the mouseGrabber from
 	 * the list, so that it is no longer tested with
-	 * {@link remixlab.proscene.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
+	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
 	 * by the Scene, and hence can no longer grab mouse focus. Use
 	 * {@link #isInMouseGrabberPool(MouseGrabbable)} to know the current state of the MouseGrabber.
 	 */
@@ -916,7 +928,7 @@ public class Scene implements PConstants {
 	 * @see #disableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
 	 */
 	public boolean frustumEquationsUpdateIsEnable() {
 		return camera().frustumEquationsUpdateIsEnable();
@@ -930,7 +942,7 @@ public class Scene implements PConstants {
 	 * @see #disableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
 	 */
 	public void toggleFrustumEquationsUpdate() {
 		if ( frustumEquationsUpdateIsEnable() )
@@ -948,7 +960,7 @@ public class Scene implements PConstants {
 	 * @see #toggleFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
 	 */
 	public void disableFrustumEquationsUpdate() {
 		enableFrustumEquationsUpdate(false);
@@ -962,7 +974,7 @@ public class Scene implements PConstants {
 	 * @see #toggleFrustumEquationsUpdate()
 	 * @see #disableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
 	 */
 	public void enableFrustumEquationsUpdate() {
 		enableFrustumEquationsUpdate(true);
@@ -977,7 +989,7 @@ public class Scene implements PConstants {
 	 * @see #toggleFrustumEquationsUpdate()
 	 * @see #disableFrustumEquationsUpdate()
 	 * @see #enableFrustumEquationsUpdate()
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
+	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
 	 */
 	public void enableFrustumEquationsUpdate(boolean flag) {
 		camera().enableFrustumEquationsUpdate(flag);
@@ -1509,7 +1521,7 @@ public class Scene implements PConstants {
 	 * Convenience wrapper function that simply calls {@code
 	 * camera().showEntireScene()}
 	 * 
-	 * @see remixlab.proscene.Camera#showEntireScene()
+	 * @see remixlab.remixcam.core.Camera#showEntireScene()
 	 */
 	public void showAll() {
 		camera().showEntireScene();
@@ -1520,12 +1532,12 @@ public class Scene implements PConstants {
 	 * camera().setArcballReferencePointFromPixel(pixel)}.
 	 * <p>
 	 * Current implementation set no
-	 * {@link remixlab.proscene.Camera#arcballReferencePoint()}. Override
-	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
+	 * {@link remixlab.remixcam.core.Camera#arcballReferencePoint()}. Override
+	 * {@link remixlab.remixcam.core.Camera#pointUnderPixel(Point)} in your openGL
 	 * based camera for this to work.
 	 * 
-	 * @see remixlab.proscene.Camera#setArcballReferencePointFromPixel(Point)
-	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
+	 * @see remixlab.remixcam.core.Camera#setArcballReferencePointFromPixel(Point)
+	 * @see remixlab.remixcam.core.Camera#pointUnderPixel(Point)
 	 */
 	public boolean setArcballReferencePointFromPixel(Point pixel) {
 		return camera().setArcballReferencePointFromPixel(pixel);
@@ -1536,11 +1548,11 @@ public class Scene implements PConstants {
 	 * camera().interpolateToZoomOnPixel(pixel)}.
 	 * <p>
 	 * Current implementation does nothing. Override
-	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
+	 * {@link remixlab.remixcam.core.Camera#pointUnderPixel(Point)} in your openGL
 	 * based camera for this to work.
 	 * 
-	 * @see remixlab.proscene.Camera#interpolateToZoomOnPixel(Point)
-	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
+	 * @see remixlab.remixcam.core.Camera#interpolateToZoomOnPixel(Point)
+	 * @see remixlab.remixcam.core.Camera#pointUnderPixel(Point)
 	 */
 	public Camera.WorldPoint interpolateToZoomOnPixel(Point pixel) {
 		return camera().interpolateToZoomOnPixel(pixel);
@@ -1551,12 +1563,12 @@ public class Scene implements PConstants {
 	 * camera().setSceneCenterFromPixel(pixel)}
 	 * <p>
 	 * Current implementation set no
-	 * {@link remixlab.proscene.Camera#sceneCenter()}. Override
-	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
+	 * {@link remixlab.remixcam.core.Camera#sceneCenter()}. Override
+	 * {@link remixlab.remixcam.core.Camera#pointUnderPixel(Point)} in your openGL
 	 * based camera for this to work.
 	 * 
-	 * @see remixlab.proscene.Camera#setSceneCenterFromPixel(Point)
-	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
+	 * @see remixlab.remixcam.core.Camera#setSceneCenterFromPixel(Point)
+	 * @see remixlab.remixcam.core.Camera#pointUnderPixel(Point)
 	 */
 	public boolean setCenterFromPixel(Point pixel) {
 		return camera().setSceneCenterFromPixel(pixel);
@@ -2232,7 +2244,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Draws all InteractiveFrames' selection regions: a shooter target
-	 * visual hint of {@link remixlab.proscene.InteractiveFrame#grabsMouseThreshold()} pixels size.
+	 * visual hint of {@link remixlab.remixcam.core.InteractiveFrame#grabsMouseThreshold()} pixels size.
 	 * 
 	 * <b>Attention:</b> If the InteractiveFrame is part of a Camera path draws
 	 * nothing.
@@ -2256,7 +2268,7 @@ public class Scene implements PConstants {
 
 	/**
 	 * Draws the selection regions (a shooter target visual hint of
-	 * {@link remixlab.proscene.InteractiveFrame#grabsMouseThreshold()} pixels size) of all
+	 * {@link remixlab.remixcam.core.InteractiveFrame#grabsMouseThreshold()} pixels size) of all
 	 * InteractiveFrames forming part of the Camera paths.
 	 * 
 	 * @see #drawSelectionHints()
@@ -3485,7 +3497,7 @@ public class Scene implements PConstants {
 	public String globalHelp() {
 		String description = new String();
 		description += "GLOBAL keyboard shortcuts\n";
-		for (Entry<KeyboardShortcut, Scene.KeyboardAction> entry : gProfile.map.entrySet()) {			
+		for (Entry<KeyboardShortcut, Scene.KeyboardAction> entry : gProfile.map().entrySet()) {			
 			Character space = ' ';
 			if (!entry.getKey().description().equals(space.toString())) 
 				description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
@@ -3493,7 +3505,7 @@ public class Scene implements PConstants {
 				description += "space_bar" + " -> " + entry.getValue().description() + "\n";
 		}
 		
-		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
+		for (Entry<Integer, Integer> entry : pathKeys.map().entrySet())
 			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
 		description += DesktopEvents.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
 		description += DesktopEvents.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
@@ -4069,7 +4081,7 @@ public class Scene implements PConstants {
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}. Calls
 	 * {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
-	 * {@link remixlab.proscene.Camera#type()}.
+	 * {@link remixlab.remixcam.core.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
 		// compute the processing camera projection matrix from our camera()

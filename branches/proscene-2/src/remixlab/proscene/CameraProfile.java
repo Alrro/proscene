@@ -31,6 +31,8 @@ import java.util.Map.Entry;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
+import remixlab.remixcam.devices.Bindings;
+import remixlab.remixcam.devices.ClickBinding;
 
 /**
  * This class encapsulates a set of camera keyboard shortcuts, and camera and
@@ -454,7 +456,7 @@ public class CameraProfile {
 	 */
 	public String cameraMouseBindingsDescription() {
 		String description = new String();
-		for (Entry<Integer, MouseAction> entry : cameraActions.map.entrySet())
+		for (Entry<Integer, MouseAction> entry : cameraActions.map().entrySet())
       description += KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -464,7 +466,7 @@ public class CameraProfile {
 	 */
 	public String frameMouseBindingsDescription() {
 		String description = new String();
-		for (Entry<Integer, MouseAction> entry : frameActions.map.entrySet())
+		for (Entry<Integer, MouseAction> entry : frameActions.map().entrySet())
       description += KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -474,7 +476,7 @@ public class CameraProfile {
 	 */
 	public String mouseClickBindingsDescription() {
 		String description = new String();
-		for (Entry<ClickBinding, ClickAction> entry : clickActions.map.entrySet())
+		for (Entry<ClickBinding, ClickAction> entry : clickActions.map().entrySet())
       description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -484,7 +486,7 @@ public class CameraProfile {
 	 */
 	public String keyboardShortcutsDescription() {
 		String description = new String();
-		for (Entry<KeyboardShortcut, Scene.CameraKeyboardAction> entry : keyboard.map.entrySet())
+		for (Entry<KeyboardShortcut, Scene.CameraKeyboardAction> entry : keyboard.map().entrySet())
       description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -494,7 +496,7 @@ public class CameraProfile {
 	 */
 	public String cameraWheelBindingsDescription() {
 		String description = new String();
-		for (Entry<Integer, Scene.MouseAction> entry : cameraWheelActions.map.entrySet()) {
+		for (Entry<Integer, Scene.MouseAction> entry : cameraWheelActions.map().entrySet()) {
 			if (KeyEvent.getModifiersExText(entry.getKey()).length() != 0 )
 				description += "Wheel " + KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 			else
@@ -508,7 +510,7 @@ public class CameraProfile {
 	 */
 	public String frameWheelBindingsDescription() {
 		String description = new String();
-		for (Entry<Integer, Scene.MouseAction> entry : frameWheelActions.map.entrySet())
+		for (Entry<Integer, Scene.MouseAction> entry : frameWheelActions.map().entrySet())
 			if (KeyEvent.getModifiersExText(entry.getKey()).length() != 0 )
 				description += "Wheel " + KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 			else
