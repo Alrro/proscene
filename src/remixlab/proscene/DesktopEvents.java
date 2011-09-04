@@ -32,6 +32,9 @@ import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.KeyboardAction;
 import remixlab.proscene.Scene.MouseAction;
+import remixlab.remixcam.core.InteractiveFrame;
+import remixlab.remixcam.core.MouseGrabbable;
+import remixlab.remixcam.geom.Point;
 
 /**
  * This class provides low level java.awt.* based input event handling.
@@ -527,7 +530,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * Wrapper function that simply returns
 	 * {@code java.awt.event.KeyEvent.getKeyText(key)}.
 	 */
-	protected static String getKeyText(int key) {
+	public static String getKeyText(int key) {
 		return KeyEvent.getKeyText(key);
 	}
 	
@@ -535,7 +538,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * Wrapper function that simply returns
 	 * {@code java.awt.event.KeyEvent.getModifiersExText(mask)}.
 	 */
-	protected static String getModifiersExText(int mask) {
+	public static String getModifiersExText(int mask) {
 		return KeyEvent.getModifiersExText(mask);
 	}
 }
