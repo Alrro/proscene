@@ -39,8 +39,6 @@ import remixlab.remixcam.devices.HIDevice;
 import remixlab.remixcam.geom.Point;
 import remixlab.remixcam.geom.Quaternion;
 import remixlab.remixcam.util.*;
-import remixlab.remixcam.util.awttimer.*;
-import remixlab.remixcam.util.protimer.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
