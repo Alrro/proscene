@@ -25,7 +25,7 @@
 
 package remixlab.remixcam.core;
 
-import processing.core.PVector;
+import remixlab.remixcam.geom.*;
 
 /**
  * Interface for objects that are to be tracked by a proscene Camera when its
@@ -45,28 +45,28 @@ public interface Trackable {
 	/**
 	 * Returns the position of the tracking Camera in the world coordinate system.
 	 * 
-	 * @return PVector holding the camera position defined in the world coordinate
+	 * @return Vector3D holding the camera position defined in the world coordinate
 	 *         system.
 	 */
-	public PVector cameraPosition();
+	public Vector3D cameraPosition();
 
 	/**
 	 * Returns the vector to be set as the
 	 * {@link remixlab.remixcam.core.Camera#upVector()}.
 	 * 
-	 * @return PVector holding the camera up-vector defined in the world
+	 * @return Vector3D holding the camera up-vector defined in the world
 	 *         coordinate system.
 	 */
-	public PVector upVector();
+	public Vector3D upVector();
 
 	/**
 	 * Returns the target point to be set as the
-	 * {@link remixlab.remixcam.core.Camera#lookAt(PVector)}.
+	 * {@link remixlab.remixcam.core.Camera#lookAt(Vector3D)}.
 	 * 
-	 * @return PVector holding the camera look-at vector defined in the world
+	 * @return Vector3D holding the camera look-at vector defined in the world
 	 *         coordinate system.
 	 */
-	public PVector target();
+	public Vector3D target();
 
 	/**
 	 * Computes the camera position according to some specific InteractiveFrame

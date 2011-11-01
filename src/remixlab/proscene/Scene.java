@@ -27,18 +27,29 @@ package remixlab.proscene;
 
 import processing.core.*;
 import remixlab.proscenejs.Timer;
+
+/**
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.devices.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.util.*;
+*/
+
 import remixlab.remixcam.core.Camera;
-import remixlab.remixcam.core.Frame;
-import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
+import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveFrame;
+import remixlab.remixcam.core.Frame;
 import remixlab.remixcam.core.MouseGrabbable;
 import remixlab.remixcam.core.Trackable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.devices.HIDevice;
-import remixlab.remixcam.geom.Point;
+import remixlab.remixcam.util.AbstractTimerJob;
+import remixlab.remixcam.util.SingleThreadedTimer;
+import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Quaternion;
-import remixlab.remixcam.util.*;
+import remixlab.remixcam.geom.Vector3D;
+import remixlab.remixcam.geom.Point;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -419,7 +430,7 @@ public class Scene implements PConstants {
 	// mouse actions
 	protected boolean arpFlag;
 	protected boolean pupFlag;
-	protected PVector pupVec;
+	protected Vector3D pupVec;
 	protected AbstractTimerJob timerFx;
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
@@ -715,7 +726,7 @@ public class Scene implements PConstants {
 		if (camera == null)
 			return;
 
-		camera.setSceneRadius(radius());
+		camera.setSceneRadius(radius());		
 		camera.setSceneCenter(center());
 
 		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);
@@ -1247,7 +1258,7 @@ public class Scene implements PConstants {
 		if (arpFlag)
 			drawArcballReferencePointHint();
 		if (pupFlag) {
-			PVector v = camera().projectedCoordinatesOf(pupVec);
+			Vector3D v = camera().projectedCoordinatesOf(pupVec);
 			drawCross(v.x, v.y);
 		}
 	}	
@@ -1278,11 +1289,10 @@ public class Scene implements PConstants {
 			if ((width != pg3d.width) || (height != pg3d.height)) {
 				width = pg3d.width;
 				height = pg3d.height;
+				// TODO test resize events
 				// weirdly enough we need to bypass what processing does
-				// to the matrices when a resize event takes place
-				camera().detachFromP5Camera();
-				camera().setScreenWidthAndHeight(width, height);
-				camera().attachToP5Camera();
+				// to the matrices when a resize event takes place				
+				camera().setScreenWidthAndHeight(width, height);				
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
 						&& (!camera().anyInterpolationIsStarted())) {
@@ -1292,10 +1302,11 @@ public class Scene implements PConstants {
 				}
 				// We set the processing camera matrices from our
 				// remixlab.proscene.Camera
+				// TODO test
 				setPProjectionMatrix();
 				setPModelViewMatrix();
-				// camera().computeProjectionMatrix();
-				// camera().computeModelViewMatrix();
+				//camera().computeProjectionMatrix();
+				//camera().computeModelViewMatrix();
 			}
 		} else {
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
@@ -1312,8 +1323,8 @@ public class Scene implements PConstants {
 			// GLGRAPHICS renderers because
 			// processing will anyway set the matrices at the end of the rendering
 			// loop.
-			// camera().computeProjectionMatrix();
-			// camera().computeModelViewMatrix();
+			//camera().computeProjectionMatrix();
+		  //camera().computeModelViewMatrix();
 		}
 
 		if (frustumEquationsUpdateIsEnable())
@@ -1416,6 +1427,9 @@ public class Scene implements PConstants {
 			// We set the processing camera matrices from our remixlab.proscene.Camera
 			setPProjectionMatrix();
 			setPModelViewMatrix();
+			// TODO test
+			//camera().computeProjectionMatrix();
+		  //camera().computeModelViewMatrix();
 
 			if (frustumEquationsUpdateIsEnable())
 				camera().updateFrustumEquations();	
@@ -1460,9 +1474,9 @@ public class Scene implements PConstants {
 	 * Convenience wrapper function that simply returns {@code
 	 * camera().sceneCenter()}
 	 * 
-	 * @see #setCenter(PVector) {@link #radius()}
+	 * @see #setCenter(Vector3D) {@link #radius()}
 	 */
-	public PVector center() {
+	public Vector3D center() {
 		return camera().sceneCenter();
 	}
 
@@ -1472,9 +1486,9 @@ public class Scene implements PConstants {
 	 * Convenience wrapper function that simply returns {@code
 	 * camera().arcballReferencePoint()}
 	 * 
-	 * @see #setCenter(PVector) {@link #radius()}
+	 * @see #setCenter(Vector3D) {@link #radius()}
 	 */
-	public PVector arcballReferencePoint() {
+	public Vector3D arcballReferencePoint() {
 		return camera().arcballReferencePoint();
 	}
 
@@ -1484,7 +1498,7 @@ public class Scene implements PConstants {
 	 * Convenience wrapper function that simply returns {@code
 	 * camera().setSceneRadius(radius)}
 	 * 
-	 * @see #setCenter(PVector)
+	 * @see #setCenter(Vector3D)
 	 */
 	public void setRadius(float radius) {
 		camera().setSceneRadius(radius);
@@ -1497,21 +1511,21 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #setRadius(float)
 	 */
-	public void setCenter(PVector center) {
+	public void setCenter(Vector3D center) {
 		camera().setSceneCenter(center);
 	}
 
 	/**
 	 * Sets the {@link #center()} and {@link #radius()} of the Scene from the
-	 * {@code min} and {@code max} PVectors.
+	 * {@code min} and {@code max} vectors.
 	 * <p>
 	 * Convenience wrapper function that simply calls {@code
 	 * camera().setSceneBoundingBox(min,max)}
 	 * 
 	 * @see #setRadius(float)
-	 * @see #setCenter(PVector)
+	 * @see #setCenter(Vector3D)
 	 */
-	public void setBoundingBox(PVector min, PVector max) {
+	public void setBoundingBox(Vector3D min, Vector3D max) {
 		camera().setSceneBoundingBox(min, max);
 	}
 
@@ -1811,7 +1825,7 @@ public class Scene implements PConstants {
 	 * <p>
 	 * {@code length} and {@code radius} define its geometry.
 	 * <p>
-	 * Use {@link #drawArrow(PVector, PVector, float)} to place the arrow
+	 * Use {@link #drawArrow(Vector3D, Vector3D, float)} to place the arrow
 	 * in 3D.
 	 */
 	public void drawArrow(float length, float radius) {
@@ -1831,12 +1845,20 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #drawArrow(float, float)
 	 */
-	public void drawArrow(PVector from, PVector to,	float radius) {
+	public void drawArrow(Vector3D from, Vector3D to,	float radius) {
 		pg3d.pushMatrix();
 		pg3d.translate(from.x, from.y, from.z);
-		pg3d.applyMatrix(new Quaternion(new PVector(0, 0, 1), PVector.sub(to,
-				from)).matrix());
-		drawArrow(PVector.sub(to, from).mag(), radius);
+		
+  	//pg3d.applyMatrix(new Quaternion(new Vector3D(0, 0, 1), Vector3D.sub(to,	from)).matrix());
+		
+		Matrix3D mat = new Quaternion(new Vector3D(0, 0, 1), Vector3D.sub(to,	from)).matrix();
+		float[] target = new float[16];
+		mat.get(target);
+		PMatrix3D pmat = new PMatrix3D();
+		pmat.set(target);
+		pg3d.applyMatrix(pmat);
+		
+		drawArrow(Vector3D.sub(to, from).mag(), radius);
 		pg3d.popMatrix();
 	}			
 	
@@ -1984,12 +2006,12 @@ public class Scene implements PConstants {
 		// pg3d.applyMatrix(camera.frame().worldMatrix());
 		// same as the previous line, but maybe more efficient
 		tmpFrame.fromMatrix(camera.frame().worldMatrix());
-		tmpFrame.applyTransformation(pg3d);
+		applyTransformation(tmpFrame);
 
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
-		PVector[] points = new PVector[2];
-		points[0] = new PVector();
-		points[1] = new PVector();
+		Vector3D[] points = new Vector3D[2];
+		points[0] = new Vector3D();
+		points[1] = new Vector3D();
 
 		points[0].z = scale * camera.zNear();
 		points[1].z = scale * camera.zFar();
@@ -2184,10 +2206,10 @@ public class Scene implements PConstants {
 		float p2x = (float) dE.lCorner.getX();
 		float p2y = (float) dE.lCorner.getY();
 		beginScreenDrawing();
-		PVector p1 = coords(new Point(p1x, p1y));
-		PVector p2 = coords(new Point(p2x, p2y));
-		PVector p3 = coords(new Point(p2x, p1y));
-		PVector p4 = coords(new Point(p1x, p2y));
+		Vector3D p1 = coords(new Point(p1x, p1y));
+		Vector3D p2 = coords(new Point(p2x, p2y));
+		Vector3D p3 = coords(new Point(p2x, p1y));
+		Vector3D p4 = coords(new Point(p1x, p2y));
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
@@ -2209,10 +2231,10 @@ public class Scene implements PConstants {
 	protected void drawScreenRotateLineHint() {
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
-		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
+		Vector3D p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
-		PVector p1s = coords(new Point(p1x, p1y));
-		PVector p2s = coords(new Point(p2.x, p2.y));
+		Vector3D p1s = coords(new Point(p1x, p1y));
+		Vector3D p2s = coords(new Point(p2.x, p2.y));
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
@@ -2236,7 +2258,7 @@ public class Scene implements PConstants {
 	 * @see #drawCross(float, float)
 	 */
 	protected void drawArcballReferencePointHint() {
-		PVector p = camera().projectedCoordinatesOf(arcballReferencePoint());
+		Vector3D p = camera().projectedCoordinatesOf(arcballReferencePoint());
 		drawCross(p.x, p.y);
 	}
 
@@ -2254,7 +2276,7 @@ public class Scene implements PConstants {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (!iF.isInCameraPath()) {
-					PVector center = camera().projectedCoordinatesOf(iF.position());
+					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse())
 						drawShooterTarget(pg3d.color(0, 255, 0), center, (iF.grabsMouseThreshold() + 1), 2);
 					else
@@ -2276,7 +2298,7 @@ public class Scene implements PConstants {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (iF.isInCameraPath()) {
-					PVector center = camera().projectedCoordinatesOf(iF.position());
+					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse())
 						drawShooterTarget(pg3d.color(0, 255, 255), center, (iF.grabsMouseThreshold() + 1), 2);
 					else
@@ -2303,10 +2325,10 @@ public class Scene implements PConstants {
 	 */
 	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
 		beginScreenDrawing();
-		PVector p1 = coords(new Point(px - size, py));
-		PVector p2 = coords(new Point(px + size, py));
-		PVector p3 = coords(new Point(px, py - size));
-		PVector p4 = coords(new Point(px, py + size));
+		Vector3D p1 = coords(new Point(px - size, py));
+		Vector3D p2 = coords(new Point(px + size, py));
+		Vector3D p3 = coords(new Point(px, py - size));
+		Vector3D p4 = coords(new Point(px, py + size));
 		pg3d.pushStyle();
 		pg3d.stroke(color);
 		pg3d.strokeWeight(strokeWeight);
@@ -2325,9 +2347,9 @@ public class Scene implements PConstants {
 	 * Convenience function that simply calls
 	 * {@code drawFilledCircle(40, color, center, radius)}.
 	 * 
-	 * @see #drawFilledCircle(int, int, PVector, float)
+	 * @see #drawFilledCircle(int, int, Vector3D, float)
 	 */
-	public void drawFilledCircle(int color, PVector center, float radius) {
+	public void drawFilledCircle(int color, Vector3D center, float radius) {
 		drawFilledCircle(40, color, center, radius);
 	}
 
@@ -2346,7 +2368,7 @@ public class Scene implements PConstants {
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
 	 */	
-	public void drawFilledCircle(int subdivisions, int color, PVector center, float radius) {
+	public void drawFilledCircle(int subdivisions, int color, Vector3D center, float radius) {
 		float precision = TWO_PI/subdivisions;
 		float x = center.x;
 		float y = center.y;
@@ -2356,9 +2378,9 @@ public class Scene implements PConstants {
 		pg3d.noStroke();
 		pg3d.fill(color);
 		pg3d.beginShape(TRIANGLE_FAN);
-		PVector c = coords(new Point(x, y));
+		Vector3D c = coords(new Point(x, y));
 		pg3d.vertex(c.x, c.y, c.z);
-		PVector aux = new PVector();
+		Vector3D aux = new Vector3D();
 		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
 			x2 = x + (float) Math.sin(angle) * radius;
 			y2 = y + (float) Math.cos(angle) * radius;
@@ -2383,14 +2405,14 @@ public class Scene implements PConstants {
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
 	 */
-	public void drawFilledSquare(int color, PVector center, float edge) {
+	public void drawFilledSquare(int color, Vector3D center, float edge) {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
-		PVector p1 = coords(new Point(x - edge, y + edge));
-		PVector p2 = coords(new Point(x + edge, y + edge));
-		PVector p3 = coords(new Point(x + edge, y - edge));
-		PVector p4 = coords(new Point(x - edge, y - edge));
+		Vector3D p1 = coords(new Point(x - edge, y + edge));
+		Vector3D p2 = coords(new Point(x + edge, y + edge));
+		Vector3D p3 = coords(new Point(x + edge, y - edge));
+		Vector3D p4 = coords(new Point(x - edge, y - edge));
 		pg3d.pushStyle();
 		pg3d.noStroke();
 		pg3d.fill(color);
@@ -2416,22 +2438,22 @@ public class Scene implements PConstants {
 	 * @param strokeWeight
 	 *          Stroke weight
 	 */
-	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {
+	public void drawShooterTarget(int color, Vector3D center, float length, int strokeWeight) {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
-		PVector p1 = coords(new Point((x - length), (y - length) + (0.6f * length)));
-		PVector p2 = coords(new Point((x - length), (y - length)));
-		PVector p3 = coords(new Point((x - length) + (0.6f * length), (y - length)));
-		PVector p4 = coords(new Point(((x + length) - (0.6f * length)), (y - length)));
-		PVector p5 = coords(new Point((x + length), (y - length)));
-		PVector p6 = coords(new Point((x + length), ((y - length) + (0.6f * length))));
-		PVector p7 = coords(new Point((x + length), ((y + length) - (0.6f * length))));
-		PVector p8 = coords(new Point((x + length), (y + length)));
-		PVector p9 = coords(new Point(((x + length) - (0.6f * length)), (y + length)));
-		PVector p10 = coords(new Point(((x - length) + (0.6f * length)), (y + length)));
-		PVector p11 = coords(new Point((x - length), (y + length)));
-		PVector p12 = coords(new Point((x - length), ((y + length) - (0.6f * length))));
+		Vector3D p1 = coords(new Point((x - length), (y - length) + (0.6f * length)));
+		Vector3D p2 = coords(new Point((x - length), (y - length)));
+		Vector3D p3 = coords(new Point((x - length) + (0.6f * length), (y - length)));
+		Vector3D p4 = coords(new Point(((x + length) - (0.6f * length)), (y - length)));
+		Vector3D p5 = coords(new Point((x + length), (y - length)));
+		Vector3D p6 = coords(new Point((x + length), ((y - length) + (0.6f * length))));
+		Vector3D p7 = coords(new Point((x + length), ((y + length) - (0.6f * length))));
+		Vector3D p8 = coords(new Point((x + length), (y + length)));
+		Vector3D p9 = coords(new Point(((x + length) - (0.6f * length)), (y + length)));
+		Vector3D p10 = coords(new Point(((x - length) + (0.6f * length)), (y + length)));
+		Vector3D p11 = coords(new Point((x - length), (y + length)));
+		Vector3D p12 = coords(new Point((x - length), ((y + length) - (0.6f * length))));
 		
 		pg3d.pushStyle();
 
@@ -2479,7 +2501,7 @@ public class Scene implements PConstants {
 	 * PApplet.endShape()}).
 	 * <p>
 	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
-	 * first call {@code PVector p = coords(new Point(x, y))} then do your
+	 * first call {@code Vector3D p = coords(new Point(x, y))} then do your
 	 * drawing as {@code vertex(p.x, p.y, p.z)}.
 	 * <p>
 	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
@@ -2548,13 +2570,13 @@ public class Scene implements PConstants {
 	 * @see #endScreenDrawing()
 	 * @see #coords(Point)
 	 */
-	public PVector coords(Point p) {
+	public Vector3D coords(Point p) {
 		if (startCoordCalls != 1)
 			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
 		if ( pg3d.getClass() == processing.core.PGraphics3D.class )
-			return new PVector(p.x, p.y, zC);
+			return new Vector3D(p.x, p.y, zC);
 		else
-			return camera().unprojectedCoordinatesOf(new PVector(p.x,p.y,zC));
+			return camera().unprojectedCoordinatesOf(new Vector3D(p.x,p.y,zC));
 	}	
 
 	/**
@@ -3315,7 +3337,7 @@ public class Scene implements PConstants {
 			}
 			break;
 		case RESET_ARP:
-			camera().setArcballReferencePoint(new PVector(0, 0, 0));
+			camera().setArcballReferencePoint(new Vector3D(0, 0, 0));
 			arpFlag = true;
 			timerFx.runOnce(1000);				
 			break;
@@ -3369,23 +3391,19 @@ public class Scene implements PConstants {
 			break;
 		case MOVE_CAMERA_LEFT:
 			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(-10.0f * camera().flySpeed(), 0.0f, 0.0f)));
+					camera().frame().inverseTransformOf(new Vector3D(-10.0f * camera().flySpeed(), 0.0f, 0.0f)));
 			break;
 		case MOVE_CAMERA_RIGHT:
 			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(10.0f * camera().flySpeed(), 0.0f, 0.0f)));
+					camera().frame().inverseTransformOf(new Vector3D(10.0f * camera().flySpeed(), 0.0f, 0.0f)));
 			break;
 		case MOVE_CAMERA_UP:
 			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
+					camera().frame().inverseTransformOf(new Vector3D(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
 			break;
 		case MOVE_CAMERA_DOWN:
 			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
+					camera().frame().inverseTransformOf(new Vector3D(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
 			break;
 		case INCREASE_ROTATION_SENSITIVITY:
 			camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);
@@ -3751,7 +3769,7 @@ public class Scene implements PConstants {
 			}
 			break;
 		case RESET_ARP:
-			camera().setArcballReferencePoint(new PVector(0, 0, 0));
+			camera().setArcballReferencePoint(new Vector3D(0, 0, 0));
 			arpFlag = true;
 			timerFx.runOnce(1000);				
 			break;
@@ -4082,6 +4100,12 @@ public class Scene implements PConstants {
 	 * {@link remixlab.remixcam.core.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
+		Matrix3D mat = new Matrix3D();
+		camera().getProjectionMatrix(mat);
+		float[] target = new float[16];;
+		pg3d.projection.set(mat.get(target));
+		
+		/**
 		// compute the processing camera projection matrix from our camera()
 		// parameters
 		switch (camera().type()) {
@@ -4094,26 +4118,107 @@ public class Scene implements PConstants {
 			break;
 		}
 		// if our camera() matrices are detached from the processing Camera
-		// matrices,
-		// we cache the processing camera projection matrix into our camera()
-		camera().setProjectionMatrix(pg3d.projection);
-		// camera().setProjectionMatrix(((PGraphics3D) parent.g).projection);
+		// matrices, we cache the processing camera projection matrix into our camera()
+		camera().setProjectionMatrix(toMatrix3D(pg3d.projection));
+		//camera().setProjectionMatrix(pg3d.projection);		 
+		*/
 	}
 
 	/**
 	 * Sets the processing camera matrix from {@link #camera()}. Simply calls
 	 * {@code PApplet.camera()}.
-	 */
+	 */	
 	protected void setPModelViewMatrix() {
+		Matrix3D mat = new Matrix3D();
+		camera().getModelViewMatrix(mat);
+		float[] target = new float[16];;
+		pg3d.modelview.set(mat.get(target));
+		
+		/**
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
 		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
 				        camera().at().x, camera().at().y, camera().at().z,
 				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		// if our camera() matrices are detached from the processing Camera
-		// matrices,
-		// we cache the processing camera modelview matrix into our camera()
-		camera().setModelViewMatrix(pg3d.modelview);
-		// camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
+		// matrices, we cache the processing camera modelview matrix into our camera()
+		camera().setModelViewMatrix(toMatrix3D(pg3d.modelview));
+		//camera().setModelViewMatrix(pg3d.modelview);
+		*/
+	}
+	
+	// TODO new stuff
+	
+	/**
+	 * Utility function that returns the PMatrix3D representation of the given Matrix3D.
+	 */
+	public static final Matrix3D toMatrix3D(PMatrix3D m) {
+		return new Matrix3D(m.m00, m.m01, m.m02, m.m03, 
+				                m.m10, m.m11, m.m12, m.m13,
+				                m.m20, m.m21, m.m22, m.m23,
+				                m.m30, m.m31, m.m32, m.m33);
+	}
+	
+	/**
+	 * Utility function that returns the PMatrix3D representation of the given Matrix3D.
+	 */
+	public static final PMatrix3D fromMatrix3D(Matrix3D m) {
+		return new PMatrix3D(m.m00, m.m01, m.m02, m.m03, 
+				                 m.m10, m.m11, m.m12, m.m13,
+				                 m.m20, m.m21, m.m22, m.m23,
+				                 m.m30, m.m31, m.m32, m.m33);
+	}
+	
+	/**
+	 * Apply the transformation defined by {@code frame} to {@link #renderer()}.
+	 * The Frame is first translated and then rotated around the new translated origin.
+	 * <p>
+	 * Same as:
+	 * <p>
+	 * {@code renderer().translate(translation().x, translation().y, translation().z);} <br>
+	 * {@code renderer().rotate(rotation().angle(), rotation().axis().x,
+	 * rotation().axis().y, rotation().axis().z);} <br>
+	 * <p>
+	 * This method may be used to modify the modelview matrix from a Frame hierarchy.
+	 * For example, with this Frame hierarchy:
+	 * <p>
+	 * {@code Frame body = new Frame();} <br>
+	 * {@code Frame leftArm = new Frame();} <br>
+	 * {@code Frame rightArm = new Frame();} <br>
+	 * {@code leftArm.setReferenceFrame(body);} <br>
+	 * {@code rightArm.setReferenceFrame(body);} <br>
+	 * <p>
+	 * The associated processing drawing code should look like:
+	 * <p>
+	 * {@code pushMatrix();} <br>
+	 * {@code applyTransformation(body);} <br>
+	 * {@code drawBody();} <br>
+	 * {@code pushMatrix();} <br>
+	 * {@code applyTransformation(leftArm);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code popMatrix();} <br>
+	 * {@code pushMatrix();} <br>
+	 * {@code applyTransformation(rightArm);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code popMatrix();} <br>
+	 * {@code popMatrix();} <br>
+	 * <p>
+	 * If the frame hierarchy to be drawn should be applied to a different renderer
+	 * context than the PApplet's (e.g., an off-screen rendering context), you may
+	 * call {@code renderer().pushMatrix();} and {@code renderer().popMatrix();} above.
+	 * <p> 
+	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()} blocks
+	 * to represent the frame hierarchy: {@code leftArm} and {@code rightArm} are
+	 * both correctly drawn with respect to the {@code body} coordinate system.
+	 * <p>
+	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method
+	 * should be used whenever possible (one can also use {@link #matrix()}
+	 * instead).
+	 * 
+	 * @see #matrix()
+	 */
+	public void applyTransformation(Frame frame) {
+		pg3d.translate( frame.translation().x, frame.translation().y, frame.translation().z );
+		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);
 	}
 }

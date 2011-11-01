@@ -73,6 +73,28 @@ public final class Matrix3D implements Matrix /*, PConstants*/ {
   			throw(new RuntimeException("vec cannot handle class in constructor: "+any.getClass(),e));
   		}
   }
+  
+  public final float[][] get3x3UpperLeftMatrixFromMatrix3D() {
+  	return get3x3UpperLeftMatrixFromMatrix3D(this);
+  }
+  
+  /**
+	 * Utility function that returns the 3x3 upper left sub-matrix of the given
+	 * PMatrix3D.
+	 */
+	public static final float[][] get3x3UpperLeftMatrixFromMatrix3D(Matrix3D pM) {
+		float[][] m = new float[3][3];
+		m[0][0] = pM.m00;
+		m[0][1] = pM.m01;
+		m[0][2] = pM.m02;
+		m[1][0] = pM.m10;
+		m[1][1] = pM.m11;
+		m[1][2] = pM.m12;
+		m[2][0] = pM.m20;
+		m[2][1] = pM.m21;
+		m[2][2] = pM.m22;
+		return m;
+	}
 
   public void reset() {
     set(1, 0, 0, 0,

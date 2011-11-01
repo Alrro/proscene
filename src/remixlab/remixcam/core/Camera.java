@@ -25,12 +25,8 @@
 
 package remixlab.remixcam.core;
 
-import processing.core.*;
 import remixlab.proscene.Scene;
-import remixlab.remixcam.geom.MathUtils;
-import remixlab.remixcam.geom.Point;
-import remixlab.remixcam.geom.Quaternion;
-import remixlab.remixcam.geom.Rectangle;
+import remixlab.remixcam.geom.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,12 +41,12 @@ import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
  * A Camera defines some intrinsic parameters ({@link #fieldOfView()},
  * {@link #position()}, {@link #viewDirection()}, {@link #upVector()}...) and
  * useful positioning tools that ease its placement ({@link #showEntireScene()},
- * {@link #fitSphere(PVector, float)}, {@link #lookAt(PVector)}...). It exports
+ * {@link #fitSphere(Vector3D, float)}, {@link #lookAt(Vector3D)}...). It exports
  * its associated processing projection and modelview matrices and it can
  * interactively be modified using the mouse.
  * <p>
  * Camera matrices can be directly set as references to the processing camera
- * matrices (default), or they can be set as independent PMatrix3D objects
+ * matrices (default), or they can be set as independent Matrix3D objects
  * (which may be useful for off-screen computations). See
  * {@link #isAttachedToP5Camera()}, {@link #attachToP5Camera()} and
  * {@link #detachFromP5Camera()}.
@@ -66,7 +62,7 @@ public class Camera implements Constants, Copyable {
 	@Override
 	public int hashCode() {	
     return new HashCodeBuilder(17, 37).
-    append(attachedToPCam).
+    //append(attachedToPCam).
     append(fpCoefficientsUpdate).
     append(lastFrameUpdate).
     append(lastFPCoeficientsUpdateIssued).
@@ -113,7 +109,7 @@ public class Camera implements Constants, Copyable {
 		
 	   return new EqualsBuilder()
     .appendSuper(super.equals(obj))		
-    .append(attachedToPCam, other.attachedToPCam)
+    //.append(attachedToPCam, other.attachedToPCam)
     .append(fpCoefficientsUpdate, other.fpCoefficientsUpdate)
     .append(lastFrameUpdate, other.lastFrameUpdate)
     .append(lastFPCoeficientsUpdateIssued, other.lastFPCoeficientsUpdateIssued)
@@ -153,26 +149,26 @@ public class Camera implements Constants, Copyable {
 	 * Typically needed to perform bfc.
 	 */
 	public class Cone {
-		PVector axis;
+		Vector3D axis;
 		float angle;
 		
 		public Cone() {
 			reset();
 		}
 		
-		public Cone(PVector vec, float a) {
+		public Cone(Vector3D vec, float a) {
 			set(vec, a);
 		}
 		
-		public Cone(ArrayList<PVector> normals) {
+		public Cone(ArrayList<Vector3D> normals) {
 			set(normals);
 		}
 		
-		public Cone(PVector [] normals) {
+		public Cone(Vector3D [] normals) {
 			set(normals);
 		}
 		
-		public PVector axis() {
+		public Vector3D axis() {
 			return axis;
 		}
 		
@@ -181,32 +177,32 @@ public class Camera implements Constants, Copyable {
 		}
 		
 		public void reset() {
-			axis = new PVector(0,0,1);
+			axis = new Vector3D(0,0,1);
 			angle = 0;
 		}
 		
-		public void set(PVector vec, float a) {
+		public void set(Vector3D vec, float a) {
 			axis = vec;
 			angle = a;
 		}
 		
-		public void set(ArrayList<PVector> normals) {
-			set( normals.toArray( new PVector [normals.size()] ) );		
+		public void set(ArrayList<Vector3D> normals) {
+			set( normals.toArray( new Vector3D [normals.size()] ) );		
 		}
 		
-		public void set(PVector [] normals) {
-			axis = new PVector(0,0,0);
+		public void set(Vector3D [] normals) {
+			axis = new Vector3D(0,0,0);
 			if(normals.length == 0) {
 				reset();
 				return;
 			}
 			
-			PVector [] n = new PVector [normals.length];
+			Vector3D [] n = new Vector3D [normals.length];
 			for(int i=0; i<normals.length; i++ ) {
-				n[i] = new PVector();
+				n[i] = new Vector3D();
 				n[i].set(normals[i]);
 				n[i].normalize();
-				axis = PVector.add(axis, n[i]);
+				axis = Vector3D.add(axis, n[i]);
 			}
 			
 			if ( axis.mag() != 0 ) {
@@ -218,7 +214,7 @@ public class Camera implements Constants, Copyable {
 			
 			angle = 0;        
 			for(int i=0; i<normals.length; i++ )		
-				angle = Math.max( angle, (float) Math.acos( PVector.dot(n[i], axis)));		
+				angle = Math.max( angle, (float) Math.acos( Vector3D.dot(n[i], axis)));		
 		}	
 	}
 	
@@ -228,18 +224,18 @@ public class Camera implements Constants, Copyable {
 	 * implemented by an openGL based derived class Camera).
 	 */
 	public class WorldPoint {
-		public WorldPoint(PVector p, boolean f) {
+		public WorldPoint(Vector3D p, boolean f) {
 			point = p;
 			found = f;
 		}
 
-		public PVector point;
+		public Vector3D point;
 		public boolean found;
 	}
 
 	int viewport[] = new int[4];
 	// next variables are needed for frustum plane coefficients
-	PVector normal[] = new PVector[6];
+	Vector3D normal[] = new Vector3D[6];
 	float dist[] = new float[6];
 
 	/**
@@ -276,7 +272,7 @@ public class Camera implements Constants, Copyable {
 	// C a m e r a p a r a m e t e r s
 	private int scrnWidth, scrnHeight; // size of the window, in pixels
 	private float fldOfView; // in radians
-	private PVector scnCenter;
+	private Vector3D scnCenter;
 	private float scnRadius; // processing scene units
 	private float zNearCoef;
 	private float zClippingCoef;
@@ -287,8 +283,8 @@ public class Camera implements Constants, Copyable {
 	private float stdZNear;
 	private float stdZFar;
 
-	private PMatrix3D modelViewMat;
-	private PMatrix3D projectionMat;
+	private Matrix3D modelViewMat;
+	private Matrix3D projectionMat;
 
 	// S t e r e o p a r a m e t e r s
 	private float IODist; // inter-ocular distance, in meters
@@ -315,20 +311,23 @@ public class Camera implements Constants, Copyable {
 	protected int lastFPCoeficientsUpdateIssued = -1;
 
 	// A t t a c h e d S c e n e
-	private boolean attachedToPCam;
+	//private boolean attachedToPCam;
 
-	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
+	// S C E N E   O B J E C T 
 	public Scene scene;
-	public PGraphics3D pg3d;
+	//public PGraphics3D pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}.
 	 * 
 	 * @see #Camera(Scene, boolean)
 	 */
+	
+	/**
 	public Camera(Scene scn) {
 		this(scn, true);
 	}
+	*/
 
 	/**
 	 * Main constructor. {@code p} will be used for rendering purposes.
@@ -348,15 +347,15 @@ public class Camera implements Constants, Copyable {
 	 * 
 	 * @see #Camera(Scene)
 	 */
-	public Camera(Scene scn, boolean attachedToScene) {
+	public Camera(Scene scn /**, boolean attachedToScene */) {
 		scene = scn;
-		pg3d = scene.pg3d;
-		attachedToPCam = attachedToScene;
+		//pg3d = scene.pg3d;
+		//attachedToPCam = attachedToScene;
 		
 		enableFrustumEquationsUpdate(false);
 
 		for (int i = 0; i < normal.length; i++)
-			normal[i] = new PVector();
+			normal[i] = new Vector3D();
 
 		fldOfView = (float) Math.PI / 4.0f;
 
@@ -375,7 +374,7 @@ public class Camera implements Constants, Copyable {
 		orthoCoef = (float) Math.tan(fieldOfView() / 2.0f);
 
 		// Also defines the arcballReferencePoint(), which changes orthoCoef.
-		setSceneCenter(new PVector(0.0f, 0.0f, 0.0f));
+		setSceneCenter(new Vector3D(0.0f, 0.0f, 0.0f));
 
 		setKind(Kind.PROSCENE);
 		orthoSize = 1;// only for standard kind, but we initialize it here
@@ -400,17 +399,19 @@ public class Camera implements Constants, Copyable {
 		setPhysicalScreenWidth(0.4f);
 		// focusDistance is set from setFieldOfView()
 
+		/**
 		if (isAttachedToP5Camera()) {
 			projectionMat = pg3d.projection;
 			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		} else {
-			modelViewMat = new PMatrix3D();
-			projectionMat = new PMatrix3D();
+		*/
+			modelViewMat = new Matrix3D();
+			projectionMat = new Matrix3D();
 			projectionMat.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			computeProjectionMatrix();
-		}
+		//}
 	}
 	
 	/**
@@ -420,13 +421,13 @@ public class Camera implements Constants, Copyable {
 	 */
 	protected Camera(Camera oCam) {
 		this.scene = oCam.scene;
-		this.pg3d = oCam.pg3d;
-		this.attachedToPCam = oCam.attachedToPCam;
+		//this.pg3d = oCam.pg3d;
+		//this.attachedToPCam = oCam.attachedToPCam;
 		
 		this.fpCoefficientsUpdate = oCam.fpCoefficientsUpdate;
 		
 		for (int i = 0; i < normal.length; i++)
-			this.normal[i] = new PVector(oCam.normal[i].x, oCam.normal[i].y, oCam.normal[i].z );
+			this.normal[i] = new Vector3D(oCam.normal[i].x, oCam.normal[i].y, oCam.normal[i].z );
 		
 		this.fldOfView = oCam.fldOfView;
 		
@@ -461,8 +462,8 @@ public class Camera implements Constants, Copyable {
 		this.setPhysicalDistanceToScreen(oCam.physicalDistanceToScreen());
 		this.setPhysicalScreenWidth( oCam.physicalScreenWidth() );		
 		
-		this.modelViewMat = new PMatrix3D(oCam.modelViewMat);
-		this.projectionMat = new PMatrix3D(oCam.projectionMat);
+		this.modelViewMat = new Matrix3D(oCam.modelViewMat);
+		this.projectionMat = new Matrix3D(oCam.projectionMat);
 	}
 	
 	/**
@@ -482,9 +483,12 @@ public class Camera implements Constants, Copyable {
 	 * 
 	 * @see #isAttachedToP5Camera()
 	 */
+	
+	/**
 	public boolean isDetachedFromP5Camera() {
 		return !isAttachedToP5Camera();
 	}
+	*/
 
 	/**
 	 * Returns {@code true} if the Camera matrices are set as references to the
@@ -492,9 +496,12 @@ public class Camera implements Constants, Copyable {
 	 * 
 	 * @see #isDetachedFromP5Camera()
 	 */
+	
+	/**
 	public boolean isAttachedToP5Camera() {
 		return attachedToPCam;
 	}
+	*/
 
 	/**
 	 * Set the Camera matrices as references to the processing camera matrices. If
@@ -507,6 +514,8 @@ public class Camera implements Constants, Copyable {
 	 * @see #detachFromP5Camera()
 	 * @see #isAttachedToP5Camera()
 	 */
+	
+	/**
 	public void attachToP5Camera() {
 		if (!isAttachedToP5Camera()) {
 			attachedToPCam = true;
@@ -516,6 +525,7 @@ public class Camera implements Constants, Copyable {
 			computeModelViewMatrix();
 		}
 	}
+	*/
 
 	/**
 	 * Create new independent Camera matrices' objects (i.e., Camera matrices are
@@ -528,16 +538,19 @@ public class Camera implements Constants, Copyable {
 	 * @see #attachToP5Camera()
 	 * @see #isAttachedToP5Camera()
 	 */
+	
+	/**
 	public void detachFromP5Camera() {
 		if (isAttachedToP5Camera()) {
 			attachedToPCam = false;
-			modelViewMat = new PMatrix3D();
-			projectionMat = new PMatrix3D();
+			modelViewMat = new Matrix3D();
+			projectionMat = new Matrix3D();
 			projectionMat.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		}
 	}	
+	*/
 
 	// 2. POSITION AND ORIENTATION
 
@@ -545,7 +558,7 @@ public class Camera implements Constants, Copyable {
 	 * Returns the Camera position (the eye), defined in the world coordinate
 	 * system.
 	 * <p>
-	 * Use {@link #setPosition(PVector)} to set the Camera position. Other
+	 * Use {@link #setPosition(Vector3D)} to set the Camera position. Other
 	 * convenient methods are showEntireScene() or fitSphere(). Actually returns
 	 * {@link remixlab.remixcam.core.Frame#position()}.
 	 * <p>
@@ -553,7 +566,7 @@ public class Camera implements Constants, Copyable {
 	 * camera. It is not located in the image plane, which is at a zNear()
 	 * distance ahead.
 	 */
-	public final PVector position() {
+	public final Vector3D position() {
 		return frame().position();
 	}
 
@@ -561,7 +574,7 @@ public class Camera implements Constants, Copyable {
 	 * Sets the Camera {@link #position()} (the eye), defined in the world
 	 * coordinate system.
 	 */
-	public void setPosition(PVector pos) {
+	public void setPosition(Vector3D pos) {
 		frame().setPosition(pos);
 	}
 
@@ -569,23 +582,23 @@ public class Camera implements Constants, Copyable {
 	 * Returns the normalized up vector of the Camera, defined in the world
 	 * coordinate system.
 	 * <p>
-	 * Set using {@link #setUpVector(PVector)} or
+	 * Set using {@link #setUpVector(Vector3D)} or
 	 * {@link #setOrientation(Quaternion)}. It is orthogonal to
 	 * {@link #viewDirection()} and to {@link #rightVector()}.
 	 * <p>
 	 * It corresponds to the Y axis of the associated {@link #frame()} (actually
 	 * returns {@code frame().yAxis()}
 	 */
-	public PVector upVector() {
+	public Vector3D upVector() {
 		return frame().yAxis();
 	}
 
 	/**
 	 * Convenience function that simply calls {@code setUpVector(up, true)}.
 	 * 
-	 * @see #setUpVector(PVector, boolean)
+	 * @see #setUpVector(Vector3D, boolean)
 	 */
-	public void setUpVector(PVector up) {
+	public void setUpVector(Vector3D up) {
 		setUpVector(up, true);
 	}
 
@@ -608,16 +621,16 @@ public class Camera implements Constants, Copyable {
 	 * unchanged, which is an intuitive behavior when the Camera is in a
 	 * walkthrough fly mode.
 	 * 
-	 * @see #setViewDirection(PVector)
-	 * @see #lookAt(PVector)
+	 * @see #setViewDirection(Vector3D)
+	 * @see #lookAt(Vector3D)
 	 * @see #setOrientation(Quaternion)
 	 */
-	public void setUpVector(PVector up, boolean noMove) {
-		Quaternion q = new Quaternion(new PVector(0.0f, 1.0f, 0.0f), frame().transformOf(up));
+	public void setUpVector(Vector3D up, boolean noMove) {
+		Quaternion q = new Quaternion(new Vector3D(0.0f, 1.0f, 0.0f), frame().transformOf(up));
 
 		if (!noMove)
 			frame().setPosition(
-					PVector.sub(arcballReferencePoint(), (Quaternion.multiply(frame()
+					Vector3D.sub(arcballReferencePoint(), (Quaternion.multiply(frame()
 							.orientation(), q)).rotate(frame().coordinatesOf(
 							arcballReferencePoint()))));
 
@@ -631,15 +644,15 @@ public class Camera implements Constants, Copyable {
 	 * Returns the normalized view direction of the Camera, defined in the world
 	 * coordinate system.
 	 * <p>
-	 * Change this value using {@link #setViewDirection(PVector)},
-	 * {@link #lookAt(PVector)} or {@link #setOrientation(Quaternion)}. It is
+	 * Change this value using {@link #setViewDirection(Vector3D)},
+	 * {@link #lookAt(Vector3D)} or {@link #setOrientation(Quaternion)}. It is
 	 * orthogonal to {@link #upVector()} and to {@link #rightVector()}.
 	 * <p>
 	 * This corresponds to the negative Z axis of the {@link #frame()} ( {@code
-	 * frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f))} ).
+	 * frame().inverseTransformOf(new Vector3D(0.0f, 0.0f, -1.0f))} ).
 	 */
-	public PVector viewDirection() {
-		return frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f));
+	public Vector3D viewDirection() {
+		return frame().inverseTransformOf(new Vector3D(0.0f, 0.0f, -1.0f));
 	}
 
 	/**
@@ -649,23 +662,23 @@ public class Camera implements Constants, Copyable {
 	 * The Camera {@link #position()} is not modified. The Camera is rotated so
 	 * that the horizon (defined by its {@link #upVector()}) is preserved.
 	 * 
-	 * @see #lookAt(PVector)
-	 * @see #setUpVector(PVector)
+	 * @see #lookAt(Vector3D)
+	 * @see #setUpVector(Vector3D)
 	 */
-	public void setViewDirection(PVector direction) {
-		if (MathUtils.squaredNorm(direction) < 1E-10)
+	public void setViewDirection(Vector3D direction) {
+		if (direction.squaredNorm() < 1E-10)
 			return;
 
-		PVector xAxis = direction.cross(upVector());
-		if (MathUtils.squaredNorm(xAxis) < 1E-10) {
+		Vector3D xAxis = direction.cross(upVector());
+		if (xAxis.squaredNorm() < 1E-10) {
 			// target is aligned with upVector, this means a rotation around X
 			// axis
 			// X axis is then unchanged, let's keep it !
-			xAxis = frame().inverseTransformOf(new PVector(1.0f, 0.0f, 0.0f));
+			xAxis = frame().inverseTransformOf(new Vector3D(1.0f, 0.0f, 0.0f));
 		}
 
 		Quaternion q = new Quaternion();
-		q.fromRotatedBasis(xAxis, xAxis.cross(direction), PVector.mult(direction,	-1));
+		q.fromRotatedBasis(xAxis, xAxis.cross(direction), Vector3D.mult(direction,	-1));
 		frame().setOrientationWithConstraint(q);
 	}
 
@@ -675,12 +688,12 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * This vector lies in the Camera horizontal plane, directed along the X axis
 	 * (orthogonal to {@link #upVector()} and to {@link #viewDirection()}. Set
-	 * using {@link #setUpVector(PVector)}, {@link #lookAt(PVector)} or
+	 * using {@link #setUpVector(Vector3D)}, {@link #lookAt(Vector3D)} or
 	 * {@link #setOrientation(Quaternion)}.
 	 * <p>
 	 * Simply returns {@code frame().xAxis()}.
 	 */
-	public PVector rightVector() {
+	public Vector3D rightVector() {
 		return frame().xAxis();
 	}
 
@@ -688,8 +701,8 @@ public class Camera implements Constants, Copyable {
 	 * Returns the Camera orientation, defined in the world coordinate system.
 	 * <p>
 	 * Actually returns {@code frame().orientation()}. Use
-	 * {@link #setOrientation(Quaternion)}, {@link #setUpVector(PVector)} or
-	 * {@link #lookAt(PVector)} to set the Camera orientation.
+	 * {@link #setOrientation(Quaternion)}, {@link #setUpVector(Vector3D)} or
+	 * {@link #lookAt(Vector3D)} to set the Camera orientation.
 	 */
 	public Quaternion orientation() {
 		return frame().orientation();
@@ -708,11 +721,11 @@ public class Camera implements Constants, Copyable {
 	 * The {@link #position()} of the Camera is unchanged, you may want to call
 	 * {@link #showEntireScene()} after this method to move the Camera.
 	 * 
-	 * @see #setUpVector(PVector)
+	 * @see #setUpVector(Vector3D)
 	 */
 	public void setOrientation(float theta, float phi) {
 		// TODO: need check.
-		PVector axis = new PVector(0.0f, 1.0f, 0.0f);
+		Vector3D axis = new Vector3D(0.0f, 1.0f, 0.0f);
 		Quaternion rot1 = new Quaternion(axis, theta);
 		axis.set(-(float) Math.cos(theta), 0.0f, (float) Math.sin(theta));
 		Quaternion rot2 = new Quaternion(axis, phi);
@@ -902,12 +915,12 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * The {@link #position()} and {@link #orientation()} of the Camera are not
 	 * modified and you first have to orientate the Camera in order to actually
-	 * see the scene (see {@link #lookAt(PVector)}, {@link #showEntireScene()} or
-	 * {@link #fitSphere(PVector, float)}).
+	 * see the scene (see {@link #lookAt(Vector3D)}, {@link #showEntireScene()} or
+	 * {@link #fitSphere(Vector3D, float)}).
 	 * <p>
 	 * This method is especially useful for <i>shadow maps</i> computation. Use
-	 * the Camera positioning tools ({@link #setPosition(PVector)},
-	 * {@link #lookAt(PVector)}) to position a Camera at the light position. Then
+	 * the Camera positioning tools ({@link #setPosition(Vector3D)},
+	 * {@link #lookAt(Vector3D)}) to position a Camera at the light position. Then
 	 * use this method to define the {@link #fieldOfView()} so that the shadow map
 	 * resolution is optimally used:
 	 * <p>
@@ -1095,7 +1108,7 @@ public class Camera implements Constants, Copyable {
 	 * is null (or not the correct size), a new array will be created.
 	 * <p>
 	 * This method is mainly used in conjunction with
-	 * {@link #project(float, float, float, PMatrix3D, PMatrix3D, int[], float[])}
+	 * {@link #project(float, float, float, Matrix3D, Matrix3D, int[], float[])}
 	 * , which requires such a viewport. Returned values are (0,
 	 * {@link #screenHeight()}, {@link #screenWidth()}, -{@link #screenHeight()}),
 	 * so that the origin is located in the upper left corner of the window.
@@ -1269,12 +1282,12 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * {@code beginShape(LINES);}<br>
 	 * {@code vertex(sceneCenter().x, sceneCenter().y, sceneCenter().z);}<br>
-	 * {@code PVector v = PVector.add(sceneCenter(), PVector.mult(upVector(), 20 *
+	 * {@code Vector3D v = Vector3D.add(sceneCenter(), Vector3D.mult(upVector(), 20 *
 	 * pixelP5Ratio(sceneCenter())));}<br>
 	 * {@code vertex(v.x, v.y, v.z);}<br>
 	 * {@code endShape();}<br>
 	 */
-	public float pixelP5Ratio(PVector position) {
+	public float pixelP5Ratio(Vector3D position) {
 		switch (type()) {
 		case PERSPECTIVE:
 			return 2.0f * Math.abs((frame().coordinatesOf(position)).z)
@@ -1302,22 +1315,22 @@ public class Camera implements Constants, Copyable {
 	 * in your Scene setup (with
 	 * {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
 	 * 
-	 * @see #pointIsVisible(PVector)
-	 * @see #sphereIsVisible(PVector, float)
-	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #pointIsVisible(Vector3D)
+	 * @see #sphereIsVisible(Vector3D, float)
+	 * @see #aaBoxIsVisible(Vector3D, Vector3D)
 	 * @see #computeFrustumEquations()
 	 * @see #updateFrustumEquations()
 	 * @see #getFrustumEquations()
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
 	 */
-	public float distanceToFrustumPlane(int index, PVector pos) {
+	public float distanceToFrustumPlane(int index, Vector3D pos) {
 		if (!scene.frustumEquationsUpdateIsEnable())
 			System.out.println("The camera frustum plane equations (needed by distanceToFrustumPlane) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
 							+ "with Scene.enableFrustumEquationsUpdate()");
-		PVector myVec = new PVector(fpCoefficients[index][0],
+		Vector3D myVec = new Vector3D(fpCoefficients[index][0],
 				fpCoefficients[index][1], fpCoefficients[index][2]);
-		return PVector.dot(pos, myVec) - fpCoefficients[index][3];
+		return Vector3D.dot(pos, myVec) - fpCoefficients[index][3];
 	}
 
 	/**
@@ -1330,15 +1343,15 @@ public class Camera implements Constants, Copyable {
 	 * in your Scene setup (with
 	 * {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
 	 * 
-	 * @see #distanceToFrustumPlane(int, PVector)
-	 * @see #sphereIsVisible(PVector, float)
-	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #distanceToFrustumPlane(int, Vector3D)
+	 * @see #sphereIsVisible(Vector3D, float)
+	 * @see #aaBoxIsVisible(Vector3D, Vector3D)
 	 * @see #computeFrustumEquations()
 	 * @see #updateFrustumEquations()
 	 * @see #getFrustumEquations()
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
 	 */
-	public boolean pointIsVisible(PVector point) {
+	public boolean pointIsVisible(Vector3D point) {
 		if (!scene.frustumEquationsUpdateIsEnable())
 			System.out.println("The camera frustum plane equations (needed by pointIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
@@ -1362,15 +1375,15 @@ public class Camera implements Constants, Copyable {
 	 * in your Scene setup (with
 	 * {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
 	 * 
-	 * @see #distanceToFrustumPlane(int, PVector)
-	 * @see #pointIsVisible(PVector)
-	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #distanceToFrustumPlane(int, Vector3D)
+	 * @see #pointIsVisible(Vector3D)
+	 * @see #aaBoxIsVisible(Vector3D, Vector3D)
 	 * @see #computeFrustumEquations()
 	 * @see #updateFrustumEquations()
 	 * @see #getFrustumEquations()
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
 	 */
-	public Visibility sphereIsVisible(PVector center, float radius) {
+	public Visibility sphereIsVisible(Vector3D center, float radius) {
 		if (!scene.frustumEquationsUpdateIsEnable())
 			System.out.println("The camera frustum plane equations (needed by sphereIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
@@ -1401,15 +1414,15 @@ public class Camera implements Constants, Copyable {
 	 * in your Scene setup (with
 	 * {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
 	 * 
-	 * @see #distanceToFrustumPlane(int, PVector)
-	 * @see #pointIsVisible(PVector)
-	 * @see #sphereIsVisible(PVector, float)
+	 * @see #distanceToFrustumPlane(int, Vector3D)
+	 * @see #pointIsVisible(Vector3D)
+	 * @see #sphereIsVisible(Vector3D, float)
 	 * @see #computeFrustumEquations()
 	 * @see #updateFrustumEquations()
 	 * @see #getFrustumEquations()
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
 	 */
-	public Visibility aaBoxIsVisible(PVector p1, PVector p2) {
+	public Visibility aaBoxIsVisible(Vector3D p1, Vector3D p2) {
 		if (!scene.frustumEquationsUpdateIsEnable())
 			System.out.println("The camera frustum plane equations (needed by aaBoxIsVisible) may be outdated. Please "
 							+ "enable automatic updates of the equations in your PApplet.setup "
@@ -1418,7 +1431,7 @@ public class Camera implements Constants, Copyable {
 		for (int i = 0; i < 6; ++i) {
 			boolean allOut = true;
 			for (int c = 0; c < 8; ++c) {
-				PVector pos = new PVector(((c & 4) != 0) ? p1.x : p2.x,
+				Vector3D pos = new Vector3D(((c & 4) != 0) ? p1.x : p2.x,
 						((c & 2) != 0) ? p1.y : p2.y, ((c & 1) != 0) ? p1.z : p2.z);
 				if (distanceToFrustumPlane(i, pos) > 0.0)
 					allInForAllPlanes = false;
@@ -1448,10 +1461,10 @@ public class Camera implements Constants, Copyable {
 	 * {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()} which
 	 * automatically update the frustum equations every frame instead.
 	 * 
-	 * @see #distanceToFrustumPlane(int, PVector)
-	 * @see #pointIsVisible(PVector)
-	 * @see #sphereIsVisible(PVector, float)
-	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #distanceToFrustumPlane(int, Vector3D)
+	 * @see #pointIsVisible(Vector3D)
+	 * @see #sphereIsVisible(Vector3D, float)
+	 * @see #aaBoxIsVisible(Vector3D, Vector3D)
 	 * @see #computeFrustumEquations()
 	 * @see #getFrustumEquations()
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
@@ -1481,10 +1494,10 @@ public class Camera implements Constants, Copyable {
 	 * in your Scene setup (with
 	 * {@link remixlab.proscene.Scene#enableFrustumEquationsUpdate()}).
 	 * 
-	 * @see #distanceToFrustumPlane(int, PVector)
-	 * @see #pointIsVisible(PVector)
-	 * @see #sphereIsVisible(PVector, float)
-	 * @see #aaBoxIsVisible(PVector, PVector)
+	 * @see #distanceToFrustumPlane(int, Vector3D)
+	 * @see #pointIsVisible(Vector3D)
+	 * @see #sphereIsVisible(Vector3D, float)
+	 * @see #aaBoxIsVisible(Vector3D, Vector3D)
 	 * @see #computeFrustumEquations()
 	 * @see #updateFrustumEquations()
 	 * @see remixlab.proscene.Scene#enableFrustumEquationsUpdate()
@@ -1553,34 +1566,34 @@ public class Camera implements Constants, Copyable {
 			coef = new float[6][4];
 
 		// Computed once and for all
-		PVector pos = position();
-		PVector viewDir = viewDirection();
-		PVector up = upVector();
-		PVector right = rightVector();
-		float posViewDir = PVector.dot(pos, viewDir);
+		Vector3D pos = position();
+		Vector3D viewDir = viewDirection();
+		Vector3D up = upVector();
+		Vector3D right = rightVector();
+		float posViewDir = Vector3D.dot(pos, viewDir);
 
 		switch (type()) {
 		case PERSPECTIVE: {
 			float hhfov = horizontalFieldOfView() / 2.0f;
 			float chhfov = (float) Math.cos(hhfov);
 			float shhfov = (float) Math.sin(hhfov);
-			normal[0] = PVector.mult(viewDir, -shhfov);
-			normal[1] = PVector.add(normal[0], PVector.mult(right, chhfov));
-			normal[0] = PVector.add(normal[0], PVector.mult(right, -chhfov));
-			normal[2] = PVector.mult(viewDir, -1);
+			normal[0] = Vector3D.mult(viewDir, -shhfov);
+			normal[1] = Vector3D.add(normal[0], Vector3D.mult(right, chhfov));
+			normal[0] = Vector3D.add(normal[0], Vector3D.mult(right, -chhfov));
+			normal[2] = Vector3D.mult(viewDir, -1);
 			normal[3] = viewDir;
 
 			float hfov = fieldOfView() / 2.0f;
 			float chfov = (float) Math.cos(hfov);
 			float shfov = (float) Math.sin(hfov);
-			normal[4] = PVector.mult(viewDir, -shfov);
-			normal[5] = PVector.add(normal[4], PVector.mult(up, -chfov));
-			normal[4] = PVector.add(normal[4], PVector.mult(up, chfov));
+			normal[4] = Vector3D.mult(viewDir, -shfov);
+			normal[5] = Vector3D.add(normal[4], Vector3D.mult(up, -chfov));
+			normal[4] = Vector3D.add(normal[4], Vector3D.mult(up, chfov));
 
 			for (int i = 0; i < 2; ++i)
-				dist[i] = PVector.dot(pos, normal[i]);
+				dist[i] = Vector3D.dot(pos, normal[i]);
 			for (int j = 4; j < 6; ++j)
-				dist[j] = PVector.dot(pos, normal[j]);
+				dist[j] = Vector3D.dot(pos, normal[j]);
 
 			// Natural equations are:
 			// dist[0,1,4,5] = pos * normal[0,1,4,5];
@@ -1589,36 +1602,36 @@ public class Camera implements Constants, Copyable {
 
 			// 2 times less computations using expanded/merged equations. Dir vectors
 			// are normalized.
-			float posRightCosHH = chhfov * PVector.dot(pos, right);
+			float posRightCosHH = chhfov * Vector3D.dot(pos, right);
 			dist[0] = -shhfov * posViewDir;
 			dist[1] = dist[0] + posRightCosHH;
 			dist[0] = dist[0] - posRightCosHH;
-			float posUpCosH = chfov * PVector.dot(pos, up);
+			float posUpCosH = chfov * Vector3D.dot(pos, up);
 			dist[4] = -shfov * posViewDir;
 			dist[5] = dist[4] - posUpCosH;
 			dist[4] = dist[4] + posUpCosH;
 			break;
 		}
 		case ORTHOGRAPHIC:
-			normal[0] = PVector.mult(right, -1);
+			normal[0] = Vector3D.mult(right, -1);
 			normal[1] = right;
 			normal[4] = up;
-			normal[5] = PVector.mult(up, -1);
+			normal[5] = Vector3D.mult(up, -1);
 
 			float[] wh = getOrthoWidthHeight();
-			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])),
+			dist[0] = Vector3D.dot(Vector3D.sub(pos, Vector3D.mult(right, wh[0])),
 					normal[0]);
-			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])),
+			dist[1] = Vector3D.dot(Vector3D.add(pos, Vector3D.mult(right, wh[0])),
 					normal[1]);
-			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])),
+			dist[4] = Vector3D.dot(Vector3D.add(pos, Vector3D.mult(up, wh[1])),
 					normal[4]);
-			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])),
+			dist[5] = Vector3D.dot(Vector3D.sub(pos, Vector3D.mult(up, wh[1])),
 					normal[5]);
 			break;
 		}
 
 		// Front and far planes are identical for both camera types.
-		normal[2] = PVector.mult(viewDir, -1);
+		normal[2] = Vector3D.mult(viewDir, -1);
 		normal[3] = viewDir;
 		dist[2] = -posViewDir - zNear();
 		dist[3] = posViewDir + zFar();
@@ -1661,9 +1674,9 @@ public class Camera implements Constants, Copyable {
 	 * Convenience function that simply calls {@code coneIsBackFacing(new Cone(normals))}.
 	 * 
 	 * @see #coneIsBackFacing(Cone)
-	 * @see #coneIsBackFacing(PVector[])
+	 * @see #coneIsBackFacing(Vector3D[])
 	 */
-	public boolean coneIsBackFacing(ArrayList<PVector> normals) {
+	public boolean coneIsBackFacing(ArrayList<Vector3D> normals) {
 		return coneIsBackFacing(new Cone(normals));
 	}
 	
@@ -1674,7 +1687,7 @@ public class Camera implements Constants, Copyable {
 	 * @param viewDirection Cached camera view direction.
 	 * @param normals cone of normals.
 	 */
-	public boolean coneIsBackFacing(PVector viewDirection, ArrayList<PVector> normals) {
+	public boolean coneIsBackFacing(Vector3D viewDirection, ArrayList<Vector3D> normals) {
 		return coneIsBackFacing(viewDirection, new Cone(normals));
 	}
 	
@@ -1684,7 +1697,7 @@ public class Camera implements Constants, Copyable {
 	 * @see #coneIsBackFacing(Cone)
 	 * @see #coneIsBackFacing(ArrayList)
 	 */
-	public boolean coneIsBackFacing(PVector [] normals) {
+	public boolean coneIsBackFacing(Vector3D [] normals) {
 		return coneIsBackFacing(new Cone(normals));
 	}
 	
@@ -1695,15 +1708,15 @@ public class Camera implements Constants, Copyable {
 	 * @param viewDirection Cached camera view direction.
 	 * @param normals cone of normals.
 	 */
-	public boolean coneIsBackFacing(PVector viewDirection, PVector [] normals) {
+	public boolean coneIsBackFacing(Vector3D viewDirection, Vector3D [] normals) {
 		return coneIsBackFacing(viewDirection, new Cone(normals));
 	}
 	
 	/**
 	 * Convenience function that simply returns {@code coneIsBackFacing(cone.axis(), cone.angle())}.
 	 * 
-	 * @see #coneIsBackFacing(PVector, float)
-	 * @see #faceIsBackFacing(PVector, PVector, PVector)
+	 * @see #coneIsBackFacing(Vector3D, float)
+	 * @see #faceIsBackFacing(Vector3D, Vector3D, Vector3D)
 	 */
 	public boolean coneIsBackFacing(Cone cone) {
 		return coneIsBackFacing(cone.axis(), cone.angle());
@@ -1716,7 +1729,7 @@ public class Camera implements Constants, Copyable {
 	 * @param viewDirection cached camera view direction.
 	 * @param cone cone of normals
 	 */
-	public boolean coneIsBackFacing(PVector viewDirection, Cone cone) {
+	public boolean coneIsBackFacing(Vector3D viewDirection, Cone cone) {
 		return coneIsBackFacing(viewDirection, cone.axis(), cone.angle());
 	}
 	
@@ -1724,9 +1737,9 @@ public class Camera implements Constants, Copyable {
 	 * Convinience funtion that simply returns
 	 * {@code coneIsBackFacing(viewDirection(), axis, angle)}.
 	 * <p>
-	 * Non-cached version of {@link #coneIsBackFacing(PVector, PVector, float)}
+	 * Non-cached version of {@link #coneIsBackFacing(Vector3D, Vector3D, float)}
 	 */
-	public boolean coneIsBackFacing(PVector axis, float angle) {
+	public boolean coneIsBackFacing(Vector3D axis, float angle) {
 		return coneIsBackFacing(viewDirection(), axis, angle);
 	}
 	
@@ -1739,11 +1752,11 @@ public class Camera implements Constants, Copyable {
 	 * @param angle cone angle
 	 * 
 	 * @see #coneIsBackFacing(Cone)
-	 * @see #faceIsBackFacing(PVector, PVector, PVector)
+	 * @see #faceIsBackFacing(Vector3D, Vector3D, Vector3D)
 	 */
-	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {		
+	public boolean coneIsBackFacing(Vector3D viewDirection, Vector3D axis, float angle) {		
 		if( angle < HALF_PI ) {			
-			float phi = (float) Math.acos ( PVector.dot(axis, viewDirection ) );
+			float phi = (float) Math.acos ( Vector3D.dot(axis, viewDirection ) );
 			if(phi >= HALF_PI)
 				return false;
 			if( (phi+angle) >= HALF_PI)
@@ -1766,9 +1779,9 @@ public class Camera implements Constants, Copyable {
 	 * @param b second face vertex
 	 * @param c third face vertex
 	 */
-  public boolean faceIsBackFacing(PVector a, PVector b, PVector c) {
-  	PVector v1 = PVector.sub(projectedCoordinatesOf(a), projectedCoordinatesOf(b));
-    PVector v2 = PVector.sub(projectedCoordinatesOf(b), projectedCoordinatesOf(c));
+  public boolean faceIsBackFacing(Vector3D a, Vector3D b, Vector3D c) {
+  	Vector3D v1 = Vector3D.sub(projectedCoordinatesOf(a), projectedCoordinatesOf(b));
+    Vector3D v2 = Vector3D.sub(projectedCoordinatesOf(b), projectedCoordinatesOf(c));
     return v1.cross(v2).z <= 0;
   }
 
@@ -1784,7 +1797,7 @@ public class Camera implements Constants, Copyable {
 	 * Note that Scene.sceneRadius() (resp. Scene.setSceneRadius()) simply call
 	 * this method on its associated Camera.
 	 * 
-	 * @see #setSceneBoundingBox(PVector, PVector)
+	 * @see #setSceneBoundingBox(Vector3D, Vector3D)
 	 */
 	public float sceneRadius() {
 		return scnRadius;
@@ -1828,14 +1841,14 @@ public class Camera implements Constants, Copyable {
 	 * as {@link #showEntireScene()}.
 	 * <p>
 	 * Note that {@link remixlab.proscene.Scene#center()} (resp.
-	 * remixlab.proscene.Scene{@link #setSceneCenter(PVector)}) simply call this
-	 * method (resp. {@link #setSceneCenter(PVector)}) on its associated
+	 * remixlab.proscene.Scene{@link #setSceneCenter(Vector3D)}) simply call this
+	 * method (resp. {@link #setSceneCenter(Vector3D)}) on its associated
 	 * {@link remixlab.proscene.Scene#camera()}. Default value is (0,0,0) (world
-	 * origin). Use {@link #setSceneCenter(PVector)} to change it.
+	 * origin). Use {@link #setSceneCenter(Vector3D)} to change it.
 	 * 
-	 * @see #setSceneBoundingBox(PVector, PVector)
+	 * @see #setSceneBoundingBox(Vector3D, Vector3D)
 	 */
-	public PVector sceneCenter() {
+	public Vector3D sceneCenter() {
 		return scnCenter;
 	}
 
@@ -1845,7 +1858,7 @@ public class Camera implements Constants, Copyable {
 	 * <b>Attention:</b> This method also sets the
 	 * {@link #arcballReferencePoint()} to {@link #sceneCenter()}.
 	 */
-	public void setSceneCenter(PVector center) {
+	public void setSceneCenter(Vector3D center) {
 		scnCenter = center;
 		setArcballReferencePoint(sceneCenter());
 	}
@@ -1862,12 +1875,12 @@ public class Camera implements Constants, Copyable {
 
 	/**
 	 * Similar to {@link #setSceneRadius(float)} and
-	 * {@link #setSceneCenter(PVector)}, but the scene limits are defined by a
+	 * {@link #setSceneCenter(Vector3D)}, but the scene limits are defined by a
 	 * (world axis aligned) bounding box.
 	 */
-	public void setSceneBoundingBox(PVector min, PVector max) {
-		setSceneCenter(PVector.mult(PVector.add(min, max), 1 / 2.0f));
-		setSceneRadius(0.5f * (PVector.sub(max, min)).mag());
+	public void setSceneBoundingBox(Vector3D min, Vector3D max) {
+		setSceneCenter(Vector3D.mult(Vector3D.add(min, max), 1 / 2.0f));
+		setSceneRadius(0.5f * (Vector3D.sub(max, min)).mag());
 	}
 
 	// 5. ARCBALL REFERENCE POINT
@@ -1879,9 +1892,9 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * Default value is the {@link #sceneCenter()}.
 	 * <p>
-	 * <b>Attention:</b> {@link #setSceneCenter(PVector)} changes this value.
+	 * <b>Attention:</b> {@link #setSceneCenter(Vector3D)} changes this value.
 	 */
-	public final PVector arcballReferencePoint() {
+	public final Vector3D arcballReferencePoint() {
 		return frame().arcballReferencePoint();
 	}
 
@@ -1889,7 +1902,7 @@ public class Camera implements Constants, Copyable {
 	 * Changes the {@link #arcballReferencePoint()} to {@code rap} (defined in the
 	 * world coordinate system).
 	 */
-	public void setArcballReferencePoint(PVector rap) {
+	public void setArcballReferencePoint(Vector3D rap) {
 		float prevDist = Math.abs(cameraCoordinatesOf(arcballReferencePoint()).z);
 
 		frame().setArcballReferencePoint(rap);
@@ -1923,7 +1936,7 @@ public class Camera implements Constants, Copyable {
 	}
 
 	/**
-	 * The {@link #setSceneCenter(PVector)} is set to the point located under
+	 * The {@link #setSceneCenter(Vector3D)} is set to the point located under
 	 * {@code pixel} on screen. Returns {@code true} if a point was found under
 	 * {@code pixel} and {@code false} if none was found (in this case no
 	 * {@link #sceneCenter()} is set).
@@ -1950,7 +1963,7 @@ public class Camera implements Constants, Copyable {
 	 * (dummy value), meaning that no point was found under pixel.
 	 */
 	public WorldPoint pointUnderPixel(Point pixel) {
-		return new WorldPoint(new PVector(0, 0, 0), false);
+		return new WorldPoint(new Vector3D(0, 0, 0), false);
 	}
 
 	// 6. ASSOCIATED FRAME AND FRAME WRAPPER FUNCTIONS
@@ -1969,9 +1982,9 @@ public class Camera implements Constants, Copyable {
 	/**
 	 * Sets the Camera {@link #frame()}.
 	 * <p>
-	 * If you want to move the Camera, use {@link #setPosition(PVector)} and
+	 * If you want to move the Camera, use {@link #setPosition(Vector3D)} and
 	 * {@link #setOrientation(Quaternion)} or one of the Camera positioning
-	 * methods ({@link #lookAt(PVector)}, {@link #fitSphere(PVector, float)},
+	 * methods ({@link #lookAt(Vector3D)}, {@link #fitSphere(Vector3D, float)},
 	 * {@link #showEntireScene()}...) instead.
 	 * <p>
 	 * This method is actually mainly useful if you derive the
@@ -2223,17 +2236,17 @@ public class Camera implements Constants, Copyable {
 
 	/**
 	 * Convenience function that simply returns {@code getProjectionMatrix(new
-	 * PMatrix3D())}
+	 * Matrix3D())}
 	 * 
-	 * @see #getProjectionMatrix(PMatrix3D)
+	 * @see #getProjectionMatrix(Matrix3D)
 	 */
-	public PMatrix3D getProjectionMatrix() {
-		return getProjectionMatrix(new PMatrix3D());
+	public Matrix3D getProjectionMatrix() {
+		return getProjectionMatrix(new Matrix3D());
 	}
 
 	/**
 	 * Fills {@code m} with the Camera projection matrix values and returns it. If
-	 * {@code m} is {@code null} a new PMatrix3D will be created.
+	 * {@code m} is {@code null} a new Matrix3D will be created.
 	 * <p>
 	 * First calls {@link #computeProjectionMatrix()} to define the Camera
 	 * projection matrix.
@@ -2241,9 +2254,9 @@ public class Camera implements Constants, Copyable {
 	 * 
 	 * @see #getModelViewMatrix()
 	 */
-	public PMatrix3D getProjectionMatrix(PMatrix3D m) {
+	public Matrix3D getProjectionMatrix(Matrix3D m) {
 		if (m == null)
-			m = new PMatrix3D();
+			m = new Matrix3D();
 
 		// May not be needed, but easier and more robust like this.
 		computeProjectionMatrix();
@@ -2274,7 +2287,7 @@ public class Camera implements Constants, Copyable {
 	 * with a Scene and is used for offscreen computations (using {@code
 	 * projectedCoordinatesOf()} for instance).
 	 * 
-	 * @see #setProjectionMatrix(PMatrix3D)
+	 * @see #setProjectionMatrix(Matrix3D)
 	 */
 	public void computeProjectionMatrix() {
 		float ZNear = zNear();
@@ -2314,33 +2327,33 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * Only meaningful when the camera {@link #isDetachedFromP5Camera()}.
 	 * 
-	 * @see #setModelViewMatrix(PMatrix3D)
+	 * @see #setModelViewMatrix(Matrix3D)
 	 */
-	public void setProjectionMatrix(PMatrix3D proj) {
-		if (isDetachedFromP5Camera())
+	public void setProjectionMatrix(Matrix3D proj) {
+		//if (isDetachedFromP5Camera())
 			projectionMat.set(proj);
 	}
 
 	/**
 	 * Convenience function that simply returns {@code getModelViewMatrix(new
-	 * PMatrix3D())}
+	 * Matrix3D())}
 	 */
-	public PMatrix3D getModelViewMatrix() {
-		return getModelViewMatrix(new PMatrix3D());
+	public Matrix3D getModelViewMatrix() {
+		return getModelViewMatrix(new Matrix3D());
 	}
 
 	/**
 	 * Fills {@code m} with the Camera modelView matrix values and returns it. If
-	 * {@code m} is {@code null} a new PMatrix3D will be created.
+	 * {@code m} is {@code null} a new Matrix3D will be created.
 	 * <p>
 	 * First calls {@link #computeModelViewMatrix()} to define the Camera
 	 * modelView matrix.
 	 * 
-	 * @see #getProjectionMatrix(PMatrix3D)
+	 * @see #getProjectionMatrix(Matrix3D)
 	 */
-	public PMatrix3D getModelViewMatrix(PMatrix3D m) {
+	public Matrix3D getModelViewMatrix(Matrix3D m) {
 		if (m == null)
-			m = new PMatrix3D();
+			m = new Matrix3D();
 		// May not be needed, but easier like this.
 		// Prevents from retrieving matrix in stereo mode -> overwrites shifted
 		// value.
@@ -2393,7 +2406,7 @@ public class Camera implements Constants, Copyable {
 		modelViewMat.m22 = 1.0f - q11 - q00;
 		modelViewMat.m32 = 0.0f;
 
-		PVector t = q.inverseRotate(frame().position());
+		Vector3D t = q.inverseRotate(frame().position());
 
 		modelViewMat.m03 = -t.x;
 		modelViewMat.m13 = -t.y;
@@ -2406,10 +2419,10 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * Only meaningful when the camera {@link #isDetachedFromP5Camera()}.
 	 * 
-	 * @see #setProjectionMatrix(PMatrix3D)
+	 * @see #setProjectionMatrix(Matrix3D)
 	 */
-	public void setModelViewMatrix(PMatrix3D modelview) {
-		if (isDetachedFromP5Camera())
+	public void setModelViewMatrix(Matrix3D modelview) {
+		//if (isDetachedFromP5Camera())
 			modelViewMat.set(modelview);
 	}
 
@@ -2419,13 +2432,13 @@ public class Camera implements Constants, Copyable {
 	 * Returns the Camera frame coordinates of a point {@code src} defined in
 	 * world coordinates.
 	 * <p>
-	 * {@link #worldCoordinatesOf(PVector)} performs the inverse transformation.
+	 * {@link #worldCoordinatesOf(Vector3D)} performs the inverse transformation.
 	 * <p>
 	 * Note that the point coordinates are simply converted in a different
 	 * coordinate system. They are not projected on screen. Use
-	 * {@link #projectedCoordinatesOf(PVector, Frame)} for that.
+	 * {@link #projectedCoordinatesOf(Vector3D, Frame)} for that.
 	 */
-	public final PVector cameraCoordinatesOf(PVector src) {
+	public final Vector3D cameraCoordinatesOf(Vector3D src) {
 		return frame().coordinatesOf(src);
 	}
 
@@ -2433,9 +2446,9 @@ public class Camera implements Constants, Copyable {
 	 * Returns the world coordinates of the point whose position {@code src} is
 	 * defined in the Camera coordinate system.
 	 * <p>
-	 * {@link #cameraCoordinatesOf(PVector)} performs the inverse transformation.
+	 * {@link #cameraCoordinatesOf(Vector3D)} performs the inverse transformation.
 	 */
-	public PVector worldCoordinatesOf(final PVector src) {
+	public Vector3D worldCoordinatesOf(final Vector3D src) {
 		return frame().inverseCoordinatesOf(src);
 	}
 
@@ -2455,7 +2468,7 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * This method is useful for analytical intersection in a selection method.
 	 */
-	public void convertClickToLine(final Point pixelInput, PVector orig, PVector dir) {
+	public void convertClickToLine(final Point pixelInput, Vector3D orig, Vector3D dir) {
 		Point pixel = new Point(pixelInput.getX(), pixelInput.getY());
 		
 		//lef-handed coordinate system correction
@@ -2464,17 +2477,17 @@ public class Camera implements Constants, Copyable {
 		switch (type()) {
 		case PERSPECTIVE:
 			orig.set(position());
-			dir.set(new PVector(((2.0f * (int)pixel.x / screenWidth()) - 1.0f)
+			dir.set(new Vector3D(((2.0f * (int)pixel.x / screenWidth()) - 1.0f)
 					* (float) Math.tan(fieldOfView() / 2.0f) * aspectRatio(),
 					((2.0f * (screenHeight() - (int)pixel.y) / screenHeight()) - 1.0f)
 							* (float) Math.tan(fieldOfView() / 2.0f), -1.0f));
-			dir.set(PVector.sub(worldCoordinatesOf(dir), orig));
+			dir.set(Vector3D.sub(worldCoordinatesOf(dir), orig));
 			dir.normalize();
 			break;
 
 		case ORTHOGRAPHIC: {
 			float[] wh = getOrthoWidthHeight();
-			orig.set(new PVector((2.0f * (int)pixel.x / screenWidth() - 1.0f) * wh[0],
+			orig.set(new Vector3D((2.0f * (int)pixel.x / screenWidth() - 1.0f) * wh[0],
 					-(2.0f * (int)pixel.y / screenHeight() - 1.0f) * wh[1], 0.0f));
 			orig.set(worldCoordinatesOf(orig));
 			dir.set(viewDirection());
@@ -2487,9 +2500,9 @@ public class Camera implements Constants, Copyable {
 	 * Convenience function that simply returns {@code projectedCoordinatesOf(src,
 	 * null)}
 	 * 
-	 * @see #projectedCoordinatesOf(PVector, Frame)
+	 * @see #projectedCoordinatesOf(Vector3D, Frame)
 	 */
-	public final PVector projectedCoordinatesOf(PVector src) {
+	public final Vector3D projectedCoordinatesOf(Vector3D src) {
 		return projectedCoordinatesOf(src, null);
 	}
 
@@ -2498,9 +2511,9 @@ public class Camera implements Constants, Copyable {
 	 * the {@code frame} coordinate system.
 	 * <p>
 	 * When {@code frame} is {@code null}, {@code src} is expressed in the world
-	 * coordinate system. See {@link #projectedCoordinatesOf(PVector)}.
+	 * coordinate system. See {@link #projectedCoordinatesOf(Vector3D)}.
 	 * <p>
-	 * The x and y coordinates of the returned PVector are expressed in pixel,
+	 * The x and y coordinates of the returned Vector3D are expressed in pixel,
 	 * (0,0) being the upper left corner of the window. The z coordinate ranges
 	 * between 0.0 (near plane) and 1.0 (excluded, far plane). See the {@code
 	 * gluProject} man page for details.
@@ -2511,14 +2524,14 @@ public class Camera implements Constants, Copyable {
 	 * matrices. You can hence define a virtual Camera and use this method to
 	 * compute projections out of a classical rendering context.
 	 * 
-	 * @see #unprojectedCoordinatesOf(PVector, Frame)
+	 * @see #unprojectedCoordinatesOf(Vector3D, Frame)
 	 */
-	public final PVector projectedCoordinatesOf(PVector src, Frame frame) {
+	public final Vector3D projectedCoordinatesOf(Vector3D src, Frame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
 
 		if (frame != null) {
-			PVector tmp = frame.inverseCoordinatesOf(src);
+			Vector3D tmp = frame.inverseCoordinatesOf(src);
 			project(tmp.x, tmp.y, tmp.z, modelViewMat, projectionMat, viewport, xyz);
 		} else
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
@@ -2526,16 +2539,16 @@ public class Camera implements Constants, Copyable {
   	//lef-handed coordinate system correction
 		xyz[1] = screenHeight() - xyz[1];
 
-		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
+		return new Vector3D((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
 	/**
 	 * Convenience function that simply returns {@code return
 	 * unprojectedCoordinatesOf(src, null)}
 	 * 
-	 * #see {@link #unprojectedCoordinatesOf(PVector, Frame)}
+	 * #see {@link #unprojectedCoordinatesOf(Vector3D, Frame)}
 	 */
-	public final PVector unprojectedCoordinatesOf(PVector src) {
+	public final Vector3D unprojectedCoordinatesOf(Vector3D src) {
 		return this.unprojectedCoordinatesOf(src, null);
 	}
 
@@ -2553,7 +2566,7 @@ public class Camera implements Constants, Copyable {
 	 * coordinates system. The possible {@code frame}
 	 * {@link remixlab.remixcam.core.Frame#referenceFrame()} are taken into account.
 	 * <p>
-	 * {@link #projectedCoordinatesOf(PVector, Frame)} performs the inverse
+	 * {@link #projectedCoordinatesOf(Vector3D, Frame)} performs the inverse
 	 * transformation.
 	 * <p>
 	 * This method only uses the intrinsic Camera parameters (see
@@ -2572,10 +2585,10 @@ public class Camera implements Constants, Copyable {
 	 * projection matrix (modelview, projection and then viewport) to speed-up the
 	 * queries. See the gluUnProject man page for details.
 	 * 
-	 * @see #projectedCoordinatesOf(PVector, Frame)
+	 * @see #projectedCoordinatesOf(Vector3D, Frame)
 	 * @see #setScreenWidthAndHeight(int, int)
 	 */
-	public final PVector unprojectedCoordinatesOf(PVector src, Frame frame) {
+	public final Vector3D unprojectedCoordinatesOf(Vector3D src, Frame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
 		
@@ -2584,10 +2597,10 @@ public class Camera implements Constants, Copyable {
 		//unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
 		if (frame != null)
-			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1],
+			return frame.coordinatesOf(new Vector3D((float) xyz[0], (float) xyz[1],
 					(float) xyz[2]));
 		else
-			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
+			return new Vector3D((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
 	// 11. FLYSPEED
@@ -2624,17 +2637,17 @@ public class Camera implements Constants, Copyable {
 	 * target} (defined in the world coordinate system).
 	 * <p>
 	 * The Camera {@link #position()} is not modified. Simply
-	 * {@link #setViewDirection(PVector)}.
+	 * {@link #setViewDirection(Vector3D)}.
 	 * 
 	 * @see #at()
-	 * @see #setUpVector(PVector)
+	 * @see #setUpVector(Vector3D)
 	 * @see #setOrientation(Quaternion)
 	 * @see #showEntireScene()
-	 * @see #fitSphere(PVector, float)
-	 * @see #fitBoundingBox(PVector, PVector)
+	 * @see #fitSphere(Vector3D, float)
+	 * @see #fitBoundingBox(Vector3D, Vector3D)
 	 */
-	public void lookAt(PVector target) {
-		setViewDirection(PVector.sub(target, position()));
+	public void lookAt(Vector3D target) {
+		setViewDirection(Vector3D.sub(target, position()));
 	}
 
 	/**
@@ -2643,10 +2656,10 @@ public class Camera implements Constants, Copyable {
 	 * the Processing camera() which uses a similar approach of that found in
 	 * gluLookAt.
 	 * 
-	 * @see #lookAt(PVector)
+	 * @see #lookAt(Vector3D)
 	 */
-	public PVector at() {
-		return PVector.add(position(), viewDirection());
+	public Vector3D at() {
+		return Vector3D.add(position(), viewDirection());
 	}
 
 	/**
@@ -2663,11 +2676,11 @@ public class Camera implements Constants, Copyable {
 	 * the {@link #standardOrthoFrustumSize()} to 1 and then calls {@code
 	 * lookAt(sceneCenter())}.
 	 * 
-	 * @see #lookAt(PVector)
+	 * @see #lookAt(Vector3D)
 	 * @see #setOrientation(Quaternion)
-	 * @see #setUpVector(PVector, boolean)
+	 * @see #setUpVector(Vector3D, boolean)
 	 */
-	public void fitSphere(PVector center, float radius) {
+	public void fitSphere(Vector3D center, float radius) {
 		if ((kind() == Kind.STANDARD) && (type() == Type.ORTHOGRAPHIC)) {
 			orthoSize = 1;
 			lookAt(sceneCenter());
@@ -2683,26 +2696,26 @@ public class Camera implements Constants, Copyable {
 			break;
 		}
 		case ORTHOGRAPHIC: {
-			distance = PVector.dot(PVector.sub(center, arcballReferencePoint()),
+			distance = Vector3D.dot(Vector3D.sub(center, arcballReferencePoint()),
 					viewDirection())
 					+ (radius / orthoCoef);
 			break;
 		}
 		}
 
-		PVector newPos = PVector.sub(center, PVector.mult(viewDirection(), distance));
+		Vector3D newPos = Vector3D.sub(center, Vector3D.mult(viewDirection(), distance));
 		frame().setPositionWithConstraint(newPos);
 	}
 
 	/**
 	 * Moves the Camera so that the (world axis aligned) bounding box ({@code min}
 	 * , {@code max}) is entirely visible, using
-	 * {@link #fitSphere(PVector, float)}.
+	 * {@link #fitSphere(Vector3D, float)}.
 	 */
-	public void fitBoundingBox(PVector min, PVector max) {
+	public void fitBoundingBox(Vector3D min, Vector3D max) {
 		float diameter = Math.max(Math.abs(max.y - min.y), Math.abs(max.x - min.x));
 		diameter = Math.max(Math.abs(max.z - min.z), diameter);
-		fitSphere(PVector.mult(PVector.add(min, max), 0.5f), 0.5f * diameter);
+		fitSphere(Vector3D.mult(Vector3D.add(min, max), 0.5f), 0.5f * diameter);
 	}
 
 	/**
@@ -2718,42 +2731,42 @@ public class Camera implements Constants, Copyable {
 	 * eventually fitted.
 	 */
 	public void fitScreenRegion(Rectangle rectangle) {
-		PVector vd = viewDirection();
+		Vector3D vd = viewDirection();
 		float distToPlane = distanceToSceneCenter();
 
 		Point center = new Point((int) rectangle.getCenterX(), (int) rectangle.getCenterY());
 
-		PVector orig = new PVector();
-		PVector dir = new PVector();
+		Vector3D orig = new Vector3D();
+		Vector3D dir = new Vector3D();
 		convertClickToLine(center, orig, dir);
-		PVector newCenter = PVector.add(orig, PVector.mult(dir,
-				(distToPlane / PVector.dot(dir, vd))));
+		Vector3D newCenter = Vector3D.add(orig, Vector3D.mult(dir,
+				(distToPlane / Vector3D.dot(dir, vd))));
 
 		convertClickToLine(new Point(rectangle.x, center.y), orig, dir);
-		final PVector pointX = PVector.add(orig, PVector.mult(dir,
-				(distToPlane / PVector.dot(dir, vd))));
+		final Vector3D pointX = Vector3D.add(orig, Vector3D.mult(dir,
+				(distToPlane / Vector3D.dot(dir, vd))));
 
 		convertClickToLine(new Point(center.x, rectangle.y), orig, dir);
-		final PVector pointY = PVector.add(orig, PVector.mult(dir,
-				(distToPlane / PVector.dot(dir, vd))));
+		final Vector3D pointY = Vector3D.add(orig, Vector3D.mult(dir,
+				(distToPlane / Vector3D.dot(dir, vd))));
 
 		float distance = 0.0f;
 		switch (type()) {
 		case PERSPECTIVE: {
-			final float distX = PVector.dist(pointX, newCenter)
+			final float distX = Vector3D.dist(pointX, newCenter)
 					/ (float) Math.sin(horizontalFieldOfView() / 2.0f);
-			final float distY = PVector.dist(pointY, newCenter)
+			final float distY = Vector3D.dist(pointY, newCenter)
 					/ (float) Math.sin(fieldOfView() / 2.0f);
 
 			distance = Math.max(distX, distY);
 			break;
 		}
 		case ORTHOGRAPHIC: {
-			final float dist = PVector.dot(PVector.sub(newCenter,
+			final float dist = Vector3D.dot(Vector3D.sub(newCenter,
 					arcballReferencePoint()), vd);
-			final float distX = PVector.dist(pointX, newCenter) / orthoCoef
+			final float distX = Vector3D.dist(pointX, newCenter) / orthoCoef
 					/ ((aspectRatio() < 1.0) ? 1.0f : aspectRatio());
-			final float distY = PVector.dist(pointY, newCenter) / orthoCoef
+			final float distY = Vector3D.dist(pointY, newCenter) / orthoCoef
 					/ ((aspectRatio() < 1.0) ? 1.0f / aspectRatio() : 1.0f);
 
 			distance = dist + Math.max(distX, distY);
@@ -2762,13 +2775,13 @@ public class Camera implements Constants, Copyable {
 		}
 		}
 
-		frame().setPositionWithConstraint(PVector.sub(newCenter, PVector.mult(vd, distance)));
+		frame().setPositionWithConstraint(Vector3D.sub(newCenter, Vector3D.mult(vd, distance)));
 	}
 
 	/**
 	 * Moves the Camera so that the entire scene is visible.
 	 * <p>
-	 * Simply calls {@link #fitSphere(PVector, float)} on a sphere defined by
+	 * Simply calls {@link #fitSphere(Vector3D, float)} on a sphere defined by
 	 * {@link #sceneCenter()} and {@link #sceneRadius()}.
 	 * <p>
 	 * You will typically use this method in
@@ -2820,7 +2833,7 @@ public class Camera implements Constants, Copyable {
 		// without modifying frame
 		tempFrame = new InteractiveCameraFrame(this);
 		InteractiveCameraFrame originalFrame = frame();
-		tempFrame.setPosition(new PVector(frame().position().x,	frame().position().y, frame().position().z));
+		tempFrame.setPosition(new Vector3D(frame().position().x,	frame().position().y, frame().position().z));
 		tempFrame.setOrientation( frame().orientation().getCopy() );
 		setFrame(tempFrame);
 		fitScreenRegion(rectangle);
@@ -2860,16 +2873,16 @@ public class Camera implements Constants, Copyable {
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
 
-		interpolationKfi.addKeyFrame(new Frame(PVector.add(PVector.mult(frame()
-				.position(), 0.3f), PVector.mult(target.point, 0.7f)), frame()
+		interpolationKfi.addKeyFrame(new Frame(Vector3D.add(Vector3D.mult(frame()
+				.position(), 0.3f), Vector3D.mult(target.point, 0.7f)), frame()
 				.orientation()), 0.4f, false);
 
 		// Small hack: attach a temporary frame to take advantage of lookAt without
 		// modifying frame
 		tempFrame = new InteractiveCameraFrame(this);
 		InteractiveCameraFrame originalFrame = frame();
-		tempFrame.setPosition(PVector.add(PVector.mult(frame().position(), coef),
-				PVector.mult(target.point, (1.0f - coef))));
+		tempFrame.setPosition(Vector3D.add(Vector3D.mult(frame().position(), coef),
+				Vector3D.mult(target.point, (1.0f - coef))));
 		tempFrame.setOrientation( frame().orientation().getCopy() );
 		setFrame(tempFrame);
 		lookAt(target.point);
@@ -2905,7 +2918,7 @@ public class Camera implements Constants, Copyable {
 		// without modifying frame
 		tempFrame = new InteractiveCameraFrame(this);
 		InteractiveCameraFrame originalFrame = frame();
-		tempFrame.setPosition(new PVector(frame().position().x,	frame().position().y, frame().position().z));
+		tempFrame.setPosition(new Vector3D(frame().position().x,	frame().position().y, frame().position().z));
 		tempFrame.setOrientation( frame().orientation().getCopy() );
 		setFrame(tempFrame);
 		showEntireScene();
@@ -3093,7 +3106,7 @@ public class Camera implements Constants, Copyable {
 	 *          Return the computed window coordinates.
 	 */
 	public boolean project(float objx, float objy, float objz,
-			PMatrix3D modelview, PMatrix3D projection, int[] viewport,
+			Matrix3D modelview, Matrix3D projection, int[] viewport,
 			float[] windowCoordinate) {
 		// Transformation vectors
 		float in[] = new float[4];
@@ -3147,9 +3160,9 @@ public class Camera implements Constants, Copyable {
 	 *          Return the computed object coordinates.
 	 */
 	public boolean unproject(float winx, float winy, float winz,
-			PMatrix3D modelview, PMatrix3D projection, int viewport[],
+			Matrix3D modelview, Matrix3D projection, int viewport[],
 			float[] objCoordinate) {
-		PMatrix3D finalMatrix = new PMatrix3D(projection);
+		Matrix3D finalMatrix = new Matrix3D(projection);
 		float in[] = new float[4];
 		float out[] = new float[4];
 
