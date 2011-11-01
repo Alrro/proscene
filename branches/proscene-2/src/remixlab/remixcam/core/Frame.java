@@ -32,10 +32,9 @@ import java.util.List;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import processing.core.*;
-import remixlab.remixcam.constraints.Constraint;
-import remixlab.remixcam.geom.MathUtils;
-import remixlab.remixcam.geom.Quaternion;
+import remixlab.proscene.Scene;
+import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.geom.*;
 
 /**
  * A Frame is a 3D coordinate system, represented by a {@link #position()} and
@@ -111,27 +110,27 @@ public class Frame implements Copyable {
 		}		
 
 		// TODO move Frame.modified() here?
-		protected PVector trans;
+		protected Vector3D trans;
 		protected Quaternion rot;
 		protected Frame refFrame;
 		protected Constraint constr;
 		
 		public FrameKernel() {
-			trans = new PVector(0, 0, 0);
+			trans = new Vector3D(0, 0, 0);
 			rot = new Quaternion();
 			refFrame = null;
 			constr = null;
 		}
 		
-		public FrameKernel(PVector p, Quaternion r) {
-			trans = new PVector(p.x, p.y, p.z);
+		public FrameKernel(Vector3D p, Quaternion r) {
+			trans = new Vector3D(p.x, p.y, p.z);
 			rot = r.getCopy();
 			refFrame = null;
 			constr = null;
 		}
 		
 		protected FrameKernel(FrameKernel other) {
-			trans = new PVector(other.translation().x, other.translation().y, other.translation().z);
+			trans = new Vector3D(other.translation().x, other.translation().y, other.translation().z);
 			rot = other.rotation().getCopy();
 			refFrame = other.referenceFrame();
 			constr = other.constraint();
@@ -141,11 +140,11 @@ public class Frame implements Copyable {
 			return new FrameKernel(this);
 		}		
 		
-		public final PVector translation() {
+		public final Vector3D translation() {
 			return trans;
 		}
 		
-		public final void setTranslation(PVector t) {
+		public final void setTranslation(Vector3D t) {
 			trans = t;			
 		}
 		
@@ -196,14 +195,14 @@ public class Frame implements Copyable {
 	/**
 	 * Creates a Frame with a {@link #position()} and an {@link #orientation()}.
 	 * <p>
-	 * See the PVector and Quaternion documentations for convenient constructors
+	 * See the Vector3D and Quaternion documentations for convenient constructors
 	 * and methods.
 	 * <p>
 	 * The Frame is defined in the world coordinate system (its
 	 * {@link #referenceFrame()} is {@code null}). It has a {@code null}
 	 * associated {@link #constraint()}.
 	 */
-	public Frame(PVector p, Quaternion r) {
+	public Frame(Vector3D p, Quaternion r) {
 		krnl = new FrameKernel(p, r);
 		list = new ArrayList<KeyFrameInterpolator>();
 		linkedFramesList = new ArrayList<Frame>();
@@ -256,10 +255,10 @@ public class Frame implements Copyable {
 	 * two values are identical when the {@link #referenceFrame()} is {@code null}
 	 * (default).
 	 * 
-	 * @see #setTranslation(PVector)
-	 * @see #setTranslationWithConstraint(PVector)
+	 * @see #setTranslation(Vector3D)
+	 * @see #setTranslationWithConstraint(Vector3D)
 	 */
-	public final PVector translation() {
+	public final Vector3D translation() {
 		return kernel().translation();
 	}
 
@@ -294,12 +293,12 @@ public class Frame implements Copyable {
 	 * <p>
 	 * Use {@link #setReferenceFrame(Frame)} to set this value and create a Frame
 	 * hierarchy. Convenient functions allow you to convert 3D coordinates from
-	 * one Frame to another: see {@link #coordinatesOf(PVector)},
-	 * {@link #localCoordinatesOf(PVector)} ,
-	 * {@link #coordinatesOfIn(PVector, Frame)} and their inverse functions.
+	 * one Frame to another: see {@link #coordinatesOf(Vector3D)},
+	 * {@link #localCoordinatesOf(Vector3D)} ,
+	 * {@link #coordinatesOfIn(Vector3D, Frame)} and their inverse functions.
 	 * <p>
-	 * Vectors can also be converted using {@link #transformOf(PVector)},
-	 * {@link #transformOfIn(PVector, Frame)}, {@link #localTransformOf(PVector)}
+	 * Vectors can also be converted using {@link #transformOf(Vector3D)},
+	 * {@link #transformOfIn(Vector3D, Frame)}, {@link #localTransformOf(Vector3D)}
 	 * and their inverse functions.
 	 */
 	public final Frame referenceFrame() {
@@ -523,33 +522,33 @@ public class Frame implements Copyable {
 	 * Sets the {@link #translation()} of the frame, locally defined with respect
 	 * to the {@link #referenceFrame()}. Calls {@link #modified()}.
 	 * <p>
-	 * Use {@link #setPosition(PVector)} to define the world coordinates
-	 * {@link #position()}. Use {@link #setTranslationWithConstraint(PVector)} to
+	 * Use {@link #setPosition(Vector3D)} to define the world coordinates
+	 * {@link #position()}. Use {@link #setTranslationWithConstraint(Vector3D)} to
 	 * take into account the potential {@link #constraint()} of the Frame.
 	 */
-	public final void setTranslation(PVector t) {
+	public final void setTranslation(Vector3D t) {
 		kernel().setTranslation(t);
 		modified();
 	}
 
 	/**
-	 * Same as {@link #setTranslation(PVector)}, but with {@code float}
+	 * Same as {@link #setTranslation(Vector3D)}, but with {@code float}
 	 * parameters.
 	 */
 	public final void setTranslation(float x, float y, float z) {
-		setTranslation(new PVector(x, y, z));
+		setTranslation(new Vector3D(x, y, z));
 	}
 
 	/**
-	 * Same as {@link #setTranslation(PVector)}, but if there's a
+	 * Same as {@link #setTranslation(Vector3D)}, but if there's a
 	 * {@link #constraint()} it is satisfied (without modifying {@code
 	 * translation}).
 	 * 
 	 * @see #setRotationWithConstraint(Quaternion)
-	 * @see #setPositionWithConstraint(PVector)
+	 * @see #setPositionWithConstraint(Vector3D)
 	 */
-	public final void setTranslationWithConstraint(PVector translation) {
-		PVector deltaT = PVector.sub(translation, this.translation());
+	public final void setTranslationWithConstraint(Vector3D translation) {
+		Vector3D deltaT = Vector3D.sub(translation, this.translation());
 		if (constraint() != null)
 			deltaT = constraint().constrainTranslation(deltaT, this);
 
@@ -575,7 +574,7 @@ public class Frame implements Copyable {
 	 * 
 	 * @see #setRotationWithConstraint(Quaternion)
 	 * @see #rotation()
-	 * @see #setTranslation(PVector)
+	 * @see #setTranslation(Vector3D)
 	 */
 	public final void setRotation(Quaternion r) {
 		kernel().setRotation(r);
@@ -594,7 +593,7 @@ public class Frame implements Copyable {
 	 * Same as {@link #setRotation(Quaternion)}, if there's a
 	 * {@link #constraint()} it's satisfied (without modifying {@code rotation}).
 	 * 
-	 * @see #setTranslationWithConstraint(PVector)
+	 * @see #setTranslationWithConstraint(Vector3D)
 	 * @see #setOrientationWithConstraint(Quaternion)
 	 */
 	public final void setRotationWithConstraint(Quaternion rotation) {
@@ -686,12 +685,12 @@ public class Frame implements Copyable {
 	 * Sets the {@link #position()} of the Frame, defined in the world coordinate
 	 * system.
 	 * <p>
-	 * Use {@link #setTranslation(PVector)} to define the local Frame translation
+	 * Use {@link #setTranslation(Vector3D)} to define the local Frame translation
 	 * (with respect to the {@link #referenceFrame()}). The potential
 	 * {@link #constraint()} of the Frame is not taken into account, use
-	 * {@link #setPositionWithConstraint(PVector)} instead.
+	 * {@link #setPositionWithConstraint(Vector3D)} instead.
 	 */
-	public final void setPosition(PVector p) {
+	public final void setPosition(Vector3D p) {
 		if (referenceFrame() != null)
 			setTranslation(referenceFrame().coordinatesOf(p));
 		else
@@ -703,17 +702,17 @@ public class Frame implements Copyable {
 	 * parameters.
 	 */
 	public final void setPosition(float x, float y, float z) {
-		setPosition(new PVector(x, y, z));
+		setPosition(new Vector3D(x, y, z));
 	}
 
 	/**
-	 * Same as {@link #setPosition(PVector)}, but if there's a
+	 * Same as {@link #setPosition(Vector3D)}, but if there's a
 	 * {@link #constraint()} it is satisfied (without modifying {@code position}).
 	 * 
 	 * @see #setOrientationWithConstraint(Quaternion)
-	 * @see #setTranslationWithConstraint(PVector)
+	 * @see #setTranslationWithConstraint(Vector3D)
 	 */
-	public final void setPositionWithConstraint(PVector position) {
+	public final void setPositionWithConstraint(Vector3D position) {
 		if (referenceFrame() != null)
 			position = referenceFrame().coordinatesOf(position);
 
@@ -749,7 +748,7 @@ public class Frame implements Copyable {
 	 * {@link #constraint()} it is satisfied (without modifying {@code
 	 * orientation}).
 	 * 
-	 * @see #setPositionWithConstraint(PVector)
+	 * @see #setPositionWithConstraint(Vector3D)
 	 * @see #setRotationWithConstraint(Quaternion)
 	 */
 	public final void setOrientationWithConstraint(Quaternion orientation) {
@@ -764,20 +763,20 @@ public class Frame implements Copyable {
 	 * Returns the position of the Frame, defined in the world coordinate system.
 	 * 
 	 * @see #orientation()
-	 * @see #setPosition(PVector)
+	 * @see #setPosition(Vector3D)
 	 * @see #translation()
 	 */
-	public final PVector position() {
-		return inverseCoordinatesOf(new PVector(0, 0, 0));
+	public final Vector3D position() {
+		return inverseCoordinatesOf(new Vector3D(0, 0, 0));
 	}
 
 	/**
 	 * Same as {@code translate(t, true)}. Calls {@link #modified()}.
 	 * 
-	 * @see #translate(PVector, boolean)
+	 * @see #translate(Vector3D, boolean)
 	 * @see #rotate(Quaternion)
 	 */
-	public final void translate(PVector t) {
+	public final void translate(Vector3D t) {
 		if (constraint() != null)
 			kernel().translation().add(constraint().constrainTranslation(t, this));
 		else
@@ -793,14 +792,14 @@ public class Frame implements Copyable {
 	 * actually applied to the Frame may differ from {@code t} (since it can be
 	 * filtered by the {@link #constraint()}). Use {@code translate(t, false)} to
 	 * retrieve the filtered translation value and {@code translate(t, true)} to
-	 * keep the original value of {@code t}. Use {@link #setTranslation(PVector)}
+	 * keep the original value of {@code t}. Use {@link #setTranslation(Vector3D)}
 	 * to directly translate the Frame without taking the {@link #constraint()}
 	 * into account.
 	 * 
 	 * @see #rotate(Quaternion)
 	 */
-	public final void translate(PVector t, boolean keepArg) {
-		PVector o = new PVector(t.x, t.y, t.z);
+	public final void translate(Vector3D t, boolean keepArg) {
+		Vector3D o = new Vector3D(t.x, t.y, t.z);
 		if (constraint() != null) {
 			o = constraint().constrainTranslation(t, this);
 			if (!keepArg) {
@@ -814,17 +813,17 @@ public class Frame implements Copyable {
 	}
 
 	/**
-	 * Same as {@link #translate(PVector)} but with {@code float} parameters.
+	 * Same as {@link #translate(Vector3D)} but with {@code float} parameters.
 	 */
 	public final void translate(float x, float y, float z) {
-		translate(new PVector(x, y, z));
+		translate(new Vector3D(x, y, z));
 	}
 
 	/**
 	 * Same as {@code rotate(q, true)}. Calls {@link #modified()}.
 	 * 
 	 * @see #rotate(Quaternion, boolean)
-	 * @see #translate(PVector)
+	 * @see #translate(Vector3D)
 	 */
 	public final void rotate(Quaternion q) {
 		if (constraint() != null)
@@ -848,7 +847,7 @@ public class Frame implements Copyable {
 	 * directly rotate the Frame without taking the {@link #constraint()} into
 	 * account.
 	 * 
-	 * @see #translate(PVector)
+	 * @see #translate(Vector3D)
 	 */
 	public final void rotate(Quaternion q, boolean keepArg) {
 		Quaternion o = q.getCopy();
@@ -879,7 +878,7 @@ public class Frame implements Copyable {
 	 * Same as {@code rotateAroundPoint(rotation, point, true)}. Calls
 	 * {@link #modified()}.
 	 */
-	public final void rotateAroundPoint(Quaternion rotation, PVector point) {
+	public final void rotateAroundPoint(Quaternion rotation, Vector3D point) {
 		if (constraint() != null)
 			rotation = constraint().constrainRotation(rotation, this);
 
@@ -887,7 +886,7 @@ public class Frame implements Copyable {
 		this.kernel().rotation().normalize(); // Prevents numerical drift
 
 		Quaternion q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());
-		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
+		Vector3D t = Vector3D.add(point, q.rotate(Vector3D.sub(position(), point)));
 		t.sub(kernel().translation());
 
 		if (constraint() != null)
@@ -898,7 +897,7 @@ public class Frame implements Copyable {
 	}
 
 	/**
-	 * Same as {@link #rotateAroundPoint(Quaternion, PVector)} but if there's a
+	 * Same as {@link #rotateAroundPoint(Quaternion, Vector3D)} but if there's a
 	 * {@link #constraint()} {@code rotation} is modified to satisfy it.
 	 */
 
@@ -920,9 +919,9 @@ public class Frame implements Copyable {
 	 * <p>
 	 * The translation which results from the filtered rotation around {@code
 	 * point} is then computed and filtered using
-	 * {@link remixlab.remixcam.constraints.Constraint#constrainTranslation(PVector, Frame)}.
+	 * {@link remixlab.remixcam.constraints.Constraint#constrainTranslation(Vector3D, Frame)}.
 	 */
-	public final void rotateAroundPoint(Quaternion rotation, PVector point,
+	public final void rotateAroundPoint(Quaternion rotation, Vector3D point,
 			boolean keepArg) {
 		Quaternion q = rotation.getCopy();
 		if (constraint() != null) {
@@ -938,7 +937,7 @@ public class Frame implements Copyable {
 		this.kernel().rotation().normalize(); // Prevents numerical drift
 
 		q = new Quaternion(inverseTransformOf(rotation.axis()), rotation.angle());
-		PVector t = PVector.add(point, q.rotate(PVector.sub(position(), point)));
+		Vector3D t = Vector3D.add(point, q.rotate(Vector3D.sub(position(), point)));
 		t.sub(kernel().translation());
 
 		if (constraint() != null)
@@ -991,16 +990,16 @@ public class Frame implements Copyable {
 	 * When {@code move} is set to {@code true}, the Frame {@link #position()} is
 	 * also affected by the alignment. The new Frame {@link #position()} is such
 	 * that the {@code frame} frame position (computed with
-	 * {@link #coordinatesOf(PVector)}, in the Frame coordinates system) does not
+	 * {@link #coordinatesOf(Vector3D)}, in the Frame coordinates system) does not
 	 * change.
 	 * <p>
 	 * {@code frame} may be {@code null} and then represents the world coordinate
 	 * system (same convention than for the {@link #referenceFrame()}).
 	 */
 	public final void alignWithFrame(Frame frame, boolean move, float threshold) {
-		PVector[][] directions = new PVector[2][3];
+		Vector3D[][] directions = new Vector3D[2][3];
 		for (int d = 0; d < 3; ++d) {
-			PVector dir = new PVector((d == 0) ? 1.0f : 0.0f, (d == 1) ? 1.0f : 0.0f,
+			Vector3D dir = new Vector3D((d == 0) ? 1.0f : 0.0f, (d == 1) ? 1.0f : 0.0f,
 					(d == 2) ? 1.0f : 0.0f);
 			if (frame != null)
 				directions[0][d] = frame.inverseTransformOf(dir);
@@ -1014,7 +1013,7 @@ public class Frame implements Copyable {
 		short[] index = new short[2];
 		index[0] = index[1] = 0;
 
-		PVector vec = new PVector(0.0f, 0.0f, 0.0f);
+		Vector3D vec = new Vector3D(0.0f, 0.0f, 0.0f);
 		for (int i = 0; i < 3; ++i) {
 			for (int j = 0; j < 3; ++j) {
 				vec.set(directions[0][i]);
@@ -1036,7 +1035,7 @@ public class Frame implements Copyable {
 
 		if (Math.abs(coef) >= threshold) {
 			vec.set(directions[0][index[0]]);
-			PVector axis = vec.cross(directions[1][index[1]]);
+			Vector3D axis = vec.cross(directions[1][index[1]]);
 			float angle = (float) Math.asin(axis.mag());
 			if (coef >= 0.0)
 				angle = -angle;
@@ -1048,7 +1047,7 @@ public class Frame implements Copyable {
 
 			// Try to align an other axis direction
 			short d = (short) ((index[1] + 1) % 3);
-			PVector dir = new PVector((d == 0) ? 1.0f : 0.0f, (d == 1) ? 1.0f : 0.0f,
+			Vector3D dir = new Vector3D((d == 0) ? 1.0f : 0.0f, (d == 1) ? 1.0f : 0.0f,
 					(d == 2) ? 1.0f : 0.0f);
 			dir = inverseTransformOf(dir);
 
@@ -1078,11 +1077,11 @@ public class Frame implements Copyable {
 		}
 
 		if (move) {
-			PVector center = new PVector(0.0f, 0.0f, 0.0f);
+			Vector3D center = new Vector3D(0.0f, 0.0f, 0.0f);
 			if (frame != null)
 				center = frame.position();
 
-			vec = PVector
+			vec = Vector3D
 					.sub(center, orientation().rotate(old.coordinatesOf(center)));
 			vec.sub(translation());
 			translate(vec);
@@ -1097,26 +1096,26 @@ public class Frame implements Copyable {
 	 * Simply uses an orthogonal projection. {@code direction} does not need to be
 	 * normalized.
 	 */
-	public final void projectOnLine(PVector origin, PVector direction) {
-		PVector shift = PVector.sub(origin, position());
-		PVector proj = shift;
+	public final void projectOnLine(Vector3D origin, Vector3D direction) {
+		Vector3D shift = Vector3D.sub(origin, position());
+		Vector3D proj = shift;
 		// float directionSquaredNorm = (direction.x * direction.x) + (direction.y *
 		// direction.y) + (direction.z * direction.z);
 		// float modulation = proj.dot(direction) / directionSquaredNorm;
-		// proj = PVector.mult(direction, modulation);
-		proj = MathUtils.projectVectorOnAxis(proj, direction);
-		translate(PVector.sub(shift, proj));
+		// proj = Vector3D.mult(direction, modulation);
+		proj = Vector3D.projectVectorOnAxis(proj, direction);
+		translate(Vector3D.sub(shift, proj));
 	}
 
 	/**
 	 * Returns the Frame coordinates of a point {@code src} defined in the world
 	 * coordinate system (converts from world to Frame).
 	 * <p>
-	 * {@link #inverseCoordinatesOf(PVector)} performs the inverse conversion.
-	 * {@link #transformOf(PVector)} converts 3D vectors instead of 3D
+	 * {@link #inverseCoordinatesOf(Vector3D)} performs the inverse conversion.
+	 * {@link #transformOf(Vector3D)} converts 3D vectors instead of 3D
 	 * coordinates.
 	 */
-	public final PVector coordinatesOf(PVector src) {
+	public final Vector3D coordinatesOf(Vector3D src) {
 		if (referenceFrame() != null)
 			return localCoordinatesOf(referenceFrame().coordinatesOf(src));
 		else
@@ -1127,13 +1126,13 @@ public class Frame implements Copyable {
 	 * Returns the world coordinates of the point whose position in the Frame
 	 * coordinate system is {@code src} (converts from Frame to world).
 	 * <p>
-	 * {@link #coordinatesOf(PVector)} performs the inverse conversion. Use
-	 * {@link #inverseTransformOf(PVector)} to transform 3D vectors instead of 3D
+	 * {@link #coordinatesOf(Vector3D)} performs the inverse conversion. Use
+	 * {@link #inverseTransformOf(Vector3D)} to transform 3D vectors instead of 3D
 	 * coordinates.
 	 */
-	public final PVector inverseCoordinatesOf(PVector src) {
+	public final Vector3D inverseCoordinatesOf(Vector3D src) {
 		Frame fr = this;
-		PVector res = src;
+		Vector3D res = src;
 		while (fr != null) {
 			res = fr.localInverseCoordinatesOf(res);
 			fr = fr.referenceFrame();
@@ -1146,13 +1145,13 @@ public class Frame implements Copyable {
 	 * {@link #referenceFrame()} coordinate system (converts from
 	 * {@link #referenceFrame()} to Frame).
 	 * <p>
-	 * {@link #localInverseCoordinatesOf(PVector)} performs the inverse
+	 * {@link #localInverseCoordinatesOf(Vector3D)} performs the inverse
 	 * conversion.
 	 * 
-	 * @see #localTransformOf(PVector)
+	 * @see #localTransformOf(Vector3D)
 	 */
-	public final PVector localCoordinatesOf(PVector src) {
-		return rotation().inverseRotate(PVector.sub(src, translation()));
+	public final Vector3D localCoordinatesOf(Vector3D src) {
+		return rotation().inverseRotate(Vector3D.sub(src, translation()));
 	}
 
 	/**
@@ -1160,12 +1159,12 @@ public class Frame implements Copyable {
 	 * defined in the Frame coordinate system (converts from Frame to
 	 * {@link #referenceFrame()}).
 	 * <p>
-	 * {@link #localCoordinatesOf(PVector)} performs the inverse conversion.
+	 * {@link #localCoordinatesOf(Vector3D)} performs the inverse conversion.
 	 * 
-	 * @see #localInverseTransformOf(PVector)
+	 * @see #localInverseTransformOf(Vector3D)
 	 */
-	public final PVector localInverseCoordinatesOf(PVector src) {
-		return PVector.add(rotation().rotate(src), translation());
+	public final Vector3D localInverseCoordinatesOf(Vector3D src) {
+		return Vector3D.add(rotation().rotate(src), translation());
 	}
 
 	/**
@@ -1173,10 +1172,10 @@ public class Frame implements Copyable {
 	 * from} coordinate system is {@code src} (converts from {@code from} to
 	 * Frame).
 	 * <p>
-	 * {@link #coordinatesOfIn(PVector, Frame)} performs the inverse
+	 * {@link #coordinatesOfIn(Vector3D, Frame)} performs the inverse
 	 * transformation.
 	 */
-	public final PVector coordinatesOfFrom(PVector src, Frame from) {
+	public final Vector3D coordinatesOfFrom(Vector3D src, Frame from) {
 		if (this == from)
 			return src;
 		else if (referenceFrame() != null)
@@ -1189,12 +1188,12 @@ public class Frame implements Copyable {
 	 * Returns the {@code in} coordinates of the point whose position in the Frame
 	 * coordinate system is {@code src} (converts from Frame to {@code in}).
 	 * <p>
-	 * {@link #coordinatesOfFrom(PVector, Frame)} performs the inverse
+	 * {@link #coordinatesOfFrom(Vector3D, Frame)} performs the inverse
 	 * transformation.
 	 */
-	public final PVector coordinatesOfIn(PVector src, Frame in) {
+	public final Vector3D coordinatesOfIn(Vector3D src, Frame in) {
 		Frame fr = this;
-		PVector res = src;
+		Vector3D res = src;
 		while ((fr != null) && (fr != in)) {
 			res = fr.localInverseCoordinatesOf(res);
 			fr = fr.referenceFrame();
@@ -1213,12 +1212,12 @@ public class Frame implements Copyable {
 	 * Returns the Frame transform of a vector {@code src} defined in the world
 	 * coordinate system (converts vectors from world to Frame).
 	 * <p>
-	 * {@link #inverseTransformOf(PVector)} performs the inverse transformation.
-	 * {@link #coordinatesOf(PVector)} converts 3D coordinates instead of 3D
+	 * {@link #inverseTransformOf(Vector3D)} performs the inverse transformation.
+	 * {@link #coordinatesOf(Vector3D)} converts 3D coordinates instead of 3D
 	 * vectors (here only the rotational part of the transformation is taken into
 	 * account).
 	 */
-	public final PVector transformOf(PVector src) {
+	public final Vector3D transformOf(Vector3D src) {
 		if (referenceFrame() != null)
 			return localTransformOf(referenceFrame().transformOf(src));
 		else
@@ -1230,13 +1229,13 @@ public class Frame implements Copyable {
 	 * Returns the world transform of the vector whose coordinates in the Frame
 	 * coordinate system is {@code src} (converts vectors from Frame to world).
 	 * <p>
-	 * {@link #transformOf(PVector)} performs the inverse transformation. Use
-	 * {@link #inverseCoordinatesOf(PVector)} to transform 3D coordinates instead
+	 * {@link #transformOf(Vector3D)} performs the inverse transformation. Use
+	 * {@link #inverseCoordinatesOf(Vector3D)} to transform 3D coordinates instead
 	 * of 3D vectors.
 	 */
-	public final PVector inverseTransformOf(PVector src) {
+	public final Vector3D inverseTransformOf(Vector3D src) {
 		Frame fr = this;
-		PVector res = src;
+		Vector3D res = src;
 		while (fr != null) {
 			res = fr.localInverseTransformOf(res);
 			fr = fr.referenceFrame();
@@ -1249,14 +1248,14 @@ public class Frame implements Copyable {
 	 * in the world coordinate system.
 	 * <p>
 	 * <b>Attention:</b> this rotation is not uniquely defined. See
-	 * {@link remixlab.remixcam.geom.Quaternion#fromTo(PVector, PVector)}.
+	 * {@link remixlab.remixcam.geom.Quaternion#fromTo(Vector3D, Vector3D)}.
 	 * 
 	 * @see #xAxis()
-	 * @see #setYAxis(PVector)
-	 * @see #setZAxis(PVector)
+	 * @see #setYAxis(Vector3D)
+	 * @see #setZAxis(Vector3D)
 	 */
-	public void setXAxis(PVector axis) {
-		rotate(new Quaternion(new PVector(1.0f, 0.0f, 0.0f), transformOf(axis)));
+	public void setXAxis(Vector3D axis) {
+		rotate(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), transformOf(axis)));
 	}
 
 	/**
@@ -1264,14 +1263,14 @@ public class Frame implements Copyable {
 	 * in the world coordinate system.
 	 * <p>
 	 * <b>Attention:</b> this rotation is not uniquely defined. See
-	 * {@link remixlab.remixcam.geom.Quaternion#fromTo(PVector, PVector)}.
+	 * {@link remixlab.remixcam.geom.Quaternion#fromTo(Vector3D, Vector3D)}.
 	 * 
 	 * @see #yAxis()
-	 * @see #setYAxis(PVector)
-	 * @see #setZAxis(PVector)
+	 * @see #setYAxis(Vector3D)
+	 * @see #setZAxis(Vector3D)
 	 */
-	public void setYAxis(PVector axis) {
-		rotate(new Quaternion(new PVector(0.0f, 1.0f, 0.0f), transformOf(axis)));
+	public void setYAxis(Vector3D axis) {
+		rotate(new Quaternion(new Vector3D(0.0f, 1.0f, 0.0f), transformOf(axis)));
 	}
 
 	/**
@@ -1279,50 +1278,50 @@ public class Frame implements Copyable {
 	 * in the world coordinate system.
 	 * <p>
 	 * <b>Attention:</b> this rotation is not uniquely defined. See
-	 * {@link remixlab.remixcam.geom.Quaternion#fromTo(PVector, PVector)}.
+	 * {@link remixlab.remixcam.geom.Quaternion#fromTo(Vector3D, Vector3D)}.
 	 * 
 	 * @see #zAxis()
-	 * @see #setYAxis(PVector)
-	 * @see #setZAxis(PVector)
+	 * @see #setYAxis(Vector3D)
+	 * @see #setZAxis(Vector3D)
 	 */
-	public void setZAxis(PVector axis) {
-		rotate(new Quaternion(new PVector(0.0f, 0.0f, 1.0f), transformOf(axis)));
+	public void setZAxis(Vector3D axis) {
+		rotate(new Quaternion(new Vector3D(0.0f, 0.0f, 1.0f), transformOf(axis)));
 	}
 
 	/**
 	 * Returns the x-axis of the frame, represented as a normalized vector defined
 	 * in the world coordinate system.
 	 * 
-	 * @see #setXAxis(PVector)
+	 * @see #setXAxis(Vector3D)
 	 * @see #yAxis()
 	 * @see #zAxis()
 	 */
-	public PVector xAxis() {
-		return inverseTransformOf(new PVector(1.0f, 0.0f, 0.0f));
+	public Vector3D xAxis() {
+		return inverseTransformOf(new Vector3D(1.0f, 0.0f, 0.0f));
 	}
 
 	/**
 	 * Returns the y-axis of the frame, represented as a normalized vector defined
 	 * in the world coordinate system.
 	 * 
-	 * @see #setYAxis(PVector)
+	 * @see #setYAxis(Vector3D)
 	 * @see #xAxis()
 	 * @see #zAxis()
 	 */
-	public PVector yAxis() {
-		return inverseTransformOf(new PVector(0.0f, 1.0f, 0.0f));
+	public Vector3D yAxis() {
+		return inverseTransformOf(new Vector3D(0.0f, 1.0f, 0.0f));
 	}
 
 	/**
 	 * Returns the z-axis of the frame, represented as a normalized vector defined
 	 * in the world coordinate system.
 	 * 
-	 * @see #setZAxis(PVector)
+	 * @see #setZAxis(Vector3D)
 	 * @see #xAxis()
 	 * @see #yAxis()
 	 */
-	public PVector zAxis() {
-		return inverseTransformOf(new PVector(0.0f, 0.0f, 1.0f));
+	public Vector3D zAxis() {
+		return inverseTransformOf(new Vector3D(0.0f, 0.0f, 1.0f));
 	}
 
 	/**
@@ -1330,12 +1329,12 @@ public class Frame implements Copyable {
 	 * {@link #referenceFrame()} coordinate system (converts vectors from
 	 * {@link #referenceFrame()} to Frame).
 	 * <p>
-	 * {@link #localInverseTransformOf(PVector)} performs the inverse
+	 * {@link #localInverseTransformOf(Vector3D)} performs the inverse
 	 * transformation.
 	 * 
-	 * @see #localCoordinatesOf(PVector)
+	 * @see #localCoordinatesOf(Vector3D)
 	 */
-	public final PVector localTransformOf(PVector src) {
+	public final Vector3D localTransformOf(Vector3D src) {
 		return rotation().inverseRotate(src);
 	}
 
@@ -1344,11 +1343,11 @@ public class Frame implements Copyable {
 	 * defined in the Frame coordinate system (converts vectors from Frame to
 	 * {@link #referenceFrame()}).
 	 * <p>
-	 * {@link #localTransformOf(PVector)} performs the inverse transformation.
+	 * {@link #localTransformOf(Vector3D)} performs the inverse transformation.
 	 * 
-	 * @see #localInverseCoordinatesOf(PVector)
+	 * @see #localInverseCoordinatesOf(Vector3D)
 	 */
-	public final PVector localInverseTransformOf(PVector src) {
+	public final Vector3D localInverseTransformOf(Vector3D src) {
 		return rotation().rotate(src);
 	}
 
@@ -1357,9 +1356,9 @@ public class Frame implements Copyable {
 	 * from} coordinate system is {@code src} (converts vectors from {@code from}
 	 * to Frame).
 	 * <p>
-	 * {@link #transformOfIn(PVector, Frame)} performs the inverse transformation.
+	 * {@link #transformOfIn(Vector3D, Frame)} performs the inverse transformation.
 	 */
-	public final PVector transformOfFrom(PVector src, Frame from) {
+	public final Vector3D transformOfFrom(Vector3D src, Frame from) {
 		if (this == from)
 			return src;
 		else if (referenceFrame() != null)
@@ -1373,12 +1372,12 @@ public class Frame implements Copyable {
 	 * Frame coordinate system is {@code src} (converts vectors from Frame to
 	 * {@code in}).
 	 * <p>
-	 * {@link #transformOfFrom(PVector, Frame)} performs the inverse
+	 * {@link #transformOfFrom(Vector3D, Frame)} performs the inverse
 	 * transformation.
 	 */
-	public final PVector transformOfIn(PVector src, Frame in) {
+	public final Vector3D transformOfIn(Vector3D src, Frame in) {
 		Frame fr = this;
-		PVector res = src;
+		Vector3D res = src;
 		while ((fr != null) && (fr != in)) {
 			res = fr.localInverseTransformOf(res);
 			fr = fr.referenceFrame();
@@ -1394,7 +1393,7 @@ public class Frame implements Copyable {
 	}
 
 	/**
-	 * Returns the PMatrix3D associated with this Frame.
+	 * Returns the Matrix3D associated with this Frame.
 	 * <p>
 	 * This method could be used in conjunction with {@code applyMatrix()} to
 	 * modify the processing modelview matrix from a Frame hierarchy. For example,
@@ -1441,10 +1440,11 @@ public class Frame implements Copyable {
 	 * <p>
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 * 
-	 * @see #applyTransformation(PApplet)
+	 * @see #applyTransformation(Scene)
 	 */
-	public final PMatrix3D matrix() {
-		PMatrix3D pM = new PMatrix3D();
+	// TODO is always inneficient
+	public final Matrix3D matrix() {
+		Matrix3D pM = new Matrix3D();
 
 		pM = kernel().rotation().matrix();
 
@@ -1453,65 +1453,17 @@ public class Frame implements Copyable {
 		pM.m23 = kernel().translation().z;
 
 		return pM;
-	}
+	}	
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code applyTransformation( (PGraphics3D) p.g )}.
-	 * 
-	 * @see #applyTransformation(PGraphics3D)
-	 */
-	public void applyTransformation(PApplet p) {
-		applyTransformation( (PGraphics3D) p.g );
-	}
-	
-	/**
-	 * Apply the transformation defined by this Frame to {@code p3d}. The Frame is
-	 * first translated and then rotated around the new translated origin.
-	 * <p>
-	 * Same as:
-	 * <p>
-	 * {@code p3d.translate(translation().x, translation().y, translation().z);} <br>
-	 * {@code p3d.rotate(rotation().angle(), rotation().axis().x,
-	 * rotation().axis().y, rotation().axis().z);} <br>
-	 * <p>
-	 * This method should be used in conjunction with PApplet to modify the
-	 * processing modelview matrix from a Frame hierarchy. For example, with this
-	 * Frame hierarchy:
-	 * <p>
-	 * {@code Frame body = new Frame();} <br>
-	 * {@code Frame leftArm = new Frame();} <br>
-	 * {@code Frame rightArm = new Frame();} <br>
-	 * {@code leftArm.setReferenceFrame(body);} <br>
-	 * {@code rightArm.setReferenceFrame(body);} <br>
-	 * <p>
-	 * The associated processing drawing code should look like:
-	 * <p>
-	 * {@code p3d.pushMatrix();//p is the PApplet instance} <br>
-	 * {@code body.applyTransformation(p);} <br>
-	 * {@code drawBody();} <br>
-	 * {@code p3d.pushMatrix();} <br>
-	 * {@code leftArm.applyTransformation(p);} <br>
-	 * {@code drawArm();} <br>
-	 * {@code p3d.popMatrix();} <br>
-	 * {@code p3d.pushMatrix();} <br>
-	 * {@code rightArm.applyTransformation(p);} <br>
-	 * {@code drawArm();} <br>
-	 * {@code p3d.popMatrix();} <br>
-	 * {@code p3d.popMatrix();} <br>
-	 * <p>
-	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()} blocks
-	 * to represent the frame hierarchy: {@code leftArm} and {@code rightArm} are
-	 * both correctly drawn with respect to the {@code body} coordinate system.
-	 * <p>
-	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method
-	 * should be used whenever possible (one can also use {@link #matrix()}
-	 * instead).
+	 * Convenience function that simply calls {@code scn.applyTransformation(this)}.
 	 * 
 	 * @see #matrix()
+	 * @see remixlab.proscene.Scene#applyTransformation(Frame)
 	 */
-	public void applyTransformation(PGraphics3D p3d) {
-		p3d.translate(translation().x, translation().y, translation().z);
-		p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
+  //TODO Scene should be abstract scene
+	public void applyTransformation(Scene scn) {
+		scn.applyTransformation(this);
 	}
 
 	/**
@@ -1540,7 +1492,7 @@ public class Frame implements Copyable {
 	 * <p>
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 */
-	public final PMatrix3D worldMatrix() {
+	public final Matrix3D worldMatrix() {
 		if (referenceFrame() != null) {
 			final Frame fr = new Frame();
 			fr.setTranslation(position());
@@ -1551,7 +1503,7 @@ public class Frame implements Copyable {
 	}
 
 	/**
-	 * Sets the Frame from a PMatrix3D (processing matrix) representation
+	 * Sets the Frame from a Matrix3D (processing matrix) representation
 	 * (rotation in the upper left 3x3 matrix and translation on the last column).
 	 * Calls {@link #modified()}.
 	 * <p>
@@ -1569,13 +1521,13 @@ public class Frame implements Copyable {
 	 * Using this conversion, you can benefit from the powerful Frame
 	 * transformation methods to translate points and vectors to and from the
 	 * Frame coordinate system to any other Frame coordinate system (including the
-	 * world coordinate system). See {@link #coordinatesOf(PVector)} and
-	 * {@link #transformOf(PVector)}.
+	 * world coordinate system). See {@link #coordinatesOf(Vector3D)} and
+	 * {@link #transformOf(Vector3D)}.
 	 * <p>
 	 * <b>Attention:</b> A Frame does not contain a scale factor. The possible
 	 * scaling in {@code m} will not be converted into the Frame by this method.
 	 */
-	public final void fromMatrix(PMatrix3D pM) {
+	public final void fromMatrix(Matrix3D pM) {
 		// m should be of size [4][4]
 		if (Math.abs(pM.m33) < 1E-8) {
 			System.out.println("Doing nothing: pM.m33 should be non-zero!");
@@ -1623,7 +1575,7 @@ public class Frame implements Copyable {
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 */
 	public final Frame inverse() {
-		Frame fr = new Frame(PVector.mult(kernel().rotation().inverseRotate(kernel().translation()), -1), kernel().rotation().inverse());
+		Frame fr = new Frame(Vector3D.mult(kernel().rotation().inverseRotate(kernel().translation()), -1), kernel().rotation().inverse());
 		fr.setReferenceFrame(referenceFrame());
 		return fr;
 	}
@@ -1645,7 +1597,7 @@ public class Frame implements Copyable {
 	 */
 	public final Frame worldInverse() {
 		return (new Frame(
-				PVector.mult(orientation().inverseRotate(position()), -1),
+				Vector3D.mult(orientation().inverseRotate(position()), -1),
 				orientation().inverse()));
 	}
 }

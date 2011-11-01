@@ -25,10 +25,8 @@
 
 package remixlab.remixcam.constraints;
 
-import processing.core.*;
-import remixlab.remixcam.core.Frame;
-import remixlab.remixcam.geom.MathUtils;
-import remixlab.remixcam.geom.Quaternion;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 
 /**
  * An AxisPlaneConstraint defined in the Frame local coordinate system.
@@ -45,22 +43,22 @@ public class LocalConstraint extends AxisPlaneConstraint {
 	 * local coordinate system by {@link #translationConstraintDirection()}.
 	 */
 	@Override
-	public PVector constrainTranslation(PVector translation, Frame frame) {
-		PVector res = new PVector(translation.x, translation.y, translation.z);
-		PVector proj;
+	public Vector3D constrainTranslation(Vector3D translation, Frame frame) {
+		Vector3D res = new Vector3D(translation.x, translation.y, translation.z);
+		Vector3D proj;
 		switch (translationConstraintType()) {
 		case FREE:
 			break;
 		case PLANE:
 			proj = frame.rotation().rotate(translationConstraintDirection());
-			res = MathUtils.projectVectorOnPlane(translation, proj);
+			res = Vector3D.projectVectorOnPlane(translation, proj);
 			break;
 		case AXIS:
 			proj = frame.rotation().rotate(translationConstraintDirection());
-			res = MathUtils.projectVectorOnAxis(translation, proj);
+			res = Vector3D.projectVectorOnAxis(translation, proj);
 			break;
 		case FORBIDDEN:
-			res = new PVector(0.0f, 0.0f, 0.0f);
+			res = new Vector3D(0.0f, 0.0f, 0.0f);
 			break;
 		}
 		return res;
@@ -80,9 +78,9 @@ public class LocalConstraint extends AxisPlaneConstraint {
 		case PLANE:
 			break;
 		case AXIS: {
-			PVector axis = rotationConstraintDirection();
-			PVector quat = new PVector(rotation.x, rotation.y, rotation.z);
-			quat = MathUtils.projectVectorOnAxis(quat, axis);
+			Vector3D axis = rotationConstraintDirection();
+			Vector3D quat = new Vector3D(rotation.x, rotation.y, rotation.z);
+			quat = Vector3D.projectVectorOnAxis(quat, axis);
 			res = new Quaternion(quat, 2.0f * (float) Math.acos(rotation.w));
 		}
 			break;

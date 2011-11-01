@@ -30,9 +30,8 @@ import java.util.*;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import processing.core.*;
 import remixlab.proscene.Scene;
-import remixlab.remixcam.geom.Quaternion;
+import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.AbstractTimerJob;
 
 /**
@@ -56,8 +55,8 @@ import remixlab.remixcam.util.AbstractTimerJob;
  * //or an anonymous Frame may also be given: {@code kfi = new KeyFrameInterpolator( this );}<br>
  * {@code //By default the Frame is provided as a reference to the
  * KeyFrameInterpolator}} (see {@link #addKeyFrame(Frame)} methods):<br>
- * {@code kfi.addKeyFrame( new Frame( new PVector(1,0,0), new Quaternion() ) );}<br>
- * {@code kfi.addKeyFrame( new Frame( new PVector(2,1,0), new Quaternion() ) );}<br>
+ * {@code kfi.addKeyFrame( new Frame( new Vector3D(1,0,0), new Quaternion() ) );}<br>
+ * {@code kfi.addKeyFrame( new Frame( new Vector3D(2,1,0), new Quaternion() ) );}<br>
  * {@code // ...and so on for all the keyFrames.}<br>
  * {@code kfi.startInterpolation();}<br>
  * <p>
@@ -153,7 +152,7 @@ public class KeyFrameInterpolator implements Copyable {
 	}
 
 	private class KeyFrame implements Copyable {
-		private PVector p, tgPVec;
+		private Vector3D p, tgPVec;
 		private Quaternion q, tgQuat;
 		private float tm;
 		private Frame frm;
@@ -165,7 +164,7 @@ public class KeyFrameInterpolator implements Copyable {
 				updateValues();
 			} else {
 				frm = null;
-				p = new PVector(fr.position().x, fr.position().y, fr.position().z);
+				p = new Vector3D(fr.position().x, fr.position().y, fr.position().z);
 				q = fr.orientation().getCopy();
 			}
 		}
@@ -178,7 +177,7 @@ public class KeyFrameInterpolator implements Copyable {
 				this.q = this.frame().orientation();
 			} else {
 				//p = new Vector3D( otherKF.p.x, otherKF.p.y, otherKF.p.z );
-				this.p = new PVector(otherKF.position().x, otherKF.position().y, otherKF.position().z);
+				this.p = new Vector3D(otherKF.position().x, otherKF.position().y, otherKF.position().z);
 				//q = otherKF.q.getCopy();
 				this.q = otherKF.orientation().getCopy();
 			}
@@ -195,7 +194,7 @@ public class KeyFrameInterpolator implements Copyable {
 			}
 		}
 
-		PVector position() {
+		Vector3D position() {
 			return p;
 		}
 
@@ -203,7 +202,7 @@ public class KeyFrameInterpolator implements Copyable {
 			return q;
 		}
 
-		PVector tgP() {
+		Vector3D tgP() {
 			return tgPVec;
 		}
 
@@ -225,7 +224,7 @@ public class KeyFrameInterpolator implements Copyable {
 		}
 
 		void computeTangent(KeyFrame prev, KeyFrame next) {
-			tgPVec = PVector.mult(PVector.sub(next.position(), prev.position()), 0.5f);
+			tgPVec = Vector3D.mult(Vector3D.sub(next.position(), prev.position()), 0.5f);
 			tgQuat = Quaternion.squadTangent(prev.orientation(), q, next.orientation());
 		}
 	}
@@ -255,7 +254,7 @@ public class KeyFrameInterpolator implements Copyable {
 	private boolean valuesAreValid;
 	private boolean currentFrmValid;
 	private boolean splineCacheIsValid;
-	private PVector v1, v2;
+	private Vector3D v1, v2;
 
   //S C E N E
   public Scene scene;
@@ -816,6 +815,7 @@ public class KeyFrameInterpolator implements Copyable {
 	 * {@code scale} controls the scaling of the camera and axis drawing. A value
 	 * of {@link remixlab.proscene.Scene#radius()} should give good results.
 	 */
+	//TODO check if this method should go into the Scene
 	public void drawPath(int mask, int nbFrames, float scale) {
 		int nbSteps = 30;
 		if (!pathIsValid) {
@@ -840,17 +840,17 @@ public class KeyFrameInterpolator implements Copyable {
 				kf[3] = (index < keyFr.size()) ? keyFr.get(index) : null;
 
 				while (kf[2] != null) {
-					PVector diff = PVector.sub(kf[2].position(), kf[1].position());
-					PVector vec1 = PVector.add(PVector.mult(diff, 3.0f), PVector.mult(
+					Vector3D diff = Vector3D.sub(kf[2].position(), kf[1].position());
+					Vector3D vec1 = Vector3D.add(Vector3D.mult(diff, 3.0f), Vector3D.mult(
 							kf[1].tgP(), (-2.0f)));
-					vec1 = PVector.sub(vec1, kf[2].tgP());
-					PVector vec2 = PVector.add(PVector.mult(diff, (-2.0f)), kf[1].tgP());
-					vec2 = PVector.add(vec2, kf[2].tgP());
+					vec1 = Vector3D.sub(vec1, kf[2].tgP());
+					Vector3D vec2 = Vector3D.add(Vector3D.mult(diff, (-2.0f)), kf[1].tgP());
+					vec2 = Vector3D.add(vec2, kf[2].tgP());
 
 					for (int step = 0; step < nbSteps; ++step) {
 						float alpha = step / (float) nbSteps;
-						myFrame.setPosition(PVector.add(kf[1].position(), PVector.mult(
-								PVector.add(kf[1].tgP(), PVector.mult(PVector.add(vec1, PVector
+						myFrame.setPosition(Vector3D.add(kf[1].position(), Vector3D.mult(
+								Vector3D.add(kf[1].tgP(), Vector3D.mult(Vector3D.add(vec1, Vector3D
 										.mult(vec2, alpha)), alpha)), alpha)));
 						myFrame.setOrientation(Quaternion.squad(kf[1].orientation(), kf[1]
 								.tgQ(), kf[2].tgQ(), kf[2].orientation(), alpha));
@@ -895,7 +895,7 @@ public class KeyFrameInterpolator implements Copyable {
 						scene.renderer().pushMatrix();
 
 						// pg3d.applyMatrix(myFr.matrix());
-						myFr.applyTransformation(scene.renderer());
+						myFr.applyTransformation(scene);
 
 						if ((mask & 2) != 0)
 							scene.drawKFICamera(scale);
@@ -1032,15 +1032,15 @@ public class KeyFrameInterpolator implements Copyable {
 	}
 
 	public void updateSplineCache() {
-		PVector delta = PVector.sub(
+		Vector3D delta = Vector3D.sub(
 				keyFr.get(currentFrame2.nextIndex()).position(), keyFr.get(
 						currentFrame1.nextIndex()).position());
-		v1 = PVector.add(PVector.mult(delta, 3.0f), PVector.mult(keyFr.get(
+		v1 = Vector3D.add(Vector3D.mult(delta, 3.0f), Vector3D.mult(keyFr.get(
 				currentFrame1.nextIndex()).tgP(), (-2.0f)));
-		v1 = PVector.sub(v1, keyFr.get(currentFrame2.nextIndex()).tgP());
-		v2 = PVector.add(PVector.mult(delta, (-2.0f)), keyFr.get(
+		v1 = Vector3D.sub(v1, keyFr.get(currentFrame2.nextIndex()).tgP());
+		v2 = Vector3D.add(Vector3D.mult(delta, (-2.0f)), keyFr.get(
 				currentFrame1.nextIndex()).tgP());
-		v2 = PVector.add(v2, keyFr.get(currentFrame2.nextIndex()).tgP());
+		v2 = Vector3D.add(v2, keyFr.get(currentFrame2.nextIndex()).tgP());
 		splineCacheIsValid = true;
 	}
 
@@ -1079,9 +1079,9 @@ public class KeyFrameInterpolator implements Copyable {
 		// (1.0-alpha)*(currentFrame1->peekNext()->position());
 		// Vec pos = currentFrame_[1]->peekNext()->position() + alpha *
 		// (currentFrame_[1]->peekNext()->tgP() + alpha * (v1+alpha*v2));
-		PVector pos = PVector.add(keyFr.get(currentFrame1.nextIndex()).position(),
-				PVector.mult(PVector.add(keyFr.get(currentFrame1.nextIndex()).tgP(),
-						PVector.mult(PVector.add(v1, PVector.mult(v2, alpha)), alpha)),
+		Vector3D pos = Vector3D.add(keyFr.get(currentFrame1.nextIndex()).position(),
+				Vector3D.mult(Vector3D.add(keyFr.get(currentFrame1.nextIndex()).tgP(),
+						Vector3D.mult(Vector3D.add(v1, Vector3D.mult(v2, alpha)), alpha)),
 						alpha));
 		Quaternion q = Quaternion.squad(keyFr.get(currentFrame1.nextIndex())
 				.orientation(), keyFr.get(currentFrame1.nextIndex()).tgQ(), keyFr.get(

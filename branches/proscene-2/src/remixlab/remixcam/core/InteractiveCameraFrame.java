@@ -28,11 +28,8 @@ package remixlab.remixcam.core;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import processing.core.*;
 import remixlab.proscene.Scene;
-import remixlab.remixcam.geom.Point;
-import remixlab.remixcam.geom.Quaternion;
-import remixlab.remixcam.geom.Rectangle;
+import remixlab.remixcam.geom.*;
 
 /**
  * The InteractiveCameraFrame class represents an InteractiveFrame with Camera
@@ -76,7 +73,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	}
 	
 	protected Camera camera;
-	protected PVector arcballRefPnt;
+	protected Vector3D arcballRefPnt;
 
 	/**
 	 * Default constructor.
@@ -90,7 +87,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		super(cam.scene);
 		camera = cam;
 		removeFromMouseGrabberPool();
-		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
+		arcballRefPnt = new Vector3D(0.0f, 0.0f, 0.0f);
 	}
 	
 	/**
@@ -101,7 +98,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	protected InteractiveCameraFrame(InteractiveCameraFrame otherFrame) {
 		super(otherFrame);
 		this.camera = otherFrame.camera;
-		this.arcballRefPnt = new PVector();
+		this.arcballRefPnt = new Vector3D();
 		this.arcballRefPnt.set(otherFrame.arcballRefPnt );
 	}
 	
@@ -145,7 +142,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	 * {@link remixlab.remixcam.core.Camera#arcballReferencePoint()} also returns this
 	 * value.
 	 */
-	public PVector arcballReferencePoint() {
+	public Vector3D arcballReferencePoint() {
 		return arcballRefPnt;
 	}
 
@@ -153,7 +150,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	 * Sets the {@link #arcballReferencePoint()}, defined in the world coordinate
 	 * system.
 	 */
-	public void setArcballReferencePoint(PVector refP) {
+	public void setArcballReferencePoint(Vector3D refP) {
 		arcballRefPnt = refP;
 	}
 
@@ -181,7 +178,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 			switch (action) {
 			case TRANSLATE: {
 				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
-				PVector trans = new PVector((int) delta.x, (int) -delta.y, 0.0f);
+				Vector3D trans = new Vector3D((int) delta.x, (int) -delta.y, 0.0f);
 				// Scale to fit the screen mouse displacement
 				switch (camera.type()) {
 				case PERSPECTIVE:
@@ -198,7 +195,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 					break;
 				}
 				}
-				translate(inverseTransformOf(PVector.mult(trans,
+				translate(inverseTransformOf(Vector3D.mult(trans,
 						translationSensitivity())));
 				prevPos = eventPoint;
 				break;
@@ -210,7 +207,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 						.coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera
 						.sceneRadius());
 				// Warning: same for left and right CoordinateSystemConvention:
-				PVector trans = new PVector(0.0f, 0.0f, -coef
+				Vector3D trans = new Vector3D(0.0f, 0.0f, -coef
 						* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
 				translate(inverseTransformOf(trans));
 				prevPos = eventPoint;
@@ -218,7 +215,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 			}
 
 			case ROTATE: {
-				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
+				Vector3D trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,
 						(int) eventPoint.y, trans.x, trans.y, camera);
 				// #CONNECTION# These two methods should go together (spinning detection
@@ -231,7 +228,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 			}
 
 			case SCREEN_ROTATE: {
-				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
+				Vector3D trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 				float angle = (float) Math.atan2((int) eventPoint.y - trans.y,
 						(int) eventPoint.x - trans.x)
 						- (float) Math.atan2((int) prevPos.y - trans.y, (int) prevPos.x
@@ -240,7 +237,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 				// lef-handed coordinate system correction
 				angle = -angle;
 
-				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
+				Quaternion rot = new Quaternion(new Vector3D(0.0f, 0.0f, 1.0f), angle);
 				// #CONNECTION# These two methods should go together (spinning detection
 				// and activation)
 				computeMouseSpeed(eventPoint);
@@ -252,7 +249,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 			}
 
 			case SCREEN_TRANSLATE: {
-				PVector trans = new PVector();
+				Vector3D trans = new Vector3D();
 				int dir = mouseOriginalDirection(eventPoint);
 				if (dir == 1)
 					trans.set(((int) prevPos.x - (int) eventPoint.x), 0.0f, 0.0f);
@@ -274,7 +271,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 				}
 				}
 
-				translate(inverseTransformOf(PVector.mult(trans,
+				translate(inverseTransformOf(Vector3D.mult(trans,
 						translationSensitivity())));
 				prevPos = eventPoint;
 				break;
@@ -332,10 +329,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 			// #CONNECTION# mouseMoveEvent() ZOOM case
 			float coef = Math.max(Math.abs((camera.frame().coordinatesOf(camera
 					.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
-			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation)
+			Vector3D trans = new Vector3D(0.0f, 0.0f, coef * (-rotation)
 					* wheelSensitivity() * wheelSensitivityCoef);
 			// right_handed coordinate system should go like this:
-			// PVector trans = new PVector(0.0f, 0.0f, coef * rotation *
+			// Vector3D trans = new Vector3D(0.0f, 0.0f, coef * rotation *
 			// wheelSensitivity() * wheelSensitivityCoef);
 			translate(inverseTransformOf(trans));
 			break;
@@ -343,7 +340,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 			// #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed()
+			translate(inverseTransformOf(new Vector3D(0.0f, 0.0f, 0.2f * flySpeed()
 					* (-rotation))));
 			break;
 		default:

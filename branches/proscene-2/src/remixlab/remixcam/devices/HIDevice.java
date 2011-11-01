@@ -27,12 +27,9 @@ package remixlab.remixcam.devices;
 
 import java.lang.reflect.Method;
 
-import processing.core.PVector;
 import remixlab.proscene.Scene;
-import remixlab.remixcam.core.Camera;
-import remixlab.remixcam.core.InteractiveCameraFrame;
-import remixlab.remixcam.core.InteractiveFrame;
-import remixlab.remixcam.geom.Quaternion;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 
 /**
  * An HIDevice represents a Human Interface Device with (<=) 6 degrees of freedom.
@@ -96,13 +93,13 @@ public class HIDevice {
 	protected InteractiveCameraFrame cameraFrame;
 	protected InteractiveFrame iFrame;
 
-	protected PVector rotation, rotSens;
-	protected PVector translation, transSens;
+	protected Vector3D rotation, rotSens;
+	protected Vector3D translation, transSens;
 	
 	//absolute mode
-	protected PVector prevRotation, prevTranslation;
+	protected Vector3D prevRotation, prevTranslation;
 	
-	protected PVector t;
+	protected Vector3D t;
 	protected Quaternion q;
 	protected float tx;
   protected float ty;
@@ -135,12 +132,12 @@ public class HIDevice {
 		camera = scene.camera();
 		cameraFrame = camera.frame();
 		iFrame = scene.interactiveFrame();
-		translation = new PVector();
-		transSens = new PVector(1, 1, 1);
-		rotation = new PVector();
-		rotSens = new PVector(1, 1, 1);		
+		translation = new Vector3D();
+		transSens = new Vector3D(1, 1, 1);
+		rotation = new Vector3D();
+		rotSens = new Vector3D(1, 1, 1);		
 		quaternion = new Quaternion();
-		t = new PVector();
+		t = new Vector3D();
     q = new Quaternion();
     tx = translation.x * transSens.x;
     ty = translation.y * transSens.y;
@@ -475,7 +472,7 @@ public class HIDevice {
   	switch (iFrameMode) {
 		case FRAME:
 			// A. Translate the iFrame      
-      iFrame.translate(iFrame.inverseTransformOf(new PVector(tx,ty,-tz))); 
+      iFrame.translate(iFrame.inverseTransformOf(new Vector3D(tx,ty,-tz))); 
       // B. Rotate the iFrame 
       q.fromEulerAngles(-roll, -pitch, yaw);
       iFrame.rotate(q);
@@ -483,7 +480,7 @@ public class HIDevice {
 		case CAMERA:
 		  // A. Translate the iFrame      
       // Transform to world coordinate system                     
-      t = cameraFrame.inverseTransformOf(new PVector(tx,ty,-tz)); //same as: t = cameraFrame.orientation().rotate(new PVector(tx,ty,-tz));
+      t = cameraFrame.inverseTransformOf(new Vector3D(tx,ty,-tz)); //same as: t = cameraFrame.orientation().rotate(new Vector3D(tx,ty,-tz));
       // And then down to frame
       if (iFrame.referenceFrame() != null)
         t = iFrame.referenceFrame().transformOf(t);
@@ -506,9 +503,9 @@ public class HIDevice {
         t = iFrame.referenceFrame().transformOf(t);
       iFrame.translate(t);        
       // B. Rotate the iFrame
-      Quaternion qx = new Quaternion(iFrame.transformOf(new PVector(1, 0, 0)), -roll);
-      Quaternion qy = new Quaternion(iFrame.transformOf(new PVector(0, 1, 0)), -pitch);     
-      Quaternion qz = new Quaternion(iFrame.transformOf(new PVector(0, 0, 1)), yaw);      
+      Quaternion qx = new Quaternion(iFrame.transformOf(new Vector3D(1, 0, 0)), -roll);
+      Quaternion qy = new Quaternion(iFrame.transformOf(new Vector3D(0, 1, 0)), -pitch);     
+      Quaternion qz = new Quaternion(iFrame.transformOf(new Vector3D(0, 0, 1)), yaw);      
       q.set(qy);
       q.multiply(qz);
       q.multiply(qx);
@@ -527,13 +524,13 @@ public class HIDevice {
 		switch (camMode) {
 		case FIRST_PERSON:
    		// Translate      
-      cameraFrame.translate(cameraFrame.localInverseTransformOf(new PVector(tx,ty,-tz)));
+      cameraFrame.translate(cameraFrame.localInverseTransformOf(new Vector3D(tx,ty,-tz)));
       // Rotate
       q.fromEulerAngles(-roll, -pitch, yaw);
       cameraFrame.rotate(q);
 			break;
 		case GOOGLE_EARTH:
-			t = PVector.mult(cameraFrame.position(), -tz * ( rotSens.z/transSens.z ) );
+			t = Vector3D.mult(cameraFrame.position(), -tz * ( rotSens.z/transSens.z ) );
       cameraFrame.translate(t);
 
       q.fromEulerAngles(-ty * ( rotSens.y/transSens.y ), tx * ( rotSens.x/transSens.x ), 0);
@@ -548,11 +545,11 @@ public class HIDevice {
 			/**
 		case WORLD:
 		  // Translate          
-      cameraFrame.translate(new PVector(tx,ty,tz));      
+      cameraFrame.translate(new Vector3D(tx,ty,tz));      
       // Rotate (same as q.fromEulerAngles, but axes are expressed int the world coordinate system)            
-      Quaternion qx = new Quaternion(cameraFrame.transformOf(new PVector(1, 0, 0)), -roll);
-      Quaternion qy = new Quaternion(cameraFrame.transformOf(new PVector(0, 1, 0)), -pitch);     
-      Quaternion qz = new Quaternion(cameraFrame.transformOf(new PVector(0, 0, 1)), yaw);      
+      Quaternion qx = new Quaternion(cameraFrame.transformOf(new Vector3D(1, 0, 0)), -roll);
+      Quaternion qy = new Quaternion(cameraFrame.transformOf(new Vector3D(0, 1, 0)), -pitch);     
+      Quaternion qz = new Quaternion(cameraFrame.transformOf(new Vector3D(0, 0, 1)), yaw);      
       q.set(qy);
       q.multiply(qz);
       q.multiply(qx);
@@ -718,9 +715,9 @@ public class HIDevice {
   public void setMode(Mode m) {
   	if(m == Mode.ABSOLUTE) {
   		if(prevTranslation == null)
-  			prevTranslation = new PVector();
+  			prevTranslation = new Vector3D();
   		if(prevRotation == null)
-  			prevRotation = new PVector();
+  			prevRotation = new Vector3D();
     }
   	mode = m;
   }

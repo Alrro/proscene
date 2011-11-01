@@ -97,6 +97,10 @@ public class Vector3D implements Constants {
 	public static final float lerp(float start, float stop, float amt) {
     return start + (stop-start) * amt;
   }
+	
+	public float squaredNorm() {
+		return squaredNorm(this);
+	}
 
 	/**
 	 * Utility function that returns the squared norm of the Vector3D.

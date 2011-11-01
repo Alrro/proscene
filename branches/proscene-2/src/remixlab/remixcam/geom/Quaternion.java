@@ -28,7 +28,6 @@ package remixlab.remixcam.geom;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import processing.core.*;
 import remixlab.remixcam.core.Constants;
 import remixlab.remixcam.core.Copyable;
 
@@ -244,13 +243,13 @@ public class Quaternion implements Constants, Copyable {
 	 * {@link #axis() axis} (non null) and {@link #angle() angle} (in radians).
 	 * 
 	 * @param axis
-	 *          the PVector representing the axis
+	 *          the Vector3D representing the axis
 	 * @param angle
 	 *          the angle in radians
 	 * 
-	 * @see #fromAxisAngle(PVector, float)
+	 * @see #fromAxisAngle(Vector3D, float)
 	 */
-	public Quaternion(PVector axis, float angle) {
+	public Quaternion(Vector3D axis, float angle) {
 		fromAxisAngle(axis, angle);
 	}
 
@@ -259,13 +258,13 @@ public class Quaternion implements Constants, Copyable {
 	 * the {@code to} direction.
 	 * 
 	 * @param from
-	 *          the first PVector
+	 *          the first Vector3D
 	 * @param to
-	 *          the second PVector
+	 *          the second Vector3D
 	 * 
-	 * @see #fromTo(PVector, PVector)
+	 * @see #fromTo(Vector3D, Vector3D)
 	 */
-	public Quaternion(PVector from, PVector to) {
+	public Quaternion(Vector3D from, Vector3D to) {
 		fromTo(from, to);
 	}
 
@@ -369,12 +368,12 @@ public class Quaternion implements Constants, Copyable {
 	 * {@code this.rotate(v).}
 	 * 
 	 * @param v
-	 *          the PVector
+	 *          the Vector3D
 	 * 
-	 * @see #rotate(PVector)
-	 * @see #inverseRotate(PVector)
+	 * @see #rotate(Vector3D)
+	 * @see #inverseRotate(Vector3D)
 	 */
-	public final PVector multiply(PVector v) {
+	public final Vector3D multiply(Vector3D v) {
 		return this.rotate(v);
 	}
 
@@ -386,12 +385,12 @@ public class Quaternion implements Constants, Copyable {
 	 *          the Quaternion
 	 * 
 	 * @param v
-	 *          the PVector
+	 *          the Vector3D
 	 * 
-	 * @see #rotate(PVector)
-	 * @see #inverseRotate(PVector)
+	 * @see #rotate(Vector3D)
+	 * @see #inverseRotate(Vector3D)
 	 */
-	public static final PVector multiply(Quaternion q1, PVector v) {
+	public static final Vector3D multiply(Quaternion q1, Vector3D v) {
 		return q1.rotate(v);
 	}
 
@@ -494,9 +493,9 @@ public class Quaternion implements Constants, Copyable {
 	 * Returns the image of {@code v} by the Quaternion rotation.
 	 * 
 	 * @param v
-	 *          the PVector
+	 *          the Vector3D
 	 */
-	public final PVector rotate(PVector v) {
+	public final Vector3D rotate(Vector3D v) {
 		float q00 = 2.0f * x * x;
 		float q11 = 2.0f * y * y;
 		float q22 = 2.0f * z * z;
@@ -510,7 +509,7 @@ public class Quaternion implements Constants, Copyable {
 
 		float q23 = 2.0f * z * w;
 
-		return new PVector((1.0f - q11 - q22) * v.x + (q01 - q23) * v.y
+		return new Vector3D((1.0f - q11 - q22) * v.x + (q01 - q23) * v.y
 				+ (q02 + q13) * v.z, (q01 + q23) * v.x + (1.0f - q22 - q00) * v.y
 				+ (q12 - q03) * v.z, (q02 - q13) * v.x + (q12 + q03) * v.y
 				+ (1.0f - q11 - q00) * v.z);
@@ -520,12 +519,12 @@ public class Quaternion implements Constants, Copyable {
 	 * Returns the image of {@code v} by the Quaternion {@link #inverse()}
 	 * rotation.
 	 * <p>
-	 * {@link #rotate(PVector)} performs an inverse transformation.
+	 * {@link #rotate(Vector3D)} performs an inverse transformation.
 	 * 
 	 * @param v
-	 *          the PVector
+	 *          the Vector3D
 	 */
-	public final PVector inverseRotate(PVector v) {
+	public final Vector3D inverseRotate(Vector3D v) {
 		Quaternion tempQuat = new Quaternion(x, y, z, w);
 		tempQuat.invert();
 		return tempQuat.rotate(v);
@@ -539,11 +538,11 @@ public class Quaternion implements Constants, Copyable {
 	 * result in an identity Quaternion.
 	 * 
 	 * @param axis
-	 *          the PVector representing the axis
+	 *          the Vector3D representing the axis
 	 * @param angle
 	 *          the angle in radians
 	 */
-	public void fromAxisAngle(PVector axis, float angle) {
+	public void fromAxisAngle(Vector3D axis, float angle) {
 		float norm = axis.mag();
 		if (norm < 1E-8f) {
 			// Null rotation
@@ -561,9 +560,9 @@ public class Quaternion implements Constants, Copyable {
 	}
 
 	/**
-	 * Same as {@link #fromEulerAngles(PVector)}.
+	 * Same as {@link #fromEulerAngles(Vector3D)}.
 	 */
-	public void fromTaitBryan(PVector angles) {
+	public void fromTaitBryan(Vector3D angles) {
 		fromEulerAngles(angles);
 	}
 
@@ -581,7 +580,7 @@ public class Quaternion implements Constants, Copyable {
 	 * @see #fromEulerAngles(float, float, float)
 	 * @see #eulerAngles()
 	 */
-	public void fromEulerAngles(PVector angles) {
+	public void fromEulerAngles(Vector3D angles) {
 		fromEulerAngles(angles.x, angles.y, angles.z);
 	}
 
@@ -604,9 +603,9 @@ public class Quaternion implements Constants, Copyable {
 	 * @see #eulerAngles()
 	 */
 	public void fromEulerAngles(float roll, float pitch, float yaw) {
-		Quaternion qx = new Quaternion(new PVector(1, 0, 0), roll);
-		Quaternion qy = new Quaternion(new PVector(0, 1, 0), pitch);
-		Quaternion qz = new Quaternion(new PVector(0, 0, 1), yaw);
+		Quaternion qx = new Quaternion(new Vector3D(1, 0, 0), roll);
+		Quaternion qy = new Quaternion(new Vector3D(0, 1, 0), pitch);
+		Quaternion qz = new Quaternion(new Vector3D(0, 0, 1), yaw);
 		set(qy);
 		multiply(qz);
 		multiply(qx);
@@ -615,7 +614,7 @@ public class Quaternion implements Constants, Copyable {
 	/**
 	 * Same as {@link #eulerAngles()}.
 	 */
-	public PVector taitBryanAngles() {
+	public Vector3D taitBryanAngles() {
 		return eulerAngles();
 	}
 
@@ -629,7 +628,7 @@ public class Quaternion implements Constants, Copyable {
 	 * <p>
 	 * <b>Attention:</b> This method assumes that this Quaternion is normalized.
 	 * 
-	 * @return the PVector holding the roll (x coordinate of the vector), pitch (y
+	 * @return the Vector3D holding the roll (x coordinate of the vector), pitch (y
 	 *         coordinate of the vector) and yaw angles (z coordinate of the
 	 *         vector). <b>Note:</b> The order of the rotations that would produce
 	 *         this Quaternion (i.e., as with {@code fromEulerAngles(roll, pitch,
@@ -637,20 +636,20 @@ public class Quaternion implements Constants, Copyable {
 	 * 
 	 * @see #fromEulerAngles(float, float, float)
 	 */
-	public PVector eulerAngles() {
+	public Vector3D eulerAngles() {
 		float roll, pitch, yaw;
 		float test = x * y + z * w;
 		if (test > 0.499) { // singularity at north pole
 			pitch = 2 * (float) Math.atan2(x, w);
 			yaw = PI / 2;
 			roll = 0;
-			return new PVector(roll, pitch, yaw);
+			return new Vector3D(roll, pitch, yaw);
 		}
 		if (test < -0.499) { // singularity at south pole
 			pitch = -2 * (float) Math.atan2(x, w);
 			yaw = - PI / 2;
 			roll = 0;
-			return new PVector(roll, pitch, yaw);
+			return new Vector3D(roll, pitch, yaw);
 		}
 		float sqx = x * x;
 		float sqy = y * y;
@@ -658,11 +657,11 @@ public class Quaternion implements Constants, Copyable {
 		pitch = (float) Math.atan2(2 * y * w - 2 * x * z, 1 - 2 * sqy - 2 * sqz);
 		yaw = (float) Math.asin(2 * test);
 		roll = (float) Math.atan2(2 * x * w - 2 * y * z, 1 - 2 * sqx - 2 * sqz);
-		return new PVector(roll, pitch, yaw);
+		return new Vector3D(roll, pitch, yaw);
 	}
 
 	/**
-	 * public PVector eulerAngles() { //This quaternion does not need to be
+	 * public Vector3D eulerAngles() { //This quaternion does not need to be
 	 * normalized. See:
 	 * //http://www.euclideanspace.com/maths/geometry/rotations/conversions
 	 * /quaternionToEuler/index.htm float roll, pitch, yaw; float sqw = w*w; float
@@ -670,12 +669,12 @@ public class Quaternion implements Constants, Copyable {
 	 * sqw; // if normalised is one, otherwise is correction factor float test =
 	 * x*y + z*w; if (test > 0.499*unit) { // singularity at north pole pitch = 2
 	 * * PApplet.atan2(x,w); yaw = PApplet.PI/2; roll = 0; return new
-	 * PVector(roll, pitch, yaw); } if (test < -0.499*unit) { // singularity at
+	 * Vector3D(roll, pitch, yaw); } if (test < -0.499*unit) { // singularity at
 	 * south pole pitch = -2 * PApplet.atan2(x,w); yaw = - PApplet.PI/2; roll = 0;
-	 * return new PVector(roll, pitch, yaw); } pitch = PApplet.atan2(2*y*w-2*x*z ,
+	 * return new Vector3D(roll, pitch, yaw); } pitch = PApplet.atan2(2*y*w-2*x*z ,
 	 * sqx - sqy - sqz + sqw); yaw = PApplet.asin(2*test/unit); roll =
 	 * PApplet.atan2(2*x*w-2*y*z , -sqx + sqy - sqz + sqw); return new
-	 * PVector(roll, pitch, yaw); } //
+	 * Vector3D(roll, pitch, yaw); } //
 	 */
 
 	/**
@@ -687,24 +686,24 @@ public class Quaternion implements Constants, Copyable {
 	 * rotation angle. This method is robust and can handle small or almost
 	 * identical vectors.
 	 * 
-	 * @see #fromAxisAngle(PVector, float)
+	 * @see #fromAxisAngle(Vector3D, float)
 	 */
-	public void fromTo(PVector from, PVector to) {
-		float fromSqNorm = MathUtils.squaredNorm(from);
-		float toSqNorm = MathUtils.squaredNorm(to);
+	public void fromTo(Vector3D from, Vector3D to) {
+		float fromSqNorm = from.squaredNorm();
+		float toSqNorm = to.squaredNorm();
 		// Identity Quaternion when one vector is null
 		if ((fromSqNorm < 1E-10f) || (toSqNorm < 1E-10f)) {
 			this.x = this.y = this.z = 0.0f;
 			this.w = 1.0f;
 		} else {
 
-			PVector axis = from.cross(to);
+			Vector3D axis = from.cross(to);
 
-			float axisSqNorm = MathUtils.squaredNorm(axis);
+			float axisSqNorm = axis.squaredNorm();
 
 			// Aligned vectors, pick any axis, not aligned with from or to
 			if (axisSqNorm < 1E-10f)
-				axis = MathUtils.orthogonalVector(from);
+				axis = from.orthogonalVector();
 
 			float angle = (float) Math.asin((float) Math.sqrt(axisSqNorm
 					/ (fromSqNorm * toSqNorm)));
@@ -722,7 +721,7 @@ public class Quaternion implements Constants, Copyable {
 	 * The matrix is expressed in European format: its three columns are the
 	 * images by the rotation of the three vectors of an orthogonal basis.
 	 * <p>
-	 * {@link #fromRotatedBasis(PVector, PVector, PVector)} sets a Quaternion from
+	 * {@link #fromRotatedBasis(Vector3D, Vector3D, Vector3D)} sets a Quaternion from
 	 * the three axis of a rotated frame. It actually fills the three columns of a
 	 * matrix with these rotated basis vectors and calls this method.
 	 * 
@@ -767,12 +766,12 @@ public class Quaternion implements Constants, Copyable {
 
 	/**
 	 * Set the Quaternion from a (supposedly correct) 3x3 rotation matrix given in
-	 * the upper left 3x3 sub-matrix of the PMatrix3D.
+	 * the upper left 3x3 sub-matrix of the Matrix3D.
 	 * 
 	 * @see #fromRotationMatrix(float[][])
 	 */
-	public final void fromMatrix(PMatrix3D pM) {
-		fromRotationMatrix(MathUtils.get3x3UpperLeftMatrixFromPMatrix3D(pM));
+	public final void fromMatrix(Matrix3D pM) {
+		fromRotationMatrix(pM.get3x3UpperLeftMatrixFromMatrix3D());
 	}
 
 	/**
@@ -782,17 +781,17 @@ public class Quaternion implements Constants, Copyable {
 	 * direct (i,e., {@code X^Y=k*Z, with k>0}).
 	 * 
 	 * @param X
-	 *          the first PVector
+	 *          the first Vector3D
 	 * @param Y
-	 *          the second PVector
+	 *          the second Vector3D
 	 * @param Z
-	 *          the third PVector
+	 *          the third Vector3D
 	 * 
 	 * @see #fromRotationMatrix(float[][])
-	 * @see #Quaternion(PVector, PVector)
+	 * @see #Quaternion(Vector3D, Vector3D)
 	 * 
 	 */
-	public final void fromRotatedBasis(PVector X, PVector Y, PVector Z) {
+	public final void fromRotatedBasis(Vector3D X, Vector3D Y, Vector3D Z) {
 		float m[][] = new float[3][3];
 		float normX = X.mag();
 		float normY = Y.mag();
@@ -815,8 +814,8 @@ public class Quaternion implements Constants, Copyable {
 	 * 
 	 * @see #angle()
 	 */
-	public final PVector axis() {
-		PVector res = new PVector(this.x, this.y, this.z);
+	public final Vector3D axis() {
+		Vector3D res = new Vector3D(this.x, this.y, this.z);
 		float sinus = res.mag();
 		if (sinus > 1E-8f)
 			res.div(sinus);
@@ -854,16 +853,16 @@ public class Quaternion implements Constants, Copyable {
 	 * 
 	 */
 	public final float[][] rotationMatrix() {
-		return MathUtils.get3x3UpperLeftMatrixFromPMatrix3D(matrix());
+		return matrix().get3x3UpperLeftMatrixFromMatrix3D();
 	}
 
 	/**
-	 * Returns the PMatrix3D (processing matrix) which represents the rotation
+	 * Returns the Matrix3D (processing matrix) which represents the rotation
 	 * matrix associated with the Quaternion.
 	 * 
 	 * @see #rotationMatrix()
 	 */
-	public final PMatrix3D matrix() {
+	public final Matrix3D matrix() {
 
 		float q00 = 2.0f * this.x * this.x;
 		float q11 = 2.0f * this.y * this.y;
@@ -899,19 +898,19 @@ public class Quaternion implements Constants, Copyable {
 		float m23 = 0.0f;
 		float m33 = 1.0f;
 
-		return new PMatrix3D(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22,
+		return new Matrix3D(m00, m01, m02, m03, m10, m11, m12, m13, m20, m21, m22,
 				m23, m30, m31, m32, m33);
 	}
 
 	/**
-	 * Returns the associated inverse rotation processing PMatrix3D. This is
+	 * Returns the associated inverse rotation processing Matrix3D. This is
 	 * simply {@link #matrix()} of the {@link #inverse()}.
 	 * <p>
 	 * <b>Attention:</b> The result is only valid until the next call to
 	 * {@link #inverseMatrix()}. Use it immediately (as in {@code
 	 * applyMatrix(q.inverseMatrix())}).
 	 */
-	public final PMatrix3D inverseMatrix() {
+	public final Matrix3D inverseMatrix() {
 		Quaternion tempQuat = new Quaternion(x, y, z, w);
 		tempQuat.invert();
 		return tempQuat.matrix();
@@ -923,7 +922,7 @@ public class Quaternion implements Constants, Copyable {
 	 * <b>Attention:</b> This is the classical mathematical rotation matrix.
 	 */
 	public final float[][] inverseRotationMatrix() {
-		return MathUtils.get3x3UpperLeftMatrixFromPMatrix3D(inverseMatrix());
+		return inverseMatrix().get3x3UpperLeftMatrixFromMatrix3D();
 	}
 
 	/**
@@ -968,7 +967,7 @@ public class Quaternion implements Constants, Copyable {
 	 * <p>
 	 * You can create a randomly directed unit vector using:
 	 * <p>
-	 * {@code PVector randomDir = new PVector(1.0f, 0.0f, 0.0f);} <br>
+	 * {@code Vector3D randomDir = new Vector3D(1.0f, 0.0f, 0.0f);} <br>
 	 * {@code randomDir = Quaternion.multiply(Quaternion.randomQuaternion(),
 	 * randomDir);}
 	 */
@@ -996,7 +995,7 @@ public class Quaternion implements Constants, Copyable {
 	 * Returns the slerp interpolation of quaternions {@code a} and {@code b}, at
 	 * time {@code t}.
 	 * <p>
-	 * {@code t} should range in {@code [0,1]}. Result is a when {@code t=0 } and
+	 * {@code t} should range in {@code [0,1]}. Result is {@code a} when {@code t=0} and
 	 * {@code b} when {@code t=1}.
 	 * <p>
 	 * When {@code allowFlip} is true (default) the slerp interpolation will
