@@ -114,8 +114,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isSpng = false;
 		prevConstraint = null;
 		startedTime = 0;
-		// delay = 10;
-		spngTimer = new Timer();
 	}
 
 	/**
@@ -190,7 +188,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public InteractiveFrame clone() {
 		InteractiveFrame clonedIFrame = (InteractiveFrame) super.clone();
-		clonedIFrame.spngTimer = new Timer();
 		return clonedIFrame;
 	}
 

@@ -60,8 +60,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		flyDisp = new PVector(0.0f, 0.0f, 0.0f);
 
 		setFlySpeed(0.0f);
-
-    flyTimer = new Timer();
 	}
 
 	/**
@@ -77,7 +75,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
-    clonedIAvtrFrame.flyTimer = new Timer();
 		return clonedIAvtrFrame;
 	}
 
