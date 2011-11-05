@@ -254,8 +254,6 @@ public class KeyFrameInterpolator implements Cloneable {
 		currentFrame1 = keyFr.listIterator();
 		currentFrame2 = keyFr.listIterator();
 		currentFrame3 = keyFr.listIterator();
-		
-		timer = new Timer();
 	}
 
 	/**
@@ -275,9 +273,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			clonedKfi.currentFrame0 = keyFr.listIterator(currentFrame0.nextIndex());
 			clonedKfi.currentFrame1 = keyFr.listIterator(currentFrame1.nextIndex());
 			clonedKfi.currentFrame2 = keyFr.listIterator(currentFrame2.nextIndex());
-			clonedKfi.currentFrame3 = keyFr.listIterator(currentFrame3.nextIndex());
-			//next line added when migrating to java.util.Timer
-			clonedKfi.timer = new Timer();
+			clonedKfi.currentFrame3 = keyFr.listIterator(currentFrame3.nextIndex());			
 			return clonedKfi;
 		} catch (CloneNotSupportedException e) {
 			throw new Error(
