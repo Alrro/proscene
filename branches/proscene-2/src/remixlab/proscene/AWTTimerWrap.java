@@ -13,7 +13,6 @@ public class AWTTimerWrap implements Timable {
 	public AWTTimerWrap(Scene scn, Taskable o) {
 		scene = scn;
 		caller = o;
-		create();
 	}	
 	
 	public void create() {
