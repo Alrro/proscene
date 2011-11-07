@@ -340,6 +340,28 @@ public final class Matrix3D implements Matrix /*, PConstants*/ {
           0, 0, 1, 0,
           0, 0, 0, 1);
   }
+  
+  public static void mult(Matrix3D a, Matrix3D b, Matrix3D c) { 
+  	c.m00 = a.m00*b.m00 + a.m01*b.m10 + a.m02*b.m20 + a.m03*b.m30;
+    c.m01 = a.m00*b.m01 + a.m01*b.m11 + a.m02*b.m21 + a.m03*b.m31;
+    c.m02 = a.m00*b.m02 + a.m01*b.m12 + a.m02*b.m22 + a.m03*b.m32;
+    c.m03 = a.m00*b.m03 + a.m01*b.m13 + a.m02*b.m23 + a.m03*b.m33;
+
+    c.m10 = a.m10*b.m00 + a.m11*b.m10 + a.m12*b.m20 + a.m13*b.m30;
+    c.m11 = a.m10*b.m01 + a.m11*b.m11 + a.m12*b.m21 + a.m13*b.m31;
+    c.m12 = a.m10*b.m02 + a.m11*b.m12 + a.m12*b.m22 + a.m13*b.m32;
+    c.m13 = a.m10*b.m03 + a.m11*b.m13 + a.m12*b.m23 + a.m13*b.m33;
+
+    c.m20 = a.m20*b.m00 + a.m21*b.m10 + a.m22*b.m20 + a.m23*b.m30;
+    c.m21 = a.m20*b.m01 + a.m21*b.m11 + a.m22*b.m21 + a.m23*b.m31;
+    c.m22 = a.m20*b.m02 + a.m21*b.m12 + a.m22*b.m22 + a.m23*b.m32;
+    c.m23 = a.m20*b.m03 + a.m21*b.m13 + a.m22*b.m23 + a.m23*b.m33;
+
+    c.m30 = a.m30*b.m00 + a.m31*b.m10 + a.m32*b.m20 + a.m33*b.m30;
+    c.m31 = a.m30*b.m01 + a.m31*b.m11 + a.m32*b.m21 + a.m33*b.m31;
+    c.m32 = a.m30*b.m02 + a.m31*b.m12 + a.m32*b.m22 + a.m33*b.m32;
+    c.m33 = a.m30*b.m03 + a.m31*b.m13 + a.m32*b.m23 + a.m33*b.m33;
+  }
 
 
   public void apply(float n00, float n01, float n02, float n03,
@@ -561,7 +583,67 @@ public final class Matrix3D implements Matrix /*, PConstants*/ {
     temp = m13; m13 = m31; m31 = temp;
     temp = m23; m23 = m32; m32 = temp;
   }
+  
+  
+  /**
+   * Invert this matrix into {@code m}, i.e., doesn't modify this matrix.
+   * <p>
+   * {@code m} should be non-null.
+   */
+  public boolean invert(Matrix3D m) {
+  	float determinant = determinant();
+    if (determinant == 0) {
+      return false;
+    }    
+    
 
+    // first row
+    float t00 =  determinant3x3(m11, m12, m13, m21, m22, m23, m31, m32, m33);
+    float t01 = -determinant3x3(m10, m12, m13, m20, m22, m23, m30, m32, m33);
+    float t02 =  determinant3x3(m10, m11, m13, m20, m21, m23, m30, m31, m33);
+    float t03 = -determinant3x3(m10, m11, m12, m20, m21, m22, m30, m31, m32);
+
+    // second row
+    float t10 = -determinant3x3(m01, m02, m03, m21, m22, m23, m31, m32, m33);
+    float t11 =  determinant3x3(m00, m02, m03, m20, m22, m23, m30, m32, m33);
+    float t12 = -determinant3x3(m00, m01, m03, m20, m21, m23, m30, m31, m33);
+    float t13 =  determinant3x3(m00, m01, m02, m20, m21, m22, m30, m31, m32);
+
+    // third row
+    float t20 =  determinant3x3(m01, m02, m03, m11, m12, m13, m31, m32, m33);
+    float t21 = -determinant3x3(m00, m02, m03, m10, m12, m13, m30, m32, m33);
+    float t22 =  determinant3x3(m00, m01, m03, m10, m11, m13, m30, m31, m33);
+    float t23 = -determinant3x3(m00, m01, m02, m10, m11, m12, m30, m31, m32);
+
+    // fourth row
+    float t30 = -determinant3x3(m01, m02, m03, m11, m12, m13, m21, m22, m23);
+    float t31 =  determinant3x3(m00, m02, m03, m10, m12, m13, m20, m22, m23);
+    float t32 = -determinant3x3(m00, m01, m03, m10, m11, m13, m20, m21, m23);
+    float t33 =  determinant3x3(m00, m01, m02, m10, m11, m12, m20, m21, m22);
+
+     // transpose and divide by the determinant
+     m.m00 = t00 / determinant;
+     m.m01 = t10 / determinant;
+     m.m02 = t20 / determinant;
+     m.m03 = t30 / determinant;
+
+     m.m10 = t01 / determinant;
+     m.m11 = t11 / determinant;
+     m.m12 = t21 / determinant;
+     m.m13 = t31 / determinant;
+
+     m.m20 = t02 / determinant;
+     m.m21 = t12 / determinant;
+     m.m22 = t22 / determinant;
+     m.m23 = t32 / determinant;
+
+     m.m30 = t03 / determinant;
+     m.m31 = t13 / determinant;
+     m.m32 = t23 / determinant;
+     m.m33 = t33 / determinant;
+     
+     return true;
+  }
 
   /**
    * Invert this matrix.
@@ -620,7 +702,6 @@ public final class Matrix3D implements Matrix /*, PConstants*/ {
 
     return true;
   }
-
 
   /**
    * Calculate the determinant of a 3x3 matrix.

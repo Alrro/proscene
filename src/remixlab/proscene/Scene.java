@@ -1269,6 +1269,24 @@ public class Scene implements PConstants {
 				if (tJob.timer() != null)
 					((Timer)tJob.timer()).execute();
 	}
+	
+	/**
+	 * Bind processing matrices to proscene matrices.
+	 */
+	protected void bindMatrices() {
+		// We set the processing camera matrices from our remixlab.proscene.Camera
+		// TODO: needs testing
+		setPProjectionMatrix();
+		setPModelViewMatrix();
+		// same as the two previous lines:
+		// WARNING: this can produce visual artifacts when using OPENGL and
+		// GLGRAPHICS renderers because
+		// processing will anyway set the matrices at the end of the rendering
+		// loop.
+		// camera().computeProjectionMatrix();
+		// camera().computeModelViewMatrix();
+		camera().cacheMatrices();
+	}
 
 	/**
 	 * Paint method which is called just before your {@code PApplet.draw()}
@@ -1300,13 +1318,7 @@ public class Scene implements PConstants {
 					camera().setUpVector(avatar().upVector());
 					camera().lookAt(avatar().target());
 				}
-				// We set the processing camera matrices from our
-				// remixlab.proscene.Camera
-				// TODO test
-				setPProjectionMatrix();
-				setPModelViewMatrix();
-				//camera().computeProjectionMatrix();
-				//camera().computeModelViewMatrix();
+				bindMatrices();
 			}
 		} else {
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
@@ -1315,16 +1327,7 @@ public class Scene implements PConstants {
 				camera().setUpVector(avatar().upVector());
 				camera().lookAt(avatar().target());
 			}
-			// We set the processing camera matrices from our remixlab.proscene.Camera
-			setPProjectionMatrix();
-			setPModelViewMatrix();
-			// same as the two previous lines:
-			// WARNING: this can produce visual artifacts when using OPENGL and
-			// GLGRAPHICS renderers because
-			// processing will anyway set the matrices at the end of the rendering
-			// loop.
-			//camera().computeProjectionMatrix();
-		  //camera().computeModelViewMatrix();
+			bindMatrices();
 		}
 
 		if (frustumEquationsUpdateIsEnable())
@@ -1424,13 +1427,7 @@ public class Scene implements PConstants {
 				camera().setUpVector(avatar().upVector());
 				camera().lookAt(avatar().target());
 			}
-			// We set the processing camera matrices from our remixlab.proscene.Camera
-			setPProjectionMatrix();
-			setPModelViewMatrix();
-			// TODO test
-			//camera().computeProjectionMatrix();
-		  //camera().computeModelViewMatrix();
-
+			bindMatrices();
 			if (frustumEquationsUpdateIsEnable())
 				camera().updateFrustumEquations();	
 		}
