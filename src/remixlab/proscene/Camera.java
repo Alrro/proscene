@@ -196,6 +196,13 @@ public class Camera implements Cloneable {
 
 	private PMatrix3D modelViewMat;
 	private PMatrix3D projectionMat;
+	
+	//cache optimization
+	public boolean projectCacheOptimized;
+	private PMatrix3D  projectionTimesModelview;
+	public boolean unprojectCacheOptimized;
+	private boolean projectionTimesModelviewHasInverse;
+	private PMatrix3D projectionTimesModelviewInverse;
 
 	// S t e r e o p a r a m e t e r s
 	private float IODist; // inter-ocular distance, in meters
@@ -261,6 +268,7 @@ public class Camera implements Cloneable {
 		attachedToPCam = attachedToScene;
 		
 		enableFrustumEquationsUpdate(false);
+		optimizeUnprojectCache(false);
 
 		for (int i = 0; i < normal.length; i++)
 			normal[i] = new PVector();
@@ -2946,6 +2954,61 @@ public class Camera implements Cloneable {
 	}
 
 	// 14. Implementation of glu utility functions
+	
+	/**
+	 * Cache {@code (P x M)} and {@code inv (P x M)} under the following circumstances:
+	 * <p>
+	 * i) If {@code scene.mouseGrabberPool().size() > 3 && scene.hasMouseTracking()} then
+	 * {@code (P x M)} is cached so that
+	 * {@link #project(float, float, float, PMatrix3D, PMatrix3D, int[], float[])} is speeded up.
+	 * <p>
+	 * ii) If {@link #unprojectCacheIsOptimized()} {@code inv (P x M)} is cached (and hence
+	 * {@code (P x M)} is cached too) so that 
+	 * {@link #unproject(float, float, float, PMatrix3D, PMatrix3D, int[], float[])} is speeded up.
+	 * 
+	 * @see #unprojectCacheIsOptimized()
+	 * @see #optimizeUnprojectCache(boolean)
+	 */
+	protected void cacheMatrices() {
+		// 1. project
+		if( ( (scene.mouseGrabberPool().size() > 3) && scene.hasMouseTracking() ) || unprojectCacheIsOptimized()) {
+			projectCacheOptimized = true;
+			projectionTimesModelview = new PMatrix3D( projectionMat );
+			projectionTimesModelview.apply( modelViewMat );
+		}
+		else
+			projectCacheOptimized = false;
+		
+		// 2. unproject
+		if(unprojectCacheIsOptimized()) {
+			projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
+			projectionTimesModelviewHasInverse = projectionTimesModelviewInverse.invert();
+		}
+	}
+	
+	/**
+	 * Returns {@code true} if {@code P x M} and {@code inv (P x M)} are being cached,
+	 * and {@code false} otherwise.
+	 * 
+	 * @see #cacheMatrices()
+	 * @see #optimizeUnprojectCache(boolean)
+	 */
+	public boolean unprojectCacheIsOptimized() {
+		return unprojectCacheOptimized;
+	}
+	
+	/**
+	 * Cache {@code inv (P x M)} (and also {@code (P x M)} ) so that
+	 * {@link #project(float, float, float, PMatrix3D, PMatrix3D, int[], float[])}
+	 * (and also {@link #unproject(float, float, float, PMatrix3D, PMatrix3D, int[], float[])})
+	 * is optimised.
+	 * 
+	 * @see #unprojectCacheIsOptimized()
+	 * @see #cacheMatrices()
+	 */
+	public void optimizeUnprojectCache(boolean optimise) {
+		unprojectCacheOptimized = optimise;
+	}
 
 	/**
 	 * Similar to {@code gluProject}: map object coordinates to window
@@ -2966,39 +3029,62 @@ public class Camera implements Cloneable {
 	 * @param windowCoordinate
 	 *          Return the computed window coordinates.
 	 */
-	public boolean project(float objx, float objy, float objz,
-			PMatrix3D modelview, PMatrix3D projection, int[] viewport,
-			float[] windowCoordinate) {
-		// Transformation vectors
+	public boolean project(float objx, float objy, float objz, PMatrix3D modelview,
+			                   PMatrix3D projection, int[] viewport, float[] windowCoordinate) {
 		float in[] = new float[4];
 		float out[] = new float[4];
-
+		
 		in[0] = objx;
 		in[1] = objy;
 		in[2] = objz;
 		in[3] = 1.0f;
-
-		modelview.mult(in, out);
-		projection.mult(out, in);
-
-		if (in[3] == 0.0)
-			return false;
-		in[0] /= in[3];
-		in[1] /= in[3];
-		in[2] /= in[3];
-		/* Map x, y and z to range 0-1 */
-		in[0] = in[0] * 0.5f + 0.5f;
-		in[1] = in[1] * 0.5f + 0.5f;
-		in[2] = in[2] * 0.5f + 0.5f;
-
-		/* Map x,y to viewport */
-		in[0] = in[0] * viewport[2] + viewport[0];
-		in[1] = in[1] * viewport[3] + viewport[1];
-
-		windowCoordinate[0] = in[0];
-		windowCoordinate[1] = in[1];
-		windowCoordinate[2] = in[2];
-		return true;
+		
+		if(projectCacheOptimized) {	
+			out[0]=projectionTimesModelview.m00*in[0] + projectionTimesModelview.m01*in[1] + projectionTimesModelview.m02*in[2] + projectionTimesModelview.m03*in[3];
+			out[1]=projectionTimesModelview.m10*in[0] + projectionTimesModelview.m11*in[1] + projectionTimesModelview.m12*in[2] + projectionTimesModelview.m13*in[3];
+			out[2]=projectionTimesModelview.m20*in[0] + projectionTimesModelview.m21*in[1] + projectionTimesModelview.m22*in[2] + projectionTimesModelview.m23*in[3];
+			out[3]=projectionTimesModelview.m30*in[0] + projectionTimesModelview.m31*in[1] + projectionTimesModelview.m32*in[2] + projectionTimesModelview.m33*in[3];
+			
+			if (out[3] == 0.0)
+				return false;
+			
+			out[0] /= out[3];
+			out[1] /= out[3];
+			out[2] /= out[3];
+			// Map x, y and z to range 0-1
+			out[0] = out[0] * 0.5f + 0.5f;
+			out[1] = out[1] * 0.5f + 0.5f;
+			out[2] = out[2] * 0.5f + 0.5f;
+			
+			// Map x,y to viewport
+			out[0] = out[0] * viewport[2] + viewport[0];
+			out[1] = out[1] * viewport[3] + viewport[1];
+			
+			windowCoordinate[0] = out[0];
+			windowCoordinate[1] = out[1];
+			windowCoordinate[2] = out[2];
+			return true;	
+		}		
+		else {
+			modelview.mult(in, out);
+			projection.mult(out, in);
+			if (in[3] == 0.0)
+				return false;
+			in[0] /= in[3];
+			in[1] /= in[3];
+			in[2] /= in[3];
+			// Map x, y and z to range 0-1
+			in[0] = in[0] * 0.5f + 0.5f;
+			in[1] = in[1] * 0.5f + 0.5f;
+			in[2] = in[2] * 0.5f + 0.5f;			
+			// Map x,y to viewport
+			in[0] = in[0] * viewport[2] + viewport[0];
+			in[1] = in[1] * viewport[3] + viewport[1];
+			windowCoordinate[0] = in[0];
+			windowCoordinate[1] = in[1];
+			windowCoordinate[2] = in[2];
+			return true;
+		}
 	}
 
 	/**
@@ -3020,17 +3106,26 @@ public class Camera implements Cloneable {
 	 * @param objCoordinate
 	 *          Return the computed object coordinates.
 	 */
-	public boolean unproject(float winx, float winy, float winz,
-			PMatrix3D modelview, PMatrix3D projection, int viewport[],
-			float[] objCoordinate) {
-		PMatrix3D finalMatrix = new PMatrix3D(projection);
+	public boolean unproject(float winx, float winy, float winz, PMatrix3D modelview,
+			                     PMatrix3D projection, int viewport[], float[] objCoordinate) {
+		
+		if(!unprojectCacheOptimized) {
+			if(!projectCacheOptimized) {
+				projectionTimesModelviewInverse = new PMatrix3D(projection);
+				projectionTimesModelviewInverse.apply(modelview);
+			}
+			else {
+				// invert should have a static version
+				projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
+			}
+			projectionTimesModelviewHasInverse = projectionTimesModelviewInverse.invert();			
+		}
+		
+		if (!projectionTimesModelviewHasInverse)
+			return false;
+		
 		float in[] = new float[4];
 		float out[] = new float[4];
-
-		finalMatrix.apply(modelview);
-
-		if (!finalMatrix.invert())
-			return false;
 
 		in[0] = winx;
 		in[1] = winy;
@@ -3046,7 +3141,7 @@ public class Camera implements Cloneable {
 		in[1] = in[1] * 2 - 1;
 		in[2] = in[2] * 2 - 1;
 
-		finalMatrix.mult(in, out);
+		projectionTimesModelviewInverse.mult(in, out);
 		if (out[3] == 0.0)
 			return false;
 
