@@ -49,7 +49,7 @@ import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
  * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
  */
 
-public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable {
+public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copyable {
 	@Override
 	public int hashCode() {
     return new HashCodeBuilder(17, 37).
@@ -290,7 +290,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	/**
 	 * Convenience function that simply calls {@code applyTransformation(scene)}.
 	 * 
-	 * @see remixlab.remixcam.core.Frame#applyTransformation(Scene)
+	 * @see remixlab.remixcam.core.BasicFrame#applyTransformation(Scene)
 	 */
 	public void applyTransformation() {
 		applyTransformation(scene);
@@ -524,7 +524,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 * <p>
 	 * The {@link #spinningQuaternion()} axis is defined in the InteractiveFrame
 	 * coordinate system. You can use
-	 * {@link remixlab.remixcam.core.Frame#transformOfFrom(Vector3D, Frame)} to convert
+	 * {@link remixlab.remixcam.core.BasicFrame#transformOfFrom(Vector3D, BasicFrame)} to convert
 	 * this axis from an other Frame coordinate system.
 	 */
 	public final Quaternion spinningQuaternion() {
@@ -582,7 +582,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Copyable 
 	 * Overloading of
 	 * {@link remixlab.remixcam.core.MouseGrabbable#mouseClicked(remixlab.proscene.Scene.Button, int, Camera)}.
 	 * <p>
-	 * Left button double click aligns the InteractiveFrame with the camera axis (see {@link #alignWithFrame(Frame)}
+	 * Left button double click aligns the InteractiveFrame with the camera axis (see {@link #alignWithFrame(BasicFrame)}
 	 * and {@link remixlab.proscene.Scene.ClickAction#ALIGN_FRAME}). Right button projects the InteractiveFrame on
 	 * the camera view direction.
 	 */

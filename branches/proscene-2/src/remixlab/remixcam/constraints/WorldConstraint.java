@@ -41,7 +41,7 @@ public class WorldConstraint extends AxisPlaneConstraint {
 	 * world coordinate system by {@link #translationConstraintDirection()}.
 	 */
 	@Override
-	public Vector3D constrainTranslation(Vector3D translation, Frame frame) {
+	public Vector3D constrainTranslation(Vector3D translation, BasicFrame frame) {
 		Vector3D res = new Vector3D(translation.x, translation.y, translation.z);
 		Vector3D proj;
 		switch (translationConstraintType()) {
@@ -74,7 +74,7 @@ public class WorldConstraint extends AxisPlaneConstraint {
 	 * Frame world coordinate system by {@link #rotationConstraintDirection()}.
 	 */
 	@Override
-	public Quaternion constrainRotation(Quaternion rotation, Frame frame) {
+	public Quaternion constrainRotation(Quaternion rotation, BasicFrame frame) {
 		Quaternion res = rotation.getCopy();
 		switch (rotationConstraintType()) {
 		case FREE:

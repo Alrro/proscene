@@ -571,7 +571,7 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * Use {@link #setPosition(Vector3D)} to set the Camera position. Other
 	 * convenient methods are showEntireScene() or fitSphere(). Actually returns
-	 * {@link remixlab.remixcam.core.Frame#position()}.
+	 * {@link remixlab.remixcam.core.BasicFrame#position()}.
 	 * <p>
 	 * This position corresponds to the projection center of a Camera.PERSPECTIVE
 	 * camera. It is not located in the image plane, which is at a zNear()
@@ -2447,7 +2447,7 @@ public class Camera implements Constants, Copyable {
 	 * <p>
 	 * Note that the point coordinates are simply converted in a different
 	 * coordinate system. They are not projected on screen. Use
-	 * {@link #projectedCoordinatesOf(Vector3D, Frame)} for that.
+	 * {@link #projectedCoordinatesOf(Vector3D, BasicFrame)} for that.
 	 */
 	public final Vector3D cameraCoordinatesOf(Vector3D src) {
 		return frame().coordinatesOf(src);
@@ -2511,7 +2511,7 @@ public class Camera implements Constants, Copyable {
 	 * Convenience function that simply returns {@code projectedCoordinatesOf(src,
 	 * null)}
 	 * 
-	 * @see #projectedCoordinatesOf(Vector3D, Frame)
+	 * @see #projectedCoordinatesOf(Vector3D, BasicFrame)
 	 */
 	public final Vector3D projectedCoordinatesOf(Vector3D src) {
 		return projectedCoordinatesOf(src, null);
@@ -2535,9 +2535,9 @@ public class Camera implements Constants, Copyable {
 	 * matrices. You can hence define a virtual Camera and use this method to
 	 * compute projections out of a classical rendering context.
 	 * 
-	 * @see #unprojectedCoordinatesOf(Vector3D, Frame)
+	 * @see #unprojectedCoordinatesOf(Vector3D, BasicFrame)
 	 */
-	public final Vector3D projectedCoordinatesOf(Vector3D src, Frame frame) {
+	public final Vector3D projectedCoordinatesOf(Vector3D src, BasicFrame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
 
@@ -2557,7 +2557,7 @@ public class Camera implements Constants, Copyable {
 	 * Convenience function that simply returns {@code return
 	 * unprojectedCoordinatesOf(src, null)}
 	 * 
-	 * #see {@link #unprojectedCoordinatesOf(Vector3D, Frame)}
+	 * #see {@link #unprojectedCoordinatesOf(Vector3D, BasicFrame)}
 	 */
 	public final Vector3D unprojectedCoordinatesOf(Vector3D src) {
 		return this.unprojectedCoordinatesOf(src, null);
@@ -2575,9 +2575,9 @@ public class Camera implements Constants, Copyable {
 	 * The result is expressed in the {@code frame} coordinate system. When
 	 * {@code frame} is {@code null}, the result is expressed in the world
 	 * coordinates system. The possible {@code frame}
-	 * {@link remixlab.remixcam.core.Frame#referenceFrame()} are taken into account.
+	 * {@link remixlab.remixcam.core.BasicFrame#referenceFrame()} are taken into account.
 	 * <p>
-	 * {@link #projectedCoordinatesOf(Vector3D, Frame)} performs the inverse
+	 * {@link #projectedCoordinatesOf(Vector3D, BasicFrame)} performs the inverse
 	 * transformation.
 	 * <p>
 	 * This method only uses the intrinsic Camera parameters (see
@@ -2596,10 +2596,10 @@ public class Camera implements Constants, Copyable {
 	 * projection matrix (modelview, projection and then viewport) to speed-up the
 	 * queries. See the gluUnProject man page for details.
 	 * 
-	 * @see #projectedCoordinatesOf(Vector3D, Frame)
+	 * @see #projectedCoordinatesOf(Vector3D, BasicFrame)
 	 * @see #setScreenWidthAndHeight(int, int)
 	 */
-	public final Vector3D unprojectedCoordinatesOf(Vector3D src, Frame frame) {
+	public final Vector3D unprojectedCoordinatesOf(Vector3D src, BasicFrame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
 		
@@ -2884,7 +2884,7 @@ public class Camera implements Constants, Copyable {
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
 
-		interpolationKfi.addKeyFrame(new Frame(Vector3D.add(Vector3D.mult(frame()
+		interpolationKfi.addKeyFrame(new BasicFrame(Vector3D.add(Vector3D.mult(frame()
 				.position(), 0.3f), Vector3D.mult(target.point, 0.7f)), frame()
 				.orientation()), 0.4f, false);
 
@@ -2942,9 +2942,9 @@ public class Camera implements Constants, Copyable {
 	/**
 	 * Convenience function that simply calls {@code interpolateTo(fr, 1)}.
 	 * 
-	 * @see #interpolateTo(Frame, float)
+	 * @see #interpolateTo(BasicFrame, float)
 	 */
-	public void interpolateTo(Frame fr) {
+	public void interpolateTo(BasicFrame fr) {
 		interpolateTo(fr, 1);
 	}
 
@@ -2955,11 +2955,11 @@ public class Camera implements Constants, Copyable {
 	 * {@code fr} is expressed in world coordinates. {@code duration} tunes the
 	 * interpolation speed.
 	 * 
-	 * @see #interpolateTo(Frame)
+	 * @see #interpolateTo(BasicFrame)
 	 * @see #interpolateToFitScene()
 	 * @see #interpolateToZoomOnPixel(Point)
 	 */
-	public void interpolateTo(Frame fr, float duration) {
+	public void interpolateTo(BasicFrame fr, float duration) {
 		// if (interpolationKfi.interpolationIsStarted())
 		// interpolationKfi.stopInterpolation();
 		if (anyInterpolationIsStarted())
