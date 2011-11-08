@@ -317,7 +317,7 @@ public class DesktopEvents implements MouseWheelListener {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		scene.setMouseGrabber(null);
 		if( scene.hasMouseTracking() )
-			for (MouseGrabbable mg : scene.MouseGrabberPool) {
+			for (MouseGrabbable mg : scene.mouseGrabberPool()) {
 				mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 				if (mg.grabsMouse())
 					scene.setMouseGrabber(mg);

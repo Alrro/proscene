@@ -35,11 +35,12 @@ import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.*;
 */
 
+import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
 import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveFrame;
-import remixlab.remixcam.core.Frame;
+import remixlab.remixcam.core.BasicFrame;
 import remixlab.remixcam.core.MouseGrabbable;
 import remixlab.remixcam.core.Trackable;
 import remixlab.remixcam.devices.Bindings;
@@ -54,7 +55,6 @@ import remixlab.remixcam.geom.Point;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -116,7 +116,7 @@ import java.util.Map.Entry;
  * otherwise), which is useful to notify the outside world when an animation event
  * occurs. See the example <i>Flock</i>.
  */
-public class Scene implements PConstants {
+public class Scene extends AbstractScene implements PConstants {
 	// proscene version
 	public static final String version = "1.2.0";
 	/**
@@ -425,31 +425,17 @@ public class Scene implements PConstants {
 	// c a m e r a p r o f i l e s
 	private HashMap<String, CameraProfile> cameraProfileMap;
 	private ArrayList<String> cameraProfileNames;
-	private CameraProfile currentCameraProfile;
-
-	// mouse actions
-	protected boolean arpFlag;
-	protected boolean pupFlag;
-	protected Vector3D pupVec;
-	protected AbstractTimerJob timerFx;
+	private CameraProfile currentCameraProfile;		
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	public PGraphics3D pg3d;
-	protected int width, height;// size
+	public PGraphics3D pg3d;	
 	protected boolean offscreen;
 	public Point upperLeftCorner;
-	protected Frame tmpFrame;
+	protected BasicFrame tmpFrame;
 
 	// O B J E C T S
 	protected DesktopEvents dE;
-	protected Camera cam;
-	protected InteractiveFrame glIFrame;
-	// boolean interactiveFrameIsAnAvatar;
-	protected boolean iFrameIsDrwn;
-	protected Trackable trck;
-	public boolean avatarIsInteractiveDrivableFrame;
-	protected boolean avatarIsInteractiveAvatarFrame;
 
 	// S C R E E N C O O R D I N A T E S	
 	protected float zC;
@@ -457,35 +443,10 @@ public class Scene implements PConstants {
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
   protected int beginOffScreenDrawingCalls;
-  
-  // T i m e r P o o l
-  protected boolean prosceneTimers;
-	protected ArrayList<AbstractTimerJob> timerPool;
-
-	// M o u s e G r a b b e r
-	protected List<MouseGrabbable> MouseGrabberPool;
-	protected MouseGrabbable mouseGrbbr;
-	protected boolean mouseGrabberIsAnIFrame;	
-	protected boolean mouseTrckn;
-
-	// D I S P L A Y F L A G S
-	private boolean axisIsDrwn; // world axis
-	private boolean gridIsDrwn; // world XY grid
-	private boolean frameSelectionHintIsDrwn;
-	private boolean cameraPathsAreDrwn;
-
-	// C O N S T R A I N T S
-	private boolean withConstraint;
 
 	// K E Y B O A R D A N D M O U S E
 	protected boolean mouseHandling;
-	protected boolean keyboardHandling;
-	
-	// A N I M A T I O N
-	protected SingleThreadedTimer animationTimer;
-	protected boolean animationStarted;
-	public boolean animatedFrameWasTriggered;
-	protected long animationPeriod;
+	protected boolean keyboardHandling;	
 
 	// R E G I S T E R   D R A W   A N D   A N I M A T I O N   M E T H O D S
 	// Draw
@@ -501,11 +462,7 @@ public class Scene implements PConstants {
 	/** The method in animateHandlerObject to execute */
 	protected Method animateHandlerMethod;
 	/** the name of the method to handle the animation */
-	protected String animateHandlerMethodName;
-	
-	// D E V I C E S
-	
-	protected ArrayList<HIDevice> devices;
+	protected String animateHandlerMethodName;	
 
 	/**
 	 * Constructor that defines an on-screen Scene (the one that most likely
@@ -560,26 +517,12 @@ public class Scene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 		
-		tmpFrame = new Frame();
+		tmpFrame = new BasicFrame();
 		
 		//event handler
-		dE = new DesktopEvents(this);		
-				
-   	//drawing timer pool
-		timerPool = new ArrayList<AbstractTimerJob>();
-		timerFx = new AbstractTimerJob() {
-			public void execute() {
-				unSetTimerFlag();
-			}
-		};
-		prosceneTimers = true;
-		registerInTimerPool(timerFx);
+		dE = new DesktopEvents(this);
 		
-		//mouse grabber pool
-		MouseGrabberPool = new ArrayList<MouseGrabbable>();		
-		
-		//devices
-		devices = new ArrayList<HIDevice>();
+		// 1 ->   	
 
 		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
 		pathKeys = new Bindings<Integer, Integer>(this);		
@@ -676,22 +619,9 @@ public class Scene implements PConstants {
 	public void proscenium() {}
 
 	// 2. Associated objects
-
-	/**
-	 * Returns a list containing references to all the active MouseGrabbers.
-	 * <p>
-	 * Used to parse all the MouseGrabbers and to check if any of them
-	 * {@link remixlab.remixcam.core.MouseGrabbable#grabsMouse()} using
-	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}.
-	 * <p>
-	 * You should not have to directly use this list. Use
-	 * {@link #removeFromMouseGrabberPool(MouseGrabbable)} and
-	 * {@link #addInMouseGrabberPool(MouseGrabbable)} to modify this list.
-	 */
-	public List<MouseGrabbable> mouseGrabberPool() {
-		return MouseGrabberPool;
-	}	
-		
+	
+	// TODO only AWTTimers, of course
+	@Override
 	public void registerInTimerPool(AbstractTimerJob job) {
 		if (prosceneTimers) {			
 			job.setTimer(new Timer(this, job));
@@ -702,26 +632,10 @@ public class Scene implements PConstants {
 		}
 	}
 	
-	public void unregisterFromTimerPool(AbstractTimerJob job) {
-		if (prosceneTimers) {			
-			timerPool.remove(job);
-		}
-	}
-	
-	public void unregisterFromTimerPool(Timer t) {			
-			timerPool.remove( t.timerJob() );
-	}
-
-	/**
-	 * Returns the associated Camera, never {@code null}.
-	 */
-	public Camera camera() {
-		return cam;
-	}
-
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
 	 */
+	@Override
 	public void setCamera(Camera camera) {
 		if (camera == null)
 			return;
@@ -1450,138 +1364,7 @@ public class Scene implements PConstants {
 		drawCommon();
 	}
 	
-	// 4. Scene dimensions
-
-	/**
-	 * Returns the scene radius.
-	 * <p>
-	 * Convenience wrapper function that simply calls {@code
-	 * camera().sceneRadius()}
-	 * 
-	 * @see #setRadius(float)
-	 * @see #center()
-	 */
-	public float radius() {
-		return camera().sceneRadius();
-	}
-
-	/**
-	 * Returns the scene center.
-	 * <p>
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().sceneCenter()}
-	 * 
-	 * @see #setCenter(Vector3D) {@link #radius()}
-	 */
-	public Vector3D center() {
-		return camera().sceneCenter();
-	}
-
-	/**
-	 * Returns the arcball reference point.
-	 * <p>
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().arcballReferencePoint()}
-	 * 
-	 * @see #setCenter(Vector3D) {@link #radius()}
-	 */
-	public Vector3D arcballReferencePoint() {
-		return camera().arcballReferencePoint();
-	}
-
-	/**
-	 * Sets the {@link #radius()} of the Scene.
-	 * <p>
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().setSceneRadius(radius)}
-	 * 
-	 * @see #setCenter(Vector3D)
-	 */
-	public void setRadius(float radius) {
-		camera().setSceneRadius(radius);
-	}
-
-	/**
-	 * Sets the {@link #center()} of the Scene.
-	 * <p>
-	 * Convenience wrapper function that simply calls {@code }
-	 * 
-	 * @see #setRadius(float)
-	 */
-	public void setCenter(Vector3D center) {
-		camera().setSceneCenter(center);
-	}
-
-	/**
-	 * Sets the {@link #center()} and {@link #radius()} of the Scene from the
-	 * {@code min} and {@code max} vectors.
-	 * <p>
-	 * Convenience wrapper function that simply calls {@code
-	 * camera().setSceneBoundingBox(min,max)}
-	 * 
-	 * @see #setRadius(float)
-	 * @see #setCenter(Vector3D)
-	 */
-	public void setBoundingBox(Vector3D min, Vector3D max) {
-		camera().setSceneBoundingBox(min, max);
-	}
-
-	/**
-	 * Convenience wrapper function that simply calls {@code
-	 * camera().showEntireScene()}
-	 * 
-	 * @see remixlab.remixcam.core.Camera#showEntireScene()
-	 */
-	public void showAll() {
-		camera().showEntireScene();
-	}
-
-	/**
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().setArcballReferencePointFromPixel(pixel)}.
-	 * <p>
-	 * Current implementation set no
-	 * {@link remixlab.remixcam.core.Camera#arcballReferencePoint()}. Override
-	 * {@link remixlab.remixcam.core.Camera#pointUnderPixel(Point)} in your openGL
-	 * based camera for this to work.
-	 * 
-	 * @see remixlab.remixcam.core.Camera#setArcballReferencePointFromPixel(Point)
-	 * @see remixlab.remixcam.core.Camera#pointUnderPixel(Point)
-	 */
-	public boolean setArcballReferencePointFromPixel(Point pixel) {
-		return camera().setArcballReferencePointFromPixel(pixel);
-	}
-
-	/**
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().interpolateToZoomOnPixel(pixel)}.
-	 * <p>
-	 * Current implementation does nothing. Override
-	 * {@link remixlab.remixcam.core.Camera#pointUnderPixel(Point)} in your openGL
-	 * based camera for this to work.
-	 * 
-	 * @see remixlab.remixcam.core.Camera#interpolateToZoomOnPixel(Point)
-	 * @see remixlab.remixcam.core.Camera#pointUnderPixel(Point)
-	 */
-	public Camera.WorldPoint interpolateToZoomOnPixel(Point pixel) {
-		return camera().interpolateToZoomOnPixel(pixel);
-	}
-
-	/**
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().setSceneCenterFromPixel(pixel)}
-	 * <p>
-	 * Current implementation set no
-	 * {@link remixlab.remixcam.core.Camera#sceneCenter()}. Override
-	 * {@link remixlab.remixcam.core.Camera#pointUnderPixel(Point)} in your openGL
-	 * based camera for this to work.
-	 * 
-	 * @see remixlab.remixcam.core.Camera#setSceneCenterFromPixel(Point)
-	 * @see remixlab.remixcam.core.Camera#pointUnderPixel(Point)
-	 */
-	public boolean setCenterFromPixel(Point pixel) {
-		return camera().setSceneCenterFromPixel(pixel);
-	}
+  // 4. Scene dimensions
 
 	/**
 	 * Returns the {@link PApplet#width} to {@link PApplet#height} aspect ratio of
@@ -1594,12 +1377,12 @@ public class Scene implements PConstants {
 	// 6. Display of visual hints and Display methods
 	
 	/**
-	 * Draws a cylinder of width {@code w} and height {@code h}, along the {@link #renderer()} 
-	 * positive {@code z} axis.
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#cylinder(float, float)}.
 	 * <p>
-	 * Code adapted from http://www.processingblogs.org/category/processing-java/
+	 * Code adapted from http://www.processingblogs.org/category/processing-java/ 
 	 */
-	public void cylinder(float w, float h) {
+	@Override
+	public void cylinder(float w, float h) {		
 		float px, py;
 
 		pg3d.beginShape(QUAD_STRIP);
@@ -1628,35 +1411,17 @@ public class Scene implements PConstants {
 			pg3d.vertex(px, py, h);
 		}
 		pg3d.endShape();
-	}	
+	}					
 	
 	/**
-	 * Same as {@code cone(det, 0, 0, r, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float)
-	 */
-	public void cone(int det, float r, float h) {
-		cone(det, 0, 0, r, h);
-	}		
-	
-	/**
-	 * Same as {@code cone(12, 0, 0, r, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float)
-	 */
-	public void cone(float r, float h) {
-		cone(12, 0, 0, r, h);
-	}			
-	
-	/**
-	 * Draws a cone along the {@link #renderer()} positive {@code z} axis, with its
-	 * base centered at {@code (x,y)}, height {@code h}, and radius {@code r}.
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#cone(int, float, float, float, float)}.
 	 * <p>
 	 * The code of this function was adapted from
 	 * http://processinghacks.com/hacks:cone Thanks to Tom Carden.
 	 * 
 	 * @see #cone(int, float, float, float, float, float)
 	 */
+	@Override
 	public void cone(int detail, float x, float y, float r, float h) {
 		float unitConeX[] = new float[detail + 1];
 		float unitConeY[] = new float[detail + 1];
@@ -1676,33 +1441,12 @@ public class Scene implements PConstants {
 		}
 		pg3d.endShape();
 		pg3d.popMatrix();
-	}
-	
-	/**
-	 * Same as {@code cone(det, 0, 0, r1, r2, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float, float)
-	 */
-	public void cone(int det, float r1, float r2, float h) {
-		cone(det, 0, 0, r1, r2, h);
 	}	
-	
-	/**
-	 * Same as {@code cone(18, 0, 0, r1, r2, h);}
-	 * 
-	 * @see #cone(int, float, float, float, float, float)
-	 */
-	public void cone(float r1, float r2, float h) {
-		cone(18, 0, 0, r1, r2, h);
-	}
 
 	/**
-	 * Draws a truncated cone along the {@link #renderer()} positive {@code z} axis,
-	 * with its base centered at {@code (x,y)}, height {@code h}, and radii
-	 * {@code r1} and {@code r2} (basis and height respectively).
-	 * 
-	 * @see #cone(int, float, float, float, float)
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#cone(int, float, float, float, float, float)}.
 	 */
+	@Override
 	public void cone(int detail, float x, float y,	float r1, float r2, float h) {
 		float firstCircleX[] = new float[detail + 1];
 		float firstCircleY[] = new float[detail + 1];
@@ -1726,21 +1470,12 @@ public class Scene implements PConstants {
 		}
 		pg3d.endShape();
 		pg3d.popMatrix();
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code drawAxis(100)}.
-	 */
-	public void drawAxis() {
-		drawAxis(100);
 	}		
 	
 	/**
-	 * Draws an axis of length {@code length} which origin correspond to the
-	 * {@link #renderer()}'s world coordinate system origin.
-	 * 
-	 * @see #drawGrid(float, int)
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawAxis(float)}.
 	 */
+	@Override
 	public void drawAxis(float length) {
 		final float charWidth = length / 40.0f;
 		final float charHeight = length / 30.0f;
@@ -1809,22 +1544,9 @@ public class Scene implements PConstants {
 	}			
 	
 	/**
-	 * Simply calls {@code drawArrow(length, 0.05f * length)}
-	 * 
-	 * @see #drawArrow(float, float)
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawArrow(float, float)}.
 	 */
-	public void drawArrow(float length) {
-		drawArrow(length, 0.05f * length);
-	}		
-	
-	/**
-	 * Draws a 3D arrow along the {@link #renderer()} positive Z axis.
-	 * <p>
-	 * {@code length} and {@code radius} define its geometry.
-	 * <p>
-	 * Use {@link #drawArrow(Vector3D, Vector3D, float)} to place the arrow
-	 * in 3D.
-	 */
+	@Override
 	public void drawArrow(float length, float radius) {
 		float head = 2.5f * (radius / length) + 0.1f;
 		float coneRadiusCoef = 4.0f - 5.0f * head;
@@ -1836,12 +1558,9 @@ public class Scene implements PConstants {
 	}		
 	
 	/**
-	 * Draws a 3D arrow between the 3D point {@code from} and the 3D point {@code
-	 * to}, both defined in the current {@link #renderer()} ModelView coordinates
-	 * system.
-	 * 
-	 * @see #drawArrow(float, float)
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawArrow(Vector3D, Vector3D, float)}.
 	 */
+	@Override
 	public void drawArrow(Vector3D from, Vector3D to,	float radius) {
 		pg3d.pushMatrix();
 		pg3d.translate(from.x, from.y, from.z);
@@ -1857,45 +1576,12 @@ public class Scene implements PConstants {
 		
 		drawArrow(Vector3D.sub(to, from).mag(), radius);
 		pg3d.popMatrix();
-	}			
-	
-	/**
-	 * Convenience function that simply calls {@code drawGrid(100, 10)}
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public void drawGrid() {
-		drawGrid(100, 10);
 	}	
-	
-	/**
-	 * Convenience function that simply calls {@code drawGrid(size, 10)}
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public void drawGrid(float size) {
-		drawGrid(size, 10);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code drawGrid(100,
-	 * nbSubdivisions)}
-	 * 
-	 * @see #drawGrid(float, int)
-	 */
-	public void drawGrid(int nbSubdivisions) {
-		drawGrid(100, nbSubdivisions);
-	}
 
 	/**
-	 * Draws a grid in the XY plane, centered on (0,0,0) (defined in the current
-	 * coordinate system).
-	 * <p>
-	 * {@code size} (processing scene units) and {@code nbSubdivisions} define its
-	 * geometry.
-	 * 
-	 * @see #drawAxis(float)
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawGrid(float, int)}.
 	 */
+	@Override
 	public void drawGrid(float size, int nbSubdivisions) {
 		pg3d.pushStyle();
 		pg3d.stroke(170, 170, 170);
@@ -1915,89 +1601,10 @@ public class Scene implements PConstants {
 	// 2. CAMERA
 
 	/**
-	 * Convenience function that simply calls {@code drawCamera(camera,
-	 * 170, true, 1.0f)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera) {
-		drawCamera(camera, 170, true, 1.0f);
-	}
-
-	/**
-	 * Convenience function that simply calls {@code drawCamera(camera,
-	 * 170, true, scale)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera, float scale) {
-		drawCamera(camera, 170, true, scale);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code drawCamera(camera,
-	 * color, true, 1.0f)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera, int color) {
-		drawCamera(camera, color, true, 1.0f);
-	}
-
-	/**
-	 * Convenience function that simply calls {@code drawCamera(camera,
-	 * 170, drawFarPlane, 1.0f)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera,	boolean drawFarPlane) {
-		drawCamera(camera, 170, drawFarPlane, 1.0f);
-	}
-
-	/**
-	 * Convenience function that simply calls {@code drawCamera(camera, 170, drawFarPlane, scale)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera,	boolean drawFarPlane, float scale) {
-		drawCamera(camera, 170, drawFarPlane, scale);
-	}
-
-	/**
-	 * Convenience function that simply calls {@code drawCamera(camera, color, true, scale)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera, int color,	float scale) {
-		drawCamera(camera, color, true, scale);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code drawCamera(camera,
-	 * color, drawFarPlane, 1.0f)}
-	 * 
-	 * @see #drawCamera(Camera, int, boolean, float)
-	 */
-	public void drawCamera(Camera camera, int color,	boolean drawFarPlane) {
-		drawCamera(camera, color, drawFarPlane, 1.0f);
-	}
-
-	/**
-	 * Draws a representation of the {@code camera} in the {@link #renderer()} 3D
-	 * virtual world using {@code color}.
-	 * <p>
-	 * The near and far planes are drawn as quads, the frustum is drawn using
-	 * lines and the camera up vector is represented by an arrow to disambiguate
-	 * the drawing.
-	 * <p>
-	 * When {@code drawFarPlane} is {@code false}, only the near plane is drawn.
-	 * {@code scale} can be used to scale the drawing: a value of 1.0 (default)
-	 * will draw the Camera's frustum at its actual size.
-	 * <p>
-	 * <b>Note:</b> The drawing of a Scene's own Scene.camera() should not be
-	 * visible, but may create artifacts due to numerical imprecisions.
-	 */
-	public void drawCamera(Camera camera, int color, boolean drawFarPlane, float scale) {
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCamera(Camera, boolean, float)}
+	 */	
+	@Override
+	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {
 		pg3d.pushMatrix();
 
 		// pg3d.applyMatrix(camera.frame().worldMatrix());
@@ -2006,16 +1613,16 @@ public class Scene implements PConstants {
 		applyTransformation(tmpFrame);
 
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
-		Vector3D[] points = new Vector3D[2];
-		points[0] = new Vector3D();
-		points[1] = new Vector3D();
+		PVector[] points = new PVector[2];
+		points[0] = new PVector();
+		points[1] = new PVector();
 
 		points[0].z = scale * camera.zNear();
 		points[1].z = scale * camera.zFar();
 
 		switch (camera.type()) {
 		case PERSPECTIVE: {
-			points[0].y = points[0].z * (float) Math.tan(camera.fieldOfView() / 2.0f);
+			points[0].y = points[0].z * PApplet.tan(camera.fieldOfView() / 2.0f);
 			points[0].x = points[0].y * camera.aspectRatio();
 			float ratio = points[1].z / points[0].z;
 			points[1].y = ratio * points[0].y;
@@ -2031,11 +1638,44 @@ public class Scene implements PConstants {
 		}
 
 		int farIndex = drawFarPlane ? 1 : 0;
+		
+	  // Frustum lines
+		pg3d.strokeWeight(2);
+		switch (camera.type()) {
+			case PERSPECTIVE:
+				pg3d.beginShape(PApplet.LINES);
+				pg3d.vertex(0.0f, 0.0f, 0.0f);
+				pg3d
+						.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
+				pg3d.vertex(0.0f, 0.0f, 0.0f);
+				pg3d.vertex(-points[farIndex].x, points[farIndex].y,
+						-points[farIndex].z);
+				pg3d.vertex(0.0f, 0.0f, 0.0f);
+				pg3d.vertex(-points[farIndex].x, -points[farIndex].y,
+						-points[farIndex].z);
+				pg3d.vertex(0.0f, 0.0f, 0.0f);
+				pg3d.vertex(points[farIndex].x, -points[farIndex].y,
+						-points[farIndex].z);
+				pg3d.endShape();
+				break;
+			case ORTHOGRAPHIC:
+				if (drawFarPlane) {
+					pg3d.beginShape(PApplet.LINES);
+					pg3d.vertex(points[0].x, points[0].y, -points[0].z);
+					pg3d.vertex(points[1].x, points[1].y, -points[1].z);
+					pg3d.vertex(-points[0].x, points[0].y, -points[0].z);
+					pg3d.vertex(-points[1].x, points[1].y, -points[1].z);
+					pg3d.vertex(-points[0].x, -points[0].y, -points[0].z);
+					pg3d.vertex(-points[1].x, -points[1].y, -points[1].z);
+					pg3d.vertex(points[0].x, -points[0].y, -points[0].z);
+					pg3d.vertex(points[1].x, -points[1].y, -points[1].z);
+					pg3d.endShape();
+				}
+		}
 
 		// Near and (optionally) far plane(s)
 		pg3d.pushStyle();
 		pg3d.noStroke();
-		pg3d.fill(color);
 		pg3d.beginShape(PApplet.QUADS);
 		for (int i = farIndex; i >= 0; --i) {
 			pg3d.normal(0.0f, 0.0f, (i == 0) ? 1.0f : -1.0f);
@@ -2053,7 +1693,6 @@ public class Scene implements PConstants {
 		float baseHalfWidth = 0.3f * points[0].x;
 
 		// pg3d.noStroke();
-		pg3d.fill(color);
 		// Base
 		pg3d.beginShape(PApplet.QUADS);
 		
@@ -2070,7 +1709,6 @@ public class Scene implements PConstants {
 		pg3d.endShape();
 
 		// Arrow
-		pg3d.fill(color);
 		pg3d.beginShape(PApplet.TRIANGLES);
 		
 		pg3d.vertex(0.0f, -arrowHeight, -points[0].z);
@@ -2081,42 +1719,7 @@ public class Scene implements PConstants {
 		//pg3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
 		//pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
 		
-		pg3d.endShape();
-
-		// Frustum lines
-		pg3d.stroke(color);
-		pg3d.strokeWeight(2);
-		switch (camera.type()) {
-		case PERSPECTIVE:
-			pg3d.beginShape(PApplet.LINES);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d
-					.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d.vertex(-points[farIndex].x, points[farIndex].y,
-					-points[farIndex].z);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d.vertex(-points[farIndex].x, -points[farIndex].y,
-					-points[farIndex].z);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d.vertex(points[farIndex].x, -points[farIndex].y,
-					-points[farIndex].z);
-			pg3d.endShape();
-			break;
-		case ORTHOGRAPHIC:
-			if (drawFarPlane) {
-				pg3d.beginShape(PApplet.LINES);
-				pg3d.vertex(points[0].x, points[0].y, -points[0].z);
-				pg3d.vertex(points[1].x, points[1].y, -points[1].z);
-				pg3d.vertex(-points[0].x, points[0].y, -points[0].z);
-				pg3d.vertex(-points[1].x, points[1].y, -points[1].z);
-				pg3d.vertex(-points[0].x, -points[0].y, -points[0].z);
-				pg3d.vertex(-points[1].x, -points[1].y, -points[1].z);
-				pg3d.vertex(points[0].x, -points[0].y, -points[0].z);
-				pg3d.vertex(points[1].x, -points[1].y, -points[1].z);
-				pg3d.endShape();
-			}
-		}
+		pg3d.endShape();	
 
 		pg3d.popStyle();
 
@@ -2125,11 +1728,11 @@ public class Scene implements PConstants {
 
 	// 3. KEYFRAMEINTERPOLATOR CAMERA
 
+	/**
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawKFICamera(int, float)}.
+	 */
+	@Override
 	public void drawKFICamera(float scale) {
-		drawKFICamera(170, scale);
-	}
-
-	public void drawKFICamera(int color, float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;
 		float dist = halfHeight / (float) Math.tan(PI / 8.0f);
@@ -2143,7 +1746,9 @@ public class Scene implements PConstants {
 		pg3d.pushStyle();
 
 		pg3d.noFill();
-		pg3d.stroke(color);
+		//pg3d.stroke(color);// no color now
+		// TODO
+		//pg3d.strokeWeight(1); // this line wasn't here, but I think it should go
 		pg3d.beginShape();
 		pg3d.vertex(-halfWidth, halfHeight, -dist);
 		pg3d.vertex(-halfWidth, -halfHeight, -dist);
@@ -2162,7 +1767,7 @@ public class Scene implements PConstants {
 
 		// Up arrow
 		pg3d.noStroke();
-		pg3d.fill(color);
+		//pg3d.fill(color); // no color now
 		// Base
 		pg3d.beginShape(PApplet.QUADS);
 		
@@ -2192,11 +1797,8 @@ public class Scene implements PConstants {
 
 		pg3d.popStyle();
 	}
-
-	/**
-	 * Draws a rectangle on the screen showing the region where a zoom operation
-	 * is taking place.
-	 */
+	
+	@Override
 	protected void drawZoomWindowHint() {
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
@@ -2221,10 +1823,7 @@ public class Scene implements PConstants {
 		endScreenDrawing();
 	}
 
-	/**
-	 * Draws visual hint (a line on the screen) when a screen rotation is taking
-	 * place.
-	 */
+	@Override
 	protected void drawScreenRotateLineHint() {
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
@@ -2242,92 +1841,66 @@ public class Scene implements PConstants {
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
-	}
+	}	
 
-	/**
-	 * Draws visual hint (a cross on the screen) when the
-	 * {@link #arcballReferencePoint()} is being set.
-	 * <p>
-	 * Simply calls {@link #drawCross(float, float)} on {@code
-	 * camera().projectedCoordinatesOf(arcballReferencePoint())} {@code x} and
-	 * {@code y} coordinates.
-	 * 
-	 * @see #drawCross(float, float)
-	 */
-	protected void drawArcballReferencePointHint() {
-		Vector3D p = camera().projectedCoordinatesOf(arcballReferencePoint());
-		drawCross(p.x, p.y);
-	}
-
-	/**
-	 * Draws all InteractiveFrames' selection regions: a shooter target
-	 * visual hint of {@link remixlab.remixcam.core.InteractiveFrame#grabsMouseThreshold()} pixels size.
-	 * 
-	 * <b>Attention:</b> If the InteractiveFrame is part of a Camera path draws
-	 * nothing.
-	 * 
-	 * @see #drawCameraPathSelectionHints()
-	 */
+	// TODO gotta determine how to handle colors!
+	@Override
 	protected void drawSelectionHints() {
-		for (MouseGrabbable mg : MouseGrabberPool) {
+		for (MouseGrabbable mg : msGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (!iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse())
-						drawShooterTarget(pg3d.color(0, 255, 0), center, (iF.grabsMouseThreshold() + 1), 2);
+						//drawShooterTarget(pg3d.color(0, 255, 0), center, (iF.grabsMouseThreshold() + 1), 2);
+						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1), 2);
 					else
-						drawShooterTarget(pg3d.color(240, 240, 240), center, iF.grabsMouseThreshold(), 1);
+						//drawShooterTarget(pg3d.color(240, 240, 240), center, iF.grabsMouseThreshold(), 1);
+						drawShooterTarget(center, iF.grabsMouseThreshold(), 1);
 				}
 			}
 		}
 	}
 
-	/**
-	 * Draws the selection regions (a shooter target visual hint of
-	 * {@link remixlab.remixcam.core.InteractiveFrame#grabsMouseThreshold()} pixels size) of all
-	 * InteractiveFrames forming part of the Camera paths.
-	 * 
-	 * @see #drawSelectionHints()
-	 */
+	@Override
 	protected void drawCameraPathSelectionHints() {
-		for (MouseGrabbable mg : MouseGrabberPool) {
+		for (MouseGrabbable mg : msGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse())
-						drawShooterTarget(pg3d.color(0, 255, 255), center, (iF.grabsMouseThreshold() + 1), 2);
+						//drawShooterTarget(pg3d.color(0, 255, 255), center, (iF.grabsMouseThreshold() + 1), 2);
+						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1), 2);
 					else
-						drawShooterTarget(pg3d.color(255, 255, 0), center, iF.grabsMouseThreshold(), 1);
+						//drawShooterTarget(pg3d.color(255, 255, 0), center, iF.grabsMouseThreshold(), 1);
+						drawShooterTarget(center, iF.grabsMouseThreshold(), 1);
 				}
 			}
 		}
 	}
 
 	/**
-	 * Convenience function that simply calls {@code
-	 * drawPointUnderPixelHint(pg3d.color(255,255,255),px,py,15,3)}.
+	 * Convenience function that simply calls
+	 * {@code drawCross(pg3d.color(255, 255, 255), px, py, 15, 3)}.
 	 */
+	@Override
 	public void drawCross(float px, float py) {
-		drawCross(pg3d.color(255, 255, 255), px, py, 15, 3);
+		drawCross(px, py, 15, 3);
 	}
 
 	/**
-	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
-	 * of size {@code size}. {@code strokeWeight} defined the weight of the
-	 * stroke.
-	 * 
-	 * @see #drawArcballReferencePointHint()
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCross(int, float, float, float, int)}.
 	 */
-	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
+	@Override
+	public void drawCross(float px, float py, float size, int strokeWeight) {
 		beginScreenDrawing();
 		Vector3D p1 = coords(new Point(px - size, py));
 		Vector3D p2 = coords(new Point(px + size, py));
 		Vector3D p3 = coords(new Point(px, py - size));
 		Vector3D p4 = coords(new Point(px, py + size));
 		pg3d.pushStyle();
-		pg3d.stroke(color);
+		//pg3d.stroke(color);
 		pg3d.strokeWeight(strokeWeight);
 		pg3d.noFill();
 		pg3d.beginShape(LINES);
@@ -2338,34 +1911,13 @@ public class Scene implements PConstants {
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
-	}
-	
-	/**
-	 * Convenience function that simply calls
-	 * {@code drawFilledCircle(40, color, center, radius)}.
-	 * 
-	 * @see #drawFilledCircle(int, int, Vector3D, float)
-	 */
-	public void drawFilledCircle(int color, Vector3D center, float radius) {
-		drawFilledCircle(40, color, center, radius);
-	}
+	}	
 
 	/**
-	 * Draws a filled circle using screen coordinates.
-	 * 
-	 * @param subdivisions
-	 *          Number of triangles aproximating the circle. 
-	 * @param color
-	 *          Color used to fill the circle.
-	 * @param center
-	 *          Circle screen center.
-	 * @param radius
-	 *          Circle screen radius.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawFilledCircle(int, int, Vector3D, float)}.
 	 */	
-	public void drawFilledCircle(int subdivisions, int color, Vector3D center, float radius) {
+	@Override
+	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
 		float precision = TWO_PI/subdivisions;
 		float x = center.x;
 		float y = center.y;
@@ -2373,7 +1925,7 @@ public class Scene implements PConstants {
 		beginScreenDrawing();
 		pg3d.pushStyle();
 		pg3d.noStroke();
-		pg3d.fill(color);
+		//pg3d.fill(color);
 		pg3d.beginShape(TRIANGLE_FAN);
 		Vector3D c = coords(new Point(x, y));
 		pg3d.vertex(c.x, c.y, c.z);
@@ -2390,19 +1942,10 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Draws a filled square using screen coordinates.
-	 * 
-	 * @param color
-	 *          Color used to fill the square.
-	 * @param center
-	 *          Square screen center.
-	 * @param edge
-	 *          Square edge length.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawFilledSquare(Vector3D, float)}.	 
 	 */
-	public void drawFilledSquare(int color, Vector3D center, float edge) {
+	@Override
+	public void drawFilledSquare(Vector3D center, float edge) {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
@@ -2412,7 +1955,7 @@ public class Scene implements PConstants {
 		Vector3D p4 = coords(new Point(x - edge, y - edge));
 		pg3d.pushStyle();
 		pg3d.noStroke();
-		pg3d.fill(color);
+		//pg3d.fill(color);
 		pg3d.beginShape(QUADS);
 		pg3d.vertex(p1.x, p1.y, p1.z);
 		pg3d.vertex(p2.x, p2.y, p2.z);
@@ -2424,18 +1967,10 @@ public class Scene implements PConstants {
 	}
 
 	/**
-	 * Draws the classical shooter target on the screen.
-	 * 
-	 * @param color
-	 *          Color of the target
-	 * @param center
-	 *          Center of the target on the screen
-	 * @param length
-	 *          Length of the target in pixels
-	 * @param strokeWeight
-	 *          Stroke weight
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawShooterTarget(Vector3D, float, int)}.
 	 */
-	public void drawShooterTarget(int color, Vector3D center, float length, int strokeWeight) {
+	@Override
+	public void drawShooterTarget(Vector3D center, float length, int strokeWeight) {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
@@ -2454,7 +1989,7 @@ public class Scene implements PConstants {
 		
 		pg3d.pushStyle();
 
-		pg3d.stroke(color);
+		//pg3d.stroke(color);
 		pg3d.strokeWeight(strokeWeight);
 		pg3d.noFill();
 
@@ -2485,7 +2020,7 @@ public class Scene implements PConstants {
 		pg3d.popStyle();
 		endScreenDrawing();
 
-		drawCross(color, center.x, center.y, 0.6f * length, strokeWeight);
+		drawCross(center.x, center.y, 0.6f * length, strokeWeight);
 	}
 
 	/**
@@ -2575,15 +2110,6 @@ public class Scene implements PConstants {
 		else
 			return camera().unprojectedCoordinatesOf(new Vector3D(p.x,p.y,zC));
 	}	
-
-	/**
-	 * Called from the timer to stop displaying the point under pixel and arcball
-	 * reference point visual hints.
-	 */
-	protected void unSetTimerFlag() {
-		arpFlag = false;
-		pupFlag = false;
-	}
 
 	// 7. Camera profiles
 
@@ -4214,7 +3740,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #matrix()
 	 */
-	public void applyTransformation(Frame frame) {
+	public void applyTransformation(BasicFrame frame) {
 		pg3d.translate( frame.translation().x, frame.translation().y, frame.translation().z );
 		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);
 	}
