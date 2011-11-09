@@ -549,4 +549,6 @@ public abstract class AbstractScene {
 	 *          Length of the target in pixels
 	 */
 	public abstract void drawShooterTarget(Vector3D center, float length);
+		
+	public abstract void drawPath(List<BasicFrame> path, int mask, int nbFrames, int nbSteps, float scale);
 }

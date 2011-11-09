@@ -41,6 +41,7 @@ import remixlab.remixcam.core.InteractiveDrivableFrame;
 import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveFrame;
 import remixlab.remixcam.core.BasicFrame;
+import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.core.MouseGrabbable;
 import remixlab.remixcam.core.Trackable;
 import remixlab.remixcam.devices.Bindings;
@@ -55,6 +56,7 @@ import remixlab.remixcam.geom.Point;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -2170,6 +2172,48 @@ public class Scene extends AbstractScene implements PConstants {
 		endScreenDrawing();
 
 		drawCross(center.x, center.y, 0.6f * length);
+	}
+	
+	/**
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawPath(KeyFrameInterpolator, int, int, float)}.
+	 */
+	@Override
+	public void drawPath(List<BasicFrame> path, int mask, int nbFrames, int nbSteps, float scale) {
+		if (mask != 0) {
+			renderer().pushStyle();
+			renderer().strokeWeight(2);
+
+			if ((mask & 1) != 0) {
+				renderer().noFill();
+				renderer().stroke(170);
+				renderer().beginShape();
+				for (BasicFrame myFr : path)
+					renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+				renderer().endShape();
+			}
+			if ((mask & 6) != 0) {
+				int count = 0;
+				if (nbFrames > nbSteps)
+					nbFrames = nbSteps;
+				float goal = 0.0f;
+
+				for (BasicFrame myFr : path)
+					if ((count++) >= goal) {
+						goal += nbSteps / (float) nbFrames;
+						renderer().pushMatrix();
+						
+						applyTransformation(myFr);
+
+						if ((mask & 2) != 0)
+							drawKFICamera(scale);
+						if ((mask & 4) != 0)
+							drawAxis(scale / 10.0f);
+
+						renderer().popMatrix();
+					}
+			}
+			renderer().popStyle();
+		}
 	}
 
 	/**

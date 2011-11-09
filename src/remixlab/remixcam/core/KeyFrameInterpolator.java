@@ -30,7 +30,6 @@ import java.util.*;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.AbstractTimerJob;
 
@@ -257,7 +256,7 @@ public class KeyFrameInterpolator implements Copyable {
 	private Vector3D v1, v2;
 
   //S C E N E
-  public Scene scene;
+  public AbstractScene scene;
   
   /**
    * Convenience constructor that simply calls {@code this(scn, new Frame())}.
@@ -267,7 +266,7 @@ public class KeyFrameInterpolator implements Copyable {
    * 
    * @see #KeyFrameInterpolator(Scene, BasicFrame)
    */
-  public KeyFrameInterpolator(Scene scn) {
+  public KeyFrameInterpolator(AbstractScene scn) {
   	this(scn, new BasicFrame());
   }
 
@@ -281,7 +280,7 @@ public class KeyFrameInterpolator implements Copyable {
 	 * {@link #interpolationTime()}, {@link #interpolationSpeed()} and
 	 * {@link #interpolationPeriod()} are set to their default values.
 	 */
-	public KeyFrameInterpolator(Scene scn, BasicFrame frame) {
+	public KeyFrameInterpolator(AbstractScene scn, BasicFrame frame) {
 		scene = scn;
 		myFrame = new BasicFrame();
 		keyFr = new ArrayList<KeyFrame>();
@@ -815,7 +814,6 @@ public class KeyFrameInterpolator implements Copyable {
 	 * {@code scale} controls the scaling of the camera and axis drawing. A value
 	 * of {@link remixlab.proscene.Scene#radius()} should give good results.
 	 */
-	//TODO check if this method should go into the Scene
 	public void drawPath(int mask, int nbFrames, float scale) {
 		int nbSteps = 30;
 		if (!pathIsValid) {
@@ -870,43 +868,8 @@ public class KeyFrameInterpolator implements Copyable {
 			}
 			pathIsValid = true;
 		}
-
-		if (mask != 0) {
-			scene.renderer().pushStyle();
-			scene.renderer().strokeWeight(2);
-
-			if ((mask & 1) != 0) {
-				scene.renderer().noFill();
-				scene.renderer().stroke(170);
-				scene.renderer().beginShape();
-				for (BasicFrame myFr : path)
-					scene.renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
-				scene.renderer().endShape();
-			}
-			if ((mask & 6) != 0) {
-				int count = 0;
-				if (nbFrames > nbSteps)
-					nbFrames = nbSteps;
-				float goal = 0.0f;
-
-				for (BasicFrame myFr : path)
-					if ((count++) >= goal) {
-						goal += nbSteps / (float) nbFrames;
-						scene.renderer().pushMatrix();
-
-						// pg3d.applyMatrix(myFr.matrix());
-						myFr.applyTransformation(scene);
-
-						if ((mask & 2) != 0)
-							scene.drawKFICamera(scale);
-						if ((mask & 4) != 0)
-							scene.drawAxis(scale / 10.0f);
-
-						scene.renderer().popMatrix();
-					}
-			}
-			scene.renderer().popStyle();
-		}
+		
+		scene.drawPath(path, mask, nbFrames, nbSteps, scale);
 	}
 
 	/**
