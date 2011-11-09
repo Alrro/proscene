@@ -446,7 +446,15 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// K E Y B O A R D A N D M O U S E
 	protected boolean mouseHandling;
-	protected boolean keyboardHandling;	
+	protected boolean keyboardHandling;
+	
+	/**
+	// M O U S E   G R A B B E R   H I N T   C O L O R S
+	private int onSelectionHintColor;
+	private int offSelectionHintColor;
+	private int cameraPathOnSelectionHintColor;
+	private int cameraPathOffSelectionHintColor;
+	*/
 
 	// R E G I S T E R   D R A W   A N D   A N I M A T I O N   M E T H O D S
 	// Draw
@@ -516,6 +524,15 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d = renderer;
 		width = pg3d.width;
 		height = pg3d.height;
+		
+		/**
+		// TODO decide if this should go
+		//mouse grabber selection hint colors		
+		setMouseGrabberOnSelectionHintColor(pg3d.color(0, 0, 255));
+		setMouseGrabberOffSelectionHintColor(pg3d.color(255, 0, 0));
+		setMouseGrabberCameraPathOnSelectionHintColor(pg3d.color(255, 255, 0));
+		setMouseGrabberCameraPathOffSelectionHintColor(pg3d.color(0, 255, 255));
+		*/
 		
 		tmpFrame = new BasicFrame();
 		
@@ -1169,11 +1186,11 @@ public class Scene extends AbstractScene implements PConstants {
 			drawZoomWindowHint();
 		if (dE.camMouseAction == MouseAction.SCREEN_ROTATE)
 			drawScreenRotateLineHint();
-		if (arpFlag)
+		if (arpFlag) 
 			drawArcballReferencePointHint();
-		if (pupFlag) {			
+		if (pupFlag) {
 			Vector3D v = camera().projectedCoordinatesOf(pupVec);
-			pg3d.pushStyle();
+			pg3d.pushStyle();			
 			pg3d.stroke(255);
 			pg3d.strokeWeight(3);
 			drawCross(v.x, v.y);
@@ -1283,7 +1300,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #addDrawHandler(Object, String)
 	 * @see #addAnimationHandler(Object, String)
 	 */
-	protected void drawCommon() {
+	protected void drawCommon() {		
 		// 0. timers
 		handleTimers();
 		
@@ -1480,7 +1497,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawAxis(float)}.
 	 */
 	@Override
-	public void drawAxis(float length) {
+	public void drawAxis(float length) {		
 		final float charWidth = length / 40.0f;
 		final float charHeight = length / 30.0f;
 		final float charShift = 1.04f * length;
@@ -1556,7 +1573,7 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.stroke(0, 100, 200);
 		pg3d.line(0, 0, 0, 0, 0, length);		
 
-		pg3d.popStyle();		
+		pg3d.popStyle();	  
 	}			
 	
 	/**
@@ -1770,9 +1787,7 @@ public class Scene extends AbstractScene implements PConstants {
 		//pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
 		
 		pg3d.endShape();	
-
 		pg3d.popStyle();
-
 		pg3d.popMatrix();
 	}
 
@@ -1795,10 +1810,7 @@ public class Scene extends AbstractScene implements PConstants {
 		// Frustum outline
 		pg3d.pushStyle();
 
-		pg3d.noFill();
-		//pg3d.stroke(color);// no color now
-		// TODO
-		//pg3d.strokeWeight(1); // this line wasn't here, but I think it should go
+		pg3d.noFill();		
 		pg3d.beginShape();
 		pg3d.vertex(-halfWidth, halfHeight, -dist);
 		pg3d.vertex(-halfWidth, -halfHeight, -dist);
@@ -1817,7 +1829,6 @@ public class Scene extends AbstractScene implements PConstants {
 
 		// Up arrow
 		pg3d.noStroke();
-		//pg3d.fill(color); // no color now
 		// Base
 		pg3d.beginShape(PApplet.QUADS);
 		
@@ -1891,9 +1902,68 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
-	}	
-
-	// TODO gotta determine how to handle colors!
+	}
+	
+	/**
+	 * Sets the mouse grabber on selection hint {@code color}
+	 * (drawn as a shooter target).
+	 * 
+	 * @see #drawSelectionHints()
+	 */
+  //public void setMouseGrabberOnSelectionHintColor(int color) { 	onSelectionHintColor = color; }
+	
+  /**
+	 * Sets the mouse grabber off selection hint {@code color}
+	 * (drawn as a shooter target).
+	 * 
+	 * @see #drawSelectionHints()
+	 */  
+	//public void setMouseGrabberOffSelectionHintColor(int color) { offSelectionHintColor = color;	}
+	
+	/**
+	 * Returns the mouse grabber on selection hint {@code color}.
+	 * 
+	 * @see #drawSelectionHints()
+	 */
+	//public int mouseGrabberOnSelectionHintColor() {	return onSelectionHintColor;}
+	
+	/**
+	 * Returns the mouse grabber off selection hint {@code color}.
+	 * 
+	 * @see #drawSelectionHints()
+	 */
+  //public int mouseGrabberOffSelectionHintColor() {return offSelectionHintColor;}
+  
+  /**
+	 * Sets the mouse grabber on selection hint {@code color} for camera paths
+	 * (drawn as a shooter target).
+	 * 
+	 * @see #drawCameraPathSelectionHints()
+	 */
+  // public void setMouseGrabberCameraPathOnSelectionHintColor(int color) {	cameraPathOnSelectionHintColor = color; }
+	
+  /**
+	 * Sets the mouse grabber off selection hint {@code color} for camera paths
+	 * (drawn as a shooter target).
+	 * 
+	 * @see #drawCameraPathSelectionHints()
+	 */
+	//public void setMouseGrabberCameraPathOffSelectionHintColor(int color) {	cameraPathOffSelectionHintColor = color;	}
+	
+	/**
+	 * Returns the mouse grabber on selection hint {@code color} for camera paths.
+	 * 
+	 * @see #drawCameraPathSelectionHints()
+	 */
+	//public int mouseGrabberCameraPathOnSelectionHintColor() {	return cameraPathOnSelectionHintColor;	}
+	
+	/**
+	 * Returns the mouse grabber off selection hint {@code color} for camera paths.
+	 * 
+	 * @see #drawCameraPathSelectionHints()
+	 */
+  //public int mouseGrabberCameraPathOffSelectionHintColor() {	return cameraPathOffSelectionHintColor;	}
+	
 	@Override
 	protected void drawSelectionHints() {
 		for (MouseGrabbable mg : msGrabberPool) {
@@ -1901,12 +1971,22 @@ public class Scene extends AbstractScene implements PConstants {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (!iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
-					if (mg.grabsMouse())
-						//drawShooterTarget(pg3d.color(0, 255, 0), center, (iF.grabsMouseThreshold() + 1), 2);
-						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1), 2);
-					else
-						//drawShooterTarget(pg3d.color(240, 240, 240), center, iF.grabsMouseThreshold(), 1);
-						drawShooterTarget(center, iF.grabsMouseThreshold(), 1);
+					if (mg.grabsMouse()) {						
+						pg3d.pushStyle();
+					  //pg3d.stroke(mouseGrabberOnSelectionHintColor());
+						pg3d.stroke(pg3d.color(0, 255, 0));
+						pg3d.strokeWeight(2);
+						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1));
+						pg3d.popStyle();					
+					}
+					else {						
+						pg3d.pushStyle();
+					  //pg3d.stroke(mouseGrabberOffSelectionHintColor());
+						pg3d.stroke(pg3d.color(240, 240, 240));
+						pg3d.strokeWeight(1);
+						drawShooterTarget(center, iF.grabsMouseThreshold());
+						pg3d.popStyle();
+					}
 				}
 			}
 		}
@@ -1919,12 +1999,22 @@ public class Scene extends AbstractScene implements PConstants {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
-					if (mg.grabsMouse())
-						//drawShooterTarget(pg3d.color(0, 255, 255), center, (iF.grabsMouseThreshold() + 1), 2);
-						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1), 2);
-					else
-						//drawShooterTarget(pg3d.color(255, 255, 0), center, iF.grabsMouseThreshold(), 1);
-						drawShooterTarget(center, iF.grabsMouseThreshold(), 1);
+					if (mg.grabsMouse()) {
+						pg3d.pushStyle();						
+					  //pg3d.stroke(mouseGrabberCameraPathOnSelectionHintColor());
+						pg3d.stroke(pg3d.color(0, 255, 255));
+						pg3d.strokeWeight(2);
+						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1));
+						pg3d.popStyle();
+					}
+					else {
+						pg3d.pushStyle();
+					  //pg3d.stroke(mouseGrabberCameraPathOffSelectionHintColor());
+						pg3d.stroke(pg3d.color(255, 255, 0));
+						pg3d.strokeWeight(1);
+						drawShooterTarget(center, iF.grabsMouseThreshold());
+						pg3d.popStyle();
+					}
 				}
 			}
 		}
@@ -1941,7 +2031,7 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.strokeWeight(3);
 		drawCross(p.x, p.y);
 		pg3d.popStyle();
-	}
+	}	
 
 	/**
 	 * Convenience function that simply calls
@@ -1949,22 +2039,20 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void drawCross(float px, float py) {
-		drawCross(px, py, 15, 3);
+		drawCross(px, py, 15);
 	}
 
 	/**
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCross(int, float, float, float, int)}.
 	 */
 	@Override
-	public void drawCross(float px, float py, float size, int strokeWeight) {
+	public void drawCross(float px, float py, float size) {
 		beginScreenDrawing();
 		Vector3D p1 = coords(new Point(px - size, py));
 		Vector3D p2 = coords(new Point(px + size, py));
 		Vector3D p3 = coords(new Point(px, py - size));
 		Vector3D p4 = coords(new Point(px, py + size));
 		pg3d.pushStyle();
-		//pg3d.stroke(color);
-		pg3d.strokeWeight(strokeWeight);
 		pg3d.noFill();
 		pg3d.beginShape(LINES);
 		pg3d.vertex(p1.x, p1.y, p1.z);
@@ -2033,7 +2121,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawShooterTarget(Vector3D, float, int)}.
 	 */
 	@Override
-	public void drawShooterTarget(Vector3D center, float length, int strokeWeight) {
+	public void drawShooterTarget(Vector3D center, float length) {
 		float x = center.x;
 		float y = center.y;
 		beginScreenDrawing();
@@ -2051,9 +2139,7 @@ public class Scene extends AbstractScene implements PConstants {
 		Vector3D p12 = coords(new Point((x - length), ((y + length) - (0.6f * length))));
 		
 		pg3d.pushStyle();
-
-		//pg3d.stroke(color);
-		pg3d.strokeWeight(strokeWeight);
+		
 		pg3d.noFill();
 
 		pg3d.beginShape();
@@ -2083,7 +2169,7 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.popStyle();
 		endScreenDrawing();
 
-		drawCross(center.x, center.y, 0.6f * length, strokeWeight);
+		drawCross(center.x, center.y, 0.6f * length);
 	}
 
 	/**
