@@ -496,12 +496,11 @@ public abstract class AbstractScene {
 	
 	/**
 	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
-	 * of size {@code size}. {@code strokeWeight} defined the weight of the
-	 * stroke.
+	 * of size {@code size}.
 	 * 
 	 * @see #drawArcballReferencePointHint()
 	 */
-	public abstract void drawCross(float px, float py, float size, int strokeWeight);
+	public abstract void drawCross(float px, float py, float size);
 	
 	/**
 	 * Convenience function that simply calls
@@ -548,8 +547,6 @@ public abstract class AbstractScene {
 	 *          Center of the target on the screen
 	 * @param length
 	 *          Length of the target in pixels
-	 * @param strokeWeight
-	 *          Stroke weight
 	 */
-	public abstract void drawShooterTarget(Vector3D center, float length, int strokeWeight);
+	public abstract void drawShooterTarget(Vector3D center, float length);
 }
