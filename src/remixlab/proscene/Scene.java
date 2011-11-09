@@ -1171,9 +1171,13 @@ public class Scene extends AbstractScene implements PConstants {
 			drawScreenRotateLineHint();
 		if (arpFlag)
 			drawArcballReferencePointHint();
-		if (pupFlag) {
+		if (pupFlag) {			
 			Vector3D v = camera().projectedCoordinatesOf(pupVec);
+			pg3d.pushStyle();
+			pg3d.stroke(255);
+			pg3d.strokeWeight(3);
 			drawCross(v.x, v.y);
+			pg3d.popStyle();
 		}
 	}	
 	
@@ -1488,13 +1492,13 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.beginShape(LINES);		
 		pg3d.strokeWeight(2);
 		// The X
-		pg3d.stroke(255, 178, 178);
+		pg3d.stroke(200, 0, 0);
 		pg3d.vertex(charShift, charWidth, -charHeight);
 		pg3d.vertex(charShift, -charWidth, charHeight);
 		pg3d.vertex(charShift, -charWidth, -charHeight);
 		pg3d.vertex(charShift, charWidth, charHeight);
 		// The Y
-		pg3d.stroke(178, 255, 178);
+		pg3d.stroke(0, 200, 0);
 		pg3d.vertex(charWidth, charShift, charHeight);
 		pg3d.vertex(0.0f, charShift, 0.0f);
 		pg3d.vertex(-charWidth, charShift, charHeight);
@@ -1502,7 +1506,7 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.vertex(0.0f, charShift, 0.0f);
 		pg3d.vertex(0.0f, charShift, -charHeight);
 		// The Z
-		pg3d.stroke(178, 178, 255);
+		pg3d.stroke(0, 100, 200);
 		
 		//left_handed
 		pg3d.vertex(-charWidth, -charHeight, charShift);
@@ -1520,27 +1524,39 @@ public class Scene extends AbstractScene implements PConstants {
 		//pg3d.vertex(charWidth, -charHeight, charShift);
 		
 		pg3d.endShape();
-
+		
+	  /**
 		// Z axis
 		pg3d.noStroke();
-		pg3d.fill(178, 178, 255);
+		pg3d.fill(0, 100, 200);
 		drawArrow(length, 0.01f * length);
 
 		// X Axis
-		pg3d.fill(255, 178, 178);
+		pg3d.fill(200, 0, 0);
 		pg3d.pushMatrix();
 		pg3d.rotateY(HALF_PI);
 		drawArrow(length, 0.01f * length);
 		pg3d.popMatrix();
 
 		// Y Axis
-		pg3d.fill(178, 255, 178);
+		pg3d.fill(0, 200, 0);
 		pg3d.pushMatrix();
 		pg3d.rotateX(-HALF_PI);
 		drawArrow(length, 0.01f * length);
 		pg3d.popMatrix();
+		// */
+		
+	  // X Axis
+		pg3d.stroke(200, 0, 0);
+		pg3d.line(0, 0, 0, length, 0, 0);
+	  // Y Axis
+		pg3d.stroke(0, 200, 0);		
+		pg3d.line(0, 0, 0, 0, length, 0);
+		// Z Axis
+		pg3d.stroke(0, 100, 200);
+		pg3d.line(0, 0, 0, 0, 0, length);		
 
-		pg3d.popStyle();
+		pg3d.popStyle();		
 	}			
 	
 	/**
@@ -1583,6 +1599,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void drawGrid(float size, int nbSubdivisions) {
+		/**
 		pg3d.pushStyle();
 		pg3d.stroke(170, 170, 170);
 		pg3d.strokeWeight(1);
@@ -1593,6 +1610,39 @@ public class Scene extends AbstractScene implements PConstants {
 			pg3d.vertex(pos, +size);
 			pg3d.vertex(-size, pos);
 			pg3d.vertex(size, pos);
+		}
+		pg3d.endShape();
+		pg3d.popStyle();
+		// */		
+		
+		float posi, posj;
+		pg3d.pushStyle();
+		pg3d.stroke(170);
+		pg3d.strokeWeight(2);
+		pg3d.beginShape(POINTS);
+		for (int i = 0; i <= nbSubdivisions; ++i) {
+			posi = size * (2.0f * i / nbSubdivisions - 1.0f);
+			for(int j = 0; j <= nbSubdivisions; ++j) {
+				posj = size * (2.0f * j / nbSubdivisions - 1.0f);
+				pg3d.vertex(posi, posj);
+			}			
+		}
+		pg3d.endShape();
+		//pg3d.popStyle();
+		
+		int internalSub = 5;
+		int subSubdivisions = nbSubdivisions * internalSub;
+		//pg3d.pushStyle();
+		pg3d.stroke(100);
+		pg3d.strokeWeight(1);
+		pg3d.beginShape(POINTS);
+		for (int i = 0; i <= subSubdivisions; ++i) {
+			posi = size * (2.0f * i / subSubdivisions - 1.0f);
+			for(int j = 0; j <= subSubdivisions; ++j) {
+				posj = size * (2.0f * j / subSubdivisions - 1.0f);
+				if(( (i%internalSub) != 0 ) || ( (j%internalSub) != 0 ) )
+					pg3d.vertex(posi, posj);
+			}			
 		}
 		pg3d.endShape();
 		pg3d.popStyle();
@@ -1878,6 +1928,19 @@ public class Scene extends AbstractScene implements PConstants {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawArcballReferencePointHint()}.
+	 */
+	@Override
+	public void drawArcballReferencePointHint() {
+		Vector3D p = camera().projectedCoordinatesOf(arcballReferencePoint());
+		pg3d.pushStyle();
+		pg3d.stroke(255);
+		pg3d.strokeWeight(3);
+		drawCross(p.x, p.y);
+		pg3d.popStyle();
 	}
 
 	/**

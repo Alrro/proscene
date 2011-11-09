@@ -65,7 +65,7 @@ public abstract class AbstractScene {
 				unSetTimerFlag();
 				}
 			};
-		prosceneTimers = true;
+		prosceneTimers = false;
 		registerInTimerPool(timerFx);
 		
 		//mouse grabber pool
@@ -470,10 +470,7 @@ public abstract class AbstractScene {
 	 * 
 	 * @see #drawCross(float, float)
 	 */	
-	protected void drawArcballReferencePointHint() {
-		Vector3D p = camera().projectedCoordinatesOf(arcballReferencePoint());
-		drawCross(p.x, p.y);
-	}
+	public abstract void drawArcballReferencePointHint();
 	
 	/**
 	 * Draws all InteractiveFrames' selection regions: a shooter target
