@@ -25,7 +25,6 @@
 
 package remixlab.remixcam.core;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.constraints.Constraint;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.AbstractTimerJob;
@@ -130,7 +129,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	// MouseGrabber
 	protected boolean keepsGrabbingMouse;
 
-	protected Scene.MouseAction action;
+	protected AbstractScene.MouseAction action;
 	protected Constraint prevConstraint; // When manipulation is without
 	// Constraint.
 	// Previous mouse position (used for incremental updates) and mouse press
@@ -142,7 +141,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	protected boolean isInCamPath;
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
-	public Scene scene;
+	public AbstractScene scene;
 
 	/**
 	 * Default constructor.
@@ -156,10 +155,10 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 * <b>Note:</b> the InteractiveFrame is automatically added to
 	 * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
 	 */
-	public InteractiveFrame(Scene scn) {
+	public InteractiveFrame(AbstractScene scn) {
 		scene = scn;		
 		
-		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		action = AbstractScene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
 
 		addInMouseGrabberPool();
@@ -253,10 +252,10 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 * 
 	 * @see remixlab.remixcam.core.Camera#addKeyFrameToPath(int)
 	 */
-	protected InteractiveFrame(Scene scn, InteractiveCameraFrame iFrame) {
+	protected InteractiveFrame(AbstractScene scn, InteractiveCameraFrame iFrame) {
 		super(iFrame.translation(), iFrame.rotation());
 		scene = scn;
-		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		action = AbstractScene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
 
 		addInMouseGrabberPool();
@@ -545,7 +544,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 * during manipulation.
 	 */
 	public boolean isInInteraction() {
-		return action != Scene.MouseAction.NO_MOUSE_ACTION;
+		return action != AbstractScene.MouseAction.NO_MOUSE_ACTION;
 	}
 
 	/**
@@ -586,7 +585,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 * and {@link remixlab.proscene.Scene.ClickAction#ALIGN_FRAME}). Right button projects the InteractiveFrame on
 	 * the camera view direction.
 	 */
-	public void mouseClicked(/**Point eventPoint,*/ Scene.Button button, int numberOfClicks, Camera camera) {
+	public void mouseClicked(/**Point eventPoint,*/ AbstractScene.Button button, int numberOfClicks, Camera camera) {
 		if(numberOfClicks != 2)
 			return;
 		switch (button) {
@@ -627,7 +626,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY = 0;
-		if(action != Scene.MouseAction.NO_MOUSE_ACTION)
+		if(action != AbstractScene.MouseAction.NO_MOUSE_ACTION)
 			deltaY = (int) (prevPos.y - eventPoint.y);
 	    //right_handed coordinate system should go like this:
 		  //deltaY = (int) (eventPoint.y - prevPos.y);
@@ -776,11 +775,11 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE))
+		if (((action == AbstractScene.MouseAction.ROTATE) || (action == AbstractScene.MouseAction.SCREEN_ROTATE))
 				&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
 
-		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		action = AbstractScene.MouseAction.NO_MOUSE_ACTION;
 	}
 
 	/**
@@ -792,7 +791,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 * @see #setWheelSensitivity(float)
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {
-		if (action == Scene.MouseAction.ZOOM) {
+		if (action == AbstractScene.MouseAction.ZOOM) {
 			float wheelSensitivityCoef = 8E-4f;
 			// Vector3D trans(0.0, 0.0,
 			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
@@ -812,7 +811,7 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		action = AbstractScene.MouseAction.NO_MOUSE_ACTION;
 	}
 
 	/**
@@ -820,14 +819,14 @@ public class InteractiveFrame extends BasicFrame implements MouseGrabbable, Copy
 	 * 
 	 * @see #startAction(Scene.MouseAction, boolean)
 	 */
-	protected void startAction(Scene.MouseAction action) {
+	protected void startAction(AbstractScene.MouseAction action) {
 		startAction(action, true);
 	}
 	
 	/**
 	 * Protected internal method used to handle mouse actions.
 	 */
-	public void startAction(Scene.MouseAction act, boolean withConstraint) {
+	public void startAction(AbstractScene.MouseAction act, boolean withConstraint) {
 		action = act;
 
 		if (withConstraint)
