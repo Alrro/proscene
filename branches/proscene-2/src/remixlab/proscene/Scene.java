@@ -44,7 +44,7 @@ import remixlab.remixcam.core.BasicFrame;
 import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.core.MouseGrabbable;
 import remixlab.remixcam.devices.Bindings;
-import remixlab.remixcam.devices.HIDevice;
+import remixlab.remixcam.devices.AbstractHIDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTimer;
 import remixlab.remixcam.geom.Matrix3D;
@@ -633,7 +633,7 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		
 		// 4. HIDevices
-		for (HIDevice device : devices)
+		for (AbstractHIDevice device : devices)
 			device.handle();
 		
 		// 5. Grid and axis drawing
@@ -2834,28 +2834,28 @@ public class Scene extends AbstractScene implements PConstants {
 	/**
 	 * Adds an HIDevice to the scene.
 	 * 
-	 * @see #removeDevice(HIDevice)
+	 * @see #removeDevice(AbstractHIDevice)
 	 * @see #removeAllDevices()
 	 */
-	public void addDevice(HIDevice device) {
+	public void addDevice(AbstractHIDevice device) {
 		devices.add(device);
 	}
 	
 	/**
 	 * Removes the device from the scene.
 	 * 
-	 * @see #addDevice(HIDevice)
+	 * @see #addDevice(AbstractHIDevice)
 	 * @see #removeAllDevices()
 	 */
-	public void removeDevice(HIDevice device) {
+	public void removeDevice(AbstractHIDevice device) {
 		devices.remove(device);
 	}
 	
 	/**
 	 * Removes all registered devices from the scene.
 	 * 
-	 * @see #addDevice(HIDevice)
-	 * @see #removeDevice(HIDevice)
+	 * @see #addDevice(AbstractHIDevice)
+	 * @see #removeDevice(AbstractHIDevice)
 	 */
 	public void removeAllDevices() {
 		devices.clear();

@@ -3,7 +3,7 @@ package remixlab.remixcam.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import remixlab.remixcam.devices.HIDevice;
+import remixlab.remixcam.devices.AbstractHIDevice;
 import remixlab.remixcam.geom.Point;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.util.AbstractTimerJob;
@@ -299,7 +299,7 @@ public abstract class AbstractScene {
 	protected long animationPeriod;
 	
   //D E V I C E S	
-	protected ArrayList<HIDevice> devices;
+	protected ArrayList<AbstractHIDevice> devices;
 	
 	// L O C A L   T I M E R
 	protected boolean arpFlag;
@@ -325,7 +325,7 @@ public abstract class AbstractScene {
 		//mouse grabber pool
 		msGrabberPool = new ArrayList<MouseGrabbable>();
 		//devices
-		devices = new ArrayList<HIDevice>();
+		devices = new ArrayList<AbstractHIDevice>();
 		// <- 1
 		
 	}

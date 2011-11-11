@@ -25,8 +25,6 @@
 
 package remixlab.remixcam.devices;
 
-import java.lang.reflect.Method;
-
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 
@@ -38,7 +36,7 @@ import remixlab.remixcam.geom.*;
  * has no such neutral position. Examples of RELATIVE devices are the space navigator and the joystick,
  * examples of ABSOLUTE devices are the wii or the kinect.
  */
-public class HIDevice {
+public abstract class AbstractHIDevice {
 	/**
 	 * This enum holds the device type.
 	 *
@@ -83,8 +81,7 @@ public class HIDevice {
 	protected CameraMode camMode;
 	protected IFrameMode iFrameMode;
 	
-	protected Object handlerObject;
-	protected Method handlerMethod;	
+	protected Object handlerObject;	
 	protected String handlerMethodName;
 	
 	protected AbstractScene scene;
@@ -116,7 +113,7 @@ public class HIDevice {
 	 * 
 	 * @see #HIDevice(Scene, Mode)
 	 */
-	public HIDevice(AbstractScene scn) {
+	public AbstractHIDevice(AbstractScene scn) {
 		this(scn, Mode.RELATIVE);
 	}
 
@@ -126,7 +123,7 @@ public class HIDevice {
 	 * @param scn The Scene object this HIDevice belongs to.
 	 * @param m The device {@link #mode()}.
 	 */
-	public HIDevice(AbstractScene scn, Mode m) {
+	public AbstractHIDevice(AbstractScene scn, Mode m) {
 		scene = scn;
 		camera = scene.camera();
 		cameraFrame = camera.frame();
@@ -394,45 +391,36 @@ public class HIDevice {
 	 * @param methodName the method to execute the feed in the object handler class
 	 * 
 	 * @see #removeHandler()
+	 * @see #invoke()
 	 */
-	public void addHandler(Object obj, String methodName) {
-		try {
-			handlerMethod = obj.getClass().getMethod(methodName, new Class[] { HIDevice.class });
-			handlerObject = obj;
-			handlerMethodName = methodName;
-		} catch (Exception e) {
-			  System.out.println("Something went wrong when registering your " + methodName + " method");
-			  e.printStackTrace();
-		}
-	}
+	public abstract void addHandler(Object obj, String methodName);
 	
 	/**
 	 * Unregisters the 'feed' handler method (if any has previously been added to
 	 * the HIDevice).
 	 * 
 	 * @see #addHandler(Object, String)
+	 * @see #invoke()
 	 */
-	public void removeHandler() {
-		handlerMethod = null;
-		handlerObject = null;
-		handlerMethodName = null;
-	}
+	public abstract void removeHandler();
+	
+	/**
+	 * called by {@link #handle()}. Invokes the method added by
+	 * {@link #addHandler(Object, String)}. Returns {@code true} if
+	 * succeeded and {@code false} otherwise (e.g., no method was added).
+	 * 
+	 * @see #addHandler(Object, String)
+	 * @see #removeHandler()
+	 */
+	public abstract boolean invoke();
 
 	/**
 	 * Handle the feed by properly calling {@link #handleCamera()} or {@link #handleIFrame()}.
 	 * 
 	 * <b>Attention</b>: Handled by the scene. You should not call this method by yourself.
 	 */
-	public void handle() {
-		if (handlerObject != null) {
-			try {
-				handlerMethod.invoke(handlerObject, new Object[] { this });
-			} catch (Exception e) {
-				System.out.println("Something went wrong when invoking your "	+ handlerMethodName + " method");
-				e.printStackTrace();
-			}
-		}
-		else {			
+	public void handle() {		
+		if(!invoke()) {			
 			feedXTranslation(feedXTranslation());
 			feedYTranslation(feedYTranslation());
 			feedZTranslation(feedZTranslation());
@@ -570,7 +558,7 @@ public class HIDevice {
 			setCameraMode(CameraMode.GOOGLE_EARTH);
 			break;
 		case GOOGLE_EARTH:
-			if (HIDevice.class == this.getClass())
+			if (AbstractHIDevice.class == this.getClass())
 				setCameraMode(CameraMode.FIRST_PERSON);
 			else
 				setCameraMode(CameraMode.CUSTOM);
@@ -598,7 +586,7 @@ public class HIDevice {
   public void previousCameraMode() {  	
   	switch (camMode) {
   	case FIRST_PERSON:
-			if (HIDevice.class == this.getClass())
+			if (AbstractHIDevice.class == this.getClass())
 				setCameraMode(CameraMode.GOOGLE_EARTH);
 			else
 				setCameraMode(CameraMode.CUSTOM);
@@ -659,7 +647,7 @@ public class HIDevice {
 			setIFrameMode(IFrameMode.WORLD);
 			break;
 		case WORLD:
-			if (HIDevice.class == this.getClass())
+			if (AbstractHIDevice.class == this.getClass())
 				setIFrameMode(IFrameMode.FRAME);
 			else
 				setIFrameMode(IFrameMode.CUSTOM);
@@ -676,7 +664,7 @@ public class HIDevice {
   public void previousIFrameMode() {  	
   	switch (iFrameMode) {
 		case FRAME:
-			if (HIDevice.class == this.getClass())
+			if (AbstractHIDevice.class == this.getClass())
 				setIFrameMode(IFrameMode.WORLD);
 			else
 				setIFrameMode(IFrameMode.CUSTOM);
