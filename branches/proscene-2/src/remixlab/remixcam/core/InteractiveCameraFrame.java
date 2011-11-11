@@ -28,7 +28,6 @@ package remixlab.remixcam.core;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.geom.*;
 
 /**
@@ -118,7 +117,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	 */
 	@Override
 	protected void modified() {		
-		camera.lastFrameUpdate = scene.parent.frameCount;
+		camera.lastFrameUpdate = scene.frameCount();
 		super.modified();
 	}
 
@@ -163,13 +162,13 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	 * inverted from those of an InteractiveFrame.
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
-		if ((action == Scene.MouseAction.MOVE_FORWARD)
-				|| (action == Scene.MouseAction.MOVE_BACKWARD)
-				|| (action == Scene.MouseAction.DRIVE)
-				|| (action == Scene.MouseAction.LOOK_AROUND)
-				|| (action == Scene.MouseAction.ROLL)
-				|| (action == Scene.MouseAction.ZOOM_ON_REGION)
-				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
+		if ((action == AbstractScene.MouseAction.MOVE_FORWARD)
+				|| (action == AbstractScene.MouseAction.MOVE_BACKWARD)
+				|| (action == AbstractScene.MouseAction.DRIVE)
+				|| (action == AbstractScene.MouseAction.LOOK_AROUND)
+				|| (action == AbstractScene.MouseAction.ROLL)
+				|| (action == AbstractScene.MouseAction.ZOOM_ON_REGION)
+				|| (action == AbstractScene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
 		else {
 			int deltaY = (int) (eventPoint.y - prevPos.y);
@@ -291,7 +290,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 	public void mouseReleased(Point eventPoint, Camera camera) {
 		// Added by pierre: #CONNECTION# seems that startAction should always be
 		// called before :)
-		if (action == Scene.MouseAction.ZOOM_ON_REGION) {
+		if (action == AbstractScene.MouseAction.ZOOM_ON_REGION) {
 			// the rectangle needs to be normalized!
 			int w = Math.abs((int) eventPoint.x - (int) pressPos.x);
 			int tlX = (int) pressPos.x < (int) eventPoint.x ? (int) pressPos.x
@@ -357,6 +356,6 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame implements 
 		if( flyTimerJob.timer() != null )
 			flyTimerJob.timer().runOnce(finalDrawAfterWheelEventDelay);
 
-		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		action = AbstractScene.MouseAction.NO_MOUSE_ACTION;
 	}
 }

@@ -27,7 +27,6 @@ package remixlab.remixcam.devices;
 
 import java.lang.reflect.Method;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 
@@ -88,7 +87,7 @@ public class HIDevice {
 	protected Method handlerMethod;	
 	protected String handlerMethodName;
 	
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected Camera camera;
 	protected InteractiveCameraFrame cameraFrame;
 	protected InteractiveFrame iFrame;
@@ -117,7 +116,7 @@ public class HIDevice {
 	 * 
 	 * @see #HIDevice(Scene, Mode)
 	 */
-	public HIDevice(Scene scn) {
+	public HIDevice(AbstractScene scn) {
 		this(scn, Mode.RELATIVE);
 	}
 
@@ -127,7 +126,7 @@ public class HIDevice {
 	 * @param scn The Scene object this HIDevice belongs to.
 	 * @param m The device {@link #mode()}.
 	 */
-	public HIDevice(Scene scn, Mode m) {
+	public HIDevice(AbstractScene scn, Mode m) {
 		scene = scn;
 		camera = scene.camera();
 		cameraFrame = camera.frame();
@@ -422,9 +421,9 @@ public class HIDevice {
 	/**
 	 * Handle the feed by properly calling {@link #handleCamera()} or {@link #handleIFrame()}.
 	 * 
-	 * <b>Attention</b>: Handled by the scene.  Yuos should not call this method by yourself.
+	 * <b>Attention</b>: Handled by the scene. You should not call this method by yourself.
 	 */
-	public void handle() {		
+	public void handle() {
 		if (handlerObject != null) {
 			try {
 				handlerMethod.invoke(handlerObject, new Object[] { this });

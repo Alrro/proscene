@@ -25,7 +25,6 @@
 
 package remixlab.remixcam.core;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.AbstractTimerJob;
 
@@ -82,7 +81,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 	 * <p>
 	 * {@link #flySpeed()} is set to 0.0 and {@link #flyUpVector()} is (0,1,0).
 	 */
-	public InteractiveDrivableFrame(Scene scn) {
+	public InteractiveDrivableFrame(AbstractScene scn) {
 		super(scn);
 		drvSpd = 0.0f;
 		flyUpVec = new Vector3D(0.0f, 1.0f, 0.0f);
@@ -225,7 +224,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 	/**
 	 * Protected internal method used to handle mouse actions.
 	 */
-	public void startAction(Scene.MouseAction a, boolean withConstraint) {
+	public void startAction(AbstractScene.MouseAction a, boolean withConstraint) {
 		super.startAction(a, withConstraint);
 		switch (action) {
 		case MOVE_FORWARD:
@@ -247,12 +246,12 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 	 * and turning actions are implemented.
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
-		if ((action == Scene.MouseAction.TRANSLATE)
-				|| (action == Scene.MouseAction.ZOOM)
-				|| (action == Scene.MouseAction.SCREEN_ROTATE)
-				|| (action == Scene.MouseAction.SCREEN_TRANSLATE)
-				|| (action == Scene.MouseAction.ROTATE)
-				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
+		if ((action == AbstractScene.MouseAction.TRANSLATE)
+				|| (action == AbstractScene.MouseAction.ZOOM)
+				|| (action == AbstractScene.MouseAction.SCREEN_ROTATE)
+				|| (action == AbstractScene.MouseAction.SCREEN_TRANSLATE)
+				|| (action == AbstractScene.MouseAction.ROTATE)
+				|| (action == AbstractScene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
 		else {		
 			int	deltaY = (int) (eventPoint.y - prevPos.y);
@@ -325,9 +324,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 	 * {@link remixlab.remixcam.core.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */
 	public void mouseReleased(Point eventPoint, Camera camera) {
-		if ((action == Scene.MouseAction.MOVE_FORWARD)
-				|| (action == Scene.MouseAction.MOVE_BACKWARD)
-				|| (action == Scene.MouseAction.DRIVE)) {
+		if ((action == AbstractScene.MouseAction.MOVE_FORWARD)
+				|| (action == AbstractScene.MouseAction.MOVE_BACKWARD)
+				|| (action == AbstractScene.MouseAction.DRIVE)) {
 			flyTimerJob.stop();
 		}
 
@@ -380,7 +379,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame implements Copyab
 	  // Starts (or prolungates) the timer.
 		flyTimerJob.runOnce(finalDrawAfterWheelEventDelay);
 
-		action = Scene.MouseAction.NO_MOUSE_ACTION;
+		action = AbstractScene.MouseAction.NO_MOUSE_ACTION;
 	}
 
 	/**

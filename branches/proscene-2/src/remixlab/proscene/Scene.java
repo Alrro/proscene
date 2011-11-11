@@ -43,7 +43,6 @@ import remixlab.remixcam.core.InteractiveFrame;
 import remixlab.remixcam.core.BasicFrame;
 import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.core.MouseGrabbable;
-import remixlab.remixcam.core.Trackable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.devices.HIDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
@@ -159,262 +158,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	public static String minorVersion() {
 		return version.substring(version.indexOf(".") + 1);
-	}
-	
-	/**
-	 * Defines the different actions that can be associated with a specific
-	 * keyboard key.
-	 */
-	public enum KeyboardAction {
-		/** Toggles the display of the world axis. */
-		DRAW_AXIS("Toggles the display of the world axis"),
-		/** Toggles the display of the XY grid. */
-		DRAW_GRID("Toggles the display of the XY grid"),
-		/** Cycles to the registered camera profiles. */
-		CAMERA_PROFILE("Cycles to the registered camera profiles"),
-		/** Toggles camera type (orthographic or perspective. */
-		CAMERA_TYPE("Toggles camera type (orthographic or perspective)"),
-		/** Toggles camera kind (proscene or standard). */
-		CAMERA_KIND("Toggles camera kind (proscene or standard)"),
-		/** Toggles animation. */
-		ANIMATION("Toggles animation"),
-		/** Set the arcball reference point from the pixel under the mouse. */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
-		/** Reset the arcball reference point to the 3d frame world origin. */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
-		/** Displays the global help. */
-		GLOBAL_HELP("Displays the global help"),
-		/** Displays the current camera profile help. */
-		CURRENT_CAMERA_PROFILE_HELP("Displays the current camera profile help"),
-		/** Toggles the key frame camera paths (if any) for edition. */
-		EDIT_CAMERA_PATH("Toggles the key frame camera paths (if any) for edition"),
-		/** Toggle interactivity between camera and interactive frame (if any). */
-		FOCUS_INTERACTIVE_FRAME("Toggle interactivity between camera and interactive frame (if any)"),
-		/** Toggle interactive frame selection region drawing. */
-		DRAW_FRAME_SELECTION_HINT("Toggle interactive frame selection region drawing"),
-		/** Toggles on and off frame constraints (if any). */
-		CONSTRAIN_FRAME("Toggles on and off frame constraints (if any)");
-		
-		private String description;
-		
-		KeyboardAction(String description) {
-       this.description = description;
-    }
-    
-    public String description() {
-      return description;
-    }
-	}
-
-	/**
-	 * Defines the different camera actions that can be associated with a specific
-	 * keyboard key. Actions are defined here, but bindings are defined at the CameraProfile level,
-	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
-	 */
-	public enum CameraKeyboardAction {
-		/** Interpolate the camera to zoom on pixel. */
-		INTERPOLATE_TO_ZOOM_ON_PIXEL("Interpolate the camera to zoom on pixel"),
-		/** Interpolate the camera to fit the whole scene. */
-		INTERPOLATE_TO_FIT_SCENE("Interpolate the camera to fit the whole scene"),
-		/** Show the whole scene. */
-		SHOW_ALL("Show the whole scene"),
-		/** Move camera to the left. */
-		MOVE_CAMERA_LEFT("Move camera to the left"),
-		/** Move camera to the right. */
-		MOVE_CAMERA_RIGHT("Move camera to the right"),
-		/** Move camera up. */
-		MOVE_CAMERA_UP("Move camera up"),
-		/** Move camera down. */
-		MOVE_CAMERA_DOWN("Move camera down"),
-		/** Increase camera rotation sensitivity (only meaningful in arcball mode). */
-		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)"),
-		/** Decrease camera rotation sensitivity (only meaningful in arcball mode). */
-		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)"),
-		/** Increase camera fly speed (only meaningful in first-person mode). */
-		INCREASE_CAMERA_FLY_SPEED("Increase camera fly speed (only meaningful in first-person mode)"),
-		/** Decrease camera fly speed (only meaningful in first-person mode). */
-		DECREASE_CAMERA_FLY_SPEED("Decrease camera fly speed (only meaningful in first-person mode)"),
-		/** Increase avatar fly speed (only meaningful in third-person mode). */
-		INCREASE_AVATAR_FLY_SPEED("Increase avatar fly speed (only meaningful in third-person mode)"),
-		/** Decrease avatar fly speed (only meaningful in third-person mode). */
-		DECREASE_AVATAR_FLY_SPEED("Decrease avatar fly speed (only meaningful in third-person mode)"),
-		/** Increase camera azymuth respect to the avatar (only meaningful in third-person mode). */
-		INCREASE_AZYMUTH("Increase camera azymuth respect to the avatar (only meaningful in third-person mode)"),
-		/** Decrease camera azymuth respect to the avatar (only meaningful in third-person mode). */
-		DECREASE_AZYMUTH("Decrease camera azymuth respect to the avatar (only meaningful in third-person mode)"),
-		/** Increase camera inclination respect to the avatar (only meaningful in third-person mode). */
-		INCREASE_INCLINATION("Increase camera inclination respect to the avatar (only meaningful in third-person mode)"),
-		/** Decrease camera inclination respect to the avatar (only meaningful in third-person mode). */
-		DECREASE_INCLINATION("Decrease camera inclination respect to the avatar (only meaningful in third-person mode)"),
-		/** Increase camera tracking distance respect to the avatar (only meaningful in third-person mode). */
-		INCREASE_TRACKING_DISTANCE("Increase camera tracking distance respect to the avatar (only meaningful in third-person mode)"),
-		/** Decrease camera tracking distance respect to the avatar (only meaningful in third-person mode). */
-		DECREASE_TRACKING_DISTANCE("Decrease camera tracking distance respect to the avatar (only meaningful in third-person mode)");
-		
-		private String description;
-		
-		CameraKeyboardAction(String description) {
-       this.description = description;
-    }
-		
-    public String description() {
-        return description;
-    }
-	}
-
-	/**
-	 * This enum defines mouse click actions to be binded to the mouse.
-	 * Actions are defined here, but bindings are defined at the CameraProfile level,
-	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
-	 */
-	public enum ClickAction {
-		/** No click action. */
-		NO_CLICK_ACTION("No click action"),
-		/** Zoom on pixel */
-		ZOOM_ON_PIXEL("Zoom on pixel"),
-		/** Zoom to fit the scene */
-		ZOOM_TO_FIT("Zoom to fit the scene"),
-		/** Set the arcball reference point from the pixel under the mouse */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
-		/** Reset the arcball reference point to the 3d frame world origin */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
-		/** Center frame */
-		CENTER_FRAME("Center frame"),
-		/** Center scene */
-		CENTER_SCENE("Center scene"),
-		/** Show the whole scene */
-		SHOW_ALL("Show the whole scene"),
-		/** Align interactive frame (if any) with world */
-		ALIGN_FRAME("Align interactive frame (if any) with world"),
-		/** Align camera with world */
-		ALIGN_CAMERA("Align camera with world");
-
-		private String description;
-		
-		ClickAction(String description) {
-       this.description = description;
-    }
-		
-    public String description() {
-        return description;
-    }
-	}
-
-	/**
-	 * This enum defines mouse actions (click + drag) to be binded to the mouse.
-	 * Actions are defined here, but bindings are defined at the CameraProfile level,
-	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
-	 */
-	public enum MouseAction {
-		/** No mouse action. */
-		NO_MOUSE_ACTION("No mouse action"),
-		/** Rotate frame (camera or interactive frame. */
-		ROTATE("Rotate frame (camera or interactive frame)"),
-		/** Zoom. */
-		ZOOM("Zoom"),
-		/** Translate frame (camera or interactive frame). */
-		TRANSLATE("Translate frame (camera or interactive frame)"),
-		/** Move forward frame (camera or interactive frame). */
-		MOVE_FORWARD("Move forward frame (camera or interactive frame)"),
-		/** move backward frame (camera or interactive frame). */
-		MOVE_BACKWARD("move backward frame (camera or interactive frame)"),
-		/** Look around with frame (camera or interactive drivable frame). */
-		LOOK_AROUND("Look around with frame (camera or interactive drivable frame)"),
-		/** Screen rotate (camera or interactive frame). */
-		SCREEN_ROTATE("Screen rotate (camera or interactive frame)"),
-		/** Roll frame (camera or interactive drivable frame). */
-		ROLL("Roll frame (camera or interactive drivable frame)"),
-		/** Drive (camera or interactive drivable frame). */
-		DRIVE("Drive (camera or interactive drivable frame)"),
-		/** Screen translate frame (camera or interactive frame). */
-		SCREEN_TRANSLATE("Screen translate frame (camera or interactive frame)"),
-		/** Zoom on region (camera or interactive drivable frame). */
-		ZOOM_ON_REGION("Zoom on region (camera or interactive drivable frame)");		
-
-		private String description;
-		
-		MouseAction(String description) {
-       this.description = description;
-    }
-		
-    public String description() {
-        return description;
-    }
-	}
-
-	/**
-	 * Constants associated to the different mouse buttons which follow java conventions.
-	 */
-	public enum Button {
-		// values correspond to: BUTTON1_DOWN_MASK, BUTTON2_DOWN_MASK and BUTTON3_DOWN_MASK
-		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		LEFT(1024), MIDDLE(2048), RIGHT(4096);
-		public final int ID;
-    Button(int code) {
-    	this.ID = code;
-    }    
-    //The following code works but is considered overkill :)
-    /**
-    public int id() { return ID; }
-    private static final Map<Integer,Button> lookup = new HashMap<Integer,Button>();
-    static {
-    	for(Button s : EnumSet.allOf(Button.class))
-         lookup.put(s.id(), s);
-    }
-    public static Button get(int code) { 
-      return lookup.get(code);
-    }
-    // */
-	}
-
-	/**
-	 * Constants associated to the different arrow keys. Taken from Processing constants 
-	 * (which follows java conventions). 
-	 */	
-	public enum Arrow {
-		UP(PApplet.UP), DOWN(PApplet.DOWN), LEFT(PApplet.LEFT), RIGHT(PApplet.RIGHT);
-		public final int ID;
-    Arrow(int code) {
-    	this.ID = code;
-    }
-    //The following code works but is considered overkill :)
-    /**
-    public int id() { return ID; }
-    private static final Map<Integer,Arrow> lookup = new HashMap<Integer,Arrow>();
-    static {
-    	for(Arrow s : EnumSet.allOf(Arrow.class))
-         lookup.put(s.id(), s);
-    }
-    public static Arrow get(int code) { 
-      return lookup.get(code);
-    }
-    // */
-	}
-
-	/**
-	 * Constants associated to the different modifier keys which follow java conventions.
-	 */
-	public enum Modifier {
-		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, META_DOWN_MASK, ALT_GRAPH_DOWN_MASK
-		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);
-		public final int ID;
-		Modifier(int code) {
-      this.ID = code;
-    }
-    //The following code works but is considered overkill :)
-    /**
-    public int id() { return ID; }
-    private static final Map<Integer,Modifier> lookup = new HashMap<Integer,Modifier>();
-    static {
-    	for(Modifier s : EnumSet.allOf(Modifier.class))
-         lookup.put(s.id(), s);
-    }
-    public static Modifier get(int code) {
-      return lookup.get(code);
-    }
-    // */
-	}
+	}	
 
 	// K E Y F R A M E S
 	protected Bindings<Integer, Integer> pathKeys;
@@ -636,6 +380,15 @@ public class Scene extends AbstractScene implements PConstants {
 	 * in OpenGL).
 	 */
 	public void proscenium() {}
+	
+	/**
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#applyTransformation(BasicFrame)}.
+	 */
+	@Override
+	public void applyTransformation(BasicFrame frame) {
+		pg3d.translate( frame.translation().x, frame.translation().y, frame.translation().z );
+		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);
+	}
 
 	// 2. Associated objects
 	
@@ -650,6 +403,16 @@ public class Scene extends AbstractScene implements PConstants {
 			job.setTimer(new AWTTimerWrap(this, job));
 		}
 	}
+	
+	// TODO need it here (or it should just go into proscene.js)? need to be overloaded?
+	/**
+	 * 
+	 */
+	@Override
+	public void unregisterFromTimerPool(SingleThreadedTimer t) {
+		if( t instanceof Timer )
+			timerPool.remove( ((Timer) t).timerJob() );
+  }
 	
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
@@ -667,186 +430,7 @@ public class Scene extends AbstractScene implements PConstants {
 		cam = camera;
 
 		showAll();
-	}
-
-	/**
-	 * Returns the InteractiveFrame associated to this Scene. It could be null if
-	 * there's no InteractiveFrame associated to this Scene.
-	 * 
-	 * @see #setInteractiveFrame(InteractiveFrame)
-	 */
-	public InteractiveFrame interactiveFrame() {
-		return glIFrame;
-	}
-
-	/**
-	 * Returns the avatar object to be tracked by the Camera when
-	 * {@link #currentCameraProfile()} is an instance of ThirdPersonCameraProfile.
-	 * Simply returns {@code null} if no avatar has been set.
-	 */
-	public Trackable avatar() {
-		return trck;
-	}
-
-	/**
-	 * Sets the avatar object to be tracked by the Camera when
-	 * {@link #currentCameraProfile()} is an instance of ThirdPersonCameraProfile.
-	 * 
-	 * @see #unsetAvatar()
-	 */
-	public void setAvatar(Trackable t) {
-		trck = t;
-		avatarIsInteractiveAvatarFrame = false;
-		avatarIsInteractiveDrivableFrame = false;
-		if (avatar() instanceof InteractiveAvatarFrame) {
-			avatarIsInteractiveAvatarFrame = true;
-			avatarIsInteractiveDrivableFrame = true;
-			if (interactiveFrame() != null)
-				((InteractiveDrivableFrame) interactiveFrame())
-						.setFlySpeed(0.01f * radius());
-		} else if (avatar() instanceof InteractiveDrivableFrame) {
-			avatarIsInteractiveAvatarFrame = false;
-			avatarIsInteractiveDrivableFrame = true;
-			if (interactiveFrame() != null)
-				((InteractiveDrivableFrame) interactiveFrame())
-						.setFlySpeed(0.01f * radius());
-		}
-	}
-
-	/**
-	 * If there's a avatar unset it.
-	 * 
-	 * @see #setAvatar(Trackable)
-	 */
-	public void unsetAvatar() {
-		trck = null;
-		avatarIsInteractiveAvatarFrame = false;
-		avatarIsInteractiveDrivableFrame = false;
-	}
-
-	/**
-	 * Sets {@code frame} as the InteractiveFrame associated to this Scene. If
-	 * {@code frame} is instance of Trackable it is also automatically set as the
-	 * Scene {@link #avatar()} (by automatically calling {@code
-	 * setAvatar((Trackable) frame)}).
-	 * 
-	 * @see #interactiveFrame()
-	 * @see #setAvatar(Trackable)
-	 */
-	public void setInteractiveFrame(InteractiveFrame frame) {
-		glIFrame = frame;		
-		if (glIFrame == null)
-			iFrameIsDrwn = false;
-		else if (glIFrame instanceof Trackable)
-			setAvatar((Trackable) glIFrame);
-	}
-
-	/**
-	 * Returns the current MouseGrabber, or {@code null} if none currently grabs
-	 * mouse events.
-	 * <p>
-	 * When {@link remixlab.remixcam.core.MouseGrabbable#grabsMouse()}, the different
-	 * mouse events are sent to it instead of their usual targets (
-	 * {@link #camera()} or {@link #interactiveFrame()}).
-	 */
-	public MouseGrabbable mouseGrabber() {
-		return mouseGrbbr;
-	}
-
-	/**
-	 * Directly defines the {@link #mouseGrabber()}.
-	 * <p>
-	 * You should not call this method directly as it bypasses the
-	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
-	 * test performed by {@link #mouseMoved(MouseEvent)}.
-	 */
-	protected void setMouseGrabber(MouseGrabbable mouseGrabber) {
-		mouseGrbbr = mouseGrabber;
-
-		mouseGrabberIsAnIFrame = mouseGrabber instanceof InteractiveFrame;
-	}
-	
-	// 3. Mouse grabber handling
-	
-	/**
-	 * Returns true if the mouseGrabber is currently in the {@link #mouseGrabberPool()} list.
-	 * <p>
-	 * When set to false using {@link #removeFromMouseGrabberPool(MouseGrabbable)}, the Scene no longer
-	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)} on this mouseGrabber.
-	 * Use {@link #addInMouseGrabberPool(MouseGrabbable)} to insert it back.
-	 */
-	public boolean isInMouseGrabberPool(MouseGrabbable mouseGrabber) {
-		return mouseGrabberPool().contains(mouseGrabber);
-	}
-	
-	/**
-	 * Adds the mouseGrabber in the {@link #mouseGrabberPool()}.
-	 * <p>
-	 * All created InteractiveFrames (which are MouseGrabbers) are automatically added in the
-	 * {@link #mouseGrabberPool()} by their constructors. Trying to add a
-	 * mouseGrabber that already {@link #isInMouseGrabberPool(MouseGrabbable)} has no effect.
-	 * <p>
-	 * Use {@link #removeFromMouseGrabberPool(MouseGrabbable)} to remove the mouseGrabber from
-	 * the list, so that it is no longer tested with
-	 * {@link remixlab.remixcam.core.MouseGrabbable#checkIfGrabsMouse(int, int, Camera)}
-	 * by the Scene, and hence can no longer grab mouse focus. Use
-	 * {@link #isInMouseGrabberPool(MouseGrabbable)} to know the current state of the MouseGrabber.
-	 */
-	public void addInMouseGrabberPool(MouseGrabbable mouseGrabber) {
-		if (!isInMouseGrabberPool(mouseGrabber))
-			mouseGrabberPool().add(mouseGrabber);
-	}
-
-	/**
-	 * Removes the mouseGrabber from the {@link #mouseGrabberPool()}.
-	 * <p>
-	 * See {@link #addInMouseGrabberPool(MouseGrabbable)} for details. Removing a mouseGrabber
-	 * that is not in {@link #mouseGrabberPool()} has no effect.
-	 */
-	public void removeFromMouseGrabberPool(MouseGrabbable mouseGrabber) {
-		mouseGrabberPool().remove(mouseGrabber);
-	}
-
-	/**
-	 * Clears the {@link #mouseGrabberPool()}.
-	 * <p>
-	 * Use this method only if it is faster to clear the
-	 * {@link #mouseGrabberPool()} and then to add back a few MouseGrabbers
-	 * than to remove each one independently.
-	 */
-	public void clearMouseGrabberPool() {
-		mouseGrabberPool().clear();
-	}
-	
-	/**
-	 * Returns {@code true}
-	 * if {@link remixlab.proscene.DesktopEvents#mouseMoved(java.awt.event.MouseEvent)}
-	 * is called even when no mouse button is pressed.
-	 * <p>
-	 * You need to setMouseTracking() to \c true in order to use MouseGrabber (see mouseGrabber()).
-	 */
-	public boolean hasMouseTracking() {
-		return mouseTrckn;
-	}
-	
-	/**
-	 * Sets the {@link #hasMouseTracking()} value.
-	 */
-	public void setMouseTracking(boolean enable) {		
-		if(!enable) {
-			if( mouseGrabber() != null )
-				mouseGrabber().setGrabsMouse(false);
-			setMouseGrabber(null);
-		}
-		mouseTrckn = enable;
-	}
-	
-	/**
-	 * Calls {@link #setMouseTracking(boolean)} to toggle the {@link #hasMouseTracking()} value.
-	 */
-	public void toggleMouseTracking() {
-		setMouseTracking(!hasMouseTracking());
-	}
+	}	
 
 	// 4. State of the viewer
 
@@ -861,139 +445,7 @@ public class Scene extends AbstractScene implements PConstants {
 		return offscreen;
 	}
 	
-	/**
-	 * Returns {@code true} if automatic update of the camera frustum plane
-	 * equations is enabled and {@code false} otherwise. Computation of the
-	 * equations is expensive and hence is disabled by default.
-	 * 
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
-	 */
-	public boolean frustumEquationsUpdateIsEnable() {
-		return camera().frustumEquationsUpdateIsEnable();
-	}
-
-	/**
-	 * Toggles automatic update of the camera frustum plane equations every frame.
-	 * Computation of the equations is expensive and hence is disabled by default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
-	 */
-	public void toggleFrustumEquationsUpdate() {
-		if ( frustumEquationsUpdateIsEnable() )
-			disableFrustumEquationsUpdate();
-		else
-			enableFrustumEquationsUpdate();
-	}
-
-	/**
-	 * Disables automatic update of the camera frustum plane equations every
-	 * frame. Computation of the equations is expensive and hence is disabled by
-	 * default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
-	 */
-	public void disableFrustumEquationsUpdate() {
-		enableFrustumEquationsUpdate(false);
-	}
-
-	/**
-	 * Enables automatic update of the camera frustum plane equations every frame.
-	 * Computation of the equations is expensive and hence is disabled by default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
-	 */
-	public void enableFrustumEquationsUpdate() {
-		enableFrustumEquationsUpdate(true);
-	}
-
-	/**
-	 * Enables or disables automatic update of the camera frustum plane equations
-	 * every frame according to {@code flag}. Computation of the equations is
-	 * expensive and hence is disabled by default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see remixlab.remixcam.core.Camera#updateFrustumEquations()
-	 */
-	public void enableFrustumEquationsUpdate(boolean flag) {
-		camera().enableFrustumEquationsUpdate(flag);
-	}
-
-	/**
-	 * Toggles the state of {@link #axisIsDrawn()}.
-	 * 
-	 * @see #axisIsDrawn()
-	 * @see #setAxisIsDrawn(boolean)
-	 */
-	public void toggleAxisIsDrawn() {
-		setAxisIsDrawn(!axisIsDrawn());
-	}
-
-	/**
-	 * Toggles the state of {@link #gridIsDrawn()}.
-	 * 
-	 * @see #setGridIsDrawn(boolean)
-	 */
-	public void toggleGridIsDrawn() {
-		setGridIsDrawn(!gridIsDrawn());
-	}
-
-	/**
-	 * Toggles the state of {@link #frameSelectionHintIsDrawn()}.
-	 * 
-	 * @see #setFrameSelectionHintIsDrawn(boolean)
-	 */
-	public void toggleFrameSelectionHintIsDrawn() {
-		setFrameSelectionHintIsDrawn(!frameSelectionHintIsDrawn());
-	}
-
-	/**
-	 * Toggles the state of {@link #cameraPathsAreDrawn()}.
-	 * 
-	 * @see #setCameraPathsAreDrawn(boolean)
-	 */
-	public void toggleCameraPathsAreDrawn() {
-		setCameraPathsAreDrawn(!cameraPathsAreDrawn());
-	}
-
-	/**
-	 * Toggles the {@link #camera()} type between PERSPECTIVE and ORTHOGRAPHIC.
-	 */
-	public void toggleCameraType() {
-		if (camera().type() == Camera.Type.PERSPECTIVE)
-			setCameraType(Camera.Type.ORTHOGRAPHIC);
-		else
-			setCameraType(Camera.Type.PERSPECTIVE);
-	}
-
-	/**
-	 * Toggles the {@link #camera()} kind between PROSCENE and STANDARD.
-	 */
-	public void toggleCameraKind() {
-		if (camera().kind() == Camera.Kind.PROSCENE)
-			setCameraKind(Camera.Kind.STANDARD);
-		else
-			setCameraKind(Camera.Kind.PROSCENE);
-	}
-
+	// TODO check if draw iFrame handdling could be uploaded.
 	/**
 	 * Toggles the {@link #interactiveFrame()} interactivity on and off.
 	 */
@@ -1003,135 +455,7 @@ public class Scene extends AbstractScene implements PConstants {
 		else
 			setDrawInteractiveFrame(true);
 	}
-
-	/**
-	 * Toggles the draw with constraint on and off.
-	 */
-	public void toggleDrawWithConstraint() {
-		if (drawIsConstrained())
-			setDrawWithConstraint(false);
-		else
-			setDrawWithConstraint(true);
-	}
 	
-	/**
-	 * Returns the current {@link #camera()} type.
-	 */
-	public final Camera.Type cameraType() {
-		return camera().type();
-	}
-
-	/**
-	 * Sets the {@link #camera()} type.
-	 */
-	public void setCameraType(Camera.Type type) {
-		if (type != camera().type())
-			camera().setType(type);
-	}
-
-	/**
-	 * Returns the current {@link #camera()} kind.
-	 */
-	public final Camera.Kind cameraKind() {
-		return camera().kind();
-	}
-
-	/**
-	 * Sets the {@link #camera()} kind.
-	 */
-	public void setCameraKind(Camera.Kind kind) {
-		if (kind != camera().kind()) {
-			camera().setKind(kind);
-			if (kind == Camera.Kind.PROSCENE)
-				PApplet.println("Changing camera kind to Proscene");
-			else
-				PApplet.println("Changing camera kind to Standard");
-		}
-	}
-	
-	/**
-	 * Returns {@code true} if axis is currently being drawn and {@code false}
-	 * otherwise.
-	 */
-	public boolean axisIsDrawn() {
-		return axisIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if grid is currently being drawn and {@code false}
-	 * otherwise.
-	 */
-	public boolean gridIsDrawn() {
-		return gridIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if the frames selection visual hints are currently
-	 * being drawn and {@code false} otherwise.
-	 */
-	public boolean frameSelectionHintIsDrawn() {
-		return frameSelectionHintIsDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if the camera key frame paths are currently being
-	 * drawn and {@code false} otherwise.
-	 */
-	public boolean cameraPathsAreDrawn() {
-		return cameraPathsAreDrwn;
-	}
-
-	/**
-	 * Returns {@code true} if axis is currently being drawn and {@code false}
-	 * otherwise.
-	 */
-	public boolean interactiveFrameIsDrawn() {
-		return iFrameIsDrwn;
-	}
-
-	/**
-	 * Convenience function that simply calls {@code setAxisIsDrawn(true)}
-	 */
-	public void setAxisIsDrawn() {
-		setAxisIsDrawn(true);
-	}
-
-	/**
-	 * Sets the display of the axis according to {@code draw}
-	 */
-	public void setAxisIsDrawn(boolean draw) {
-		axisIsDrwn = draw;
-	}
-
-	/**
-	 * Convenience function that simply calls {@code setGridIsDrawn(true)}
-	 */
-	public void setGridIsDrawn() {
-		setGridIsDrawn(true);
-	}
-
-	/**
-	 * Sets the display of the grid according to {@code draw}
-	 */
-	public void setGridIsDrawn(boolean draw) {
-		gridIsDrwn = draw;
-	}
-
-	/**
-	 * Sets the display of the interactive frames' selection hints according to
-	 * {@code draw}
-	 */
-	public void setFrameSelectionHintIsDrawn(boolean draw) {
-		frameSelectionHintIsDrwn = draw;
-	}
-
-	/**
-	 * Sets the display of the camera key frame paths according to {@code draw}
-	 */
-	public void setCameraPathsAreDrawn(boolean draw) {
-		cameraPathsAreDrwn = draw;
-	}
-
 	/**
 	 * Convenience function that simply calls {@code setDrawInteractiveFrame(true)}.
 	 * 
@@ -1140,7 +464,7 @@ public class Scene extends AbstractScene implements PConstants {
 	public void setDrawInteractiveFrame() {
 		setDrawInteractiveFrame(true);
 	}
-
+	
 	/**
 	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance
 	 * according to {@code draw}
@@ -1152,21 +476,6 @@ public class Scene extends AbstractScene implements PConstants {
 				&& interactiveFrame().equals(avatar()))// more natural than to bypass it
 			return;
 		iFrameIsDrwn = draw;
-	}
-	
-	/**
-	 * Returns {@code true} if drawn is currently being constrained and {@code
-	 * false} otherwise.
-	 */
-	public boolean drawIsConstrained() {
-		return withConstraint;
-	}
-
-	/**
-	 * Constrain frame displacements according to {@code wConstraint}
-	 */
-	public void setDrawWithConstraint(boolean wConstraint) {
-		withConstraint = wConstraint;
 	}
 
 	// 5. Drawing methods
@@ -1388,6 +697,16 @@ public class Scene extends AbstractScene implements PConstants {
 	}
 	
   // 4. Scene dimensions
+	
+	@Override
+	public float frameRate() {
+		return parent.frameRate;
+	}
+
+	@Override
+	public long frameCount() {
+		return parent.frameCount;
+	}
 
 	/**
 	 * Returns the {@link PApplet#width} to {@link PApplet#height} aspect ratio of
@@ -3883,58 +3202,5 @@ public class Scene extends AbstractScene implements PConstants {
 				                 m.m10, m.m11, m.m12, m.m13,
 				                 m.m20, m.m21, m.m22, m.m23,
 				                 m.m30, m.m31, m.m32, m.m33);
-	}
-	
-	/**
-	 * Apply the transformation defined by {@code frame} to {@link #renderer()}.
-	 * The Frame is first translated and then rotated around the new translated origin.
-	 * <p>
-	 * Same as:
-	 * <p>
-	 * {@code renderer().translate(translation().x, translation().y, translation().z);} <br>
-	 * {@code renderer().rotate(rotation().angle(), rotation().axis().x,
-	 * rotation().axis().y, rotation().axis().z);} <br>
-	 * <p>
-	 * This method may be used to modify the modelview matrix from a Frame hierarchy.
-	 * For example, with this Frame hierarchy:
-	 * <p>
-	 * {@code Frame body = new Frame();} <br>
-	 * {@code Frame leftArm = new Frame();} <br>
-	 * {@code Frame rightArm = new Frame();} <br>
-	 * {@code leftArm.setReferenceFrame(body);} <br>
-	 * {@code rightArm.setReferenceFrame(body);} <br>
-	 * <p>
-	 * The associated processing drawing code should look like:
-	 * <p>
-	 * {@code pushMatrix();} <br>
-	 * {@code applyTransformation(body);} <br>
-	 * {@code drawBody();} <br>
-	 * {@code pushMatrix();} <br>
-	 * {@code applyTransformation(leftArm);} <br>
-	 * {@code drawArm();} <br>
-	 * {@code popMatrix();} <br>
-	 * {@code pushMatrix();} <br>
-	 * {@code applyTransformation(rightArm);} <br>
-	 * {@code drawArm();} <br>
-	 * {@code popMatrix();} <br>
-	 * {@code popMatrix();} <br>
-	 * <p>
-	 * If the frame hierarchy to be drawn should be applied to a different renderer
-	 * context than the PApplet's (e.g., an off-screen rendering context), you may
-	 * call {@code renderer().pushMatrix();} and {@code renderer().popMatrix();} above.
-	 * <p> 
-	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()} blocks
-	 * to represent the frame hierarchy: {@code leftArm} and {@code rightArm} are
-	 * both correctly drawn with respect to the {@code body} coordinate system.
-	 * <p>
-	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method
-	 * should be used whenever possible (one can also use {@link #matrix()}
-	 * instead).
-	 * 
-	 * @see #matrix()
-	 */
-	public void applyTransformation(BasicFrame frame) {
-		pg3d.translate( frame.translation().x, frame.translation().y, frame.translation().z );
-		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);
-	}
+	}		
 }

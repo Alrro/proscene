@@ -28,9 +28,9 @@ package remixlab.proscene;
 import java.awt.event.*;
 import java.util.Map.Entry;
 
-import remixlab.proscene.Scene.CameraKeyboardAction;
-import remixlab.proscene.Scene.ClickAction;
-import remixlab.proscene.Scene.MouseAction;
+import remixlab.remixcam.core.AbstractScene.CameraKeyboardAction;
+import remixlab.remixcam.core.AbstractScene.ClickAction;
+import remixlab.remixcam.core.AbstractScene.MouseAction;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.devices.ClickBinding;
 

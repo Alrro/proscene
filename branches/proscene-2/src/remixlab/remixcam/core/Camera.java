@@ -25,7 +25,7 @@
 
 package remixlab.remixcam.core;
 
-import remixlab.proscene.Scene;
+//import remixlab.proscene.Scene;
 import remixlab.remixcam.geom.*;
 
 import java.util.ArrayList;
@@ -316,14 +316,14 @@ public class Camera implements Constants, Copyable {
    * Takes into account the {@link #frame()} (position and orientation of the camera)
    * and the camera {@link #type()} and {@link #kind()}.
    */
-	public int lastFrameUpdate = 0;
-	protected int lastFPCoeficientsUpdateIssued = -1;
+	public long lastFrameUpdate = 0;
+	protected long lastFPCoeficientsUpdateIssued = -1;
 
 	// A t t a c h e d S c e n e
 	//private boolean attachedToPCam;
 
 	// S C E N E   O B J E C T 
-	public Scene scene;
+	public AbstractScene scene;
 	//public PGraphics3D pg3d;
 
 	/**
@@ -356,7 +356,7 @@ public class Camera implements Constants, Copyable {
 	 * 
 	 * @see #Camera(Scene)
 	 */
-	public Camera(Scene scn /**, boolean attachedToScene */) {
+	public Camera(AbstractScene scn /**, boolean attachedToScene */) {
 		scene = scn;
 		//pg3d = scene.pg3d;
 		//attachedToPCam = attachedToScene;
@@ -786,7 +786,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void setKind(Kind k) {
 		if(k!=knd)
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		knd = k;		
 	}
 
@@ -799,7 +799,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void setStandardZNear(float zN) {
 		if( (kind() == Camera.Kind.STANDARD) && (zN != stdZNear) )
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		stdZNear = zN;
 	}
 
@@ -823,7 +823,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void setStandardZFar(float zF) {
 		if( (kind() == Camera.Kind.STANDARD) && (zF != stdZFar) )
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		stdZFar = zF;
 	}
 
@@ -848,7 +848,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void changeStandardOrthoFrustumSize(boolean augment) {
 		if( (kind() == Camera.Kind.STANDARD) && (type() == Camera.Type.ORTHOGRAPHIC) )
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		if (augment)
 			orthoSize *= 1.01f;
 		else
@@ -881,7 +881,7 @@ public class Camera implements Constants, Copyable {
 		// been changed with a
 		// setArcballReferencePoint in the meantime.
 		if( type != type() )
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		if ((type == Camera.Type.ORTHOGRAPHIC) && (type() == Camera.Type.PERSPECTIVE))
 			orthoCoef = (float) Math.tan(fieldOfView() / 2.0f);
 
@@ -1079,7 +1079,7 @@ public class Camera implements Constants, Copyable {
 	public void setScreenWidthAndHeight(int width, int height) {
 		// Prevent negative and zero dimensions that would cause divisions by zero.
 		if( (width != scrnWidth) && (height != scrnHeight) )
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		scrnWidth = width > 0 ? width : 1;
 		scrnHeight = height > 0 ? height : 1;
 	}
@@ -1244,7 +1244,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void setZNearCoefficient(float coef) {
 		if(coef != zNearCoef)
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		zNearCoef = coef;
 	}
 
@@ -1274,7 +1274,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void setZClippingCoefficient(float coef) {
 		if(coef != zClippingCoef)
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		zClippingCoef = coef;
 	}
 
@@ -3091,7 +3091,7 @@ public class Camera implements Constants, Copyable {
 	 */
 	public void setFocusDistance(float distance) {
 		if(distance != focusDist)
-			lastFrameUpdate = scene.parent.frameCount;
+			lastFrameUpdate = scene.frameCount();
 		focusDist = distance;
 	}
 

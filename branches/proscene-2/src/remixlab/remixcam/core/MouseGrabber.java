@@ -25,8 +25,7 @@
 
 package remixlab.remixcam.core;
 
-import remixlab.proscene.Scene;
-import remixlab.proscene.Scene.Button;
+import remixlab.remixcam.core.AbstractScene.Button;
 import remixlab.remixcam.geom.Point;
 
 /**
@@ -41,7 +40,7 @@ import remixlab.remixcam.geom.Point;
  * <b>Note:</b> The InteractiveFrame object implements the MouseGrabbable interface.
  */
 public class MouseGrabber implements MouseGrabbable {
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected boolean grabsMouse;
 	protected boolean keepsGrabbingMouse;
 	
@@ -51,7 +50,7 @@ public class MouseGrabber implements MouseGrabbable {
 	 * 
 	 * @param scn Scene instance
 	 */
-	public MouseGrabber(Scene scn) {
+	public MouseGrabber(AbstractScene scn) {
 		scene = scn;
 		grabsMouse = false;
 		keepsGrabbingMouse = false;

@@ -28,7 +28,6 @@ package remixlab.remixcam.core;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.geom.*;
 
 /**
@@ -80,7 +79,7 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements	
 	 * @see remixlab.proscene.Scene#setAvatar(Trackable)
 	 * @see remixlab.proscene.Scene#setInteractiveFrame(InteractiveFrame)
 	 */
-	public InteractiveAvatarFrame(Scene scn) {
+	public InteractiveAvatarFrame(AbstractScene scn) {
 		super(scn);
 		q = new Quaternion();
 		q.fromTaitBryan(QUARTER_PI, 0, 0);

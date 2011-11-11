@@ -32,7 +32,6 @@ import java.util.List;
 import com.flipthebird.gwthashcodeequals.EqualsBuilder;
 import com.flipthebird.gwthashcodeequals.HashCodeBuilder;
 
-import remixlab.proscene.Scene;
 import remixlab.remixcam.constraints.*;
 import remixlab.remixcam.geom.*;
 
@@ -1461,8 +1460,7 @@ public class BasicFrame implements Copyable {
 	 * @see #matrix()
 	 * @see remixlab.proscene.Scene#applyTransformation(BasicFrame)
 	 */
-  //TODO Scene should be abstract scene
-	public void applyTransformation(Scene scn) {
+	public void applyTransformation(AbstractScene scn) {
 		scn.applyTransformation(this);
 	}
 
