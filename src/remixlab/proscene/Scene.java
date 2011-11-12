@@ -97,7 +97,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.0";
+	public static final String version = "1.1.1";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -1964,7 +1964,38 @@ public class Scene implements PConstants {
 		}
 
 		int farIndex = drawFarPlane ? 1 : 0;
-
+		
+   	// Frustum lines
+		pg3d.stroke(color);
+		pg3d.strokeWeight(2);
+		switch (camera.type()) {
+		case PERSPECTIVE:
+			pg3d.beginShape(PApplet.LINES);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(-points[farIndex].x, points[farIndex].y, -points[farIndex].z);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(-points[farIndex].x, -points[farIndex].y,	-points[farIndex].z);
+			pg3d.vertex(0.0f, 0.0f, 0.0f);
+			pg3d.vertex(points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
+			pg3d.endShape();
+			break;
+		case ORTHOGRAPHIC:
+			if (drawFarPlane) {
+				pg3d.beginShape(PApplet.LINES);
+				pg3d.vertex(points[0].x, points[0].y, -points[0].z);
+				pg3d.vertex(points[1].x, points[1].y, -points[1].z);
+				pg3d.vertex(-points[0].x, points[0].y, -points[0].z);
+				pg3d.vertex(-points[1].x, points[1].y, -points[1].z);
+				pg3d.vertex(-points[0].x, -points[0].y, -points[0].z);
+				pg3d.vertex(-points[1].x, -points[1].y, -points[1].z);
+				pg3d.vertex(points[0].x, -points[0].y, -points[0].z);
+				pg3d.vertex(points[1].x, -points[1].y, -points[1].z);
+				pg3d.endShape();
+				}
+			}
+		
 		// Near and (optionally) far plane(s)
 		pg3d.pushStyle();
 		pg3d.noStroke();
@@ -2014,42 +2045,7 @@ public class Scene implements PConstants {
 		//pg3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
 		//pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
 		
-		pg3d.endShape();
-
-		// Frustum lines
-		pg3d.stroke(color);
-		pg3d.strokeWeight(2);
-		switch (camera.type()) {
-		case PERSPECTIVE:
-			pg3d.beginShape(PApplet.LINES);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d
-					.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d.vertex(-points[farIndex].x, points[farIndex].y,
-					-points[farIndex].z);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d.vertex(-points[farIndex].x, -points[farIndex].y,
-					-points[farIndex].z);
-			pg3d.vertex(0.0f, 0.0f, 0.0f);
-			pg3d.vertex(points[farIndex].x, -points[farIndex].y,
-					-points[farIndex].z);
-			pg3d.endShape();
-			break;
-		case ORTHOGRAPHIC:
-			if (drawFarPlane) {
-				pg3d.beginShape(PApplet.LINES);
-				pg3d.vertex(points[0].x, points[0].y, -points[0].z);
-				pg3d.vertex(points[1].x, points[1].y, -points[1].z);
-				pg3d.vertex(-points[0].x, points[0].y, -points[0].z);
-				pg3d.vertex(-points[1].x, points[1].y, -points[1].z);
-				pg3d.vertex(-points[0].x, -points[0].y, -points[0].z);
-				pg3d.vertex(-points[1].x, -points[1].y, -points[1].z);
-				pg3d.vertex(points[0].x, -points[0].y, -points[0].z);
-				pg3d.vertex(points[1].x, -points[1].y, -points[1].z);
-				pg3d.endShape();
-			}
-		}
+		pg3d.endShape();		
 
 		pg3d.popStyle();
 
