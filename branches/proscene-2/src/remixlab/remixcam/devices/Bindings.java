@@ -26,8 +26,7 @@
 package remixlab.remixcam.devices;
 
 import java.util.HashMap;
-
-import remixlab.proscene.Scene;
+import remixlab.remixcam.core.*;
 
 /**
  * A parameterized template class used to define shortcut bindings. This is
@@ -41,10 +40,10 @@ import remixlab.proscene.Scene;
  * (HashMap<K, A>). 
  */
 public class Bindings<K, A> {
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected HashMap<K, A> map;
 
-	public Bindings(Scene scn) {
+	public Bindings(AbstractScene scn) {
 		scene = scn;
 		map = new HashMap<K, A>();
 	}

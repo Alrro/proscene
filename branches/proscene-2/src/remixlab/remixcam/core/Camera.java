@@ -25,7 +25,6 @@
 
 package remixlab.remixcam.core;
 
-//import remixlab.proscene.Scene;
 import remixlab.remixcam.geom.*;
 
 import java.util.ArrayList;

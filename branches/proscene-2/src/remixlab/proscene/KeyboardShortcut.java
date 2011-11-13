@@ -147,9 +147,9 @@ public final class KeyboardShortcut {
 			description = key.toString();
 		else {
 			if(mask == 0)
-				description = DesktopEvents.getKeyText(vKey);
+				description = AWTClickBinding.getKeyText(vKey);
 			else
-				description = DesktopEvents.getModifiersExText(mask) + "+" + DesktopEvents.getKeyText(vKey);
+				description = AWTClickBinding.getModifiersExText(mask) + "+" + AWTClickBinding.getKeyText(vKey);
 		}			
 		return description;
 	}			
