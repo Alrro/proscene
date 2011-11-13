@@ -1,6 +1,8 @@
 package remixlab.remixcam.util;
 
-import remixlab.proscene.*;
+import remixlab.remixcam.core.*;
+
+//import remixlab.proscene.*;
 
 /**
  * this timer should belong to all P5 versions. Don't know yet if it
@@ -44,14 +46,14 @@ public class SingleThreadedTimer implements Timable {
 		return true;
 	}
 
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected boolean active;
 	protected boolean runOnlyOnce;
 	private long counter;
 	private long period;
 	private long startTime;	
 	
-	public SingleThreadedTimer(Scene scn) {
+	public SingleThreadedTimer(AbstractScene scn) {
 		scene = scn;
 		create();
 	}
@@ -107,7 +109,7 @@ public class SingleThreadedTimer implements Timable {
   	  	
   	long elapsedTime = System.currentTimeMillis() - startTime;  	
   	
-  	float timePerFrame = (1 / scene.parent.frameRate) * 1000;  	
+  	float timePerFrame = (1 / scene.frameRate()) * 1000;  	
   	long threshold = counter * period;  	
   	
   	boolean result = false;
@@ -126,7 +128,7 @@ public class SingleThreadedTimer implements Timable {
   	if(result) {
   		counter++;
   		if( period < timePerFrame )
-  		System.out.println("Your current frame rate (~" + scene.parent.frameRate + " fps) is not high enough " +
+  		System.out.println("Your current frame rate (~" + scene.frameRate() + " fps) is not high enough " +
           "to run the timer and reach the specified " + period + " ms period, " + timePerFrame
           + " ms period will be used instead. If you want to sustain a lower timer " +
           "period, define a higher frame rate (minimum of " + 1000f/period + " fps) " +
