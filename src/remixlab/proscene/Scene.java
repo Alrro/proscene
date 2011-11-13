@@ -2021,7 +2021,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #setPathKey(Integer, Integer)
 	 */
 	public void setPathKey(Character key, Integer path) {
-		setPathKey(DesktopEvents.getVKey(key), path);
+		setPathKey(AWTClickBinding.getVKey(key), path);
 	}
 	
 	/**
@@ -2050,7 +2050,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #path(Integer)
 	 */
 	public Integer path(Character key) {
-		return path(DesktopEvents.getVKey(key));
+		return path(AWTClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2074,7 +2074,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #removePathKey(Integer)
 	 */
 	public void removePathKey(Character key) {
-		removePathKey(DesktopEvents.getVKey(key));
+		removePathKey(AWTClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2098,7 +2098,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #isPathKeyInUse(Integer)
 	 */
 	public boolean isPathKeyInUse(Character key) {
-		return isPathKeyInUse(DesktopEvents.getVKey(key));
+		return isPathKeyInUse(AWTClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2156,7 +2156,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #setShortcut(Integer, Integer, KeyboardAction)
    */
 	public void setShortcut(Integer mask, Character key, KeyboardAction action) {
-		setShortcut(mask, DesktopEvents.getVKey(key), action);
+		setShortcut(mask, AWTClickBinding.getVKey(key), action);
 	}
 	
   /**
@@ -2217,7 +2217,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #removeShortcut(Integer, Integer)
    */
 	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, DesktopEvents.getVKey(key));
+		removeShortcut(mask, AWTClickBinding.getVKey(key));
 	}
 
 	/**
@@ -2261,7 +2261,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #shortcut(Integer, Integer)
    */
 	public KeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, DesktopEvents.getVKey(key));
+		return shortcut(mask, AWTClickBinding.getVKey(key));
 	}
 
 	/**
@@ -2305,7 +2305,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #isKeyInUse(Integer, Integer)
    */
 	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, DesktopEvents.getVKey(key));
+		return isKeyInUse(mask, AWTClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2557,9 +2557,9 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		
 		for (Entry<Integer, Integer> entry : pathKeys.map().entrySet())
-			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
-		description += DesktopEvents.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
-		description += DesktopEvents.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+			description += AWTClickBinding.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
+		description += AWTClickBinding.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
+		description += AWTClickBinding.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
 		
 		return description;		
 	}

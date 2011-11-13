@@ -32,7 +32,6 @@ import remixlab.remixcam.core.AbstractScene.CameraKeyboardAction;
 import remixlab.remixcam.core.AbstractScene.ClickAction;
 import remixlab.remixcam.core.AbstractScene.MouseAction;
 import remixlab.remixcam.devices.Bindings;
-import remixlab.remixcam.devices.ClickBinding;
 
 /**
  * This class encapsulates a set of camera keyboard shortcuts, and camera and
@@ -213,7 +212,7 @@ public class CameraProfile {
 	protected Bindings<Integer, Scene.MouseAction> cameraActions;
 	protected Bindings<Integer, Scene.MouseAction> frameActions;
 	// C L I C K A C T I O N S
-	protected Bindings<ClickBinding, ClickAction> clickActions;
+	protected Bindings<AWTClickBinding, ClickAction> clickActions;
 	protected Bindings<Integer, Scene.MouseAction> cameraWheelActions;
 	protected Bindings<Integer, Scene.MouseAction> frameWheelActions;
 	
@@ -250,7 +249,7 @@ public class CameraProfile {
 		keyboard = new Bindings<KeyboardShortcut, Scene.CameraKeyboardAction>(scene);
 		cameraActions = new Bindings<Integer, Scene.MouseAction>(scene);
 		frameActions = new Bindings<Integer, Scene.MouseAction>(scene);		
-		clickActions = new Bindings<ClickBinding, Scene.ClickAction>(scene);
+		clickActions = new Bindings<AWTClickBinding, Scene.ClickAction>(scene);
 		
 		cameraWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
 		frameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);		
@@ -476,7 +475,7 @@ public class CameraProfile {
 	 */
 	public String mouseClickBindingsDescription() {
 		String description = new String();
-		for (Entry<ClickBinding, ClickAction> entry : clickActions.map().entrySet())
+		for (Entry<AWTClickBinding, ClickAction> entry : clickActions.map().entrySet())
       description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
 		return description;
 	}
@@ -548,7 +547,7 @@ public class CameraProfile {
 	 * @see #setShortcut(Integer, Integer, Scene.CameraKeyboardAction)
 	 */
 	public void setShortcut(Integer mask, Character key, CameraKeyboardAction action) {
-		setShortcut(mask, DesktopEvents.getVKey(key), action);
+		setShortcut(mask, AWTClickBinding.getVKey(key), action);
 	}
 	
 	/**
@@ -612,7 +611,7 @@ public class CameraProfile {
 	 * @see #removeShortcut(Integer, Integer)
 	 */
 	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, DesktopEvents.getVKey(key));
+		removeShortcut(mask, AWTClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -661,7 +660,7 @@ public class CameraProfile {
    * @see #shortcut(Integer, Integer)
    */
 	public CameraKeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, DesktopEvents.getVKey(key));
+		return shortcut(mask, AWTClickBinding.getVKey(key));
 	}
 
 	/**
@@ -710,7 +709,7 @@ public class CameraProfile {
 	 * @see #isKeyInUse(Integer, Integer)
 	 */
 	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, DesktopEvents.getVKey(key));
+		return isKeyInUse(mask, AWTClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -879,7 +878,7 @@ public class CameraProfile {
 	 * @param button binding
 	 */
 	public boolean isClickBindingInUse(Scene.Button button) {
-		return clickActions.isShortcutInUse(new ClickBinding(button));
+		return clickActions.isShortcutInUse(new AWTClickBinding(button));
 	}
 	
 	/**
@@ -889,7 +888,7 @@ public class CameraProfile {
 	 * @param button button defining the binding
 	 */
 	public boolean isClickBindingInUse(Integer mask, Scene.Button button) {
-		return clickActions.isShortcutInUse(new ClickBinding(mask, button));
+		return clickActions.isShortcutInUse(new AWTClickBinding(mask, button));
 	}
 	
 	/**
@@ -899,7 +898,7 @@ public class CameraProfile {
 	 * @param nc number of clicks defining the binding
 	 */
 	public boolean isClickBindingInUse(Scene.Button button, Integer nc) {
-		return clickActions.isShortcutInUse(new ClickBinding(button, nc));
+		return clickActions.isShortcutInUse(new AWTClickBinding(button, nc));
 	}
 
 	/**
@@ -910,7 +909,7 @@ public class CameraProfile {
 	 * @param nc number of clicks defining the binding
 	 */
 	public boolean isClickBindingInUse(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.isShortcutInUse(new ClickBinding(mask, button, nc)); 
+		return clickActions.isShortcutInUse(new AWTClickBinding(mask, button, nc)); 
 	}
 
 	/** 
@@ -931,7 +930,7 @@ public class CameraProfile {
 			ClickAction a = clickBinding(button);
 			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickBinding(button), action);
+		clickActions.setBinding(new AWTClickBinding(button), action);
 	}
 
 	/**
@@ -949,7 +948,7 @@ public class CameraProfile {
 			ClickAction a = clickBinding(mask, button);
 			System.out.println("Warning: overwritting bindings which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickBinding(mask, button), action);
+		clickActions.setBinding(new AWTClickBinding(mask, button), action);
 	}
 	
 	/**
@@ -964,7 +963,7 @@ public class CameraProfile {
 			ClickAction a = clickBinding(button, nc);
 			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickBinding(button, nc), action);
+		clickActions.setBinding(new AWTClickBinding(button, nc), action);
 	}
 
 	/**
@@ -983,7 +982,7 @@ public class CameraProfile {
 			ClickAction a = clickBinding(mask, button, nc);
 			System.out.println("Warning: overwritting binding which was previously associated to " + a);
 		}
-		clickActions.setBinding(new ClickBinding(mask, button, nc), action);
+		clickActions.setBinding(new AWTClickBinding(mask, button, nc), action);
 	}
 	
 	/**
@@ -992,7 +991,7 @@ public class CameraProfile {
 	 * @param button binding
 	 */
 	public void removeClickBinding(Scene.Button button) {
-		clickActions.removeBinding(new ClickBinding(button));
+		clickActions.removeBinding(new AWTClickBinding(button));
 	}
 
 	/**
@@ -1002,7 +1001,7 @@ public class CameraProfile {
 	 * @param button mouse button defining the binding
 	 */
 	public void removeClickBinding(Integer mask, Scene.Button button) {
-		clickActions.removeBinding(new ClickBinding(mask, button));
+		clickActions.removeBinding(new AWTClickBinding(mask, button));
 	}
 	
 	/**
@@ -1012,7 +1011,7 @@ public class CameraProfile {
 	 * @param nc number of clicks defining the binding
 	 */
 	public void removeClickBinding(Scene.Button button, Integer nc) {
-		clickActions.removeBinding(new ClickBinding(button, nc));
+		clickActions.removeBinding(new AWTClickBinding(button, nc));
 	}
 	
 	/**
@@ -1023,7 +1022,7 @@ public class CameraProfile {
 	 * @param nc number of clicks defining the binding
 	 */
 	public void removeClickBinding(Integer mask, Scene.Button button, Integer nc) {
-		clickActions.removeBinding(new ClickBinding(mask, button, nc));
+		clickActions.removeBinding(new AWTClickBinding(mask, button, nc));
 	}
 	
 	/**
@@ -1032,7 +1031,7 @@ public class CameraProfile {
 	 * @param button binding
 	 */
 	public Scene.ClickAction clickBinding(Scene.Button button) {
-		return clickActions.binding(new ClickBinding(button));
+		return clickActions.binding(new AWTClickBinding(button));
 	}
 
 	/**
@@ -1042,7 +1041,7 @@ public class CameraProfile {
 	 * @param button mouse button defining the binding
 	 */
 	public Scene.ClickAction clickBinding(Integer mask, Scene.Button button) {
-		return clickActions.binding(new ClickBinding(mask, button));
+		return clickActions.binding(new AWTClickBinding(mask, button));
 	}
 	
 	/**
@@ -1052,7 +1051,7 @@ public class CameraProfile {
 	 * @param nc number of clicks defining the binding
 	 */
 	public Scene.ClickAction clickBinding(Scene.Button button, Integer nc) {
-		return clickActions.binding(new ClickBinding(button, nc));
+		return clickActions.binding(new AWTClickBinding(button, nc));
 	}
 
 	/**
@@ -1063,7 +1062,7 @@ public class CameraProfile {
 	 * @param nc number of clicks defining the binding
 	 */
 	public Scene.ClickAction clickBinding(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.binding(new ClickBinding(mask, button, nc));
+		return clickActions.binding(new AWTClickBinding(mask, button, nc));
 	}
 	
 	// wheel
