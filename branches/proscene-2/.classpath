@@ -8,5 +8,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/gwtent.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
