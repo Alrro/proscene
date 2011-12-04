@@ -40,9 +40,9 @@ import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
 import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveFrame;
-import remixlab.remixcam.core.BasicFrame;
+import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.core.KeyFrameInterpolator;
-import remixlab.remixcam.core.MouseGrabbable;
+import remixlab.remixcam.devices.HIDeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.devices.AbstractHIDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
@@ -178,7 +178,7 @@ public class Scene extends AbstractScene implements PConstants {
 	public PGraphics3D pg3d;	
 	protected boolean offscreen;
 	public Point upperLeftCorner;
-	protected BasicFrame tmpFrame;
+	protected SimpleFrame tmpFrame;
 
 	// O B J E C T S
 	protected DesktopEvents dE;
@@ -280,7 +280,7 @@ public class Scene extends AbstractScene implements PConstants {
 		setMouseGrabberCameraPathOffSelectionHintColor(pg3d.color(0, 255, 255));
 		*/
 		
-		tmpFrame = new BasicFrame();
+		tmpFrame = new SimpleFrame();
 		
 		//event handler
 		dE = new DesktopEvents(this);
@@ -382,10 +382,10 @@ public class Scene extends AbstractScene implements PConstants {
 	public void proscenium() {}
 	
 	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#applyTransformation(BasicFrame)}.
+	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#applyTransformation(SimpleFrame)}.
 	 */
 	@Override
-	public void applyTransformation(BasicFrame frame) {
+	public void applyTransformation(SimpleFrame frame) {
 		pg3d.translate( frame.translation().x, frame.translation().y, frame.translation().z );
 		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);
 	}
@@ -1287,7 +1287,7 @@ public class Scene extends AbstractScene implements PConstants {
 	
 	@Override
 	protected void drawSelectionHints() {
-		for (MouseGrabbable mg : msGrabberPool) {
+		for (HIDeviceGrabbable mg : msGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (!iF.isInCameraPath()) {
@@ -1315,7 +1315,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 	@Override
 	protected void drawCameraPathSelectionHints() {
-		for (MouseGrabbable mg : msGrabberPool) {
+		for (HIDeviceGrabbable mg : msGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (iF.isInCameraPath()) {
@@ -1497,7 +1497,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawPath(KeyFrameInterpolator, int, int, float)}.
 	 */
 	@Override
-	public void drawPath(List<BasicFrame> path, int mask, int nbFrames, int nbSteps, float scale) {
+	public void drawPath(List<SimpleFrame> path, int mask, int nbFrames, int nbSteps, float scale) {
 		if (mask != 0) {
 			renderer().pushStyle();
 			renderer().strokeWeight(2);
@@ -1506,7 +1506,7 @@ public class Scene extends AbstractScene implements PConstants {
 				renderer().noFill();
 				renderer().stroke(170);
 				renderer().beginShape();
-				for (BasicFrame myFr : path)
+				for (SimpleFrame myFr : path)
 					renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
 				renderer().endShape();
 			}
@@ -1516,7 +1516,7 @@ public class Scene extends AbstractScene implements PConstants {
 					nbFrames = nbSteps;
 				float goal = 0.0f;
 
-				for (BasicFrame myFr : path)
+				for (SimpleFrame myFr : path)
 					if ((count++) >= goal) {
 						goal += nbSteps / (float) nbFrames;
 						renderer().pushMatrix();
@@ -1811,7 +1811,7 @@ public class Scene extends AbstractScene implements PConstants {
 				// perform small animation ;)
 				if (camera().anyInterpolationIsStarted())
 					camera().stopAllInterpolations();
-				Camera cm = camera().getCopy();
+				Camera cm = camera().get();
 				cm.setPosition(avatar().cameraPosition());
 				cm.setUpVector(avatar().upVector());
 				cm.lookAt(avatar().target());
