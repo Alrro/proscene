@@ -5,20 +5,20 @@ import java.awt.event.KeyEvent;
 import remixlab.remixcam.core.AbstractScene.Button;
 import remixlab.remixcam.devices.*;
 
-public class AWTClickBinding extends AbstractClickBinding {
-	public AWTClickBinding(Button b) {
+public class ClickBinding extends AbstractClickBinding {
+	public ClickBinding(Button b) {
 		super(b);
 	}
 	
-	public AWTClickBinding(Integer m, Button b) {
+	public ClickBinding(Integer m, Button b) {
 		super (m,b);
 	}
 	
-	public AWTClickBinding(Button b, Integer c) {
+	public ClickBinding(Button b, Integer c) {
 		super(b, c);
 	}
 	
-	public AWTClickBinding(Integer m, Button b, Integer c) {
+	public ClickBinding(Integer m, Button b, Integer c) {
 		super(m,b,c);
 	} 
 
@@ -31,7 +31,7 @@ public class AWTClickBinding extends AbstractClickBinding {
 	public String description() {
 		String description = new String();
 		if(mask != 0)
-			description += AWTClickBinding.getModifiersExText(mask) + " + ";
+			description += ClickBinding.getModifiersExText(mask) + " + ";
 		switch (button) {
 		case LEFT :
 			description += "Button1";

@@ -5,10 +5,10 @@ import java.lang.reflect.Method;
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.devices.*;
 
-public class HIDevice extends AbstractHIDevice {
+public class Device extends AbstractDevice {
 	protected Method handlerMethod;
 	
-	public HIDevice(AbstractScene scn, Mode m) {
+	public Device(AbstractScene scn, Mode m) {
 		super(scn, m);
 	}	
 	
@@ -19,7 +19,7 @@ public class HIDevice extends AbstractHIDevice {
 	@Override
 	public void addHandler(Object obj, String methodName) {
 		try {
-			handlerMethod = obj.getClass().getMethod(methodName, new Class[] { HIDevice.class });
+			handlerMethod = obj.getClass().getMethod(methodName, new Class[] { Device.class });
 			handlerObject = obj;
 			handlerMethodName = methodName;
 		} catch (Exception e) {
