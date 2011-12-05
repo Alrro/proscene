@@ -33,7 +33,7 @@ import remixlab.remixcam.core.AbstractScene.ClickAction;
 import remixlab.remixcam.core.AbstractScene.KeyboardAction;
 import remixlab.remixcam.core.AbstractScene.MouseAction;
 import remixlab.remixcam.core.InteractiveFrame;
-import remixlab.remixcam.devices.HIDeviceGrabbable;
+import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.geom.Point;
 
 /**
@@ -317,7 +317,7 @@ public class DesktopEvents implements MouseWheelListener {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		scene.setMouseGrabber(null);
 		if( scene.hasMouseTracking() )
-			for (HIDeviceGrabbable mg : scene.mouseGrabberPool()) {
+			for (DeviceGrabbable mg : scene.mouseGrabberPool()) {
 				mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
 				if (mg.grabsMouse())
 					scene.setMouseGrabber(mg);

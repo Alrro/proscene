@@ -4,13 +4,13 @@ import java.util.*;
 
 import remixlab.remixcam.util.*;
 
-public class AWTTimerWrap implements Timable {
+public class TimerWrap implements Timable {
 	Scene scene;
 	Timer timer;
 	TimerTask timerTask;
 	Taskable caller;
 	
-	public AWTTimerWrap(Scene scn, Taskable o) {
+	public TimerWrap(Scene scn, Taskable o) {
 		scene = scn;
 		caller = o;
 	}	

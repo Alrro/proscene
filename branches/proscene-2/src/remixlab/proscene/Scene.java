@@ -42,9 +42,9 @@ import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveFrame;
 import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.core.KeyFrameInterpolator;
-import remixlab.remixcam.devices.HIDeviceGrabbable;
+import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
-import remixlab.remixcam.devices.AbstractHIDevice;
+import remixlab.remixcam.devices.AbstractDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTimer;
 import remixlab.remixcam.geom.Matrix3D;
@@ -400,7 +400,7 @@ public class Scene extends AbstractScene implements PConstants {
 			timerPool.add(job);
 		}
 		else {
-			job.setTimer(new AWTTimerWrap(this, job));
+			job.setTimer(new TimerWrap(this, job));
 		}
 	}
 	
@@ -633,7 +633,7 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		
 		// 4. HIDevices
-		for (AbstractHIDevice device : devices)
+		for (AbstractDevice device : devices)
 			device.handle();
 		
 		// 5. Grid and axis drawing
@@ -1287,7 +1287,7 @@ public class Scene extends AbstractScene implements PConstants {
 	
 	@Override
 	protected void drawSelectionHints() {
-		for (HIDeviceGrabbable mg : msGrabberPool) {
+		for (DeviceGrabbable mg : msGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (!iF.isInCameraPath()) {
@@ -1315,7 +1315,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 	@Override
 	protected void drawCameraPathSelectionHints() {
-		for (HIDeviceGrabbable mg : msGrabberPool) {
+		for (DeviceGrabbable mg : msGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (iF.isInCameraPath()) {
@@ -2021,7 +2021,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #setPathKey(Integer, Integer)
 	 */
 	public void setPathKey(Character key, Integer path) {
-		setPathKey(AWTClickBinding.getVKey(key), path);
+		setPathKey(ClickBinding.getVKey(key), path);
 	}
 	
 	/**
@@ -2050,7 +2050,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #path(Integer)
 	 */
 	public Integer path(Character key) {
-		return path(AWTClickBinding.getVKey(key));
+		return path(ClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2074,7 +2074,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #removePathKey(Integer)
 	 */
 	public void removePathKey(Character key) {
-		removePathKey(AWTClickBinding.getVKey(key));
+		removePathKey(ClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2098,7 +2098,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #isPathKeyInUse(Integer)
 	 */
 	public boolean isPathKeyInUse(Character key) {
-		return isPathKeyInUse(AWTClickBinding.getVKey(key));
+		return isPathKeyInUse(ClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2156,7 +2156,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #setShortcut(Integer, Integer, KeyboardAction)
    */
 	public void setShortcut(Integer mask, Character key, KeyboardAction action) {
-		setShortcut(mask, AWTClickBinding.getVKey(key), action);
+		setShortcut(mask, ClickBinding.getVKey(key), action);
 	}
 	
   /**
@@ -2217,7 +2217,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #removeShortcut(Integer, Integer)
    */
 	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, AWTClickBinding.getVKey(key));
+		removeShortcut(mask, ClickBinding.getVKey(key));
 	}
 
 	/**
@@ -2261,7 +2261,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #shortcut(Integer, Integer)
    */
 	public KeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, AWTClickBinding.getVKey(key));
+		return shortcut(mask, ClickBinding.getVKey(key));
 	}
 
 	/**
@@ -2305,7 +2305,7 @@ public class Scene extends AbstractScene implements PConstants {
    * @see #isKeyInUse(Integer, Integer)
    */
 	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, AWTClickBinding.getVKey(key));
+		return isKeyInUse(mask, ClickBinding.getVKey(key));
 	}
 	
 	/**
@@ -2557,9 +2557,9 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		
 		for (Entry<Integer, Integer> entry : pathKeys.map().entrySet())
-			description += AWTClickBinding.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
-		description += AWTClickBinding.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
-		description += AWTClickBinding.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+			description += ClickBinding.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
+		description += ClickBinding.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
+		description += ClickBinding.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
 		
 		return description;		
 	}
@@ -2837,7 +2837,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #removeDevice(AbstractHIDevice)
 	 * @see #removeAllDevices()
 	 */
-	public void addDevice(AbstractHIDevice device) {
+	public void addDevice(AbstractDevice device) {
 		devices.add(device);
 	}
 	
@@ -2847,7 +2847,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #addDevice(AbstractHIDevice)
 	 * @see #removeAllDevices()
 	 */
-	public void removeDevice(AbstractHIDevice device) {
+	public void removeDevice(AbstractDevice device) {
 		devices.remove(device);
 	}
 	
