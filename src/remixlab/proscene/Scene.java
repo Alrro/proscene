@@ -33,8 +33,9 @@ import remixlab.remixcam.core.*;
 import remixlab.remixcam.devices.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.*;
-*/
+// */
 
+// /*
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
@@ -51,6 +52,7 @@ import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Quaternion;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
+// */
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
