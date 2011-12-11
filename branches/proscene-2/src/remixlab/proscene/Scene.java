@@ -388,8 +388,8 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void applyTransformation(SimpleFrame frame) {
-		pg3d.translate( frame.translation().x, frame.translation().y, frame.translation().z );
-		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);
+		pg3d.translate( frame.translation().vec[0], frame.translation().vec[1], frame.translation().vec[2] );
+		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().vec[0], frame.rotation().axis().vec[1], frame.rotation().axis().vec[2]);
 	}
 
 	// 2. Associated objects
@@ -506,7 +506,7 @@ public class Scene extends AbstractScene implements PConstants {
 			pg3d.pushStyle();			
 			pg3d.stroke(255);
 			pg3d.strokeWeight(3);
-			drawCross(v.x, v.y);
+			drawCross(v.vec[0], v.vec[1]);
 			pg3d.popStyle();
 		}
 	}	
@@ -919,7 +919,7 @@ public class Scene extends AbstractScene implements PConstants {
 	@Override
 	public void drawArrow(Vector3D from, Vector3D to,	float radius) {
 		pg3d.pushMatrix();
-		pg3d.translate(from.x, from.y, from.z);
+		pg3d.translate(from.vec[0], from.vec[1], from.vec[2]);
 		
   	//pg3d.applyMatrix(new Quaternion(new Vector3D(0, 0, 1), Vector3D.sub(to,	from)).matrix());
 		
@@ -1198,10 +1198,10 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.strokeWeight(2);
 		pg3d.noFill();
 		pg3d.beginShape();
-		pg3d.vertex(p1.x, p1.y, p1.z);
-		pg3d.vertex(p3.x, p3.y, p3.z);//p3
-		pg3d.vertex(p2.x, p2.y, p2.z);
-		pg3d.vertex(p4.x, p4.y, p4.z);//p4
+		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
+		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);//p3
+		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
+		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);//p4
 		pg3d.endShape(CLOSE);
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1214,14 +1214,14 @@ public class Scene extends AbstractScene implements PConstants {
 		Vector3D p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
 		Vector3D p1s = coords(new Point(p1x, p1y));
-		Vector3D p2s = coords(new Point(p2.x, p2.y));
+		Vector3D p2s = coords(new Point(p2.vec[0], p2.vec[1]));
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
 		pg3d.noFill();
 		pg3d.beginShape(LINE);
-		pg3d.vertex(p1s.x, p1s.y, p1s.z);
-		pg3d.vertex(p2s.x, p2s.y, p2s.z);
+		pg3d.vertex(p1s.vec[0], p1s.vec[1], p1s.vec[2]);
+		pg3d.vertex(p2s.vec[0], p2s.vec[1], p2s.vec[2]);
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1352,7 +1352,7 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.pushStyle();
 		pg3d.stroke(255);
 		pg3d.strokeWeight(3);
-		drawCross(p.x, p.y);
+		drawCross(p.vec[0], p.vec[1]);
 		pg3d.popStyle();
 	}	
 
@@ -1378,10 +1378,10 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.pushStyle();
 		pg3d.noFill();
 		pg3d.beginShape(LINES);
-		pg3d.vertex(p1.x, p1.y, p1.z);
-		pg3d.vertex(p2.x, p2.y, p2.z);
-		pg3d.vertex(p3.x, p3.y, p3.z);
-		pg3d.vertex(p4.x, p4.y, p4.z);
+		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
+		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
+		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);
+		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1393,8 +1393,8 @@ public class Scene extends AbstractScene implements PConstants {
 	@Override
 	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
 		float precision = TWO_PI/subdivisions;
-		float x = center.x;
-		float y = center.y;
+		float x = center.vec[0];
+		float y = center.vec[1];
 		float angle, x2, y2;
 		beginScreenDrawing();
 		pg3d.pushStyle();
@@ -1402,13 +1402,13 @@ public class Scene extends AbstractScene implements PConstants {
 		//pg3d.fill(color);
 		pg3d.beginShape(TRIANGLE_FAN);
 		Vector3D c = coords(new Point(x, y));
-		pg3d.vertex(c.x, c.y, c.z);
+		pg3d.vertex(c.vec[0], c.vec[1], c.vec[2]);
 		Vector3D aux = new Vector3D();
 		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
 			x2 = x + (float) Math.sin(angle) * radius;
 			y2 = y + (float) Math.cos(angle) * radius;
 			aux.set(coords(new Point(x2, y2)));
-			pg3d.vertex(aux.x, aux.y, aux.z);
+			pg3d.vertex(aux.vec[0], aux.vec[1], aux.vec[2]);
 		}
 		pg3d.endShape();
 		pg3d.popStyle();
@@ -1420,8 +1420,8 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void drawFilledSquare(Vector3D center, float edge) {
-		float x = center.x;
-		float y = center.y;
+		float x = center.vec[0];
+		float y = center.vec[1];
 		beginScreenDrawing();
 		Vector3D p1 = coords(new Point(x - edge, y + edge));
 		Vector3D p2 = coords(new Point(x + edge, y + edge));
@@ -1431,10 +1431,10 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.noStroke();
 		//pg3d.fill(color);
 		pg3d.beginShape(QUADS);
-		pg3d.vertex(p1.x, p1.y, p1.z);
-		pg3d.vertex(p2.x, p2.y, p2.z);
-		pg3d.vertex(p3.x, p3.y, p3.z);
-		pg3d.vertex(p4.x, p4.y, p4.z);
+		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
+		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
+		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);
+		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1445,8 +1445,8 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void drawShooterTarget(Vector3D center, float length) {
-		float x = center.x;
-		float y = center.y;
+		float x = center.vec[0];
+		float y = center.vec[1];
 		beginScreenDrawing();
 		Vector3D p1 = coords(new Point((x - length), (y - length) + (0.6f * length)));
 		Vector3D p2 = coords(new Point((x - length), (y - length)));
@@ -1466,33 +1466,33 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.noFill();
 
 		pg3d.beginShape();
-		pg3d.vertex(p1.x, p1.y, p1.z);
-		pg3d.vertex(p2.x, p2.y, p2.z);
-		pg3d.vertex(p3.x, p3.y, p3.z);
+		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
+		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
+		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);
 		pg3d.endShape();
 
 		pg3d.beginShape();
-		pg3d.vertex(p4.x, p4.y, p4.z);
-		pg3d.vertex(p5.x, p5.y, p5.z);
-		pg3d.vertex(p6.x, p6.y, p6.z);
+		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);
+		pg3d.vertex(p5.vec[0], p5.vec[1], p5.vec[2]);
+		pg3d.vertex(p6.vec[0], p6.vec[1], p6.vec[2]);
 		pg3d.endShape();
 
 		pg3d.beginShape();
-		pg3d.vertex(p7.x, p7.y, p7.z);
-		pg3d.vertex(p8.x, p8.y, p8.z);
-		pg3d.vertex(p9.x, p9.y, p9.z);
+		pg3d.vertex(p7.vec[0], p7.vec[1], p7.vec[2]);
+		pg3d.vertex(p8.vec[0], p8.vec[1], p8.vec[2]);
+		pg3d.vertex(p9.vec[0], p9.vec[1], p9.vec[2]);
 		pg3d.endShape();
 
 		pg3d.beginShape();
-		pg3d.vertex(p10.x, p10.y, p10.z);
-		pg3d.vertex(p11.x, p11.y, p11.z);
-		pg3d.vertex(p12.x, p12.y, p12.z);
+		pg3d.vertex(p10.vec[0], p10.vec[1], p10.vec[2]);
+		pg3d.vertex(p11.vec[0], p11.vec[1], p11.vec[2]);
+		pg3d.vertex(p12.vec[0], p12.vec[1], p12.vec[2]);
 		pg3d.endShape();
 
 		pg3d.popStyle();
 		endScreenDrawing();
 
-		drawCross(center.x, center.y, 0.6f * length);
+		drawCross(center.vec[0], center.vec[1], 0.6f * length);
 	}
 	
 	/**
@@ -1509,7 +1509,7 @@ public class Scene extends AbstractScene implements PConstants {
 				renderer().stroke(170);
 				renderer().beginShape();
 				for (SimpleFrame myFr : path)
-					renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+					renderer().vertex(myFr.position().vec[0], myFr.position().vec[1], myFr.position().vec[2]);
 				renderer().endShape();
 			}
 			if ((mask & 6) != 0) {
