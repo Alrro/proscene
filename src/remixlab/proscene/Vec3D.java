@@ -34,9 +34,9 @@ public class Vec3D extends Vector3D {
 			float[] result = new float[3];
 			any.getClass().getMethod("get", new Class[] { float[].class })
 					.invoke(any, result);
-			x = result[0];
-			y = result[1];
-			z = result[2];
+			x(result[0]);
+			y(result[1]);
+			z(result[2]);
 
 		} catch (Exception e) {
 			throw (new RuntimeException("vec cannot handle class in constructor: "
