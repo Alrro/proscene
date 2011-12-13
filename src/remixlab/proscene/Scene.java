@@ -3190,9 +3190,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Utility function that returns the PMatrix3D representation of the given Matrix3D.
 	 */
 	public static final Matrix3D toMatrix3D(PMatrix3D m) {
-		return new Matrix3D(m.m00, m.m01, m.m02, m.m03, 
-				                m.m10, m.m11, m.m12, m.m13,
-				                m.m20, m.m21, m.m22, m.m23,
+		return new Matrix3D(m.m00, m.m01, m.m02, m.m03,
+												m.m10, m.m11, m.m12, m.m13,
+												m.m20, m.m21, m.m22, m.m23,
 				                m.m30, m.m31, m.m32, m.m33);
 	}
 	
@@ -3200,9 +3200,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Utility function that returns the PMatrix3D representation of the given Matrix3D.
 	 */
 	public static final PMatrix3D fromMatrix3D(Matrix3D m) {
-		return new PMatrix3D(m.m00, m.m01, m.m02, m.m03, 
-				                 m.m10, m.m11, m.m12, m.m13,
-				                 m.m20, m.m21, m.m22, m.m23,
-				                 m.m30, m.m31, m.m32, m.m33);
+		return new PMatrix3D(m.mat[0], m.mat[1], m.mat[2], m.mat[3], 
+				                 m.mat[4], m.mat[5], m.mat[6], m.mat[7],
+				                 m.mat[8], m.mat[9], m.mat[10], m.mat[11],
+				                 m.mat[12], m.mat[13], m.mat[14], m.mat[15]);
 	}		
 }
