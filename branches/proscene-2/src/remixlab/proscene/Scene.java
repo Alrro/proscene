@@ -994,7 +994,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCamera(Camera, boolean, float)}
 	 */	
 	@Override
-	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {
+	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {		
 		pg3d.pushMatrix();
 
 		// pg3d.applyMatrix(camera.frame().worldMatrix());
@@ -3137,12 +3137,17 @@ public class Scene extends AbstractScene implements PConstants {
 	 * {@link remixlab.remixcam.core.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
-		Matrix3D mat = new Matrix3D();
-		camera().getProjectionMatrix(mat);
-		float[] target = new float[16];;
-		pg3d.projection.set(mat.get(target));
-		
 		/**
+		Matrix3D mat = new Matrix3D();		
+		camera().getProjectionMatrix(mat);
+		mat.transpose();
+		float[] target = new float[16];
+		pg3d.projection.set(mat.get(target));
+		*/
+				
+		//pg3d.projection.set(camera().getProjectionMatrix(new float[16]));
+		
+		// /**
 		// compute the processing camera projection matrix from our camera()
 		// parameters
 		switch (camera().type()) {
@@ -3156,9 +3161,9 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		// if our camera() matrices are detached from the processing Camera
 		// matrices, we cache the processing camera projection matrix into our camera()
-		camera().setProjectionMatrix(toMatrix3D(pg3d.projection));
+		camera().setProjectionMatrix( pg3d.projection.get(new float[16]) );
 		//camera().setProjectionMatrix(pg3d.projection);		 
-		*/
+		// */
 	}
 
 	/**
@@ -3166,43 +3171,26 @@ public class Scene extends AbstractScene implements PConstants {
 	 * {@code PApplet.camera()}.
 	 */	
 	protected void setPModelViewMatrix() {
-		Matrix3D mat = new Matrix3D();
-		camera().getModelViewMatrix(mat);
-		float[] target = new float[16];;
-		pg3d.modelview.set(mat.get(target));
-		
 		/**
+		Matrix3D mat = new Matrix3D();		
+		camera().getModelViewMatrix(mat);
+		mat.transpose();// experimental
+		float[] target = new float[16];
+		pg3d.modelview.set(mat.get(target));
+		*/
+		
+		// pg3d.modelview.set(camera().getModelViewMatrix(new float[16]));
+		
+		// /**
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
-		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
-				        camera().at().x, camera().at().y, camera().at().z,
-				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
+		pg3d.camera(camera().position().x(), camera().position().y(), camera().position().z(),
+				        camera().at().x(), camera().at().y(), camera().at().z(),
+				        camera().upVector().x(), camera().upVector().y(), camera().upVector().z());
 		// if our camera() matrices are detached from the processing Camera
 		// matrices, we cache the processing camera modelview matrix into our camera()
-		camera().setModelViewMatrix(toMatrix3D(pg3d.modelview));
+		camera().setModelViewMatrix( pg3d.modelview.get(new float[16]) );
 		//camera().setModelViewMatrix(pg3d.modelview);
-		*/
+		// */
 	}
-	
-	// TODO new stuff
-	
-	/**
-	 * Utility function that returns the PMatrix3D representation of the given Matrix3D.
-	 */
-	public static final Matrix3D toMatrix3D(PMatrix3D m) {
-		return new Matrix3D(m.m00, m.m01, m.m02, m.m03,
-												m.m10, m.m11, m.m12, m.m13,
-												m.m20, m.m21, m.m22, m.m23,
-				                m.m30, m.m31, m.m32, m.m33);
-	}
-	
-	/**
-	 * Utility function that returns the PMatrix3D representation of the given Matrix3D.
-	 */
-	public static final PMatrix3D fromMatrix3D(Matrix3D m) {
-		return new PMatrix3D(m.mat[0], m.mat[1], m.mat[2], m.mat[3], 
-				                 m.mat[4], m.mat[5], m.mat[6], m.mat[7],
-				                 m.mat[8], m.mat[9], m.mat[10], m.mat[11],
-				                 m.mat[12], m.mat[13], m.mat[14], m.mat[15]);
-	}		
 }

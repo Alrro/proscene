@@ -21,11 +21,13 @@
  */
 
 import remixlab.proscene.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 
 Scene scene, auxScene;
 PGraphics canvas, auxCanvas;
 
-void setup() {
+public void setup() {
   size(640, 720, P3D);
 
   canvas = createGraphics(640, 360, P3D);
@@ -57,7 +59,7 @@ void mainDrawing(Scene s) {
   p.noStroke();
   // the main viewer camera is used to cull the sphere object against its
   // frustum
-  switch (scene.camera().sphereIsVisible(new PVector(0, 0, 0), 40)) {
+  switch (scene.camera().sphereIsVisible(new Vector3D(0, 0, 0), 40)) {
   case VISIBLE:
     p.fill(0, 255, 0);
     p.sphere(40);
@@ -73,10 +75,14 @@ void mainDrawing(Scene s) {
 
 void auxiliarDrawing(Scene s) {
   mainDrawing(s);
+  s.renderer().pushStyle();
+  s.renderer().fill(0,0,255);
+  s.renderer().stroke(0,0,255);
   s.drawCamera(scene.camera());
+  s.renderer().popStyle();
 }
 
-void draw() {
+public void draw() {
   handleMouse();
   canvas.beginDraw();
   scene.beginDraw();

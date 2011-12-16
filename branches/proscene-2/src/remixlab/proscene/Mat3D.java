@@ -28,23 +28,23 @@ public class Mat3D extends Matrix3D {
 			any.getClass().getMethod("get", new Class[] { float[].class }).invoke(any, result);
 
 			mat[0] = result[0];
-			mat[1] = result[1];
-			mat[2] = result[2];
-			mat[3] = result[3];
+			mat[4] = result[1];
+			mat[8] = result[2];
+			mat[12] = result[3];
 
-			mat[4] = result[4];
+			mat[1] = result[4];
 			mat[5] = result[5];
-			mat[6] = result[6];
-			mat[7] = result[7];
+			mat[9] = result[6];
+			mat[13] = result[7];
 
-			mat[8] = result[8];
-			mat[9] = result[9];
+			mat[2] = result[8];
+			mat[6] = result[9];
 			mat[10] = result[10];
-			mat[11] = result[11];
+			mat[14] = result[11];
 
-			mat[12] = result[12];
-			mat[13] = result[13];
-			mat[14] = result[14];
+			mat[3] = result[12];
+			mat[7] = result[13];
+			mat[11] = result[14];
 			mat[15] = result[15];
 
 		} catch (Exception e) {
