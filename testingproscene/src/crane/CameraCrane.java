@@ -1,6 +1,9 @@
 package crane;
 
 import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -22,8 +25,8 @@ public class CameraCrane extends PApplet {
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		auxCanvas = createGraphics(width, (height - canvas.height), P3D);
-		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
-		//auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, (height - canvas.height));
+		//auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+		auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, (height - canvas.height));
 		auxScene.setRadius(50);
 		auxScene.setGridIsDrawn(false);
 		// same drawing function which is defined below
@@ -36,6 +39,7 @@ public class CameraCrane extends PApplet {
 		robot = new RobotArm(scene);
 		//link robot head frame with auxScene camera frame
 		auxScene.camera().frame().linkTo(robot.frame(3));
+		//robot.frame(3).linkTo(auxScene.camera().frame());
 		//auxScene.camera().bindFrame(robot.frame(3));
 		
 		/**
@@ -130,6 +134,26 @@ public class CameraCrane extends PApplet {
 				println("draw robot camera frustum");
 			else
 				println("don't draw robot camera frustum");
+		}
+		if( key == 'p') {
+			if ( auxScene.camera().frame().isLinked() ) {
+				println("camera frame is linked!");
+				auxScene.camera().frame().unlink();
+			}
+			else {
+				println("camera frame is NOT linked!");
+				auxScene.camera().frame().linkTo(robot.frame(3));
+			}
+		}
+		if( key == 'q') {
+			if ( robot.frame(3).isLinked() ) {
+				println("robot frame is linked!");
+				robot.frame(3).unlinkFrom(auxScene.camera().frame());
+			}
+			else {
+				println("robot frame is NOT linked!");
+				auxScene.camera().frame().linkTo(robot.frame(3));
+			}
 		}
 	}
 

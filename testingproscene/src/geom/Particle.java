@@ -1,7 +1,7 @@
-package animation;
+package geom;
 import processing.core.*;
 
-class Particle {
+public class Particle {
 	PApplet parent;
 	public PVector speed;
 	public PVector pos;

@@ -1,6 +1,8 @@
 package basicrane;
 
 import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")

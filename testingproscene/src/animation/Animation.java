@@ -1,4 +1,5 @@
 package animation;
+import geom.Particle;
 import processing.core.*;
 import remixlab.proscene.*;
 

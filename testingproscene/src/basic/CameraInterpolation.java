@@ -2,6 +2,8 @@ package basic;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 
 @SuppressWarnings("serial")
 public class CameraInterpolation extends PApplet {
@@ -13,28 +15,33 @@ public class CameraInterpolation extends PApplet {
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);
 		//create the camera path:
-		scene.camera().setPosition(new PVector(80,0,0));
+		//scene.camera().setPosition(new PVector(80,0,0));
+		scene.camera().setPosition(new Vector3D(80,0,0));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
-		scene.camera().setPosition(new PVector(30,30,-80));
+		//scene.camera().setPosition(new PVector(30,30,-80));
+		scene.camera().setPosition(new Vector3D(30,30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
-		scene.camera().setPosition(new PVector(-30,-30,-80));
+		//scene.camera().setPosition(new PVector(-30,-30,-80));
+		scene.camera().setPosition(new Vector3D(-30,-30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
-		scene.camera().setPosition(new PVector(-80,0,0));
+		//scene.camera().setPosition(new PVector(-80,0,0));
+		scene.camera().setPosition(new Vector3D(-80,0,0));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
 		//
-		scene.camera().setPosition(new PVector(0,0,1));
+		//scene.camera().setPosition(new PVector(0,0,1));
+		scene.camera().setPosition(new Vector3D(0,0,1));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		scene.showAll();
 		

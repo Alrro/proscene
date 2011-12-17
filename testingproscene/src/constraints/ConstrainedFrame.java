@@ -1,7 +1,8 @@
 package constraints;
-import processing.core.PApplet;
-import processing.core.PFont;
-import processing.core.PVector;
+import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -10,7 +11,7 @@ public class ConstrainedFrame extends PApplet {
 	PFont myFont;
 	private int transDir;
 	private int rotDir;
-	remixlab.proscene.InteractiveFrame frame;
+	InteractiveFrame frame;
 	AxisPlaneConstraint constraints[] = new AxisPlaneConstraint[3];
 	int activeConstraint;
 	
@@ -38,8 +39,8 @@ public class ConstrainedFrame extends PApplet {
 		rotDir   = 0;
 		activeConstraint = 0;
 		
-		frame = new remixlab.proscene.InteractiveFrame(scene);
-		frame.translate(new PVector(0.2f, 0.2f, 0));
+		frame = new InteractiveFrame(scene);
+		frame.translate(new Vector3D(0.2f, 0.2f, 0));
 		scene.setInteractiveFrame(frame);			
 		frame.setConstraint(constraints[activeConstraint]);
 		scene.setDrawInteractiveFrame(true);	
@@ -84,9 +85,14 @@ public class ConstrainedFrame extends PApplet {
 	public void draw() {		
 		background(0);
 		pushMatrix();
-		//applyMatrix( frame.pMatrix() );
-		//Same as the previous commented line, but a lot more efficient:
-		frame.applyTransformation(this);		
+		// /**
+		float [] m = new float[16];
+		PMatrix3D pM = new PMatrix3D();
+		pM.set(frame.matrix().getTransposed(m) );
+		applyMatrix( pM );
+		// */
+		//Same as the previous commented lines, but a lot more efficient:
+		//frame.applyTransformation();		
 		scene.drawAxis(40);		
 		fill(204, 102, 0);
 		box(30, 30, 30);				
@@ -173,20 +179,20 @@ public class ConstrainedFrame extends PApplet {
 			constraints[activeConstraint].setRotationConstraintType(nextRotationConstraintType(constraints[activeConstraint].rotationConstraintType()));
 		}
 		
-		PVector dir = new PVector(0.0f, 0.0f, 0.0f);
+		Vector3D dir = new Vector3D(0.0f, 0.0f, 0.0f);
 		switch (transDir) {
-		case 0 : dir.x = 1.0f; break;
-		case 1 : dir.y = 1.0f; break;
-		case 2 : dir.z = 1.0f; break;
+		case 0 : dir.x(1.0f); break;
+		case 1 : dir.y(1.0f); break;
+		case 2 : dir.z(1.0f); break;
 		}
 		
 		constraints[activeConstraint].setTranslationConstraintDirection(dir);
 
 		dir.set(0.0f, 0.0f, 0.0f);
 		switch (rotDir) {
-		case 0 : dir.x = 1.0f; break;
-		case 1 : dir.y = 1.0f; break;
-		case 2 : dir.z = 1.0f; break;
+		case 0 : dir.x(1.0f); break;
+		case 1 : dir.y(1.0f); break;
+		case 2 : dir.z(1.0f); break;
 		}
 		
 		constraints[activeConstraint].setRotationConstraintDirection(dir);

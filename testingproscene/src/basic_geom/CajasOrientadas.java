@@ -4,6 +4,8 @@ import geom.Sphere;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 //import codeanticode.glgraphics.*;
 
 @SuppressWarnings("serial")
@@ -26,7 +28,7 @@ public class CajasOrientadas extends PApplet {
 		//scene.disableBackgroundHanddling();
 		
 		esfera = new Sphere(scene);
-		esfera.setPosition(new PVector(0.0f, 1.4f, 0.0f));
+		esfera.setPosition(new Vector3D(0.0f, 1.4f, 0.0f));
 		esfera.setColor(color(0,0,255));
 		
 		cajas = new Box[30];
@@ -42,9 +44,9 @@ public class CajasOrientadas extends PApplet {
 			cajas[i].draw(true);
 		}
 		
-		// /**
+		/**
 		int c = color(255,0,0);
-		scene.drawFilledCircle(c, new PVector(width/2,height/2,0), 50);
+		scene.drawFilledCircle(c, new Vector3D(width/2,height/2,0), 50);
 		//scene.drawFilledCircle(120, c, new PVector(width/2,height/2,0), 50);
 		// */
 		
@@ -59,7 +61,7 @@ public class CajasOrientadas extends PApplet {
 		popStyle();
 		// */
 		
-		// /**
+		/**
 		pushStyle();
 		scene.beginScreenDrawing();		
 		stroke(255);		
@@ -129,6 +131,6 @@ public class CajasOrientadas extends PApplet {
 	}
 		
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "CajasOrientadas" });
+		PApplet.main(new String[] { "--present", "basic_geom.CajasOrientadas" });
 	}
 }

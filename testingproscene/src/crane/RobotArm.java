@@ -1,6 +1,9 @@
 package crane;
 
 import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 public class RobotArm {
@@ -27,25 +30,25 @@ public class RobotArm {
 		frame(1).setTranslation(0, 0, 8); // Base height
 		frame(2).setTranslation(0, 0, 50); // Arm length
 		frame(3).setTranslation(0, 0, 50); // Arm length
-		frame(1).setRotation(new Quaternion(new PVector(1.0f, 0.0f, 0.0f), 0.6f));
-		frame(2).setRotation(new Quaternion(new PVector(1.0f, 0.0f, 0.0f), -2.0f));		
-		frame(3).setRotation(new Quaternion(new PVector(1.0f, -0.3f, 0.0f), 1.7f));		
+		frame(1).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), 0.6f));
+		frame(2).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), -2.0f));		
+		frame(3).setRotation(new Quaternion(new Vector3D(1.0f, -0.3f, 0.0f), 1.7f));		
 
 		// Set frame constraints
 		WorldConstraint baseConstraint = new WorldConstraint();
-		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE,	new PVector(0.0f, 0.0f, 1.0f));
-		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS,	new PVector(0.0f, 0.0f, 1.0f));
+		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE,	new Vector3D(0.0f, 0.0f, 1.0f));
+		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS,	new Vector3D(0.0f, 0.0f, 1.0f));
 		frame(0).setConstraint(baseConstraint);
 
 		LocalConstraint XAxis = new LocalConstraint();
-		XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-		XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(1.0f, 0.0f, 0.0f));
+		XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 0.0f));
+		XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(1.0f, 0.0f, 0.0f));
 		frame(1).setConstraint(XAxis);
 		frame(2).setConstraint(XAxis);
 
 		// /**
 		LocalConstraint headConstraint = new LocalConstraint();
-		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
+		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 0.0f));
 		//frame(3).setConstraint(headConstraint);
 		// */
 	}
@@ -55,18 +58,18 @@ public class RobotArm {
 		PGraphics3D pg3d = scn.renderer();	
 		
 		pg3d.pushMatrix();
-		frame(0).applyTransformation(pg3d);
+		frame(0).applyTransformation();
 		setColor(scn, frame(0).grabsMouse() );
 		drawBase(scn);
 
 		pg3d.pushMatrix();
-		frame(1).applyTransformation(pg3d);
+		frame(1).applyTransformation();
 		setColor(scn, frame(1).grabsMouse() );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
-		frame(2).applyTransformation(pg3d);
+		frame(2).applyTransformation();
 		setColor( scn, frame(2).grabsMouse() );
 		drawCylinder(scn);
 		drawArm(scn);
@@ -93,7 +96,7 @@ public class RobotArm {
 		
 		// /** //testing		
 		pg3d.pushMatrix();
-		frame(3).applyTransformation(pg3d);
+		frame(3).applyTransformation();
 		setColor( scn, frame(3).grabsMouse() );
 		drawHead(scn);
 		pg3d.popMatrix();// frame(0)

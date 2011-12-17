@@ -3,6 +3,9 @@ package SpaceNavigator;
 import processing.core.*;
 import procontroll.*;
 import net.java.games.input.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 public class SpaceNavigator extends PApplet {
@@ -67,7 +70,7 @@ public class SpaceNavigator extends PApplet {
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//iFrame = new InteractiveAvatarFrame(scene);
 		//scene.setInteractiveFrame(iFrame);
-		scene.interactiveFrame().translate(new PVector(30, 30, 0));
+		scene.interactiveFrame().translate(new Vector3D(30, 30, 0));
 		
 		// press 'i' to switch the interaction between the camera frame and the interactive frame
 		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);

@@ -1,7 +1,8 @@
 package constraints;
-import processing.core.PApplet;
-import processing.core.PFont;
-import processing.core.PVector;
+import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -155,20 +156,20 @@ public class ConstrainedCamera extends PApplet  {
 			constraints[activeConstraint].setRotationConstraintType(nextRotationConstraintType(constraints[activeConstraint].rotationConstraintType()));
 		}
 		
-		PVector dir = new PVector(0.0f, 0.0f, 0.0f);
+		Vector3D dir = new Vector3D(0.0f, 0.0f, 0.0f);
 		switch (transDir) {
-		case 0 : dir.x = 1.0f; break;
-		case 1 : dir.y = 1.0f; break;
-		case 2 : dir.z = 1.0f; break;
+		case 0 : dir.x(1.0f); break;
+		case 1 : dir.y(1.0f); break;
+		case 2 : dir.z(1.0f); break;
 		}
 		
 		constraints[activeConstraint].setTranslationConstraintDirection(dir);
 
 		dir.set(0.0f, 0.0f, 0.0f);
 		switch (rotDir) {
-		case 0 : dir.x = 1.0f; break;
-		case 1 : dir.y = 1.0f; break;
-		case 2 : dir.z = 1.0f; break;
+		case 0 : dir.x(1.0f); break;
+		case 1 : dir.y(1.0f); break;
+		case 2 : dir.z(1.0f); break;
 		}
 		constraints[activeConstraint].setRotationConstraintDirection(dir);
 	}

@@ -2,6 +2,8 @@ package basic;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 
 @SuppressWarnings("serial")
 public class FrameInteraction extends PApplet {
@@ -19,7 +21,7 @@ public class FrameInteraction extends PApplet {
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//iFrame = new InteractiveAvatarFrame(scene);
 		//scene.setInteractiveFrame(iFrame);
-		scene.interactiveFrame().translate(new PVector(30, 30, 0));
+		scene.interactiveFrame().translate(new Vector3D(30, 30, 0));
 		// press 'i' to switch the interaction between the camera frame and the interactive frame
 		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		// press 'f' to display frame selection hints

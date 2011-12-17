@@ -1,21 +1,23 @@
-package geom;
+package gnutopic;
 import processing.core.*;
-import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
+import remixlab.proscene.*;
 
-public class Sphere {
+public class SpecializedSphere {
 	Scene scene;
 	PApplet parent;
-	InteractiveFrame iFrame;
+	CircledInteractiveFrame iFrame;
 	float r;
 	int c;
 	
-	public Sphere(Scene scn) {
+	public SpecializedSphere(Scene scn) {
 		scene = scn;
 		parent = scn.parent;
-		iFrame = new InteractiveFrame(scn);
-		setRadius(10);
+		float radius = 10;
+		setRadius(radius);
+		iFrame = new CircledInteractiveFrame(scn, radius);		
 	}
 	
 	public void draw() {
@@ -24,8 +26,7 @@ public class Sphere {
 	
 	public void draw(boolean drawAxis) {
 		parent.pushMatrix();
-		//iFrame.applyTransformation(parent);
-		iFrame.applyTransformation(scene);
+		iFrame.applyTransformation();
 		
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, radius()*1.3f);

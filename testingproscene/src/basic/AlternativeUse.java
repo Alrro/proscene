@@ -9,6 +9,7 @@ public class AlternativeUse extends PApplet {
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
+		//size(640, 360, P3D);
 		scene = new MyScene(this);			  
 	}
 

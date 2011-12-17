@@ -1,6 +1,9 @@
 package basic;
 import processing.core.*;
 import processing.opengl.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 import remixlab.proscene.CameraProfile.Mode;
 
@@ -22,8 +25,8 @@ public class ThirdPerson extends PApplet {
 		avatar.setInclination(PI/6);
 		
 		WorldConstraint baseConstraint = new WorldConstraint();
-		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,1.0f,0.0f));
-		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,1.0f,0.0f));
+		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new Vector3D(0.0f,1.0f,0.0f));
+		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(0.0f,1.0f,0.0f));
 		avatar.setConstraint(baseConstraint);
 		
 		scene.setInteractiveFrame(avatar);
@@ -37,7 +40,8 @@ public class ThirdPerson extends PApplet {
 		pushMatrix();
 		// Multiply matrix to get in the frame coordinate system.
 		// applyMatrix(scene.interactiveFrame().matrix()) is possible but inefficient 
-		scene.interactiveFrame().applyTransformation(this);//very efficient
+		//scene.interactiveFrame().applyTransformation(this);//very efficient
+		scene.applyTransformation(scene.interactiveFrame());
 		// Draw an axis using the Scene static function
 		scene.drawAxis(20);
 		if (scene.interactiveFrameIsDrawn())

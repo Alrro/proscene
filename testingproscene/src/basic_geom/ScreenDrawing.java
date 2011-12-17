@@ -2,6 +2,8 @@ package basic_geom;
 import geom.Box;
 import processing.core.*;
 import processing.opengl.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")

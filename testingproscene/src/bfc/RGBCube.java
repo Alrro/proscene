@@ -3,7 +3,10 @@ import java.util.ArrayList;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.proscene.Camera.Cone;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.core.Camera.Cone;
+
 
 @SuppressWarnings("serial")
 public class RGBCube extends PApplet {
@@ -11,19 +14,19 @@ public class RGBCube extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
 	PGraphics3D g3;
-	PVector normalXPos = new PVector(1,0,0);
-	PVector normalYPos = new PVector(0,1,0);
-	PVector normalZPos = new PVector(0,0,1);
-	PVector normalXNeg = new PVector(-1,0,0);
-	PVector normalYNeg = new PVector(0,-1,0);
-	PVector normalZNeg = new PVector(0,0,-1);
+	Vector3D normalXPos = new Vector3D(1,0,0);
+	Vector3D normalYPos = new Vector3D(0,1,0);
+	Vector3D normalZPos = new Vector3D(0,0,1);
+	Vector3D normalXNeg = new Vector3D(-1,0,0);
+	Vector3D normalYNeg = new Vector3D(0,-1,0);
+	Vector3D normalZNeg = new Vector3D(0,0,-1);
 	ArrayList<Camera.Cone> normalCones; 
-	ArrayList<PVector> normals;
-	PVector [] normalArray = new PVector [2];	
+	ArrayList<Vector3D> normals;
+	Vector3D [] normalArray = new Vector3D [2];	
 
 	public void setup() {
 		size(640, 720, P3D);
-		normals = new ArrayList<PVector>();
+		normals = new ArrayList<Vector3D>();
 		normals.add(normalZPos);
 		normals.add(normalXPos);
 		normals.add(normalYPos);
@@ -62,16 +65,16 @@ public class RGBCube extends PApplet {
 		Cone cone = scene.camera().new Cone(normals);
 		println( "cone angle: " + cone.angle() + " cone axis: " + cone.axis() );
 		
-		ArrayList<PVector> nT = new ArrayList<PVector>();
-		nT.add(new PVector(1,1,1));
-		nT.add(new PVector(1,1,-1));
-		nT.add(new PVector(1,-1,1));
-		nT.add(new PVector(1,-1,-1));
+		ArrayList<Vector3D> nT = new ArrayList<Vector3D>();
+		nT.add(new Vector3D(1,1,1));
+		nT.add(new Vector3D(1,1,-1));
+		nT.add(new Vector3D(1,-1,1));
+		nT.add(new Vector3D(1,-1,-1));
 		
-		nT.add(new PVector(-1,1,1));
-		nT.add(new PVector(-1,1,-1));
-		nT.add(new PVector(-1,-1,1));
-		nT.add(new PVector(-1,-1,-1));
+		nT.add(new Vector3D(-1,1,1));
+		nT.add(new Vector3D(-1,1,-1));
+		nT.add(new Vector3D(-1,-1,1));
+		nT.add(new Vector3D(-1,-1,-1));
 		
 		/**
 		 [ 1.0, 1.0, 1.0 ]
@@ -121,7 +124,7 @@ public class RGBCube extends PApplet {
 		p.noStroke();
 		p.beginShape(QUADS);		
 		
-        PVector nVD = scene.camera().viewDirection();
+        Vector3D nVD = scene.camera().viewDirection();
         
         if(!scene.camera().coneIsBackFacing(nVD, normals)) {        
         

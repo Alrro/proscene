@@ -1,7 +1,10 @@
 package basic;
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.proscene.Scene.ClickAction;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.core.AbstractScene.KeyboardAction;
+import remixlab.remixcam.core.AbstractScene.ClickAction;
 
 @SuppressWarnings("serial")
 public class CameraProfiles extends PApplet {
@@ -15,7 +18,7 @@ public class CameraProfiles extends PApplet {
 		// A Scene has a single InteractiveFrame (null by default). We set it
 		// here.
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
-		scene.interactiveFrame().translate(new PVector(30, 30, 0));
+		scene.interactiveFrame().translate(new Vector3D(30, 30, 0));
 		
 		// 1. Perform some keyboard configuration:
 		// Note that there are some defaults set (soon to be  documented ;)
@@ -24,6 +27,8 @@ public class CameraProfiles extends PApplet {
 		scene.setShortcut('f', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		// 'z' toggles camera type:
 		scene.setShortcut('z', Scene.KeyboardAction.CAMERA_TYPE);
+		// 
+		scene.setShortcut('i', KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 
 		// 2. Customized camera profile:
 		profile = new MyCameraProfile(scene, "MY_PROFILE");

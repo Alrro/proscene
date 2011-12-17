@@ -5,6 +5,9 @@ import java.util.ListIterator;
 
 import processing.core.*;
 import processing.opengl.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 //import codeanticode.glgraphics.*;
 
@@ -57,35 +60,35 @@ public class TestingAPI extends PApplet {
 		
 		q1.fromEulerAngles(roll, pitch, yaw);
 		
-		PApplet.println("q1 = (" + q1.x + ", " + q1.y + ", " + q1.z + ", " + q1.w + ")");
+		PApplet.println("q1 = (" + q1.x() + ", " + q1.y() + ", " + q1.z() + ", " + q1.w() + ")");
 		
-		PVector v = q1.eulerAngles();
+		Vector3D v = q1.eulerAngles();
 		
-		roll = v.x;
-		pitch = v.y;
-		yaw = v.z;		
+		roll = v.x();
+		pitch = v.y();
+		yaw = v.z();		
 		PApplet.println("roll = " + roll);
 		PApplet.println("pitch = " + pitch);
 		PApplet.println("yaw = " + yaw);
 		
 		q2.fromEulerAngles(roll, pitch, yaw);
 		
-		PApplet.println("q2 = (" + q2.x + ", " + q2.y + ", " + q2.z + ", " + q2.w + ")");
+		PApplet.println("q2 = (" + q2.x() + ", " + q2.y() + ", " + q2.z() + ", " + q2.w() + ")");
 		
 		float x = random(200);
 		float y = random(200);
 		float z = random(200);
-		PVector axis3 = new PVector(x, y, z);
-		PVector axis4 = new PVector(-x, -y, -z);
+		Vector3D axis3 = new Vector3D(x, y, z);
+		Vector3D axis4 = new Vector3D(-x, -y, -z);
 		float angle = random(low, high);;
 		
 		Quaternion q3 = new Quaternion(axis3, angle);
 		Quaternion q4 = new Quaternion(axis4, -angle);
 		
-		PApplet.println("q3 = (" + q3.x + ", " + q3.y + ", " + q3.z + ", " + q3.w + ")");
-		PApplet.println("q4 = (" + q4.x + ", " + q4.y + ", " + q4.z + ", " + q4.w + ")");
+		PApplet.println("q3 = (" + q3.x() + ", " + q3.y() + ", " + q3.z() + ", " + q3.w() + ")");
+		PApplet.println("q4 = (" + q4.x() + ", " + q4.y() + ", " + q4.z() + ", " + q4.w() + ")");
 		
-		PVector vec = new PVector(0, -8, 5);
+		Vector3D vec = new Vector3D(0, -8, 5);
 		
 		float mag = 45;
 		
@@ -106,7 +109,7 @@ public class TestingAPI extends PApplet {
 		/**
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setCameraType(Camera.Type.PERSPECTIVE);
-		scene.camera().setPosition(new PVector(-30,-30,-80));
+		scene.camera().setPosition(new Vector3D(-30,-30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		scene.showAll();
 		*/
@@ -169,7 +172,7 @@ public class TestingAPI extends PApplet {
 		for (int i=0; i<nbKeyFrames; i++) {
 			keyFrame_[i] = new InteractiveFrame();
 			keyFrame_[i].setPosition(-1.0f + 2.0f*i/(nbKeyFrames-1), 0.0f, 0.0f);
-			Quaternion q = new Quaternion(new PVector(0,1,0), i*(3.1416f/6));
+			Quaternion q = new Quaternion(new Vector3D(0,1,0), i*(3.1416f/6));
 			keyFrame_[i].setOrientation(q.x, q.y, q.z, q.w);
 			kfi_.addKeyFrame(keyFrame_[i], true);
 		}
@@ -188,8 +191,8 @@ public class TestingAPI extends PApplet {
 		//q2.pMatrix().print();
 		//q2.matrix().print();
 		
-		//PVector v1 = new PVector(random(-9.9f, 9.9f),random(-9.9f, 9.9f), random(-9.9f, 9.9f));
-		//PVector v2 = new PVector(random(-9.9f, 9.9f),random(-9.9f, 9.9f), random(-9.9f, 9.9f));
+		//Vector3D v1 = new Vector3D(random(-9.9f, 9.9f),random(-9.9f, 9.9f), random(-9.9f, 9.9f));
+		//Vector3D v2 = new Vector3D(random(-9.9f, 9.9f),random(-9.9f, 9.9f), random(-9.9f, 9.9f));
 		//Frame f1 = new Frame(v1, q1);
 		
 		//f1.pMatrix().print();
@@ -211,8 +214,8 @@ public class TestingAPI extends PApplet {
 		//println(f2.rotation().x + " " + f2.rotation().y + " " + f2.rotation().z + " " +  f2.rotation().w);
 		//println(f3.rotation().x + " " + f3.rotation().y + " " + f3.rotation().z + " " +  f3.rotation().w);
 		
-		//PVector v3 = f1.rotation().rotate(v2);
-		//PVector v4 = f3.rotation().rotate(v2);
+		//Vector3D v3 = f1.rotation().rotate(v2);
+		//Vector3D v4 = f3.rotation().rotate(v2);
 		
 		//println(v3.x + " " + v3.y + " " + v3.z);
 		//println(v4.x + " " + v4.y + " " + v4.z);

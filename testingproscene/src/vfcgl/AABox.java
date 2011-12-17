@@ -1,15 +1,18 @@
 package vfcgl;
 import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 public class AABox {
 	Scene scene;
-	Frame frame;
+	SimpleFrame frame;
 	float w, h, d, halfW, halfH, halfD, radius;
 	int r, g, b;
 
 	AABox() {
-		frame = new Frame();
+		frame = new SimpleFrame();
 		setSize();
 		setPosition();
 		setColor();
@@ -34,8 +37,8 @@ public class AABox {
 			drawCube(parent, drawBoundingVolumes, drawAxis);
 			break;
 		case SEMIVISIBLE:
-			PVector BBCorner1 = new PVector(frame.position().x - this.halfW, frame.position().y + this.halfH, frame.position().z - this.halfD);
-			PVector BBCorner2 = new PVector(frame.position().x + this.halfW, frame.position().y - this.halfH, frame.position().z + this.halfD);
+			Vector3D BBCorner1 = new Vector3D(frame.position().x() - this.halfW, frame.position().y() + this.halfH, frame.position().z() - this.halfD);
+			Vector3D BBCorner2 = new Vector3D(frame.position().x() + this.halfW, frame.position().y() - this.halfH, frame.position().z() + this.halfD);
 			switch (camera.aaBoxIsVisible(BBCorner1, BBCorner2)) {
 			case VISIBLE:
 			case SEMIVISIBLE:
@@ -53,7 +56,7 @@ public class AABox {
 	public void drawCube(PApplet parent, boolean drawBoundingVolumes, boolean drawAxis) {
 		TestVFCGL.renderedCubes++;
 		parent.pushMatrix();
-		frame.applyTransformation(parent);
+		frame.applyTransformation(scene);
 		if (drawAxis)
 			scene.drawAxis(PApplet.max(w, h, d) * 1.3f);
 		parent.noStroke();
@@ -97,17 +100,17 @@ public class AABox {
 				* halfD);
 	}
 
-	public PVector getPosition() {
+	public Vector3D getPosition() {
 		return frame.position();
 	}
 
 	public void setPosition() {
-		frame.setPosition(new PVector((float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize,
+		frame.setPosition(new Vector3D((float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize,
 				                      (float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize, 
 				                      (float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize));
 	}
 
-	public void setPosition(PVector pos) {
+	public void setPosition(Vector3D pos) {
 		frame.setPosition(pos);
 	}
 

@@ -1,13 +1,15 @@
 package basicfrustum;
 import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 
 public class BoxNode {
-	PVector p1, p2;
+	Vector3D p1, p2;
 	BoxNode child[];
 	int level;
 	
-	BoxNode(PVector P1, PVector P2) {
+	BoxNode(Vector3D P1, Vector3D P2) {
 		p1 = P1;
 		p2 = P2;
 		child = new BoxNode[8];		
@@ -19,26 +21,26 @@ public class BoxNode {
 		parent.strokeWeight(level+1);
 		
 		parent.beginShape();		
-		parent.vertex(p1.x, p1.y, p1.z);
-		parent.vertex(p1.x, p2.y, p1.z);
-		parent.vertex(p2.x, p2.y, p1.z);
-		parent.vertex(p2.x, p1.y, p1.z);
-		parent.vertex(p1.x, p1.y, p1.z);
-		parent.vertex(p1.x, p1.y, p2.z);
-		parent.vertex(p1.x, p2.y, p2.z);
-		parent.vertex(p2.x, p2.y, p2.z);
-		parent.vertex(p2.x, p1.y, p2.z);
-		parent.vertex(p1.x, p1.y, p2.z);
+		parent.vertex(p1.x(), p1.y(), p1.z());
+		parent.vertex(p1.x(), p2.y(), p1.z());
+		parent.vertex(p2.x(), p2.y(), p1.z());
+		parent.vertex(p2.x(), p1.y(), p1.z());
+		parent.vertex(p1.x(), p1.y(), p1.z());
+		parent.vertex(p1.x(), p1.y(), p2.z());
+		parent.vertex(p1.x(), p2.y(), p2.z());
+		parent.vertex(p2.x(), p2.y(), p2.z());
+		parent.vertex(p2.x(), p1.y(), p2.z());
+		parent.vertex(p1.x(), p1.y(), p2.z());
 		parent.endShape();
 		//parent.endShape(PApplet.CLOSE);
 		
 		parent.beginShape(PApplet.LINES);
-		parent.vertex(p1.x, p2.y, p1.z);
-		parent.vertex(p1.x, p2.y, p2.z);
-		parent.vertex(p2.x, p2.y, p1.z);
-		parent.vertex(p2.x, p2.y, p2.z);
-		parent.vertex(p2.x, p1.y, p1.z);
-		parent.vertex(p2.x, p1.y, p2.z);
+		parent.vertex(p1.x(), p2.y(), p1.z());
+		parent.vertex(p1.x(), p2.y(), p2.z());
+		parent.vertex(p2.x(), p2.y(), p1.z());
+		parent.vertex(p2.x(), p2.y(), p2.z());
+		parent.vertex(p2.x(), p1.y(), p1.z());
+		parent.vertex(p2.x(), p1.y(), p2.z());
 		parent.endShape();
 		//parent.colorMode(PApplet.RGB, 255);
 	}
@@ -57,10 +59,10 @@ public class BoxNode {
 	
 	public void buildBoxHierarchy(int l) {
 		level = l;		
-		PVector middle = PVector.mult(PVector.add(p1, p2), 1/2.0f);
+		Vector3D middle = Vector3D.mult(Vector3D.add(p1, p2), 1/2.0f);
 		for (int i=0; i<8; ++i) {
 			// point in one of the 8 box corners
-		    PVector point = new PVector(((i&4)!=0)?p1.x:p2.x, ((i&2)!=0)?p1.y:p2.y, ((i&1)!=0)?p1.z:p2.z);
+		    Vector3D point = new Vector3D(((i&4)!=0)?p1.x():p2.x(), ((i&2)!=0)?p1.y():p2.y(), ((i&1)!=0)?p1.z():p2.z());
 		    if (level > 0) {
 		    	child[i] = new BoxNode(point, middle);
 		    	child[i].buildBoxHierarchy(level-1);

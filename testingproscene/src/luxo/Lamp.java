@@ -1,5 +1,8 @@
 package luxo;
 import processing.core.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
+import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 public class Lamp {
@@ -22,18 +25,10 @@ public class Lamp {
 		}
 		*/
 		
-		cam = new Camera(scene, false);
+		cam = new Camera(scene);
 		
 		for (int i = 0; i < 4; ++i) {
-			// last frame should be a camera frame:
-			if(i == 3) {
-				frameArray[i] = cam.frame();
-				//frameArray[i] = new InteractiveCameraFrame(scene);								
-				//cam.setFrame((InteractiveCameraFrame)frameArray[i]);
-				//frameArray[i] = new InteractiveDrivableFrame(scene);
-			}			
-			else
-				frameArray[i] = new InteractiveFrame(scene);
+			frameArray[i] = new InteractiveFrame(scene);
 			// Creates a hierarchy of frames
 			if (i > 0)
 				frame(i).setReferenceFrame(frame(i - 1));
@@ -44,48 +39,48 @@ public class Lamp {
 		frame(2).setTranslation(0, 0, 50);  // Arm length
 		frame(3).setTranslation(0, 0, 50);  // Arm length
 		
-		frame(1).setRotation(new Quaternion(new PVector(1.0f,0.0f,0.0f), 0.6f));
-		frame(2).setRotation(new Quaternion(new PVector(1.0f,0.0f,0.0f), -2.0f));
-		frame(3).setRotation(new Quaternion(new PVector(1.0f,-0.3f,0.0f), -1.7f));
+		frame(1).setRotation(new Quaternion(new Vector3D(1.0f,0.0f,0.0f), 0.6f));
+		frame(2).setRotation(new Quaternion(new Vector3D(1.0f,0.0f,0.0f), -2.0f));
+		frame(3).setRotation(new Quaternion(new Vector3D(1.0f,-0.3f,0.0f), -1.7f));
 		
 		// Set frame constraints
 		WorldConstraint baseConstraint = new WorldConstraint();
-		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f,0.0f,1.0f));
-		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f,0.0f,1.0f));
+		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new Vector3D(0.0f,0.0f,1.0f));
+		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(0.0f,0.0f,1.0f));
 		frame(0).setConstraint(baseConstraint);
 		
 		LocalConstraint XAxis = new LocalConstraint();
-		XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN,  new PVector(0.0f,0.0f,0.0f));
-		XAxis.setRotationConstraint   (AxisPlaneConstraint.Type.AXIS, new PVector(1.0f,0.0f,0.0f));
+		XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN,  new Vector3D(0.0f,0.0f,0.0f));
+		XAxis.setRotationConstraint   (AxisPlaneConstraint.Type.AXIS, new Vector3D(1.0f,0.0f,0.0f));
 		frame(1).setConstraint(XAxis);
 		frame(2).setConstraint(XAxis);
 		
 		LocalConstraint headConstraint = new LocalConstraint();
-		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f,0.0f,0.0f));
-		//frame(3).setConstraint(headConstraint);
+		headConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f,0.0f,0.0f));
+		frame(3).setConstraint(headConstraint);
 	}
 	
 	public void draw() {
 		// Luxo's local frame
 		parent.pushMatrix();
-		frame(0).applyTransformation(parent);
+		frame(0).applyTransformation();
 		setColor( frame(0).grabsMouse() );
 		drawBase();
 		
 		parent.pushMatrix();//not really necessary here
-		frame(1).applyTransformation(parent);
+		frame(1).applyTransformation();
 		setColor( frame(1).grabsMouse() );
 		drawCylinder();
 		drawArm();		
 		
 		parent.pushMatrix();//not really necessary here
-		frame(2).applyTransformation(parent);
+		frame(2).applyTransformation();
 		setColor( frame(2).grabsMouse() );
 		drawCylinder();
 		drawArm();		
 		
 		parent.pushMatrix();//not really necessary here
-		frame(3).applyTransformation(parent);
+		frame(3).applyTransformation();
 		setColor( frame(3).grabsMouse() );
 		drawHead();
 		

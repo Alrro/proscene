@@ -9,6 +9,8 @@ import javax.media.opengl.GL;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 
 @SuppressWarnings("serial")
 public class PointUnderPixel extends PApplet {
@@ -50,6 +52,15 @@ public class PointUnderPixel extends PApplet {
 	  for (int i = 0; i < boxes.length; i++)    
 	    boxes[i].draw();
 	}
+	
+	public void keyPressed() {
+		if ((key == 'x') || (key == 'x')) {
+			println("projectCacheOptimized: " + scene.camera().projectCacheOptimized + " unprojectCacheOptimized: " + scene.camera().unprojectCacheOptimized);
+		}
+		if ((key == 'y') || (key == 'Y')) {
+			scene.camera().optimizeUnprojectCache(!scene.camera().unprojectCacheOptimized);
+		}
+	}
 
 	class GLCamera extends Camera {
 		protected PGraphicsOpenGL pgl;
@@ -58,7 +69,7 @@ public class PointUnderPixel extends PApplet {
 
 		public GLCamera(Scene scn) {
 			super(scn);
-			pgl = (PGraphicsOpenGL) scene.pg3d;
+			pgl = (PGraphicsOpenGL) scn.pg3d;
 			gl = pgl.gl;
 			//glu = pgl.glu;
 		}
@@ -71,13 +82,13 @@ public class PointUnderPixel extends PApplet {
 					1, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer
 							.wrap(depth));
 			pgl.endGL();
-			PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
+			Vector3D point = new Vector3D((int) pixel.x, (int) pixel.y, depth[0]);
 			point = unprojectedCoordinatesOf(point);
 			return new WorldPoint(point, (depth[0] < 1.0f));
 		}
 	}
 
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "PointUnderPixel" });
+		PApplet.main(new String[] { "--present", "basic_geom.PointUnderPixel" });
 	}
 }
