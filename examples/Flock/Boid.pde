@@ -5,7 +5,7 @@ class Boid {
   int avatarColor;
 
   // fields
-  PVector pos, vel, acc, ali, coh, sep; // pos, velocity, and acceleration in
+  Vector3D pos, vel, acc, ali, coh, sep; // pos, velocity, and acceleration in
   // a vector datatype
   float neighborhoodRadius; // radius in which it looks for fellow boids
   float maxSpeed = 4; // maximum magnitude for the velocity vector
@@ -15,48 +15,48 @@ class Boid {
   float t = 0;
 
   // constructors
-  Boid(PVector inPos) {
+  Boid(Vector3D inPos) {
     grabsMouseColor = color(0,0,255);
     avatarColor = color(255,0,0);		
-    pos = new PVector();
+    pos = new Vector3D();
     pos.set(inPos);
     frame = new InteractiveAvatarFrame(scene);	
     frame.setPosition(pos);
     frame.setAzimuth(-HALF_PI);
     frame.setInclination(PI*(4/5));
     frame.setTrackingDistance(scene.radius()/10);
-    vel = new PVector(random(-1, 1), random(-1, 1), random(1, -1));
-    acc = new PVector(0, 0, 0);
+    vel = new Vector3D(random(-1, 1), random(-1, 1), random(1, -1));
+    acc = new Vector3D(0, 0, 0);
     neighborhoodRadius = 100;
   }
 
-  Boid(PVector inPos, PVector inVel, float r) {
+  Boid(Vector3D inPos, Vector3D inVel, float r) {
     grabsMouseColor = color(0,0,255);
     avatarColor = color(255,0,0);
-    pos = new PVector();
+    pos = new Vector3D();
     pos.set(inPos);
     frame = new InteractiveAvatarFrame(scene);
     frame.setPosition(pos);
     frame.setAzimuth(-HALF_PI);
     frame.setTrackingDistance(scene.radius()/10);
-    vel = new PVector();
+    vel = new Vector3D();
     vel.set(inVel);
-    acc = new PVector(0, 0);
+    acc = new Vector3D(0, 0);
     neighborhoodRadius = r;
   }
 
   void run(ArrayList bl) {
     t += .1;
     flap = 10 * sin(t);
-    // acc.add(steer(new PVector(mouseX,mouseY,300),true));
-    // acc.add(new PVector(0,.05,0));
+    // acc.add(steer(new Vector3D(mouseX,mouseY,300),true));
+    // acc.add(new Vector3D(0,.05,0));
     if (avoidWalls) {
-      acc.add(PVector.mult(avoid(new PVector(pos.x, flockHeight, pos.z), true), 5));
-      acc.add(PVector.mult(avoid(new PVector(pos.x, 0, pos.z), true), 5));
-      acc.add(PVector.mult(avoid(new PVector(flockWidth, pos.y, pos.z),	true), 5));
-      acc.add(PVector.mult(avoid(new PVector(0, pos.y, pos.z), true), 5));
-      acc.add(PVector.mult(avoid(new PVector(pos.x, pos.y, 0), true), 5));
-      acc.add(PVector.mult(avoid(new PVector(pos.x, pos.y, flockDepth), true), 5));
+      acc.add(Vector3D.mult(avoid(new Vector3D(pos.x(), flockHeight, pos.z()), true), 5));
+      acc.add(Vector3D.mult(avoid(new Vector3D(pos.x(), 0, pos.z()), true), 5));
+      acc.add(Vector3D.mult(avoid(new Vector3D(flockWidth, pos.y(), pos.z()),	true), 5));
+      acc.add(Vector3D.mult(avoid(new Vector3D(0, pos.y(), pos.z()), true), 5));
+      acc.add(Vector3D.mult(avoid(new Vector3D(pos.x(), pos.y(), 0), true), 5));
+      acc.add(Vector3D.mult(avoid(new Vector3D(pos.x(), pos.y(), flockDepth), true), 5));
     }
     flock(bl);
     move();
@@ -69,9 +69,9 @@ class Boid {
     ali = alignment(bl);
     coh = cohesion(bl);
     sep = seperation(bl);
-    acc.add(PVector.mult(ali, 1));
-    acc.add(PVector.mult(coh, 3));
-    acc.add(PVector.mult(sep, 1));
+    acc.add(Vector3D.mult(ali, 1));
+    acc.add(Vector3D.mult(coh, 3));
+    acc.add(Vector3D.mult(sep, 1));
   }
 
   void scatter() {
@@ -90,18 +90,18 @@ class Boid {
   }
 
   void checkBounds() {
-    if (pos.x > flockWidth)
-      pos.x = 0;
-    if (pos.x < 0)
-      pos.x = flockWidth;
-    if (pos.y > flockHeight)
-      pos.y = 0;
-    if (pos.y < 0)
-      pos.y = flockHeight;
-    if (pos.z > flockDepth)
-      pos.z = 0;
-    if (pos.z < 0)
-      pos.z = flockDepth;
+    if (pos.x() > flockWidth)
+      pos.x(0);
+    if (pos.x() < 0)
+      pos.x(flockWidth);
+    if (pos.y() > flockHeight)
+      pos.y(0);
+    if (pos.y() < 0)
+      pos.y(flockHeight);
+    if (pos.z() > flockDepth)
+      pos.z(0);
+    if (pos.z() < 0)
+      pos.z(flockDepth);
   }
   
   // check if this boid's frame is the avatar
@@ -120,8 +120,8 @@ class Boid {
     noStroke();
     fill(hue);		
 
-    q = Quaternion.multiply(new Quaternion( new PVector(0,1,0),  atan2(-vel.z, vel.x)), 
-                            new Quaternion( new PVector(0,0,1),  asin(vel.y / vel.mag())) );		
+    q = Quaternion.multiply(new Quaternion( new Vector3D(0,1,0),  atan2(-vel.z(), vel.x())), 
+                            new Quaternion( new Vector3D(0,0,1),  asin(vel.y() / vel.mag())) );		
     frame.setRotation(q);
 
     pushMatrix();
@@ -167,10 +167,10 @@ class Boid {
 
   // steering. If arrival==true, the boid slows to meet the target. Credit to
   // Craig Reynolds
-  PVector steer(PVector target, boolean arrival) {
-    PVector steer = new PVector(); // creates vector for steering
+  Vector3D steer(Vector3D target, boolean arrival) {
+    Vector3D steer = new Vector3D(); // creates vector for steering
     if (!arrival) {
-      steer.set(PVector.sub(target, pos)); // steering vector points
+      steer.set(Vector3D.sub(target, pos)); // steering vector points
       // towards target (switch
       // target and pos for
       // avoiding)
@@ -178,38 +178,38 @@ class Boid {
       // maxSteerForce
     } 
     else {
-      PVector targetOffset = PVector.sub(target, pos);
+      Vector3D targetOffset = Vector3D.sub(target, pos);
       float distance = targetOffset.mag();
       float rampedSpeed = maxSpeed * (distance / 100);
       float clippedSpeed = min(rampedSpeed, maxSpeed);
-      PVector desiredVelocity = PVector.mult(targetOffset,
+      Vector3D desiredVelocity = Vector3D.mult(targetOffset,
       (clippedSpeed / distance));
-      steer.set(PVector.sub(desiredVelocity, vel));
+      steer.set(Vector3D.sub(desiredVelocity, vel));
     }
     return steer;
   }
 
   // avoid. If weight == true avoidance vector is larger the closer the boid
   // is to the target
-  PVector avoid(PVector target, boolean weight) {
-    PVector steer = new PVector(); // creates vector for steering
-    steer.set(PVector.sub(pos, target)); // steering vector points away from
+  Vector3D avoid(Vector3D target, boolean weight) {
+    Vector3D steer = new Vector3D(); // creates vector for steering
+    steer.set(Vector3D.sub(pos, target)); // steering vector points away from
     // target
     if (weight)
-      steer.mult(1 / sq(PVector.dist(pos, target)));
+      steer.mult(1 / sq(Vector3D.dist(pos, target)));
     // steer.limit(maxSteerForce); //limits the steering force to
     // maxSteerForce
     return steer;
   }
 
-  PVector seperation(ArrayList boids) {
-    PVector posSum = new PVector(0, 0, 0);
-    PVector repulse;
+  Vector3D seperation(ArrayList boids) {
+    Vector3D posSum = new Vector3D(0, 0, 0);
+    Vector3D repulse;
     for (int i = 0; i < boids.size(); i++) {
       Boid b = (Boid) boids.get(i);
-      float d = PVector.dist(pos, b.pos);
+      float d = Vector3D.dist(pos, b.pos);
       if (d > 0 && d <= neighborhoodRadius) {
-        repulse = PVector.sub(pos, b.pos);
+        repulse = Vector3D.sub(pos, b.pos);
         repulse.normalize();
         repulse.div(d);
         posSum.add(repulse);
@@ -218,12 +218,12 @@ class Boid {
     return posSum;
   }
 
-  PVector alignment(ArrayList boids) {
-    PVector velSum = new PVector(0, 0, 0);
+  Vector3D alignment(ArrayList boids) {
+    Vector3D velSum = new Vector3D(0, 0, 0);
     int count = 0;
     for (int i = 0; i < boids.size(); i++) {
       Boid b = (Boid) boids.get(i);
-      float d = PVector.dist(pos, b.pos);
+      float d = Vector3D.dist(pos, b.pos);
       if (d > 0 && d <= neighborhoodRadius) {
         velSum.add(b.vel);
         count++;
@@ -236,13 +236,13 @@ class Boid {
     return velSum;
   }
 
-  PVector cohesion(ArrayList boids) {
-    PVector posSum = new PVector(0, 0, 0);
-    PVector steer = new PVector(0, 0, 0);
+  Vector3D cohesion(ArrayList boids) {
+    Vector3D posSum = new Vector3D(0, 0, 0);
+    Vector3D steer = new Vector3D(0, 0, 0);
     int count = 0;
     for (int i = 0; i < boids.size(); i++) {
       Boid b = (Boid) boids.get(i);
-      float d = dist(pos.x, pos.y, b.pos.x, b.pos.y);
+      float d = dist(pos.x(), pos.y(), b.pos.x(), b.pos.y());
       if (d > 0 && d <= neighborhoodRadius) {
         posSum.add(b.pos);
         count++;
@@ -251,7 +251,7 @@ class Boid {
     if (count > 0) {
       posSum.div((float) count);
     }
-    steer = PVector.sub(posSum, pos);
+    steer = Vector3D.sub(posSum, pos);
     steer.limit(maxSteerForce);
     return steer;
   }

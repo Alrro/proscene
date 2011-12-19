@@ -33,6 +33,8 @@
  * and mouse bindings in the console.
  */
 
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 
 Scene scene;
@@ -55,13 +57,13 @@ void setup() {
   currentCP = scene.currentCameraProfile();
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
-  scene.setBoundingBox(new PVector(0,0,0), new PVector(flockWidth,flockHeight,flockDepth));
+  scene.setBoundingBox(new Vector3D(0,0,0), new Vector3D(flockWidth,flockHeight,flockDepth));
   scene.showAll();
   frameRate(100);
   // create and fill the list of boids
   flock = new ArrayList();
   for (int i = 0; i < initBoidNum; i++)
-    flock.add(new Boid(new PVector(flockWidth/2, flockHeight/2, flockDepth/2 )));
+    flock.add(new Boid(new Vector3D(flockWidth/2, flockHeight/2, flockDepth/2 )));
 
   // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);

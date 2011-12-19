@@ -273,6 +273,8 @@ public class Scene extends AbstractScene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 		
+		setLeftHanded();
+		
 		/**
 		// TODO decide if this should go
 		//mouse grabber selection hint colors		
