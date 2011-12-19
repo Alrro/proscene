@@ -8,6 +8,10 @@ import remixlab.remixcam.devices.*;
 public class Device extends AbstractDevice {
 	protected Method handlerMethod;
 	
+	public Device(AbstractScene scn) {
+		super(scn);
+	}
+	
 	public Device(AbstractScene scn, Mode m) {
 		super(scn, m);
 	}	
@@ -56,5 +60,65 @@ public class Device extends AbstractDevice {
 			}
 		}
 		return result;
-	}	
+	}
+	
+	@Override
+	public void nextCameraMode() {
+		switch (camMode) {		
+		case GOOGLE_EARTH:
+			if (Device.class == this.getClass())
+				setCameraMode(CameraMode.FIRST_PERSON);
+			else
+				setCameraMode(CameraMode.CUSTOM);
+			break;
+		default:
+			super.nextCameraMode();
+			break;
+		}
+	}
+	
+	@Override
+  public void previousCameraMode() {  	
+  	switch (camMode) {
+  	case FIRST_PERSON:
+			if (Device.class == this.getClass())
+				setCameraMode(CameraMode.GOOGLE_EARTH);
+			else
+				setCameraMode(CameraMode.CUSTOM);
+			break;
+		default:
+			super.previousCameraMode();
+		break;
+		}
+  }
+  
+	@Override
+  public void nextIFrameMode() {  	
+  	switch (iFrameMode) {		
+		case WORLD:
+			if (Device.class == this.getClass())
+				setIFrameMode(IFrameMode.FRAME);
+			else
+				setIFrameMode(IFrameMode.CUSTOM);
+			break;
+		default:
+			super.nextIFrameMode();
+			break;
+		}
+  }
+  
+	@Override
+  public void previousIFrameMode() {  	
+  	switch (iFrameMode) {
+		case FRAME:
+			if (Device.class == this.getClass())
+				setIFrameMode(IFrameMode.WORLD);
+			else
+				setIFrameMode(IFrameMode.CUSTOM);
+			break;
+		default:
+			super.previousIFrameMode();
+			break;
+		}
+  }	
 }

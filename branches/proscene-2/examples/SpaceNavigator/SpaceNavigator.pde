@@ -1,41 +1,11 @@
-/**
- * Space Navigator by Jean Pierre Charalambos
- *
- * Originally, Textured Sphere by Mike 'Flux' Chang (cleaned up by Aaron Koblin). 
- * Based on code by Toxi.
- * Initially ported to GLGraphics by Andres Colubri:
- * http://glgraphics.sourceforge.net/
- * 3DConnexion SpaceNavigator support using procontroll:
- * http://www.creativecomputing.cc/p5libs/procontroll/
- * by Ralf Löhmer - rl@loehmer.de
- * 
- * A 3D textured sphere with simple rotation control and
- * 3DConnexion SpaceNavigator support.
- *
- * This example illustrates the use of the HIDevice (Human Interaction
- * Device) class to manipulate your scene through sophisticated
- * interaction devices, such as the 3d space navigator (which is
- * required to run the sketch).
- *
- * This demo requires the GLGraphics (http://glgraphics.sourceforge.net/)
- * and procontroll (http://www.creativecomputing.cc/p5libs/procontroll/) libraries.
- *
- * Press 'i' (which is a shortcut defined below) to switch the
- * interaction between the camera frame and the interactive frame.
- * 
- * Press 'h' to display the global shortcuts in the console.
- * Press 'H' to display the current camera profile keyboard shortcuts
- * and mouse bindings in the console. 
- */
-
-import processing.opengl.*;
-import codeanticode.glgraphics.*;
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 import procontroll.*;
 import net.java.games.input.*;
 
 Scene scene;
-HIDevice dev;
+Device dev;
 
 ControllIO controll;
 ControllDevice device; // my SpaceNavigator
@@ -48,78 +18,51 @@ ControllSlider sliderZrot;
 ControllButton button1; // Buttons
 ControllButton button2;
 
-ArrayList vertices;
-ArrayList texCoords;
-ArrayList normals;
+// Sphere Variables
+float globeRadius = 250;
+int xDetail = 40;
+int yDetail = 30;
+float[] xGrid = new float[xDetail+1];
+float[] yGrid = new float[yDetail+1];
+float[][][] allPoints = new float[xDetail+1][yDetail+1][3];
 
-int globeDetail = 70;                 // Sphere detail setting.
-float globeRadius = 450;              // Sphere radius.
-String globeMapName = "world32k.jpg"; // Image of the earth.
-
-GLModel earth;
-GLTexture tex;
-
-float distance = 30000; // Distance of camera from origin.
+// Texture
+PImage texmap;
 
 void setup() {
-  size(1024, 768, GLConstants.GLGRAPHICS);
-  openSpaceNavigator();
+  size(700, 700, P3D);
+  noStroke();   
   scene = new Scene(this);
-  scene.setRadius(globeRadius*1.3f);
+  scene.setRadius(globeRadius*1.8f);
   scene.showAll();  
-  scene.setGridIsDrawn(false);
-  scene.setAxisIsDrawn(false);		
+  //scene.setGridIsDrawn(false);
+  //scene.setAxisIsDrawn(false);		
   scene.setInteractiveFrame(new InteractiveFrame(scene));
-  scene.interactiveFrame().translate(new PVector(globeRadius/2, globeRadius/2, 0));
+  scene.interactiveFrame().translate(new Vector3D(1.3f*globeRadius, 1.3f*globeRadius/2, 0));
 
   // press 'f' to draw frame selection hint
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   // press 'i' to switch the interaction between the camera frame and the interactive frame
   scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 
-  // Define the RELATIVE mode HIDevice.
-  dev = new HIDevice(scene);
+  // Define the RELATIVE mode Device.  
+  openSpaceNavigator();
+  // /*
+  dev = new Device(scene);
   dev.addHandler(this, "feed");
   dev.setTranslationSensitivity(0.01f, 0.01f, 0.01f);
   dev.setRotationSensitivity(0.0001f, 0.0001f, 0.0001f);
-  dev.setCameraMode(HIDevice.CameraMode.GOOGLE_EARTH);
+  dev.setCameraMode(Device.CameraMode.GOOGLE_EARTH);
   scene.addDevice(dev);
+  // */
 
-  // This function calculates the vertices, texture coordinates and normals for the earth model.
-  calculateEarthCoords();
-
-  earth = new GLModel(this, vertices.size(), TRIANGLE_STRIP, GLModel.STATIC);
-
-  // Sets the coordinates.
-  earth.updateVertices(vertices);
-
-  // Sets the texture map.
-  tex = new GLTexture(this, globeMapName);
-  earth.initTextures(1);
-  earth.setTexture(0, tex);
-  earth.updateTexCoords(0, texCoords);
-
-  // Sets the normals.
-  earth.initNormals();
-  earth.updateNormals(normals);
-
-  // Sets the colors of all the vertices to white.
-  earth.initColors();
-  earth.setColors(255);
+  texmap = loadImage("world32k.jpg"); 
+  setupSphere(globeRadius, xDetail, yDetail);
 }
 
-void feed(HIDevice d) {
-  d.feedTranslation(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue());
-  d.feedRotation(sliderXrot.getValue(), sliderYrot.getValue(), sliderZrot.getValue());
-}
-
-void draw() {
+void draw() {  
   background(0);
-
-  GLGraphics renderer = (GLGraphics)g;
-  renderer.beginGL();   
-  renderer.model(earth);
-  renderer.endGL();
+  drawSphere(texmap);
 
   pushMatrix();
   scene.interactiveFrame().applyTransformation();//very efficient
@@ -132,17 +75,10 @@ void draw() {
     box(50, 75, 60);
   }
   else {
-    fill(0,0,255);
+    fill(0, 0, 255);
     box(50, 75, 60);
   }		
   popMatrix();
-}
-
-void keyPressed() {
-  if ((key == 'u') || (key == 'U'))
-    dev.nextCameraMode();
-  if ((key == 'v') || (key == 'V'))
-    dev.nextIFrameMode();
 }
 
 void openSpaceNavigator() {
@@ -163,3 +99,72 @@ void openSpaceNavigator() {
   button1 = device.getButton(0);
   button2 = device.getButton(1);
 }
+
+void feed(Device d) {
+  d.feedTranslation(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue());
+  d.feedRotation(sliderXrot.getValue(), sliderYrot.getValue(), sliderZrot.getValue());
+}
+
+void keyPressed() {
+  if ((key == 'u') || (key == 'U'))
+    dev.nextCameraMode();
+  if ((key == 'v') || (key == 'V'))
+    dev.nextIFrameMode();
+  if ((key == 'x') || (key == 'X')){
+    if( scene.isLeftHanded() ) {
+      scene.setRightHanded();
+      println("set right handed coordinate system convention");
+    }
+    else{
+      scene.setLeftHanded();
+      println("set left handed coordinate system convention");
+    }
+  }
+}
+
+void setupSphere(float R, int xDetail, int yDetail) {
+  // Create a 2D grid of standardized mercator coordinates
+  for (int i = 0; i <= xDetail; i++) {
+    xGrid[i]= i / (float) xDetail;
+  } 
+  for (int i = 0; i <= yDetail; i++) {
+    yGrid[i]= i / (float) yDetail;
+  }
+
+  textureMode(NORMALIZED);
+
+  // Transform the 2D grid into a grid of points on the sphere, using the inverse mercator projection
+  for (int i = 0; i <= xDetail; i++) {
+    for (int j = 0; j <= yDetail; j++) {
+      allPoints[i][j] = mercatorPoint(R, xGrid[i], yGrid[j]);
+    }
+  }
+}
+
+float[] mercatorPoint(float R, float x, float y) {
+  float[] thisPoint = new float[3];
+  float phi = x*2*PI;
+  float theta = PI - y*PI;
+
+  thisPoint[0] = R*sin(theta)*cos(phi);
+  thisPoint[1] = R*sin(theta)*sin(phi);
+  thisPoint[2] = R*cos(theta);
+
+  return thisPoint;
+}
+
+void drawSphere(PImage Map) {
+  pushStyle();
+  noStroke();
+  for (int j = 0; j < yDetail; j++) {
+    beginShape(TRIANGLE_STRIP);
+    texture(Map);
+    for (int i = 0; i <= xDetail; i++) {
+      vertex(allPoints[i][j+1][0], allPoints[i][j+1][1], allPoints[i][j+1][2], xGrid[i], yGrid[j+1]);
+      vertex(allPoints[i][j][0], allPoints[i][j][1], allPoints[i][j][2], xGrid[i], yGrid[j]);
+    }
+    endShape(CLOSE);
+  }
+  popStyle();
+}
+
