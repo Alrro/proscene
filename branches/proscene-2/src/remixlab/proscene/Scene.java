@@ -49,7 +49,6 @@ import remixlab.remixcam.devices.AbstractDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTimer;
 import remixlab.remixcam.geom.Matrix3D;
-import remixlab.remixcam.geom.Quaternion;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
 // */
@@ -1045,41 +1044,6 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.line(0, 0, 0, 0, 0, length);		
 
 		pg3d.popStyle();	  
-	}			
-	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawArrow(float, float)}.
-	 */
-	@Override
-	public void drawArrow(float length, float radius) {
-		float head = 2.5f * (radius / length) + 0.1f;
-		float coneRadiusCoef = 4.0f - 5.0f * head;
-
-		cylinder(radius, length * (1.0f - head / coneRadiusCoef));
-		pg3d.translate(0.0f, 0.0f, length * (1.0f - head));
-		cone(coneRadiusCoef * radius, head * length);
-		pg3d.translate(0.0f, 0.0f, -length * (1.0f - head));
-	}		
-	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawArrow(Vector3D, Vector3D, float)}.
-	 */
-	@Override
-	public void drawArrow(Vector3D from, Vector3D to,	float radius) {
-		pg3d.pushMatrix();
-		pg3d.translate(from.vec[0], from.vec[1], from.vec[2]);
-		
-  	//pg3d.applyMatrix(new Quaternion(new Vector3D(0, 0, 1), Vector3D.sub(to,	from)).matrix());
-		
-		Matrix3D mat = new Quaternion(new Vector3D(0, 0, 1), Vector3D.sub(to,	from)).matrix();
-		float[] target = new float[16];
-		mat.get(target);
-		PMatrix3D pmat = new PMatrix3D();
-		pmat.set(target);
-		pg3d.applyMatrix(pmat);
-		
-		drawArrow(Vector3D.sub(to, from).mag(), radius);
-		pg3d.popMatrix();
 	}	
 
 	/**
@@ -1183,17 +1147,13 @@ public class Scene extends AbstractScene implements PConstants {
 			case PERSPECTIVE:
 				pg3d.beginShape(PApplet.LINES);
 				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d
-						.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
+				pg3d.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
 				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(-points[farIndex].x, points[farIndex].y,
-						-points[farIndex].z);
+				pg3d.vertex(-points[farIndex].x, points[farIndex].y, -points[farIndex].z);
 				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(-points[farIndex].x, -points[farIndex].y,
-						-points[farIndex].z);
+				pg3d.vertex(-points[farIndex].x, -points[farIndex].y,	-points[farIndex].z);
 				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(points[farIndex].x, -points[farIndex].y,
-						-points[farIndex].z);
+				pg3d.vertex(points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
 				pg3d.endShape();
 				break;
 			case ORTHOGRAPHIC:
@@ -1503,15 +1463,6 @@ public class Scene extends AbstractScene implements PConstants {
 		drawCross(p.vec[0], p.vec[1]);
 		pg3d.popStyle();
 	}	
-
-	/**
-	 * Convenience function that simply calls
-	 * {@code drawCross(pg3d.color(255, 255, 255), px, py, 15, 3)}.
-	 */
-	@Override
-	public void drawCross(float px, float py) {
-		drawCross(px, py, 15);
-	}
 
 	/**
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCross(int, float, float, float, int)}.
