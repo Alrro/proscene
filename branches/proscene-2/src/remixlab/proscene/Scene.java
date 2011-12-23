@@ -26,7 +26,6 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import remixlab.proscenejs.Timer;
 
 /**
 import remixlab.remixcam.core.*;
@@ -47,6 +46,7 @@ import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.devices.AbstractDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
+import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
 import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
@@ -272,6 +272,8 @@ public class Scene extends AbstractScene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 		
+		//TODO testing
+		prosceneTimers = true;
 		setLeftHanded();
 		
 		/**
@@ -545,23 +547,13 @@ public class Scene extends AbstractScene implements PConstants {
 	@Override
 	public void registerInTimerPool(AbstractTimerJob job) {
 		if (prosceneTimers) {			
-			job.setTimer(new Timer(this, job));
+			job.setTimer(new SingleThreadedTaskableTimer(this, job));
 			timerPool.add(job);
 		}
 		else {
 			job.setTimer(new TimerWrap(this, job));
 		}
-	}
-	
-	// TODO need it here (or it should just go into proscene.js)? need to be overloaded?
-	/**
-	 * 
-	 */
-	@Override
-	public void unregisterFromTimerPool(SingleThreadedTimer t) {
-		if( t instanceof Timer )
-			timerPool.remove( ((Timer) t).timerJob() );
-  }
+	}	
 	
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
@@ -662,7 +654,7 @@ public class Scene extends AbstractScene implements PConstants {
 		if(prosceneTimers)
 			for ( AbstractTimerJob tJob : timerPool )
 				if (tJob.timer() != null)
-					((Timer)tJob.timer()).execute();
+					((SingleThreadedTaskableTimer)tJob.timer()).execute();
 	}
 	
 	/**

@@ -7,7 +7,7 @@
 			<attribute name="javadoc_location" value="file:/home/pierre/Fun/software/processing-1.5.1-read-only/build/javadoc/core/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar" sourcepath="/remixcam"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/gwtent.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
