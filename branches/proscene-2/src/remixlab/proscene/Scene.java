@@ -38,7 +38,6 @@ import remixlab.remixcam.util.*;
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
-import remixlab.remixcam.core.InteractiveAvatarFrame;
 import remixlab.remixcam.core.InteractiveFrame;
 import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.core.KeyFrameInterpolator;
@@ -188,11 +187,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
-  protected int beginOffScreenDrawingCalls;
-
-	// K E Y B O A R D A N D M O U S E
-	protected boolean mouseHandling;
-	protected boolean keyboardHandling;
+  protected int beginOffScreenDrawingCalls;	
 	
 	/**
 	// M O U S E   G R A B B E R   H I N T   C O L O R S
@@ -554,32 +549,13 @@ public class Scene extends AbstractScene implements PConstants {
 	
 	public boolean isOffscreen() {
 		return offscreen;
-	}
-	
-	// TODO check if draw iFrame handdling could be uploaded.
-	/**
-	 * Toggles the {@link #interactiveFrame()} interactivity on and off.
-	 */
-	public void toggleDrawInteractiveFrame() {
-		if (interactiveFrameIsDrawn())
-			setDrawInteractiveFrame(false);
-		else
-			setDrawInteractiveFrame(true);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code setDrawInteractiveFrame(true)}.
-	 * 
-	 * @see #setDrawInteractiveFrame(boolean)
-	 */
-	public void setDrawInteractiveFrame() {
-		setDrawInteractiveFrame(true);
-	}
+	}	
 	
 	/**
 	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance
 	 * according to {@code draw}
 	 */
+	@Override
 	public void setDrawInteractiveFrame(boolean draw) {
 		if (draw && (glIFrame == null))
 			return;
@@ -813,7 +789,7 @@ public class Scene extends AbstractScene implements PConstants {
 		float unitConeY[] = new float[detail + 1];
 
 		for (int i = 0; i <= detail; i++) {
-			float a1 = TWO_PI * i / detail;
+			float a1 = PApplet.TWO_PI * i / detail;
 			unitConeX[i] = r * (float) Math.cos(a1);
 			unitConeY[i] = r * (float) Math.sin(a1);
 		}
@@ -840,7 +816,7 @@ public class Scene extends AbstractScene implements PConstants {
 		float secondCircleY[] = new float[detail + 1];
 
 		for (int i = 0; i <= detail; i++) {
-			float a1 = TWO_PI * i / detail;
+			float a1 = PApplet.TWO_PI * i / detail;
 			firstCircleX[i] = r1 * (float) Math.cos(a1);
 			firstCircleY[i] = r1 * (float) Math.sin(a1);
 			secondCircleX[i] = r2 * (float) Math.cos(a1);
@@ -1126,7 +1102,7 @@ public class Scene extends AbstractScene implements PConstants {
 	public void drawKFICamera(float scale) {
 		float halfHeight = scale * 0.07f;
 		float halfWidth = halfHeight * 1.3f;
-		float dist = halfHeight / (float) Math.tan(PI / 8.0f);
+		float dist = halfHeight / (float) Math.tan(PApplet.PI / 8.0f);
 
 		float arrowHeight = 1.5f * halfHeight;
 		float baseHeight = 1.2f * halfHeight;
@@ -1386,7 +1362,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 */	
 	@Override
 	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
-		float precision = TWO_PI/subdivisions;
+		float precision = PApplet.TWO_PI/subdivisions;
 		float x = center.vec[0];
 		float y = center.vec[1];
 		float angle, x2, y2;
@@ -1398,7 +1374,7 @@ public class Scene extends AbstractScene implements PConstants {
 		Vector3D c = coords(new Point(x, y));
 		pg3d.vertex(c.vec[0], c.vec[1], c.vec[2]);
 		Vector3D aux = new Vector3D();
-		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
+		for (angle = 0.0f; angle <= PApplet.TWO_PI + 1.1*precision; angle += precision) {			
 			x2 = x + (float) Math.sin(angle) * radius;
 			y2 = y + (float) Math.cos(angle) * radius;
 			aux.set(coords(new Point(x2, y2)));
@@ -1561,10 +1537,10 @@ public class Scene extends AbstractScene implements PConstants {
 		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
 		//if ( pg3d instanceof processing.core.PGraphics3D ) {
 			pg3d.hint(DISABLE_DEPTH_TEST);
-			pg3d.matrixMode(PROJECTION);
+			pg3d.matrixMode(PApplet.PROJECTION);
 			pg3d.pushMatrix();
 			pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-			pg3d.matrixMode(MODELVIEW);
+			pg3d.matrixMode(PApplet.MODELVIEW);
 			pg3d.pushMatrix();
 		  // Camera needs to be reset!
 			pg3d.camera();
@@ -1588,9 +1564,9 @@ public class Scene extends AbstractScene implements PConstants {
 							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 
 		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
-			pg3d.matrixMode(PROJECTION);
+			pg3d.matrixMode(PApplet.PROJECTION);
 			pg3d.popMatrix();
-			pg3d.matrixMode(MODELVIEW);  
+			pg3d.matrixMode(PApplet.MODELVIEW);  
 			pg3d.popMatrix();		  
 			pg3d.hint(ENABLE_DEPTH_TEST);
 		}
@@ -1836,9 +1812,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * <p>
 	 * Camera profiles are ordered by their registration order.
 	 */
+	@Override
 	public void nextCameraProfile() {
-		int currentCameraProfileIndex = cameraProfileNames
-				.indexOf(currentCameraProfile().name());
+		int currentCameraProfileIndex = cameraProfileNames.indexOf(currentCameraProfile().name());
 		nextCameraProfile(++currentCameraProfileIndex);
 	}
 
@@ -1907,37 +1883,7 @@ public class Scene extends AbstractScene implements PConstants {
 			PApplet.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene " +
 					"keyboard handling with Scene.disableKeyboardHandling() (you can re-enable it later with Scene.enableKeyboardHandling()).");
 		}
-	}
-
-	/**
-	 * Returns {@code true} if the keyboard is currently being handled by proscene
-	 * and {@code false} otherwise. Set keyboard handling with
-	 * {@link #enableMouseHandling(boolean)}.
-	 * <p>
-	 * Keyboard handling is enable by default.
-	 */
-	public boolean keyboardIsHandled() {
-		return keyboardHandling;
-	}
-
-	/**
-	 * Toggles the state of {@link #keyboardIsHandled()}
-	 */
-	public void toggleKeyboardHandling() {
-		enableKeyboardHandling(!keyboardHandling);
-	}
-
-	/**
-	 * Enables or disables proscene keyboard handling according to {@code enable}
-	 * 
-	 * @see #keyboardIsHandled()
-	 */
-	public void enableKeyboardHandling(boolean enable) {
-		if (enable)
-			enableKeyboardHandling();
-		else
-			disableKeyboardHandling();
-	}
+	}	
 
 	/**
 	 * Enables Proscene keyboard handling.
@@ -1946,10 +1892,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #enableMouseHandling()
 	 * @see #disableKeyboardHandling()
 	 */
+	@Override
 	public void enableKeyboardHandling() {
-		if( keyboardIsHandled() )
-			return;
-		keyboardHandling = true;
+		super.enableKeyboardHandling();
 		parent.registerKeyEvent(dE);
 	}
 
@@ -1958,10 +1903,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * 
 	 * @see #keyboardIsHandled()
 	 */
+	@Override
 	public void disableKeyboardHandling() {
-		if( !keyboardIsHandled() )
-			return;
-		keyboardHandling = false;
+		super.disableKeyboardHandling();
 		parent.unregisterKeyEvent(dE);
 	}
 
@@ -2332,190 +2276,7 @@ public class Scene extends AbstractScene implements PConstants {
 	public boolean isActionBinded(KeyboardAction action) {
 		return gProfile.isActionMapped(action);
 	}
-
-	/**
-	 * Internal method. Handles the different global keyboard actions.
-	 */
-	protected void handleKeyboardAction(KeyboardAction id) {
-		if( !keyboardIsHandled() )
-			return;
-		switch (id) {
-		case DRAW_AXIS:
-			toggleAxisIsDrawn();
-			break;
-		case DRAW_GRID:
-			toggleGridIsDrawn();
-			break;
-		case CAMERA_PROFILE:
-			nextCameraProfile();
-			break;
-		case CAMERA_TYPE:
-			toggleCameraType();
-			break;
-		case CAMERA_KIND:
-			toggleCameraKind();
-			break;
-		case ANIMATION:
-			toggleAnimation();
-			break;
-		case ARP_FROM_PIXEL:
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-				arpFlag = true;
-				timerFx.runOnce(1000);					
-			}
-			break;
-		case RESET_ARP:
-			camera().setArcballReferencePoint(new Vector3D(0, 0, 0));
-			arpFlag = true;
-			timerFx.runOnce(1000);				
-			break;
-		case GLOBAL_HELP:
-			displayGlobalHelp();
-			break;
-		case CURRENT_CAMERA_PROFILE_HELP:
-			displayCurrentCameraProfileHelp();
-			break;
-		case EDIT_CAMERA_PATH:
-			toggleCameraPathsAreDrawn();
-			break;
-		case FOCUS_INTERACTIVE_FRAME:
-			toggleDrawInteractiveFrame();
-			break;
-		case DRAW_FRAME_SELECTION_HINT:
-			toggleFrameSelectionHintIsDrawn();
-			break;
-		case CONSTRAIN_FRAME:
-			toggleDrawInteractiveFrame();
-			break;
-		}
-	}
-
-	/**
-	 * Internal method. Handles the different camera keyboard actions.
-	 */
-	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
-		if( !keyboardIsHandled() )
-			return;
-		switch (id) {
-		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(
-						parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point;
-					pupFlag = true;
-					timerFx.runOnce(1000);						
-				}
-			}
-			break;
-		case INTERPOLATE_TO_FIT_SCENE:
-			camera().interpolateToFitScene();
-			break;
-		case SHOW_ALL:
-			showAll();
-			break;
-		case MOVE_CAMERA_LEFT:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(new Vector3D(-10.0f * camera().flySpeed(), 0.0f, 0.0f)));
-			break;
-		case MOVE_CAMERA_RIGHT:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(new Vector3D(10.0f * camera().flySpeed(), 0.0f, 0.0f)));
-			break;
-		case MOVE_CAMERA_UP:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(new Vector3D(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
-			break;
-		case MOVE_CAMERA_DOWN:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(new Vector3D(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
-			break;
-		case INCREASE_ROTATION_SENSITIVITY:
-			camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);
-			break;
-		case DECREASE_ROTATION_SENSITIVITY:
-			camera().setRotationSensitivity(camera().rotationSensitivity() / 1.2f);
-			break;
-		case INCREASE_CAMERA_FLY_SPEED:
-			camera().setFlySpeed(camera().flySpeed() * 1.2f);
-			break;
-		case DECREASE_CAMERA_FLY_SPEED:
-			camera().setFlySpeed(camera().flySpeed() / 1.2f);
-			break;
-		case INCREASE_AVATAR_FLY_SPEED:
-			if (avatar() != null)
-				if (avatarIsInteractiveDrivableFrame)
-					((InteractiveDrivableFrame) avatar())
-							.setFlySpeed(((InteractiveDrivableFrame) avatar()).flySpeed() * 1.2f);
-			break;
-		case DECREASE_AVATAR_FLY_SPEED:
-			if (avatar() != null)
-				if (avatarIsInteractiveDrivableFrame)
-					((InteractiveDrivableFrame) avatar())
-							.setFlySpeed(((InteractiveDrivableFrame) avatar()).flySpeed() / 1.2f);
-			break;
-		case INCREASE_AZYMUTH:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setAzimuth(((InteractiveAvatarFrame) avatar()).azimuth()
-									+ PI / 64);
-			break;
-		case DECREASE_AZYMUTH:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setAzimuth(((InteractiveAvatarFrame) avatar()).azimuth()
-									- PI / 64);
-			break;
-		case INCREASE_INCLINATION:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setInclination(((InteractiveAvatarFrame) avatar()).inclination()
-									+ PI / 64);
-			break;
-		case DECREASE_INCLINATION:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setInclination(((InteractiveAvatarFrame) avatar()).inclination()
-									- PI / 64);
-			break;
-		case INCREASE_TRACKING_DISTANCE:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setTrackingDistance(((InteractiveAvatarFrame) avatar())
-									.trackingDistance()
-									+ radius() / 50);
-			break;
-		case DECREASE_TRACKING_DISTANCE:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setTrackingDistance(((InteractiveAvatarFrame) avatar())
-									.trackingDistance()
-									- radius() / 50);
-			break;
-		}
-	}
-
-	/**
-	 * Convenience funstion that simply calls {@code displayGlobalHelp(true)}.
-	 * 
-	 * @see #displayGlobalHelp(boolean)
-	 */
-	public void displayGlobalHelp() {
-		displayGlobalHelp(true);
-	}
-	
+		
 	/**
 	 * Displays global keyboard bindings.
 	 * 
@@ -2524,6 +2285,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * 
 	 * @see #displayGlobalHelp()
 	 */
+	@Override
 	public void displayGlobalHelp(boolean onConsole) {
 		if (onConsole)
 			PApplet.println(globalHelp());
@@ -2558,16 +2320,7 @@ public class Scene extends AbstractScene implements PConstants {
 		description += ClickBinding.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
 		
 		return description;		
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code displayCurrentCameraProfileHelp(true)}.
-	 * 
-	 * @see #displayCurrentCameraProfileHelp(boolean)
-	 */
-	public void displayCurrentCameraProfileHelp() {
-		displayCurrentCameraProfileHelp(true);
-	}
+	}	
 	
 	/**
 	 * Displays the {@link #currentCameraProfile()} bindings.
@@ -2577,6 +2330,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * 
 	 * @see #displayCurrentCameraProfileHelp()
 	 */
+	@Override
 	public void displayCurrentCameraProfileHelp(boolean onConsole) {
 		if (onConsole)
 			PApplet.println(currentCameraProfileHelp());
@@ -2702,37 +2456,7 @@ public class Scene extends AbstractScene implements PConstants {
 			PApplet.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene " +
 			"mouse handling with Scene.disableMouseHandling() (you can re-enable it later with Scene.enableMouseHandling()).");
 		}
-	}
-
-	/**
-	 * Returns {@code true} if the mouse is currently being handled by proscene and
-	 * {@code false} otherwise. Set mouse handling with
-	 * {@link #enableMouseHandling(boolean)}.
-	 * <p>
-	 * Mouse handling is enable by default.
-	 */
-	public boolean mouseIsHandled() {
-		return mouseHandling;
-	}
-
-	/**
-	 * Toggles the state of {@link #mouseIsHandled()}
-	 */
-	public void toggleMouseHandling() {
-		enableMouseHandling(!mouseHandling);
-	}
-
-	/**
-	 * Enables or disables proscene mouse handling according to {@code enable}
-	 * 
-	 * @see #mouseIsHandled()
-	 */
-	public void enableMouseHandling(boolean enable) {
-		if (enable)
-			enableMouseHandling();
-		else
-			disableMouseHandling();
-	}
+	}	
 
 	/**
 	 * Enables Proscene mouse handling.
@@ -2741,10 +2465,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #disableMouseHandling()
 	 * @see #enableKeyboardHandling()
 	 */
+	@Override
 	public void enableMouseHandling() {
-		if( mouseIsHandled() )
-			return;
-		mouseHandling = true;
+		super.enableMouseHandling();
 		parent.registerMouseEvent(dE);
 	}
 
@@ -2753,77 +2476,11 @@ public class Scene extends AbstractScene implements PConstants {
 	 * 
 	 * @see #mouseIsHandled()
 	 */
+	@Override
 	public void disableMouseHandling() {
-		if( !mouseIsHandled() )
-			return;
-		mouseHandling = false;
+		super.disableMouseHandling();
 		parent.unregisterMouseEvent(dE);
 	}
-
-	/**
-	 * Internal method. Handles the different mouse click actions.
-	 */
-	protected void handleClickAction(ClickAction action) {
-		// public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT,
-		// SELECT, ARP_FROM_PIXEL, RESET_ARP,
-		// CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA }
-		if( !mouseIsHandled() )
-			return;
-		switch (action) {
-		case NO_CLICK_ACTION:
-			break;
-		case ZOOM_ON_PIXEL:
-			if (Camera.class == camera().getClass())
-				PApplet
-						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(
-						parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point;
-					pupFlag = true;
-					timerFx.runOnce(1000);						
-				}
-			}
-			break;
-		case ZOOM_TO_FIT:
-			camera().interpolateToFitScene();
-			break;
-		case ARP_FROM_PIXEL:
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-				arpFlag = true;
-				timerFx.runOnce(1000);					
-			}
-			break;
-		case RESET_ARP:
-			camera().setArcballReferencePoint(new Vector3D(0, 0, 0));
-			arpFlag = true;
-			timerFx.runOnce(1000);				
-			break;
-		case CENTER_FRAME:
-			if (interactiveFrame() != null)
-				interactiveFrame().projectOnLine(camera().position(),
-						camera().viewDirection());
-			break;
-		case CENTER_SCENE:
-			camera().centerScene();
-			break;
-		case SHOW_ALL:
-			camera().showEntireScene();
-			break;
-		case ALIGN_FRAME:
-			if (interactiveFrame() != null)
-				interactiveFrame().alignWithFrame(camera().frame());
-			break;
-		case ALIGN_CAMERA:
-			camera().frame().alignWithFrame(null, true);
-			break;
-		}
-	}	
 
 	// 10. Draw method registration
 

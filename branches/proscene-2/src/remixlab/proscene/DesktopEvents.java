@@ -268,7 +268,9 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see remixlab.proscene.Scene#mouseIsHandled()
 	 * @see remixlab.proscene.Scene#enableMouseHandling(boolean)
 	 */
-	public void mouseEvent(MouseEvent e) {		
+	public void mouseEvent(MouseEvent e) {
+		scene.mouseX = e.getX();
+		scene.mouseY = e.getY();
 		if ((scene.currentCameraProfile() == null) || (!scene.mouseIsHandled()) )
 			return;
 		switch (e.getID()) {
@@ -447,6 +449,8 @@ public class DesktopEvents implements MouseWheelListener {
 	// 2.b Wheel	
 	
 	/**
+	 * Implementation of {@link java.awt.event.MouseWheelListener#mouseWheelMoved(MouseWheelEvent)}.
+	 * <p>
 	 * The action generated when the user start rotating the mouse wheel is handled by the
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} (if any), or the
 	 * {@link remixlab.proscene.Scene#interactiveFrame()}
@@ -458,6 +462,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * 
 	 * @see #mousePressed(MouseEvent)
 	 */
+	@Override	
 	public void mouseWheelMoved(MouseWheelEvent event) {
 		if(!scene.mouseIsHandled())
 			return;
@@ -478,8 +483,4 @@ public class DesktopEvents implements MouseWheelListener {
 		scene.camera().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
 		scene.camera().frame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 	}
-	
-	// 3. Utility package dependent functions: java.awt wrappers that should be replaced
-	//    by each platform where proscene is going to be implemented.
-
 }
