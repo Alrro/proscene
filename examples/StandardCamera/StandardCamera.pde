@@ -29,6 +29,7 @@ PGraphics canvas, auxCanvas;
 
 public void setup() {
   size(640, 720, P3D);
+  frame.setResizable(true);
 
   canvas = createGraphics(640, 360, P3D);
   scene = new Scene(this, (PGraphics3D) canvas);

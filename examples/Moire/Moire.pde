@@ -19,6 +19,8 @@
  * and mouse bindings in the console.
  */
 
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 
 Scene scene;
@@ -40,13 +42,13 @@ void draw() {
     
     stroke(204, 51, 51);
     // These lines will never be seen as they are always aligned with the viewing direction.
-    vertex(scene.camera().position().x, scene.camera().position().y, scene.camera().position().z);
+    vertex(scene.camera().position().x(), scene.camera().position().y(), scene.camera().position().z());
     vertex(100*cos(angle), 100*sin(angle), 0);
     
     stroke(55, 204, 55);
     // World Coordinates are infered from the camera, and seem to be immobile in the screen.
-    PVector tmp = scene.camera().worldCoordinatesOf(new PVector(30*cos(angle), 30*sin(angle), -200));
-    vertex(tmp.x, tmp.y, tmp.z);
+    Vector3D tmp = scene.camera().worldCoordinatesOf(new Vector3D(30*cos(angle), 30*sin(angle), -200));
+    vertex(tmp.x(), tmp.y(), tmp.z());
     vertex(100*cos(angle), 100*sin(angle), 0);
     
     stroke(55, 55, 204);

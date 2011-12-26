@@ -44,7 +44,6 @@ import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
-import remixlab.remixcam.devices.AbstractDevice;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
@@ -501,36 +500,7 @@ public class Scene extends AbstractScene implements PConstants {
   	pg3d.matrixMode(mode);
   }
 	
-	// end matrix stack wrapper
-	
-	// 1. Scene overloaded
-	
-	/**
-	 * This method is called before the first drawing happen and should be overloaded to
-	 * initialize stuff not initialized in {@code PApplet.setup()}. The default
-	 * implementation is empty.
-	 * <p>
-	 * Typical usage include {@link #camera()} initialization ({@link #showAll()})
-	 * and Scene state setup ({@link #setAxisIsDrawn(boolean)} and
-	 * {@link #setGridIsDrawn(boolean)}.
-	 */
-	public void init() {}
-	
-	/**
-	 * The method that actually defines the scene.
-	 * <p>
-	 * If you build a class that inherits from Scene, this is the method you
-	 * should overload, but no if you instantiate your own Scene object (in this
-	 * case you should just overload {@code PApplet.draw()} to define your scene).
-	 * <p>
-	 * The processing camera set in {@link #pre()} converts from the world to the
-	 * camera coordinate systems. Vertices given in {@link #draw()} can then be
-	 * considered as being given in the world coordinate system. The camera is
-	 * moved in this world using the mouse. This representation is much more
-	 * intuitive than a camera-centric system (which for instance is the standard
-	 * in OpenGL).
-	 */
-	public void proscenium() {}
+	// end matrix stack wrapper	
 	
 	/**
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#applyTransformation(SimpleFrame)}.
@@ -625,7 +595,8 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
 	 * or {@link #draw()}.
 	 */
-	private void displayVisualHints() {		
+	@Override
+	protected void displayVisualHints() {		
 		if (frameSelectionHintIsDrawn())
 			drawSelectionHints();
 		if (cameraPathsAreDrawn()) {
@@ -649,31 +620,6 @@ public class Scene extends AbstractScene implements PConstants {
 			pg3d.popStyle();
 		}
 	}	
-	
-	private void handleTimers() {		
-		if(prosceneTimers)
-			for ( AbstractTimerJob tJob : timerPool )
-				if (tJob.timer() != null)
-					((SingleThreadedTaskableTimer)tJob.timer()).execute();
-	}
-	
-	/**
-	 * Bind processing matrices to proscene matrices.
-	 */
-	protected void bindMatrices() {
-		// We set the processing camera matrices from our remixlab.proscene.Camera
-		// TODO: needs testing
-		setPProjectionMatrix();
-		setPModelViewMatrix();
-		// same as the two previous lines:
-		// WARNING: this can produce visual artifacts when using OPENGL and
-		// GLGRAPHICS renderers because
-		// processing will anyway set the matrices at the end of the rendering
-		// loop.
-		// camera().computeProjectionMatrix();
-		// camera().computeModelViewMatrix();
-		camera().cacheMatrices();
-	}
 
 	/**
 	 * Paint method which is called just before your {@code PApplet.draw()}
@@ -684,6 +630,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * the frustum planes equations if {@link #enableFrustumEquationsUpdate(boolean)}
 	 * has been set to {@code true}.
 	 */
+	// TODO: try to rewrite and test how resizable works now
 	public void pre() {
 		if (isOffscreen()) return;	
 		
@@ -693,10 +640,7 @@ public class Scene extends AbstractScene implements PConstants {
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
 			if ((width != pg3d.width) || (height != pg3d.height)) {
 				width = pg3d.width;
-				height = pg3d.height;
-				// TODO test resize events
-				// weirdly enough we need to bypass what processing does
-				// to the matrices when a resize event takes place				
+				height = pg3d.height;				
 				camera().setScreenWidthAndHeight(width, height);				
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
@@ -705,7 +649,6 @@ public class Scene extends AbstractScene implements PConstants {
 					camera().setUpVector(avatar().upVector());
 					camera().lookAt(avatar().target());
 				}
-				bindMatrices();
 			}
 		} else {
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
@@ -714,11 +657,9 @@ public class Scene extends AbstractScene implements PConstants {
 				camera().setUpVector(avatar().upVector());
 				camera().lookAt(avatar().target());
 			}
-			bindMatrices();
 		}
 
-		if (frustumEquationsUpdateIsEnable())
-			camera().updateFrustumEquations();
+		preDraw();
 	}
 
 	/**
@@ -730,61 +671,20 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	public void draw() {
 		if (isOffscreen()) return;
-		drawCommon();
-	}
+		postDraw();
+	}	
 	
-	/**
-	 * Internal method. Called by {@link #draw()} and {@link #beginDraw()}.
-	 * <p>
-	 * First performs any scheduled animation, then calls {@link #proscenium()}
-	 * which is the main drawing method that could be overloaded. Then, if
-	 * there's an additional drawing method registered at the Scene, calls it (see
-	 * {@link #addDrawHandler(Object, String)}). Finally, displays the
-	 * {@link #displayGlobalHelp()}, the axis, the grid, the interactive frames' selection
-	 * hints and camera paths, and some visual hints (such {@link #drawZoomWindowHint()},
-	 * {@link #drawScreenRotateLineHint()} and {@link #drawArcballReferencePointHint()})
-	 * according to user interaction and flags.
-	 * 
-	 * @see #proscenium()
-	 * @see #addDrawHandler(Object, String)
-	 * @see #gridIsDrawn()
-	 * @see #axisIsDrwn
-	 * @see #addDrawHandler(Object, String)
-	 * @see #addAnimationHandler(Object, String)
-	 */
-	protected void drawCommon() {		
-		// 0. timers
-		handleTimers();
-		
-		// 1. Animation
-		if( animationIsStarted() )
-			performAnimation();
-		
-		// 2. Alternative use only
-		proscenium();
-
-		// 3. Draw external registered method
-		if (drawHandlerObject != null) {
-			try {
-				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
-			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
-				e.printStackTrace();
-			}
-		}
-		
-		// 4. HIDevices
-		for (AbstractDevice device : devices)
-			device.handle();
-		
-		// 5. Grid and axis drawing
-		if (gridIsDrawn())
-			drawGrid(camera().sceneRadius());
-		if (axisIsDrawn())
-			drawAxis(camera().sceneRadius());
-		
-		// 6. Display visual hints
-		displayVisualHints();
+	@Override
+	protected void invokeRegisteredMethod() {
+     	// 3. Draw external registered method
+			if (drawHandlerObject != null) {
+				try {
+					drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
+				} catch (Exception e) {
+					PApplet.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
+					e.printStackTrace();
+				}
+			}	
 	}
 	
 	/**
@@ -814,9 +714,8 @@ public class Scene extends AbstractScene implements PConstants {
 				camera().setUpVector(avatar().upVector());
 				camera().lookAt(avatar().target());
 			}
-			bindMatrices();
-			if (frustumEquationsUpdateIsEnable())
-				camera().updateFrustumEquations();	
+			
+			preDraw();	
 		}
 	}
 
@@ -834,20 +733,24 @@ public class Scene extends AbstractScene implements PConstants {
 					"There should be exactly one beginDraw() call followed by a "
 							+ "endDraw() and they cannot be nested. Check your implementation!");
 		
-		drawCommon();
+		postDraw();
 	}
 	
   // 4. Scene dimensions
 	
+	/**
 	@Override
 	public float frameRate() {
 		return parent.frameRate;
 	}
+	*/
 
+	/**
 	@Override
 	public long frameCount() {
 		return parent.frameCount;
 	}
+	*/
 
 	/**
 	 * Returns the {@link PApplet#width} to {@link PApplet#height} aspect ratio of
@@ -2920,38 +2823,6 @@ public class Scene extends AbstractScene implements PConstants {
 			camera().frame().alignWithFrame(null, true);
 			break;
 		}
-	}
-	
-	// Device registration
-	
-	/**
-	 * Adds an HIDevice to the scene.
-	 * 
-	 * @see #removeDevice(AbstractHIDevice)
-	 * @see #removeAllDevices()
-	 */
-	public void addDevice(AbstractDevice device) {
-		devices.add(device);
-	}
-	
-	/**
-	 * Removes the device from the scene.
-	 * 
-	 * @see #addDevice(AbstractHIDevice)
-	 * @see #removeAllDevices()
-	 */
-	public void removeDevice(AbstractDevice device) {
-		devices.remove(device);
-	}
-	
-	/**
-	 * Removes all registered devices from the scene.
-	 * 
-	 * @see #addDevice(AbstractHIDevice)
-	 * @see #removeDevice(AbstractHIDevice)
-	 */
-	public void removeAllDevices() {
-		devices.clear();
 	}	
 
 	// 10. Draw method registration
@@ -3000,127 +2871,7 @@ public class Scene extends AbstractScene implements PConstants {
 		return true;
 	}
 	
-	// 11. Animation
-	
-	/**
-	 * Return {@code true} when the animation loop is started.
-	 * <p>
-	 * Proscene animation loop relies on processing drawing loop. The {@link #draw()} function will
-	 * check when {@link #animationIsStarted()} and then called the animation handler method
-	 * (set with {@link #addAnimationHandler(Object, String)}) or {@link #animate()} (if no handler
-	 * has been added to the scene) every {@link #animationPeriod()} milliseconds. In addition,
-	 * During the drawing loop, the variable {@link #animatedFrameWasTriggered} is set
-   * to {@code true} each time an animated frame is triggered (and {@code false} otherwise),
-   * which is useful to notify to the outside world when an animation event occurs. 
-	 * <p>
-	 * Be sure to call {@code loop()} before an animation is started.
-	 * <p>
-	 * <b>Note:</b> The drawing frame rate may be modified when {@link #startAnimation()} is called,
-	 * depending on the {@link #animationPeriod()}.   
-	 * <p>
-	 * Use {@link #startAnimation()}, {@link #stopAnimation()} or {@link #toggleAnimation()}
-	 * to change this value.
-	 * 
-	 * @see #startAnimation()
-	 * @see #addAnimationHandler(Object, String)
-	 * @see #animate()
-	 */
-	public boolean animationIsStarted() {
-		return animationStarted;
-	}
-	
-	/**
-	 * The animation loop period, in milliseconds. When {@link #animationIsStarted()}, this is
-	 * the delay that takes place between two consecutive iterations of the animation loop.
-	 * <p>
-	 * This delay defines a target frame rate that will only be achieved if your
-	 * {@link #animate()} and {@link #draw()} methods are fast enough. If you want to know
-	 * the maximum possible frame rate of your machine on a given scene,
-	 * {@link #setAnimationPeriod(float)} to {@code 1}, and {@link #startAnimation()}. The display
-	 * will then be updated as often as possible, and the frame rate will be meaningful.  
-	 * <p>
-	 * Default value is 16.6666 milliseconds (60 Hz) which matches <b>processing</b> default
-	 * frame rate.
-	 * <p>
-	 * <b>Note:</b> This value is taken into account only the next time you call
-	 * {@link #startAnimation()}. If {@link #animationIsStarted()}, you should
-	 * {@link #stopAnimation()} first. See {@link #restartAnimation()} and
-	 * {@link #setAnimationPeriod(float, boolean)}.
-	 * 
-	 * @see #setAnimationPeriod(float, boolean)
-	 */
-	public long animationPeriod() {
-		return animationPeriod;
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code setAnimationPeriod(period, true)}.
-	 * 
-	 * @see #setAnimationPeriod(float, boolean)
-	 */
-	public void setAnimationPeriod(long period) {
-		setAnimationPeriod(period, true);
-	}
-	
-	/**
-	 * Sets the {@link #animationPeriod()}, in milliseconds. If restart is {@code true}
-	 * and {@link #animationIsStarted()} then {@link #restartAnimation()} is called.
-	 * <p>
-	 * <b>Note:</b> The drawing frame rate could be modified when {@link #startAnimation()} is called
-	 * depending on the {@link #animationPeriod()}.
-	 * 
-	 * @see #startAnimation()
-	 */
-	public void setAnimationPeriod(long period, boolean restart) {
-		if(period>0) {
-			animationPeriod = period;
-			if(animationIsStarted() && restart)				
-				restartAnimation();
-		}
-	}
-	
-	/**
-	 * Stops animation.
-	 * <p>
-	 * <b>Warning:</b> Restores the {@code PApplet} frame rate to its default value,
-	 * i.e., calls {@code parent.frameRate(60)}. 
-	 * 
-	 * @see #animationIsStarted()
-	 */
-	public void stopAnimation()	{
-		animationStarted = false;
-		animatedFrameWasTriggered = false;
-		animationTimer.stop();
-	}
-	
-	/**
-	 * Starts the animation loop.
-	 * <p>
-	 * Syncs the drawing frame rate according to {@link #animationPeriod()}: If the animation
-	 * frame rate (which value depends on the {@link #animationPeriod()})
-	 * is higher than the current {@link #frameRate()}, the frame rate is modified to match it,
-	 * i.e., each drawing frame will trigger exactly one animation event. If the animation
-	 * frame rate is lower than the {@link #frameRate()}, the frame rate is left unmodified,
-	 * and the animation frames will be interleaved among the drawing frames in intervals
-	 * needed to achieve the target {@link #animationPeriod()} (provided that your
-	 * {@link #animate()} and {@link #draw()} methods are fast enough).
-	 * 
-	 * @see #animationIsStarted()
-	 */
-	public void startAnimation() {
-		animationStarted = true;	
-		animationTimer.run(animationPeriod);
-	}
-	
-	/**
-	 * Restart the animation.
-	 * <p>
-	 * Simply calls {@link #stopAnimation()} and then {@link #startAnimation()}.
-	 */
-  public void restartAnimation() {
-  	stopAnimation();
-  	startAnimation();
-	}
+	// 11. Animation	
   
   /**
 	 * Internal use.
@@ -3133,6 +2884,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #animationPeriod()
 	 * @see #startAnimation()
 	 */
+	@Override
 	protected void performAnimation() {
 		if( !animationTimer.isTrigggered() ) {
 			animatedFrameWasTriggered = false;
@@ -3150,30 +2902,6 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		else
 			animate();
-	}
-	
-	/**
-	 * Scene animation method.
-	 * <p>
-	 * When {@link #animationIsStarted()}, this method defines how your scene evolves over time.
-	 * <p>
-	 * Overload it as needed. Default implementation is empty. You may
-	 * {@link #addAnimationHandler(Object, String)} instead.
-	 * <p>
-	 * <b>Note</b> that remixlab.proscene.KeyFrameInterpolator (which regularly updates a Frame)
-	 * do not use this method.
-	 * 
-	 * @see #addAnimationHandler(Object, String).
-	 */
-	public void animate() {
-	}
-	
-	/**
-	 * Calls {@link #startAnimation()} or {@link #stopAnimation()}, depending on
-	 * {@link #animationIsStarted()}.
-	 */
-	public void toggleAnimation() {
-		if (animationIsStarted()) stopAnimation(); else startAnimation();
 	}
 	
 	/**
@@ -3227,9 +2955,10 @@ public class Scene extends AbstractScene implements PConstants {
 	 * {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
 	 * {@link remixlab.remixcam.core.Camera#type()}.
 	 */
-	protected void setPProjectionMatrix() {
-		/**
-		// All options work seemlessly
+	@Override
+	protected void setProjectionMatrix() {
+	  // All options work seemlessly
+		 /**		
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
 		camera().getProjectionMatrix(mat);
@@ -3262,10 +2991,11 @@ public class Scene extends AbstractScene implements PConstants {
 	/**
 	 * Sets the processing camera matrix from {@link #camera()}. Simply calls
 	 * {@code PApplet.camera()}.
-	 */	
-	protected void setPModelViewMatrix() {
-		/**
-		// All options work seemlessly
+	 */
+	@Override
+	protected void setModelViewMatrix() {
+	  // All options work seemlessly
+		 /**		
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
 		camera().getModelViewMatrix(mat);
