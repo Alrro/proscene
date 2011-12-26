@@ -10,14 +10,17 @@
  * and mouse bindings in the console.
  */
 
+import remixlab.remixcam.core.*;
 import remixlab.proscene.*;
 
 Scene scene;
 
 void setup() {
   size(640, 360, P3D);
+  frame.setResizable(true);
   //Scene instantiation
-  scene = new Scene(this);  
+  scene = new Scene(this); 
+  
 }
 
 void draw() {
