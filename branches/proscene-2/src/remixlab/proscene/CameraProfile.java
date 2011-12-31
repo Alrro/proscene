@@ -393,7 +393,7 @@ public class CameraProfile {
 	 * Internal method. Parses the event to convert it to a Scene.MouseAction. Returns
 	 * {@link remixlab.proscene.Scene.MouseAction#NO_MOUSE_ACTION} if no action was found.
 	 * <p>
-	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
+	 * Called by {@link remixlab.proscene.AWTWheeledDesktopEvents#awtMousePressed(MouseEvent)}.
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
 		MouseAction camMouseAction = cameraMouseBinding( e.getModifiersEx() );
@@ -415,7 +415,7 @@ public class CameraProfile {
 	 * Internal method. Parses the event to convert it to a Scene.MouseAction. Returns
 	 * {@link remixlab.proscene.Scene.MouseAction#NO_MOUSE_ACTION} if no action was found.
 	 * <p>
-	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
+	 * Called by {@link remixlab.proscene.AWTWheeledDesktopEvents#awtMousePressed(MouseEvent)}.
 	 */
 	protected MouseAction frameMouseAction(MouseEvent e) {
 		MouseAction iFrameMouseAction = frameMouseBinding( e.getModifiersEx() );
@@ -428,7 +428,7 @@ public class CameraProfile {
 	 * Internal method. Parses the event to convert it to a Scene.MouseAction. Returns
 	 * {@link remixlab.proscene.Scene.MouseAction#NO_MOUSE_ACTION} if no action was found.
 	 * <p>
-	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
+	 * Called by {@link remixlab.proscene.AWTWheeledDesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
 	protected MouseAction cameraWheelMouseAction(MouseWheelEvent e) {
 		MouseAction wMouseAction = cameraWheelBinding(e.getModifiersEx());
@@ -441,7 +441,7 @@ public class CameraProfile {
 	 * Internal method. Parses the event to convert it to a Scene.MouseAction. Returns
 	 * {@link remixlab.proscene.Scene.MouseAction#NO_MOUSE_ACTION} if no action was found.
 	 * <p>
-	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
+	 * Called by {@link remixlab.proscene.AWTWheeledDesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
 	protected MouseAction frameWheelMouseAction(MouseWheelEvent e) {
 		MouseAction fMouseAction = frameWheelBinding( e.getModifiersEx() );

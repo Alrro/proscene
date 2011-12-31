@@ -46,7 +46,7 @@ import remixlab.remixcam.geom.Point;
  * generated via Processing will then be directed to {@link #keyEvent(KeyEvent)} and to
  * {@link #mouseEvent(MouseEvent)}.  
  */
-public class DesktopEvents implements MouseWheelListener {
+public class AWTDesktopEvents {
 	protected Scene scene;
 	protected MouseAction camMouseAction;
 	protected boolean keyHandled;
@@ -54,7 +54,7 @@ public class DesktopEvents implements MouseWheelListener {
 	public Point fCorner;// also used for SCREEN_ROTATE
 	public Point lCorner;
 	
-	public DesktopEvents(Scene s) {
+	public AWTDesktopEvents(Scene s) {
 		scene = s;
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		keyHandled = false;
@@ -78,10 +78,10 @@ public class DesktopEvents implements MouseWheelListener {
 		case KeyEvent.KEY_PRESSED:
 			break;
 		case KeyEvent.KEY_TYPED:
-			keyTyped(e);
+			awtKeyTyped(e);
 			break;
 		case KeyEvent.KEY_RELEASED:
-			keyReleased(e);
+			awtKeyReleased(e);
 			break;
 		}
 	}
@@ -96,7 +96,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #keyTypedCameraKeyboardAction(KeyEvent)
 	 * @see #keyTypedKeyboardAction(KeyEvent)
 	 */
-	protected void keyTyped(KeyEvent e) {
+	protected void awtKeyTyped(KeyEvent e) {
 		boolean handled = false;		
 		if (scene.currentCameraProfile() != null)
 			handled = keyTypedCameraKeyboardAction(e);
@@ -117,7 +117,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #keyReleasedCameraKeyboardAction(KeyEvent)
 	 * @see #keyReleasedKeyboardAction(KeyEvent)
 	 */
-	protected void keyReleased(KeyEvent e) {
+	protected void awtKeyReleased(KeyEvent e) {
 		if(keyHandled)
 			return;
 		boolean handled = false;
@@ -275,19 +275,19 @@ public class DesktopEvents implements MouseWheelListener {
 			return;
 		switch (e.getID()) {
 		case MouseEvent.MOUSE_CLICKED:
-			mouseClicked(e);
+			awtMouseClicked(e);
 			break;
 		case MouseEvent.MOUSE_DRAGGED:
-			mouseDragged(e);
+			awtMouseDragged(e);
 			break;
 		case MouseEvent.MOUSE_MOVED:
-			mouseMoved(e);
+			awtMouseMoved(e);
 			break;
 		case MouseEvent.MOUSE_PRESSED:
-			mousePressed(e);
+			awtMousePressed(e);
 			break;
 		case MouseEvent.MOUSE_RELEASED:
-			mouseReleased(e);
+			awtMouseReleased(e);
 			break;
 		}
 	}
@@ -299,7 +299,7 @@ public class DesktopEvents implements MouseWheelListener {
    * a binding for this click event, taking into account the button, the modifier mask, and
    * the number of clicks.
    */
-	protected void mouseClicked(MouseEvent event) {
+	protected void awtMouseClicked(MouseEvent event) {
 		Button button = getButton(event);
 		int numberOfClicks = event.getClickCount();
 		if (scene.mouseGrabber() != null)
@@ -315,7 +315,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabbable)} to the MouseGrabber that grabs the
 	 * mouse (or to {@code null} if none of them grab it).
 	 */
-	public void mouseMoved(MouseEvent e) {
+	public void awtMouseMoved(MouseEvent e) {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		scene.setMouseGrabber(null);
 		if( scene.hasMouseTracking() )
@@ -336,11 +336,11 @@ public class DesktopEvents implements MouseWheelListener {
 	 * Mouse displacements are interpreted according to the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse bindings.
 	 * 
-	 * @see #mouseDragged(MouseEvent)
-	 * @see #mouseReleased(MouseEvent)
+	 * @see #awtMouseDragged(MouseEvent)
+	 * @see #awtMouseReleased(MouseEvent)
 	 * @see #mouseWheelMoved(MouseWheelEvent)
 	 */
-	public void mousePressed(MouseEvent e) {
+	public void awtMousePressed(MouseEvent e) {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
@@ -371,15 +371,15 @@ public class DesktopEvents implements MouseWheelListener {
 	 * The mouse dragged event is sent to the {@link remixlab.proscene.Scene#mouseGrabber()}
 	 * or the {@link remixlab.proscene.Scene#interactiveFrame()}, or to the
 	 * {@link remixlab.proscene.Scene#camera()}, according to the action started at
-	 * {@link #mousePressed(MouseEvent)}.
+	 * {@link #awtMousePressed(MouseEvent)}.
 	 * <p>
 	 * Mouse displacements are interpreted according to the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse bindings.
 	 * 
-	 * @see #mousePressed(MouseEvent)
-	 * @see #mouseReleased(MouseEvent)
+	 * @see #awtMousePressed(MouseEvent)
+	 * @see #awtMouseReleased(MouseEvent)
 	 */
-	public void mouseDragged(MouseEvent e) {
+	public void awtMouseDragged(MouseEvent e) {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		if (scene.mouseGrabber() != null) {
 			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.camera());
@@ -410,15 +410,15 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} or the
 	 * {@link remixlab.proscene.Scene#interactiveFrame()}, or to the
 	 * {@link remixlab.proscene.Scene#camera()}, according to the action started at
-	 * {@link #mousePressed(MouseEvent)}.
+	 * {@link #awtMousePressed(MouseEvent)}.
 	 * <p>
 	 * Mouse displacements are interpreted according to the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse bindings.
 	 * 
-	 * @see #mousePressed(MouseEvent)
-	 * @see #mouseDragged(MouseEvent)
+	 * @see #awtMousePressed(MouseEvent)
+	 * @see #awtMouseDragged(MouseEvent)
 	 */
-	public void mouseReleased(MouseEvent e) {
+	public void awtMouseReleased(MouseEvent e) {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) //covers also the case when mouseGrabberIsADrivableFrame
@@ -449,8 +449,6 @@ public class DesktopEvents implements MouseWheelListener {
 	// 2.b Wheel	
 	
 	/**
-	 * Implementation of {@link java.awt.event.MouseWheelListener#mouseWheelMoved(MouseWheelEvent)}.
-	 * <p>
 	 * The action generated when the user start rotating the mouse wheel is handled by the
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} (if any), or the
 	 * {@link remixlab.proscene.Scene#interactiveFrame()}
@@ -460,10 +458,9 @@ public class DesktopEvents implements MouseWheelListener {
 	 * Mouse wheel rotation is interpreted according to the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse wheel bindings.
 	 * 
-	 * @see #mousePressed(MouseEvent)
+	 * @see #awtMousePressed(MouseEvent)
 	 */
-	@Override	
-	public void mouseWheelMoved(MouseWheelEvent event) {
+	public void awtMouseWheelMoved(MouseWheelEvent event) {
 		if(!scene.mouseIsHandled())
 			return;
 		if (scene.mouseGrabber() != null) {
@@ -484,3 +481,4 @@ public class DesktopEvents implements MouseWheelListener {
 		scene.camera().frame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 	}
 }
+
