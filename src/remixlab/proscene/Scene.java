@@ -27,7 +27,7 @@ package remixlab.proscene;
 
 import processing.core.*;
 
-/**
+ /**
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.devices.*;
 import remixlab.remixcam.geom.*;
@@ -180,7 +180,7 @@ public class Scene extends AbstractScene implements PConstants {
 	protected SimpleFrame tmpFrame;
 
 	// O B J E C T S
-	protected DesktopEvents dE;
+	protected AWTWheeledDesktopEvents dE;
 
 	// S C R E E N C O O R D I N A T E S	
 	protected float zC;
@@ -282,7 +282,7 @@ public class Scene extends AbstractScene implements PConstants {
 		tmpFrame = new SimpleFrame();
 		
 		//event handler
-		dE = new DesktopEvents(this);
+		dE = new AWTWheeledDesktopEvents(this);
 		
 		// 1 ->   	
 
