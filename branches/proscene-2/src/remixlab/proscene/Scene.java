@@ -46,7 +46,6 @@ import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
-import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
 // */
@@ -261,6 +260,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #Scene(PApplet, PGraphics3D)
 	 */
 	public Scene(PApplet p, PGraphics3D renderer, int x, int y) {
+		super(new P5Renderer(renderer));
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
@@ -349,161 +349,6 @@ public class Scene extends AbstractScene implements PConstants {
 
 		// called only once
 		init();
-	}
-	
-	// 0. Matrix stack wrappers: solving resolution naming possible  conflicts
-	
-	@Override
-	public void pushMatrix() {
-		pg3d.pushMatrix();
-	}
-	
-	@Override
-	public void popMatrix() {
-		pg3d.popMatrix();
-	}	 
-	
-	@Override
-  public void translate(float tx, float ty) {    
-  	pg3d.translate(tx, ty);
-  }
-
-	@Override
-  public void translate(float tx, float ty, float tz) {    
-  	pg3d.translate(tx, ty, tz);
-  }
-
-	@Override
-  public void rotate(float angle) {    
-  	pg3d.rotate(angle);
-  }
-
-	@Override
-  public void rotateX(float angle) {    
-  	pg3d.rotateX(angle);
-  }
-
-	@Override
-  public void rotateY(float angle) {
-  	pg3d.rotateY(angle);
-  }
-
-	@Override
-  public void rotateZ(float angle) {
-  	pg3d.rotateZ(angle);
-  }
-
-	@Override
-  public void rotate(float angle, float vx, float vy, float vz) {
-  	pg3d.rotate(angle, vx, vy, vz);
-  }
-
-	@Override
-  public void scale(float s) {
-  	pg3d.scale(s);
-  }
-
-	@Override
-  public void scale(float sx, float sy) {
-  	pg3d.scale(sx, sy);
-  }
-
-	@Override
-  public void scale(float x, float y, float z) {
-  	pg3d.scale(x, y, z);
-  }
-
-	@Override
-  public void shearX(float angle) {
-  	pg3d.shearX(angle);
-  }
-
-	@Override
-  public void shearY(float angle) {
-  	pg3d.shearY(angle);
-  }
-  
-	@Override
-  public void loadIdentity() {
-  	pg3d.resetMatrix();
-  }
-
-	@Override
-  public void resetMatrix() {
-  	pg3d.resetMatrix();
-  }
-  
-	@Override
-  public void loadMatrix(Matrix3D source) {
-  	PMatrix3D pM = new PMatrix3D();  	
-  	pM.set( source.getTransposed(new float[16]) );
-  	pg3d.setMatrix(pM);
-  	
-  }
-  
-	@Override
-  public void multiplyMatrix(Matrix3D source) {
-  	this.applyMatrix(source);
-  }
-  
-	@Override
-  public void applyMatrix(Matrix3D source) {
-  	PMatrix3D pM = new PMatrix3D();  	
-  	pM.set( source.getTransposed(new float[16]) );
-  	pg3d.applyMatrix(pM);
-  }
-
-	@Override
-  public void applyMatrix(float n00, float n01, float n02, float n03,
-                          float n10, float n11, float n12, float n13,
-                          float n20, float n21, float n22, float n23,
-                          float n30, float n31, float n32, float n33) {    
-  	pg3d.applyMatrix(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22, n23, n30, n31, n32, n33);
-  }
-  
-	@Override
-  public void frustum(float left, float right, float bottom, float top, float znear, float zfar) {
-  	pg3d.frustum(left, right, bottom, top, znear, zfar);
-  }
-
-	@Override
-  public Matrix3D getMatrix() {		
-		PMatrix3D pM = (PMatrix3D) pg3d.getMatrix();
-		return new Matrix3D(pM.get(new float[16]), true);// set it transposed
-  }
-
-	@Override
-  public Matrix3D getMatrix(Matrix3D target) {		
-		PMatrix3D pM = (PMatrix3D) pg3d.getMatrix();
-		target.setTransposed(pM.get(new float[16]));
-		return target;
-  }
-
-	@Override
-  public void setMatrix(Matrix3D source) {
-		resetMatrix();
-    applyMatrix(source);
-  }
-
-	@Override
-  public void printMatrix() {
-  	pg3d.printMatrix();
-  }
-  
-	@Override
-  public void matrixMode( int mode  ) {
-  	pg3d.matrixMode(mode);
-  }
-	
-	// end matrix stack wrapper	
-	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#applyTransformation(SimpleFrame)}.
-	 */
-	@Override
-	public void applyTransformation(SimpleFrame frame) {
-		pg3d.translate( frame.translation().vec[0], frame.translation().vec[1], frame.translation().vec[2] );
-		pg3d.rotate( frame.rotation().angle(), frame.rotation().axis().vec[0], frame.rotation().axis().vec[1], frame.rotation().axis().vec[2]);
 	}
 
 	// 2. Associated objects
