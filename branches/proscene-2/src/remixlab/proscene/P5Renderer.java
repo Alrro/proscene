@@ -70,17 +70,7 @@ public class P5Renderer implements Renderable {
 	@Override
 	public void scale(float x, float y, float z) {
 		pg3d.scale(x, y, z);
-	}
-
-	@Override
-	public void shearX(float angle) {
-		pg3d.shearX(angle);
-	}
-
-	@Override
-	public void shearY(float angle) {
-		pg3d.shearY(angle);
-	}
+	}	
 
 	@Override
 	public void loadIdentity() {
@@ -110,19 +100,18 @@ public class P5Renderer implements Renderable {
 		PMatrix3D pM = new PMatrix3D();
 		pM.set(source.getTransposed(new float[16]));
 		pg3d.applyMatrix(pM);
+	}	
+
+	@Override
+	public void applyMatrixRowMajorOrder(float n00, float n01, float n02, float n03,
+			                                 float n10, float n11, float n12, float n13,
+			                                 float n20, float n21, float n22, float n23,
+			                                 float n30, float n31, float n32, float n33) {
+		pg3d.applyMatrix(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22,	n23, n30, n31, n32, n33);
 	}
 
 	@Override
-	public void applyMatrix(float n00, float n01, float n02, float n03,
-			float n10, float n11, float n12, float n13, float n20, float n21,
-			float n22, float n23, float n30, float n31, float n32, float n33) {
-		pg3d.applyMatrix(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22,
-				n23, n30, n31, n32, n33);
-	}
-
-	@Override
-	public void frustum(float left, float right, float bottom, float top,
-			float znear, float zfar) {
+	public void frustum(float left, float right, float bottom, float top,	float znear, float zfar) {
 		pg3d.frustum(left, right, bottom, top, znear, zfar);
 	}
 
@@ -208,5 +197,5 @@ public class P5Renderer implements Renderable {
 	@Override
 	public void popStyle() {
 		pg3d.popStyle();
-	}
+	}	
 }
