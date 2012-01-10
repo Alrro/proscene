@@ -46,6 +46,7 @@ import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
+import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
 // */
@@ -2460,17 +2461,19 @@ public class Scene extends AbstractScene implements PConstants {
 	@Override
 	protected void setProjectionMatrix() {
 	  // All options work seemlessly
-		 /**		
+		/**		
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
-		camera().getProjectionMatrix(mat);
+		camera().getProjectionMatrix(mat, true);
 		mat.transpose();
 		float[] target = new float[16];
 		pg3d.projection.set(mat.get(target));
 		// */
 		
-		// Option 2
-		//pg3d.projection.set(camera().getProjectionMatrix(new float[16], true));// set it transposed
+		/**		
+		// Option 2		
+		pg3d.projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		// */		
 		
 		// /**
 		// Option 3
@@ -2496,18 +2499,20 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	protected void setModelViewMatrix() {
-	  // All options work seemlessly
-		 /**		
+	  // All options work seamlessly
+		/**		
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
-		camera().getModelViewMatrix(mat);
+		camera().getViewMatrix(mat, true);
 		mat.transpose();// experimental
 		float[] target = new float[16];
 		pg3d.modelview.set(mat.get(target));
 		// */
 		
-	  // Option 2
-		//pg3d.modelview.set(camera().getModelViewMatrix(new float[16], true));// set it transposed
+		/**		
+		// Option 2
+		pg3d.modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
+		// */	  
 		
 		// /**
 	  // Option 3
@@ -2517,7 +2522,7 @@ public class Scene extends AbstractScene implements PConstants {
 				        camera().upVector().x(), camera().upVector().y(), camera().upVector().z());
 		// if our camera() matrices are detached from the processing Camera
 		// matrices, we cache the processing camera modelview matrix into our camera()
-		camera().setModelViewMatrix( pg3d.modelview.get(new float[16]), true );// set it transposed
+		camera().setViewMatrix( pg3d.modelview.get(new float[16]), true );// set it transposed
 		// */
 	}
 }
