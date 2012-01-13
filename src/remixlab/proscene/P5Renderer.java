@@ -143,6 +143,12 @@ public class P5Renderer implements Renderable {
 	public void matrixMode(int mode) {
 		pg3d.matrixMode(mode);
 	}
+	
+	@Override
+	public int getMatrixMode() {
+		//TODO seems there's no way to handle this under processing
+		return 0;
+	}
 
 	@Override
 	public int getWidth() {
