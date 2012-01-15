@@ -15,6 +15,11 @@ public class TimerWrap implements Timable {
 		caller = o;
 	}	
 	
+	public Taskable timerJob() {
+		return caller;
+	}
+	
+	@Override
 	public void create() {
 		stop();
 		timer = new Timer();
@@ -25,24 +30,33 @@ public class TimerWrap implements Timable {
 		};
 	}
   
+	@Override
   public void run(long period) {
   	create();
 		timer.scheduleAtFixedRate(timerTask, 0, period);
   }
   
+  @Override
   public void runOnce(long period) {
   	create();
 		timer.schedule(timerTask, period);
   }
   
+  @Override
   public void cancel() {
   	stop();
   }
   
+  @Override
   public void stop() {
   	if(timer != null) {
 			timer.cancel();
 			timer.purge();
 		}
   }
+
+	@Override
+	public boolean isActive() {
+		return timer != null;
+	}
 }

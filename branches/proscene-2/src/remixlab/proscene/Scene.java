@@ -44,9 +44,8 @@ import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.util.AbstractTimerJob;
-import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
-import remixlab.remixcam.geom.Matrix3D;
+//import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
 // */
@@ -188,6 +187,9 @@ public class Scene extends AbstractScene implements PConstants {
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
   protected int beginOffScreenDrawingCalls;	
+  
+  // T I M E R S
+  boolean singleThreadedTaskableTimers;
 	
 	/**
 	// M O U S E   G R A B B E R   H I N T   C O L O R S
@@ -267,8 +269,8 @@ public class Scene extends AbstractScene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 		
-		//TODO testing: currently cannot be set from here
-		//singleThreadedTaskableTimers = false;		
+		//TODO testing
+		this.setSingleThreadedTimers(true);
 		setLeftHanded();
 		
 		/**
@@ -354,17 +356,27 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// 2. Associated objects
 	
+	public void setSingleThreadedTimers(boolean singlethreaded) {
+		singleThreadedTaskableTimers = singlethreaded;
+	}
+	
+	public boolean timersAreSingleThreaded() {
+		return singleThreadedTaskableTimers;
+	}
+	
 	@Override
 	public void registerJob(AbstractTimerJob job) {
-		if (singleThreadedTaskableTimers) {			
-			registerJobInTimerPool(job);
-			PApplet.println("registering singleThreadedTaskableTimer " +  job.getClass() +  " in timer pool");
+		if (timersAreSingleThreaded()) {
+			super.registerJob(job);
+			//registerJobInTimerPool(job);
+			//PApplet.println("registering singleThreadedTaskableTimer " +  job.getClass() +  " in timer pool");
 		}
 		else {
 			job.setTimer(new TimerWrap(this, job));
-			PApplet.println("creating new awt timer " +  job.getClass());
+			//PApplet.println("creating new awt timer " +  job.getClass());
 		}
 	}	
+			
 	
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
