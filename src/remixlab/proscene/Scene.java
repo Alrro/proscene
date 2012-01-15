@@ -267,8 +267,8 @@ public class Scene extends AbstractScene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 		
-		//TODO testing
-		prosceneTimers = true;
+		//TODO testing: currently cannot be set from here
+		//singleThreadedTaskableTimers = false;		
 		setLeftHanded();
 		
 		/**
@@ -354,15 +354,15 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// 2. Associated objects
 	
-	// TODO only AWTTimers, of course
 	@Override
-	public void registerInTimerPool(AbstractTimerJob job) {
-		if (prosceneTimers) {			
-			job.setTimer(new SingleThreadedTaskableTimer(this, job));
-			timerPool.add(job);
+	public void registerJob(AbstractTimerJob job) {
+		if (singleThreadedTaskableTimers) {			
+			registerJobInTimerPool(job);
+			PApplet.println("registering singleThreadedTaskableTimer " +  job.getClass() +  " in timer pool");
 		}
 		else {
 			job.setTimer(new TimerWrap(this, job));
+			PApplet.println("creating new awt timer " +  job.getClass());
 		}
 	}	
 	
