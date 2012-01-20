@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.0)      
- *    Copyright (c) 2010-2011 by National University of Colombia
+ *                     ProScene (version 1.1.1)      
+ *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -323,6 +323,12 @@ public class DesktopEvents implements MouseWheelListener {
 				if (mg.grabsMouse())
 					scene.setMouseGrabber(mg);
 			}
+		if ((scene.currentCameraProfile().mode() == CameraProfile.Mode.FIRST_PERSON) &&
+				(getButton(e) ==  null) && 
+				(scene.cursorIsHiddenOnFirstPerson()) ) {
+			scene.camera().frame().startAction(Scene.MouseAction.LOOK_AROUND, scene.drawIsConstrained());
+			scene.camera().frame().mouseDragged(event, scene.camera());
+		}
 	}
 	
 	/**

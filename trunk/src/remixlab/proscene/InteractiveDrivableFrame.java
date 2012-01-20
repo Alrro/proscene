@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.0)      
- *    Copyright (c) 2010-2011 by National University of Colombia
+ *                     ProScene (version 1.1.1)      
+ *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -212,6 +212,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
 		else {		
+			if( prevPos == null ) prevPos = eventPoint;
 			int	deltaY = (int) (eventPoint.y - prevPos.y);
 		  //right_handed coordinate system should go like this:
 			//int deltaY = (int) (prevPos.y - eventPoint.y);

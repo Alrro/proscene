@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.0)      
- *    Copyright (c) 2010-2011 by National University of Colombia
+ *                     ProScene (version 1.1.1)      
+ *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -315,6 +315,8 @@ public class Camera implements Cloneable {
 		setPhysicalScreenWidth(0.4f);
 		// focusDistance is set from setFieldOfView()
 
+		projectionTimesModelview = new PMatrix3D();
+		
 		if (isAttachedToP5Camera()) {
 			projectionMat = pg3d.projection;
 			modelViewMat = pg3d.modelview;
@@ -415,6 +417,7 @@ public class Camera implements Cloneable {
 			if (isDetachedFromP5Camera()) {
 				clonedCam.modelViewMat = new PMatrix3D(modelViewMat);
 				clonedCam.projectionMat = new PMatrix3D(projectionMat);
+				clonedCam.projectionTimesModelview = new PMatrix3D(projectionTimesModelview);
 			}
 			clonedCam.frm = frm.clone();
 			return clonedCam;
@@ -2971,17 +2974,22 @@ public class Camera implements Cloneable {
 	 */
 	protected void cacheMatrices() {
 		// 1. project
-		if( ( (scene.mouseGrabberPool().size() > 3) && scene.hasMouseTracking() ) || unprojectCacheIsOptimized()) {
+		//if( ( (scene.mouseGrabberPool().size() > 3) && scene.hasMouseTracking() ) || unprojectCacheIsOptimized()) {
+		if(scene.hasMouseTracking() || unprojectCacheIsOptimized()) {
 			projectCacheOptimized = true;
-			projectionTimesModelview = new PMatrix3D( projectionMat );
-			projectionTimesModelview.apply( modelViewMat );
+			projectionTimesModelview.set(projectionMat);			
+			projectionTimesModelview.apply(modelViewMat);
 		}
 		else
 			projectCacheOptimized = false;
 		
 		// 2. unproject
 		if(unprojectCacheIsOptimized()) {
-			projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
+			if(projectionTimesModelviewInverse == null)
+				projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
+			else
+				projectionTimesModelviewInverse.set(projectionTimesModelview);			
+			
 			projectionTimesModelviewHasInverse = projectionTimesModelviewInverse.invert();
 		}
 	}
