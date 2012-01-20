@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.0)      
- *    Copyright (c) 2010-2011 by National University of Colombia
+ *                     ProScene (version 1.1.1)      
+ *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -482,8 +482,10 @@ public class Scene implements PConstants {
 	/** the name of the method to handle the animation */
 	protected String animateHandlerMethodName;
 	
-	// D E V I C E S
+	// F I R S T   P E R S O N   C A M E R A
+	protected boolean hideCursorOn1stPerson = false;
 	
+	// D E V I C E S	
 	protected ArrayList<HIDevice> devices;
 
 	/**
@@ -853,7 +855,7 @@ public class Scene implements PConstants {
 		if(!enable) {
 			if( mouseGrabber() != null )
 				mouseGrabber().setGrabsMouse(false);
-			setMouseGrabber(null);
+			setMouseGrabber(null);			
 		}
 		mouseTrckn = enable;
 	}
@@ -862,7 +864,7 @@ public class Scene implements PConstants {
 	 * Calls {@link #setMouseTracking(boolean)} to toggle the {@link #hasMouseTracking()} value.
 	 */
 	public void toggleMouseTracking() {
-		setMouseTracking(!hasMouseTracking());
+		setMouseTracking(!hasMouseTracking());			
 	}
 
 	// 4. State of the viewer
@@ -2687,7 +2689,16 @@ public class Scene implements PConstants {
 			return false;
 		if ((camProfile.mode() == CameraProfile.Mode.THIRD_PERSON) && (avatar() == null))
 			return false;
-		else {
+		else {			
+			// first-person
+			if (camProfile.mode() == CameraProfile.Mode.FIRST_PERSON && cursorIsHiddenOnFirstPerson())
+				parent.noCursor();
+			else {
+				if (currentCameraProfile != null)
+					if ((currentCameraProfile.mode() == CameraProfile.Mode.FIRST_PERSON ) && (camProfile.mode() != CameraProfile.Mode.FIRST_PERSON))			
+						parent.cursor();
+			}			
+			//third person
 			if (camProfile.mode() == CameraProfile.Mode.THIRD_PERSON) {
 				setDrawInteractiveFrame();
 				setCameraType(Camera.Type.PERSPECTIVE);
@@ -2714,17 +2725,62 @@ public class Scene implements PConstants {
 				
 				if(currentCameraProfile != null)
 					if (currentCameraProfile.mode() == CameraProfile.Mode.THIRD_PERSON)
-						camera().interpolateToFitScene();
+						camera().interpolateToFitScene();												
         
 				currentCameraProfile = camProfile;        
 				
 				setDrawInteractiveFrame(false);
 				if (avatarIsInteractiveDrivableFrame)
 					((InteractiveDrivableFrame) avatar()).addInMouseGrabberPool();
-			}
+			}			
 			return true;
 		}
 	}
+	
+  /**
+   * Returns {@code true} if the cursor is hidden in the first person
+   * camera profile (meaning that the {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}
+   * mouse action whill be performed by just moving the mouse) and {@code false} otherwise.
+   * 
+   * @see #hideCursorOnFirstPerson(boolean)
+   * @see #toggleCursorHiddenOnFirstPerson()
+   */
+	public boolean cursorIsHiddenOnFirstPerson() {
+		return hideCursorOn1stPerson;
+	}
+	
+  /**
+   * Toggles {@link #cursorIsHiddenOnFirstPerson()}.
+   * 
+   * @see #hideCursorOnFirstPerson(boolean)
+   */
+	public void toggleCursorHiddenOnFirstPerson() {
+		hideCursorOnFirstPerson(!cursorIsHiddenOnFirstPerson());
+	}
+	
+	/**
+	 * Hides the cursor on the first person camera profile if {@code hide}
+	 * is {@code true}, otherwise shows it. Default behaviour is to show the
+	 * cursor on the first person camera profle.
+	 * <p>
+	 * If the cursor is hidden in the first person
+   * camera profile the {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}
+   * mouse action whill be performed by just moving the mouse. The
+   * {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND} mouse action
+   * binding is never changed by a call to this method.
+   * <p>
+   * <b>Attention:</b> If the {@link #cursorIsHiddenOnFirstPerson()} maybe you'd
+   * want to disable mouse tracking (i.e., by a call to {@link #setMouseTracking(boolean)})
+   * which doesn't seem to make too much sense when the mouse cursor is not shown. 
+	 */
+	public void hideCursorOnFirstPerson(boolean hide) {
+		hideCursorOn1stPerson = hide;
+		if (currentCameraProfile.mode() == CameraProfile.Mode.FIRST_PERSON)
+			if (hideCursorOn1stPerson)
+				parent.noCursor();
+			else									
+				parent.cursor();
+	} 
 
 	/**
 	 * Sets the next registered camera profile as current.

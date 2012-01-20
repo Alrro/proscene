@@ -14,9 +14,15 @@
  * When the camera mode is set to THIRD_PERSON you can then manipulate your
  * interactive frame with the mouse and the camera will follow it.
  * 
- * Click the space bar to change between the camera modes: ARCBALL, WALKTHROUGH,
- * and THIRD_PERSON.
+ * Click the space bar to change between the camera modes: ARCBALL, WALKTHROUGH (also
+ * known as FIRST_PERSON), and THIRD_PERSON.
  * 
+ * This example also illustrates hiding the cursor in the first person camera profile.
+ * If the cursor is hidden in the first person camera profile, the LOOK_AROUND mouse
+ * action is performed by just moving the mouse (camera mouse bindings are unchanged).
+ * 
+ * Press 'u' (or 'U') to toggle hiding the cursor in the first person camera profile.
+ * Press 'v' (or 'V') to toggle mouse tracking. 
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
  * and mouse bindings in the console.
@@ -49,6 +55,7 @@ void setup() {
   // This also sets the scene.avatar() by automatically calling scene.setAvatar()
   // (provided that the interactive frame is an instance of the InteractiveAvatarFrame class).
   scene.setInteractiveFrame(avatar);
+  scene.hideCursorOnFirstPerson(true);
 }
 
 void draw() {
@@ -75,4 +82,11 @@ void draw() {
   vertex(400, 10, 400);
   vertex(-400, 10, 400);
   endShape(CLOSE);
+}
+
+void keyPressed() {
+  if(key == 'u' || key == 'U')
+    scene.toggleCursorHiddenOnFirstPerson();
+  if(key == 'v' || key == 'V')
+    scene.toggleMouseTracking();
 }
