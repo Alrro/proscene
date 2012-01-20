@@ -1,5 +1,19 @@
 #summary Wiki page containing all the project news.
 
+=28/06/2011 Release of *Proscene v1.1.0*=
+
+We are pleased to announce the immediate availability of proscene v1.1.0 (download it [http://proscene.googlecode.com/files/proscene-v1.1.0.zip here]). Changelog:
+
+ # Generic suppport for [http://en.wikipedia.org/wiki/Human_interface_device Human Interface Devices (HID)] has been implemented. Learn how to use it [HIDevice here].
+ # Off-screen rendering mode has seen great improvements and it  now supports mouse tracking and screen drawing. See all the examples using off-screen rendering: [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/CameraCrane/applet/index.html CameraCrane], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/StandardCamera/applet/index.html StandardCamera], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/ViewFrustumCulling/applet/index.html ViewFrustumCulling] and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/BasicUseOffscreen/applet/index.html BasicUseOffscreen].
+ # Screen drawing (i.e., drawing of 2d primitives on top of a 3d scene) has been completely rewritten based on the new `matrixMode` introduced in *Processing-1.5.x*, which means:
+   * This version of *proscene* only works with *Processing-1.5.x*.
+   * The [http://code.google.com/p/proscene/issues/detail?id=1 flickering issue] with screen drawing has been fixed.
+   * The background is no longer handled by *proscene*. Use the *Processing's* built-in [http://processing.org/reference/background_.html background()] method instead (as it is expected in the first place).
+ # New exciting examples: [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/CameraCrane/applet/index.html CameraCrane], [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/SpaceNavigator/applet/index.html SpaceNavigator] (requires the [http://www.3dconnexion.com/products/spacenavigator.html 3d connexion space navigator]), and [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/Woobik/applet/index.html Woobik].
+
+Many thanks to [http://interfaze.info/ Andres Colubri] (for his continuous support), [http://jimblackhurst.com/ Jim Blackhurst] (for his awesome [http://www.youtube.com/watch?v=hEoxaGkNcrg&feature=player_embedded#at=19 Just Cause 2 - Player Death by impact - Point Cloud Visualisation]),  Mark C. Mitchell (for his awesome [http://www.thecreators.tv/ audio-reactive touch application] which uses the new *HIDevice* *proscene* class), Camilo Salomón ([http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/Woobik/applet/index.html Woobik] example), Ivan Chinome and Cesar Montañez ([http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/CameraCrane/applet/index.html CameraCrane] example), Eduardo Moriana and Miguel Parra (first kinect experiments), and to all supporters and enthusiasts which gave us some great feedback :)
+
 =25/05/2011 Release of *Proscene v-1.1.0-beta1 (a.k.a. v-1.0.7)*=
 
 This is the first (and hopefully last) beta release of the next version of *proscene* targeted at testers that wish to give us some feedback (download it [http://proscene.googlecode.com/files/proscene-1.0.7.zip here]).
