@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.1)      
+ *                     ProScene (version 1.1.90)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -97,7 +97,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.1";
+	public static final String version = "1.1.90";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -2765,7 +2765,7 @@ public class Scene implements PConstants {
 	 * <p>
 	 * If the cursor is hidden in the first person
    * camera profile the {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND}
-   * mouse action whill be performed by just moving the mouse. The
+   * mouse action will be performed by just moving the mouse. The
    * {@link remixlab.proscene.Scene.MouseAction#LOOK_AROUND} mouse action
    * binding is never changed by a call to this method.
    * <p>
