@@ -7,6 +7,7 @@ import remixlab.proscene.*;
 @SuppressWarnings("serial")
 public class Moire extends PApplet  {
 Scene scene;
+Vector3D camPos;
 	
 	public void setup()	{
 		size(640, 360, OPENGL);
@@ -27,7 +28,10 @@ Scene scene;
 			
 			stroke(204, 51, 51);
 			// These lines will never be seen as they are always aligned with the viewing direction.
-			vertex(scene.camera().position().x(), scene.camera().position().y(), scene.camera().position().z());
+			camPos = scene.camera().position();
+			//vertex(camPos.x(), camPos.y(), 391);
+			//println(camPos);
+			vertex(camPos.x(), camPos.y(), camPos.z());			
 			vertex(100*cos(angle), 100*sin(angle), 0);			
 			
 			stroke(55, 204, 55);
@@ -42,7 +46,13 @@ Scene scene;
 		    vertex(100*cos(angle), 100*sin(angle), 0);		    
 		}	
 		endShape();
-	}	
+	}
+	
+	public void keyPressed() {
+		if( key == 'x' || key == 'X' ) {
+			println(camPos);
+		}
+	}
 		
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "Moire" });

@@ -12,7 +12,6 @@ import remixlab.remixcam.geom.*;
 
 @SuppressWarnings("serial")
 public class BasicUse extends PApplet {
-	
 	public class Vec1 {
 		public float [] values;
 		
@@ -293,6 +292,20 @@ public class BasicUse extends PApplet {
 		//b = loadImage("pierre.png");
 		//scene.background(b);
 		//frame.setResizable(true);
+		float [] a = new float [] {1.2f, -5, 6, 4.3f, 5.4f, 7.2f, 8, -7.2f, -4.3f, 2.1f, -0.6f, 1, 0.5f, -0.5f, 8, -6.4f};
+		Matrix3D m =  new Matrix3D();
+		m.setTransposed(a);
+		/**
+		m.setTransposed(a);
+		m.print();
+		*/
+		//println(m.determinant());
+		// /**
+		Matrix3D n =  new Matrix3D();
+		m.invert(n);
+		n.print();
+		println(m.determinant());
+		// */
 	}
 
 	// /**
@@ -300,9 +313,10 @@ public class BasicUse extends PApplet {
 		//PVector eulerAngles = scene.camera().orientation().eulerAngles();
 		//println(eulerAngles);
 		//scene.background(b);		
-		background(0);
-		//scene.displayGlobalHelp(false);
-		//scene.displayCurrentCameraProfileHelp(false);
+		background(0);	
+		
+		scene.drawArrow(new Vector3D(0,0,0), new Vector3D(50,50,50), 1);
+				
 		if(frame != null) {
 			frame.setResizable(true);
 			PApplet.println("set size");
@@ -336,18 +350,30 @@ public class BasicUse extends PApplet {
 			scene.camera().setOrientation(new Quaternion(new Vector3D(0,0,1), radians));
 		}
 		
-		/**
-		if(key == 'y') {
-			println(frameRate);
-			PVector pvec = new PVector(1,2,3);			
-			Vec3D vec = new Vec3D(new PVector(1,2,3));
-			println(vec.x);
-			println(vec.y);
-			println(vec.z);
-			//scene.camera().testing3(vec);s
-			Vec3D otherVec = new Vec3D(0.0f,1.0f,2.0f);
+		
+		if(key == 'y' || key == 'Y') {
+			scene.matrixMode(MODELVIEW);
+			Matrix3D m_apply = new Matrix3D( scene.getMatrix() );
+			Matrix3D m_applytrans = new Matrix3D( scene.getMatrix() );
+			scene.matrixMode(PROJECTION);
+			Matrix3D p = new Matrix3D( scene.getMatrix() );
+			/**
+			m_apply.preApply(p.m00(), p.m01(), p.m02(), p.m03(),
+					      p.m10(), p.m11(), p.m12(), p.m13(),
+					      p.m20(), p.m21(), p.m22(), p.m23(),
+					      p.m30(), p.m31(), p.m32(), p.m33());
+					      */
+			/**
+			m_applytrans.preApplyTranspose(p.m00(), p.m10(), p.m20(), p.m30(),
+										p.m01(), p.m11(), p.m21(), p.m31(),
+										p.m02(), p.m12(), p.m22(), p.m32(),
+										p.m03(), p.m13(), p.m23(), p.m33());
+										*/
+			println("apply:");
+			m_apply.print();
+			println("apply_trans:");
+			m_applytrans.print();
 		}
-		*/
 		
 		if(key == 'z') {
 			/**

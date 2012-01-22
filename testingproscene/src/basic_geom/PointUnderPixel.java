@@ -53,12 +53,13 @@ public class PointUnderPixel extends PApplet {
 	    boxes[i].draw();
 	}
 	
-	public void keyPressed() {
-		if ((key == 'x') || (key == 'x')) {
-			println("projectCacheOptimized: " + scene.camera().projectCacheOptimized + " unprojectCacheOptimized: " + scene.camera().unprojectCacheOptimized);
-		}
+	public void keyPressed() {		
 		if ((key == 'y') || (key == 'Y')) {
 			scene.camera().optimizeUnprojectCache(!scene.camera().unprojectCacheOptimized);
+			if(scene.camera().unprojectCacheOptimized)
+				println("unprojectCacheOptimized is on");
+			else
+				println("unprojectCacheOptimized is off");
 		}
 	}
 

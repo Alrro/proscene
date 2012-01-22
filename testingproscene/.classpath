@@ -7,12 +7,12 @@
 			<attribute name="javadoc_location" value="file:/home/pierre/Fun/src/processing/build/javadoc/core/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/pierre/Fun/software/processing-1.5.1/modes/java/libraries/opengl/library/gluegen-rt.jar">
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing/gluegen-rt.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/workspace/native_libs"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/jogl.jar">
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing/jogl.jar">
 		<attributes>
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/projects/workspace/native_libs"/>
 		</attributes>
@@ -24,5 +24,7 @@
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/OBJLoader.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/procontroll.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing/pdf.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing/itext.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

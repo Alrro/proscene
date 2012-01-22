@@ -24,8 +24,16 @@ public class Box {
 	
 	public void draw(boolean drawAxis) {
 		scene.pg3d.pushMatrix();
-				
-		//Same as the previous commented line, but a lot more efficient:
+		
+		/**
+		PMatrix3D pM3d =  new PMatrix3D();
+		float [] m = new float [16];
+		Matrix3D m3d = iFrame.matrix();
+		m = m3d.getTransposed(m);
+		pM3d.set(m);
+		scene.pg3d.applyMatrix(pM3d);
+		*/				
+		//Same as the previous commented lines, but a lot more efficient:
 		iFrame.applyTransformation();
 		
 		if(drawAxis)

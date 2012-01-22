@@ -17,7 +17,7 @@ public class CajasOrientadas extends PApplet {
 	public void setup()	{
 		//size(640, 360, P3D);
 		size(640, 360, OPENGL);
-		scene = new Scene(this);
+		scene = new Scene(this);		
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setGridIsDrawn(true);		
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
@@ -34,6 +34,8 @@ public class CajasOrientadas extends PApplet {
 		cajas = new Box[30];
 		for (int i = 0; i < cajas.length; i++)
 			cajas[i] = new Box(scene);
+		
+		frameRate(500);
 	}
 
 	public void draw() {		
@@ -124,9 +126,17 @@ public class CajasOrientadas extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if ((key == 'x') || (key == 'x')) {
+		if ((key == 'x') || (key == 'X')) {
 			scene.toggleMouseTracking();
 			println(scene.hasMouseTracking());
+		}
+		if ((key == 'u') || (key == 'U')) {
+			println("papplet's frame count: " + frameCount);
+			println("scene's frame count: " + scene.frameCount());
+		}
+		if ((key == 'v') || (key == 'V')) {
+			println("papplet's frame rate: " + frameRate);
+			println("scene's frame rate: " + scene.frameRate());
 		}
 	}
 		

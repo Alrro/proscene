@@ -12,6 +12,7 @@ public class Luxo extends PApplet {
 	public void setup()	{
 		size(640, 360, P3D);
 		scene = new Scene(this);
+		scene.camera().optimizeUnprojectCache(true);
 		scene.setRadius(100);
 		scene.showAll();
 		scene.setFrameSelectionHintIsDrawn(true);
