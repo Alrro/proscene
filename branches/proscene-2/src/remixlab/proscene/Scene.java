@@ -989,6 +989,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 		// Up arrow
 		pg3d.noStroke();
+		pg3d.fill(170);
 		// Base
 		pg3d.beginShape(PApplet.QUADS);
 		
