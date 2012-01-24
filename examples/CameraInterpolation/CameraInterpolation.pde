@@ -30,6 +30,11 @@
  * and mouse bindings in the console.
  */
 
+import processing.opengl.*;
+
+import remixlab.remixcam.core.*;
+import remixlab.remixcam.devices.*;
+import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
 
 Scene scene;
@@ -39,28 +44,29 @@ int h;
 
 void setup() {
   size(640, 360, P3D);
+  //size(640, 360, OPENGL);
   scene = new Scene(this);
 
   //create a camera path and add some key frames:
   //key frames can be added at runtime with keys [j..n]
-  scene.camera().setPosition(new PVector(80,0,0));
+  scene.camera().setPosition(new Vector3D(80,0,0));
   scene.camera().lookAt( scene.camera().sceneCenter() );
   scene.camera().addKeyFrameToPath(1);
 
-  scene.camera().setPosition(new PVector(30,30,-80));
+  scene.camera().setPosition(new Vector3D(30,30,-80));
   scene.camera().lookAt( scene.camera().sceneCenter() );
   scene.camera().addKeyFrameToPath(1);
 
-  scene.camera().setPosition(new PVector(-30,-30,-80));
+  scene.camera().setPosition(new Vector3D(-30,-30,-80));
   scene.camera().lookAt( scene.camera().sceneCenter() );
   scene.camera().addKeyFrameToPath(1);
 
-  scene.camera().setPosition(new PVector(-80,0,0));
+  scene.camera().setPosition(new Vector3D(-80,0,0));
   scene.camera().lookAt( scene.camera().sceneCenter() );
   scene.camera().addKeyFrameToPath(1);
 
   //re-position the camera:
-  scene.camera().setPosition(new PVector(0,0,1));
+  scene.camera().setPosition(new Vector3D(0,0,1));
   scene.camera().lookAt( scene.camera().sceneCenter() );
   scene.showAll();
 
@@ -71,7 +77,7 @@ void setup() {
   for (int i=0; i<5; ++i)
     buttons.add(null);
   
-  Button2D button = new ClickButton(scene, new PVector(10,5), fSize, 0);
+  Button2D button = new ClickButton(scene, new Vector3D(10,5), fSize, 0);
   h = button.myHeight;
   buttons.set(0, button);
 }
@@ -92,7 +98,7 @@ void updateButtons() {
       buttons.set(i, null);
     // Or add it if needed
     if ((scene.camera().keyFrameInterpolator(i) != null) && (buttons.get(i) == null))
-      buttons.set(i, new ClickButton(scene, new PVector(10, + ( i ) * ( h + 7 )), fSize, i));
+      buttons.set(i, new ClickButton(scene, new Vector3D(10, + ( i ) * ( h + 7 )), fSize, i));
   }
 }
 
