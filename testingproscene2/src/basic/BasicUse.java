@@ -1,5 +1,5 @@
 package basic;
-import java.awt.event.InputEvent;
+//import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import processing.core.*;
@@ -263,7 +263,8 @@ public class BasicUse extends PApplet {
 	float radians = 0;
 	
 	public void setup()	{
-		size(640, 360, P3D);
+		//size(640, 360, P3D);
+		size(640, 360, OPENGL);
 		
 		println("major version: " + Scene.majorVersionNumber() );
 		println("minor version: " + Scene.minorVersionNumber() );
