@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing/core.jar" sourcepath="/home/pierre/Fun/software/processing-1.5.1-read-only/core/src/">
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-1.5.1/jar/core.jar" sourcepath="/home/pierre/Fun/software/processing-1.5.1-read-only/core/src/">
 		<attributes>
 			<attribute name="javadoc_location" value="file:/home/pierre/Fun/software/processing-1.5.1-read-only/build/javadoc/core/"/>
 		</attributes>
