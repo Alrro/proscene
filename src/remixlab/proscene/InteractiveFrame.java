@@ -131,7 +131,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * 
 	 * @see remixlab.proscene.Camera#addKeyFrameToPath(int)
 	 */
-	protected InteractiveFrame(Scene scn, InteractiveCameraFrame iFrame) {
+	public InteractiveFrame(Scene scn, InteractiveCameraFrame iFrame) {
 		super(iFrame.translation(), iFrame.rotation());
 		scene = scn;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
