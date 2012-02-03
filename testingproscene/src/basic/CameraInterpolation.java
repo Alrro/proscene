@@ -17,21 +17,26 @@ public class CameraInterpolation extends PApplet {
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
+		// TODO add check null pointer exception here
+		//scene.camera().keyFrameInterpolator(1).addKeyFrame(new InteractiveFrame(scene, scene.camera().frame()));
 		
 		scene.camera().setPosition(new PVector(30,30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
-		scene.camera().addKeyFrameToPath(1);
+		//scene.camera().addKeyFrameToPath(1);
+		scene.camera().keyFrameInterpolator(1).addKeyFrame(new InteractiveFrame(scene, scene.camera().frame()), 2);
 		
 		scene.camera().setPosition(new PVector(-30,-30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
-		scene.camera().addKeyFrameToPath(1);
+		//scene.camera().addKeyFrameToPath(1);
+		scene.camera().keyFrameInterpolator(1).addKeyFrame(new InteractiveFrame(scene, scene.camera().frame()), 5);
 		
 		scene.camera().setPosition(new PVector(-80,0,0));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
-		scene.camera().addKeyFrameToPath(1);
+		//scene.camera().addKeyFrameToPath(1);
+		scene.camera().keyFrameInterpolator(1).addKeyFrame(new InteractiveFrame(scene, scene.camera().frame()), 8);
 		
 		//
 		scene.camera().setPosition(new PVector(0,0,1));
@@ -42,6 +47,10 @@ public class CameraInterpolation extends PApplet {
 	}
 	
 	public void keyPressed() {
+		if( key == 'x' ) {
+			scene.camera().keyFrameInterpolator(1).removeKeyFrame(1);
+		}		
+		
 		KeyFrameInterpolator kfi = scene.camera().keyFrameInterpolator(scene.path('1'));
 		if (kfi == null)
 			return;

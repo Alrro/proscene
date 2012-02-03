@@ -27,7 +27,7 @@ public class BasicUseOffscreen extends PApplet {
 	}
 
 	public void draw() {
-	  background(255);
+	  //background(255);
 	  
 	  // Offscreen rendering of the scene. The
 	  // beginDraw/endDraw calls are required. Note

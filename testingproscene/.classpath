@@ -2,9 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-1.5.1/jar/core.jar">
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-1.5.1/jar/core.jar" sourcepath="/home/pierre/Fun/software/processing-src-1.5.1/processing/core">
 		<attributes>
-			<attribute name="javadoc_location" value="file:/home/pierre/Fun/src/processing/build/javadoc/core/"/>
+			<attribute name="javadoc_location" value="file:/home/pierre/Fun/software/processing-src-1.5.1/processing/build/javadoc/core/"/>
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-1.5.1/jar/gluegen-rt.jar">
@@ -17,7 +17,11 @@
 			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/home/pierre/workspace/libs/processing-1.5.1/lib"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/proscene.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/proscene.jar" sourcepath="/home/pierre/workspace/proscene">
+		<attributes>
+			<attribute name="javadoc_location" value="file:/home/pierre/workspace/proscene/distribution/proscene-1.1.90/reference/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-1.5.1/jar/opengl.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/GLGraphics.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/procontroll.jar"/>
