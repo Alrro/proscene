@@ -49,6 +49,10 @@ public class CameraInterpolation extends PApplet {
 	}
 	
 	public void keyPressed() {
+		if( key == 'x' ) {
+			scene.camera().keyFrameInterpolator(1).removeKeyFrame(1);
+		}
+		
 		KeyFrameInterpolator kfi = scene.camera().keyFrameInterpolator(scene.path('1'));
 		if (kfi == null)
 			return;
