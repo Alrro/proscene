@@ -44,6 +44,7 @@ import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.util.AbstractTimerJob;
+import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
 //import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
@@ -186,10 +187,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
-  protected int beginOffScreenDrawingCalls;	
-  
-  // T I M E R S
-  boolean singleThreadedTaskableTimers;
+  protected int beginOffScreenDrawingCalls;  
 	
 	/**
 	// M O U S E   G R A B B E R   H I N T   C O L O R S
@@ -267,10 +265,8 @@ public class Scene extends AbstractScene implements PConstants {
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
-		height = pg3d.height;
+		height = pg3d.height;	
 		
-		//TODO testing
-		this.setSingleThreadedTimers(true);
 		setLeftHanded();
 		
 		/**
@@ -354,17 +350,66 @@ public class Scene extends AbstractScene implements PConstants {
 		init();
 	}
 
-	// 2. Associated objects
-	
-	public void setSingleThreadedTimers(boolean singlethreaded) {
-		singleThreadedTaskableTimers = singlethreaded;
-	}
-	
-	public boolean timersAreSingleThreaded() {
-		return singleThreadedTaskableTimers;
-	}
+	// 2. Associated objects	
 	
 	@Override
+	public void registerJob(AbstractTimerJob job) {
+		if (timersAreSingleThreaded())
+			super.registerJob(job);
+		else {
+			job.setTimer(new TimerWrap(this, job));
+			registerJobInTimerPool(job);
+		}
+	}
+	
+	public void setSingleThreadedTimers() {
+		if( timersAreSingleThreaded() )
+			return;
+		
+		boolean isActive;
+		
+		for ( AbstractTimerJob job : timerPool ) {
+			isActive = job.isActive();
+			job.stop();
+			job.setTimer(new SingleThreadedTaskableTimer(this, job));
+			/**
+			if(isActive)
+				job.timer().
+			*/
+		}
+		
+		singleThreadedTaskableTimers = true;		
+		PApplet.println("single threaded timers set");
+	}
+	
+	public void setAWTTimers() {
+		if( !timersAreSingleThreaded() )
+			return;
+		
+		boolean isActive;
+		
+		for ( AbstractTimerJob job : timerPool ) {
+			isActive = job.isActive();
+			job.stop();
+			job.setTimer(new TimerWrap(this, job));
+			/**
+			if(isActive)
+				job.timer().
+			*/
+		}	
+		
+		singleThreadedTaskableTimers = false;
+		PApplet.println("awt timers set");
+	}
+	
+	public void switchTimers() {
+		if( timersAreSingleThreaded() )
+			setAWTTimers();
+		else
+			setSingleThreadedTimers();
+	}
+	
+	/**
 	public void registerJob(AbstractTimerJob job) {
 		if (timersAreSingleThreaded()) {
 			super.registerJob(job);
@@ -375,8 +420,8 @@ public class Scene extends AbstractScene implements PConstants {
 			job.setTimer(new TimerWrap(this, job));
 			//PApplet.println("creating new awt timer " +  job.getClass());
 		}
-	}	
-			
+	}
+	*/	
 	
 	/**
 	 * Replaces the current {@link #camera()} with {@code camera}
