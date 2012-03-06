@@ -358,7 +358,7 @@ public class Scene extends AbstractScene implements PConstants {
 			super.registerJob(job);
 		else {
 			job.setTimer(new TimerWrap(this, job));
-			registerJobInTimerPool(job);
+			timerPool.add(job);
 		}
 	}
 	
@@ -369,13 +369,21 @@ public class Scene extends AbstractScene implements PConstants {
 		boolean isActive;
 		
 		for ( AbstractTimerJob job : timerPool ) {
+			long period = 0;
+			boolean rOnce = false;
 			isActive = job.isActive();
+			if(isActive) {
+				period = job.period();
+				rOnce = job.timer().isSingleShot();
+			}
 			job.stop();
-			job.setTimer(new SingleThreadedTaskableTimer(this, job));
-			/**
-			if(isActive)
-				job.timer().
-			*/
+			job.setTimer(new SingleThreadedTaskableTimer(this, job));			
+			if(isActive) {
+				if(rOnce)
+					job.runOnce(period);
+				else
+					job.run(period);
+			}
 		}
 		
 		singleThreadedTaskableTimers = true;		
@@ -389,13 +397,21 @@ public class Scene extends AbstractScene implements PConstants {
 		boolean isActive;
 		
 		for ( AbstractTimerJob job : timerPool ) {
+			long period = 0;
+			boolean rOnce = false;
 			isActive = job.isActive();
+			if(isActive) {
+				period = job.period();
+				rOnce = job.timer().isSingleShot();
+			}
 			job.stop();
-			job.setTimer(new TimerWrap(this, job));
-			/**
-			if(isActive)
-				job.timer().
-			*/
+			job.setTimer(new TimerWrap(this, job));			
+			if(isActive) {
+				if(rOnce)
+					job.runOnce(period);
+				else
+					job.run(period);
+			}
 		}	
 		
 		singleThreadedTaskableTimers = false;
