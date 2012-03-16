@@ -122,7 +122,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * <p>
 	 * Constructs a Frame from the the {@code iFrame} {@link #translation()} and
 	 * {@link #orientation()} and immediately adds it to the
-	 * {@link #mouseGrabberPool()}.
+	 * {@link remixlab.proscene.Scene#mouseGrabberPool()}.
 	 * <p>
 	 * A call on {@link #isInCameraPath()} on this Frame will return {@code true}.
 	 * 

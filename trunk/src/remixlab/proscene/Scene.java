@@ -1541,6 +1541,8 @@ public class Scene implements PConstants {
 	 * positive {@code z} axis.
 	 * <p>
 	 * Code adapted from http://www.processingblogs.org/category/processing-java/
+	 * 
+	 * @see #hollowCylinder(int, float, float, PVector, PVector)
 	 */
 	public void cylinder(float w, float h) {
 		float px, py;
@@ -1571,7 +1573,70 @@ public class Scene implements PConstants {
 			pg3d.vertex(px, py, h);
 		}
 		pg3d.endShape();
-	}	
+	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code hollowCylinder(20, w, h, new PVector(0,0,-1), new PVector(0,0,1))}.
+	 * 
+	 * @see #hollowCylinder(int, float, float, PVector, PVector)
+	 * @see #cylinder(float, float)
+	 */
+	public void hollowCylinder(float w, float h) {
+		this.hollowCylinder(20, w, h, new PVector(0,0,-1), new PVector(0,0,1));
+	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code hollowCylinder(detail, w, h, new PVector(0,0,-1), new PVector(0,0,1))}.
+	 * 
+	 * @see #hollowCylinder(int, float, float, PVector, PVector)
+	 * @see #cylinder(float, float)
+	 */
+	public void hollowCylinder(int detail, float w, float h) {
+		this.hollowCylinder(detail, w, h, new PVector(0,0,-1), new PVector(0,0,1));
+	}
+ 
+	/**
+	 * Draws a cylinder whose bases are formed by two cutting planes ({@code m}
+	 * and {@code n}), along the {@link #renderer()} positive {@code z} axis.
+	 * 
+	 * @param detail
+	 * @param w radius of the cylinder and h is its height
+	 * @param h height of the cylinder
+	 * @param m normal of the plane that intersects the cylinder at z=0
+	 * @param n normal of the plane that intersects the cylinder at z=h
+	 * 
+	 * @see #cylinder(float, float)
+	 */
+	public void hollowCylinder(int detail, float w, float h, PVector m, PVector n) {
+		//eqs taken from: http://en.wikipedia.org/wiki/Line-plane_intersection
+		PVector pm0 = new PVector(0,0,0);
+		PVector pn0 = new PVector(0,0,h);
+		PVector l0 = new PVector();		
+		PVector l = new PVector(0,0,1);
+		PVector p = new PVector();
+		float x,y,d;		
+		
+		pg3d.noStroke();
+		pg3d.beginShape(QUAD_STRIP);
+		
+		for (float t = 0; t <= detail; t++) {
+			x = w * PApplet.cos(t * TWO_PI/detail);
+			y = w * PApplet.sin(t * TWO_PI/detail);
+			l0.set(x,y,0);
+			
+			d = ( m.dot(PVector.sub(pm0, l0)) )/( l.dot(m) );
+			p =  PVector.add( PVector.mult(l, d), l0 );
+			pg3d.vertex(p.x, p.y, p.z);
+			
+			l0.z = h;
+			d = ( n.dot(PVector.sub(pn0, l0)) )/( l.dot(n) );
+			p =  PVector.add( PVector.mult(l, d), l0 );
+			pg3d.vertex(p.x, p.y, p.z);
+		}
+		pg3d.endShape();
+	}
 	
 	/**
 	 * Same as {@code cone(det, 0, 0, r, h);}
@@ -1669,7 +1734,7 @@ public class Scene implements PConstants {
 		}
 		pg3d.endShape();
 		pg3d.popMatrix();
-	}
+	}	
 	
 	/**
 	 * Convenience function that simply calls {@code drawAxis(100)}.
