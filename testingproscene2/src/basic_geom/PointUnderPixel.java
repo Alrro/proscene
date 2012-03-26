@@ -61,6 +61,8 @@ public class PointUnderPixel extends PApplet {
 			else
 				println("unprojectCacheOptimized is off");
 		}
+		if( key == 'x' )
+			scene.switchTimers();
 	}
 
 	class GLCamera extends Camera {

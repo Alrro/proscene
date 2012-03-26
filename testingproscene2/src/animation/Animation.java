@@ -13,6 +13,7 @@ public class Animation extends PApplet {
 		size(640, 360, OPENGL);
 		// We instantiate our MyScene class defined below
 		scene = new MyScene(this);
+		//scene.setAWTTimers();
 	}
 
 	// Make sure to define the draw() method, even if it's empty.

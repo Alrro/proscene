@@ -28,7 +28,9 @@ public class FrameInterpolation extends PApplet {
 	  scene.setRadius(70);
 	  scene.showAll();
 	  scene.setFrameSelectionHintIsDrawn(true);
-	  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);	  
+	  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);	 
+	  
+	  //scene.setAWTTimers();
 	  
 	  kfi = new KeyFrameInterpolator(scene);
 	  kfi.setLoopInterpolation();
@@ -43,8 +45,8 @@ public class FrameInterpolation extends PApplet {
 	  }
 	  
 	  kfi.startInterpolation();
-	  frameRate(200);
-	  //frameRate(2);
+	  //frameRate(200);
+	  frameRate(2);
 	}
 
 	public void draw() {
@@ -76,6 +78,8 @@ public class FrameInterpolation extends PApplet {
 	    kfi.setInterpolationSpeed(kfi.interpolationSpeed()-0.25f);
 	  if ( key == 'v')
 	    kfi.setInterpolationSpeed(kfi.interpolationSpeed()+0.25f);
+	  if( key == 'x' )
+		  scene.switchTimers();
 	}
 	
 	public static void main(String args[]) {
