@@ -26,7 +26,9 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.opengl.*;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -233,7 +235,7 @@ public class Camera implements Cloneable {
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
-	public PGraphics3D pg3d;
+	public PGraphicsOpenGL pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}.
@@ -1834,8 +1836,14 @@ public class Camera implements Cloneable {
 	 * Current implementation always returns {@code WorlPoint.found = false}
 	 * (dummy value), meaning that no point was found under pixel.
 	 */
-	public WorldPoint pointUnderPixel(Point pixel) {
-		return new WorldPoint(new PVector(0, 0, 0), false);
+	public WorldPoint pointUnderPixel(Point pixel) {		
+		float[] depth = new float[1];
+		PGL pgl = scene.pg3d.beginPGL();
+		pgl.gl2.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1,	1, PGL.GL_DEPTH_COMPONENT24, PGL.GL_FLOAT, FloatBuffer.wrap(depth));
+	  scene.pg3d.endPGL();
+		PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
+		point = unprojectedCoordinatesOf(point);		
+		return new WorldPoint(point, (depth[0] < 1.0f));
 	}
 
 	// 6. ASSOCIATED FRAME AND FRAME WRAPPER FUNCTIONS
@@ -2409,7 +2417,8 @@ public class Camera implements Cloneable {
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 
   	//lef-handed coordinate system correction
-		xyz[1] = screenHeight() - xyz[1];
+		// TODO p5-v2 seems to be roght handed!
+		//xyz[1] = screenHeight() - xyz[1];
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}

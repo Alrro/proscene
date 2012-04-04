@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import processing.core.*;
+import processing.opengl.*;
 
 /**
  * A Frame is a 3D coordinate system, represented by a {@link #position()} and
@@ -1432,12 +1433,12 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	 * Convenience wrapper function that simply calls {@code applyTransformation( (PGraphics3D) p.g )}.
+	 * Convenience wrapper function that simply calls {@code applyTransformation( (PGraphicsOpenGL) p.g )}.
 	 * 
-	 * @see #applyTransformation(PGraphics3D)
+	 * @see #applyTransformation(PGraphicsOpenGL)
 	 */
 	public void applyTransformation(PApplet p) {
-		applyTransformation( (PGraphics3D) p.g );
+		applyTransformation( (PGraphicsOpenGL) p.g );
 	}
 	
 	/**
@@ -1485,7 +1486,7 @@ public class Frame implements Cloneable {
 	 * 
 	 * @see #matrix()
 	 */
-	public void applyTransformation(PGraphics3D p3d) {
+	public void applyTransformation(PGraphicsOpenGL p3d) {
 		p3d.translate(translation().x, translation().y, translation().z);
 		p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
 	}

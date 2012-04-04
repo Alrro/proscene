@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.opengl.*;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -413,7 +414,7 @@ public class Scene implements PConstants {
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	public PGraphics3D pg3d;
+	public PGraphicsOpenGL pg3d;
 	protected int width, height;// size
 	protected boolean offscreen;
 	public Point upperLeftCorner;
@@ -493,14 +494,14 @@ public class Scene implements PConstants {
 	 * would just fulfill all of your needs). All viewer parameters (display flags,
 	 * scene parameters, associated objects...) are set to their default values.
 	 * See the associated documentation. This is actually just a convenience
-	 * function that simply calls {@code this(p, (PGraphics3D) p.g)}. Call any
+	 * function that simply calls {@code this(p, (PGraphicsOpenGL) p.g)}. Call any
 	 * other constructor by yourself to possibly define an off-screen Scene.
 	 * 
-	 * @see #Scene(PApplet, PGraphics3D)
-	 * @see #Scene(PApplet, PGraphics3D, int, int)
+	 * @see #Scene(PApplet, PGraphicsOpenGL)
+	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
 	 */	
 	public Scene(PApplet p) {
-		this(p, (PGraphics3D) p.g);
+		this(p, (PGraphicsOpenGL) p.g);
 	}
 	
 	/**
@@ -513,9 +514,9 @@ public class Scene implements PConstants {
 	 * call {@link #Scene(PApplet)} instead.
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphics3D, int, int)
+	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
 	 */
-	public Scene(PApplet p, PGraphics3D renderer) {
+	public Scene(PApplet p, PGraphicsOpenGL renderer) {
 		this(p, renderer, 0, 0);
 	}
 
@@ -533,9 +534,9 @@ public class Scene implements PConstants {
 	 * plan to define an on-screen Scene, call {@link #Scene(PApplet)} instead. 
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphicsOpenGL)
 	 */
-	public Scene(PApplet p, PGraphics3D renderer, int x, int y) {
+	public Scene(PApplet p, PGraphicsOpenGL renderer, int x, int y) {
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
@@ -873,7 +874,7 @@ public class Scene implements PConstants {
 	 * Returns {@code true} if this Scene is associated to an offscreen 
 	 * renderer and {@code false} otherwise.
 	 * 
-	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphicsOpenGL)
 	 */
 	
 	public boolean isOffscreen() {
@@ -1345,9 +1346,9 @@ public class Scene implements PConstants {
 	/**
 	 * Returns the renderer context linked to this scene. 
 	 * 
-	 * @return PGraphics3D renderer.
+	 * @return PGraphicsOpenGL renderer.
 	 */
-	public PGraphics3D renderer() {
+	public PGraphicsOpenGL renderer() {
 		return pg3d;
 	}
 
@@ -2505,14 +2506,16 @@ public class Scene implements PConstants {
 	 * @see #coords(Point)
 	 */
 	public void beginScreenDrawing() {
+		//TODO fix me!
 		if (startCoordCalls != 0)
 			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
 							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 		
 		startCoordCalls++;
 		
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
-		//if ( pg3d instanceof processing.core.PGraphics3D ) {
+		/**
+		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
+		//if ( pg3d instanceof processing.core.PGraphicsOpenGL ) {
 			pg3d.hint(DISABLE_DEPTH_TEST);
 			pg3d.matrixMode(PROJECTION);
 			pg3d.pushMatrix();
@@ -2526,6 +2529,14 @@ public class Scene implements PConstants {
 		else {
 			zC = 0.1f;
 		}
+		*/
+		pg3d.hint(DISABLE_DEPTH_TEST);
+		pg3d.pushProjection();
+		pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);		
+		pg3d.pushMatrix();
+	  // Camera needs to be reset!
+		pg3d.camera();
+		zC = 0.0f;
 	}
 
 	/**
@@ -2540,13 +2551,18 @@ public class Scene implements PConstants {
 			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
 							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
+		/**
+		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
 			pg3d.matrixMode(PROJECTION);
 			pg3d.popMatrix();
 			pg3d.matrixMode(MODELVIEW);  
 			pg3d.popMatrix();		  
 			pg3d.hint(ENABLE_DEPTH_TEST);
 		}
+		*/		
+		pg3d.popProjection();  
+		pg3d.popMatrix();		  
+		pg3d.hint(ENABLE_DEPTH_TEST);
 	}
 	
 	/**
@@ -2566,10 +2582,13 @@ public class Scene implements PConstants {
 	public PVector coords(Point p) {
 		if (startCoordCalls != 1)
 			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class )
+		/**
+		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class )
 			return new PVector(p.x, p.y, zC);
 		else
 			return camera().unprojectedCoordinatesOf(new PVector(p.x,p.y,zC));
+			*/
+		return new PVector(p.x, p.y, zC);
 	}	
 
 	/**
@@ -3375,10 +3394,13 @@ public class Scene implements PConstants {
 			toggleAnimation();
 			break;
 		case ARP_FROM_PIXEL:
+			/**
 			if (Camera.class == camera().getClass())
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
-			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+			else
+			*/
+			if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				Timer timer=new Timer();
 				TimerTask timerTask = new TimerTask() {
@@ -3429,12 +3451,13 @@ public class Scene implements PConstants {
 			return;
 		switch (id) {
 		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
+			/**
 			if (Camera.class == camera().getClass())
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(
-						parent.mouseX, parent.mouseY));
+			*/
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
@@ -3446,7 +3469,7 @@ public class Scene implements PConstants {
 					};
 					timer.schedule(timerTask, 1000);
 				}
-			}
+			//}
 			break;
 		case INTERPOLATE_TO_FIT_SCENE:
 			camera().interpolateToFitScene();
@@ -3811,13 +3834,14 @@ public class Scene implements PConstants {
 		case NO_CLICK_ACTION:
 			break;
 		case ZOOM_ON_PIXEL:
+			/**
 			if (Camera.class == camera().getClass())
 				PApplet
 						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
 			else {
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(
-						parent.mouseX, parent.mouseY));
+			*/
+				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
 				if (wP.found) {
 					pupVec = wP.point;
 					pupFlag = true;
@@ -3829,16 +3853,18 @@ public class Scene implements PConstants {
 					};
 					timer.schedule(timerTask, 1000);
 				}
-			}
+			//}
 			break;
 		case ZOOM_TO_FIT:
 			camera().interpolateToFitScene();
 			break;
 		case ARP_FROM_PIXEL:
+			/**
 			if (Camera.class == camera().getClass())
 				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
 								+ "See the Point Under Pixel example!");
-			else if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
+			else */
+			if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				Timer timer=new Timer();
 				TimerTask timerTask = new TimerTask() {
@@ -4251,7 +4277,7 @@ public class Scene implements PConstants {
 		// matrices,
 		// we cache the processing camera projection matrix into our camera()
 		camera().setProjectionMatrix(pg3d.projection);
-		// camera().setProjectionMatrix(((PGraphics3D) parent.g).projection);
+		// camera().setProjectionMatrix(((PGraphicsOpenGL) parent.g).projection);
 	}
 
 	/**
@@ -4268,6 +4294,6 @@ public class Scene implements PConstants {
 		// matrices,
 		// we cache the processing camera modelview matrix into our camera()
 		camera().setModelViewMatrix(pg3d.modelview);
-		// camera().setProjectionMatrix(((PGraphics3D) parent.g).modelview);
+		// camera().setProjectionMatrix(((PGraphicsOpenGL) parent.g).modelview);
 	}
 }
