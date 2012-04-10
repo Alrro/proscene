@@ -1,7 +1,6 @@
 package vfcgl;
 import processing.core.*;
 import processing.opengl.*;
-import codeanticode.glgraphics.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -14,7 +13,7 @@ public class TestVFCGL extends PApplet {
 	Scene scene;
 
 	public void setup() {
-		size(640, 480, GLConstants.GLGRAPHICS);
+		size(640, 480, P3D);
 		// size(640, 360, P3D);
 		scene = new Scene(this);
 		scene.setRadius(volSize);

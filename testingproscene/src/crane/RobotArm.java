@@ -1,6 +1,7 @@
 package crane;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.proscene.*;
 
 public class RobotArm {
@@ -53,7 +54,7 @@ public class RobotArm {
 
 	public void draw(Scene scn) {
 		// Robot arm's local frame
-		PGraphics3D pg3d = scn.renderer();	
+		PGraphicsOpenGL pg3d = scn.renderer();	
 		
 		pg3d.pushMatrix();
 		frame(0).applyTransformation(pg3d);
@@ -105,7 +106,7 @@ public class RobotArm {
 	}
 
 	public void drawArm(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.translate(2, 0, 0);
 		drawCone(scn, 0, 50, 1, 1, 10);
 		pg3d.translate(-4, 0, 0);
@@ -122,7 +123,7 @@ public class RobotArm {
 	}
 
 	public void drawCylinder(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.pushMatrix();
 		pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
 		drawCone(scn, -5, 5, 2, 2, 20);
@@ -130,14 +131,14 @@ public class RobotArm {
 	}
 
 	public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, int nbSub) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.translate(0.0f, 0.0f, zMin);
 		scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
 		pg3d.translate(0.0f, 0.0f, -zMin);
 	}
 	
 	public void setColor(Scene scn, boolean selected) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		if (selected)
 			pg3d.fill(200, 200, 0);
 		else

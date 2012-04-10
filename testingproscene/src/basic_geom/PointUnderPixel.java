@@ -4,6 +4,7 @@ import geom.Box;
 import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
 import javax.media.opengl.glu.GLU;
 
 import processing.core.*;
@@ -33,8 +34,12 @@ public class PointUnderPixel extends PApplet {
 	    camProfiles[i].setClickBinding( Scene.Modifier.SHIFT.ID, Scene.Button.MIDDLE, 2, Scene.ClickAction.RESET_ARP );
 	  }
 	  
-	  GLCamera glCam = new GLCamera(scene);
-	  scene.setCamera(glCam);
+	  // /**
+	  GLCamera glCam = new GLCamera(scene);	  
+	  // */
+	  
+	  //scene.setCamera(glCam);
+	  
 	  scene.setGridIsDrawn(false);
 	  scene.setAxisIsDrawn(false);
 	  scene.setRadius(150);
@@ -51,31 +56,47 @@ public class PointUnderPixel extends PApplet {
 	    boxes[i].draw();
 	}
 
+	// /**
 	class GLCamera extends Camera {
-		protected PGraphicsOpenGL pgl;
+		//protected PGraphicsOpenGL pgl;
+		protected PGL pgl;
 		protected GL gl;
+		protected GL2 gl2;
 		protected GLU glu;
 
 		public GLCamera(Scene scn) {
 			super(scn);
-			pgl = (PGraphicsOpenGL) pg3d;
+			// /**
+			pgl = scn.pg3d.pgl;
 			gl = pgl.gl;
+			gl2 = pgl.gl2;
 			glu = pgl.glu;
+			// */
 		}
 		
 		@Override
 		public WorldPoint pointUnderPixel(Point pixel) {
 			float[] depth = new float[1];
-			pgl.beginGL();
-			gl.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1,
-					1, GL.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer
-							.wrap(depth));
-			pgl.endGL();
+			
+			//pgl.beginGL();
+			/**
+			pgl = scene.pg3d.beginPGL();
+			gl = pgl.gl;
+			gl2 = pgl.gl2;
+			glu = pgl.glu;
+			*/			
+			
+			gl2.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, GL2.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap(depth));
+			
+			//pgl.endGL();
+			//scene.pg3d.endPGL();
+			
 			PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
 			point = unprojectedCoordinatesOf(point);
 			return new WorldPoint(point, (depth[0] < 1.0f));
 		}
 	}
+	// */
 
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "PointUnderPixel" });

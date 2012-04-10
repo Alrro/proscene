@@ -2,6 +2,7 @@ package bfc;
 import java.util.ArrayList;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.proscene.*;
 import remixlab.proscene.Camera.Cone;
 
@@ -36,7 +37,7 @@ public class RGBCube extends PApplet {
 		
 		
 		canvas = createGraphics(640, 360, P3D);
-		scene = new Scene(this, (PGraphics3D) canvas);
+		scene = new Scene(this, (PGraphicsOpenGL) canvas);
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		// enable computation of the frustum planes equations (disabled by
 		// default)
@@ -45,7 +46,7 @@ public class RGBCube extends PApplet {
 		scene.addDrawHandler(this, "mainDrawing");
 
 		auxCanvas = createGraphics(640, 360, P3D);
-		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas);
 		auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
 		auxScene.setAxisIsDrawn(false);
 		auxScene.setGridIsDrawn(false);
@@ -106,7 +107,7 @@ public class RGBCube extends PApplet {
 
 	public void mainDrawing(Scene s) {
 		//s.background(0.0f);
-		PGraphics3D p = s.renderer();
+		PGraphicsOpenGL p = s.renderer();
 		p.background(0);
 		drawScene(p);
 	}

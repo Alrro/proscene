@@ -10,10 +10,11 @@ public class FrameInteraction extends PApplet {
 	
 	public void setup()	{
 		//size(640, 360, P3D);
-		size(400, 400, P3D);
+		//size(400, 400, P3D);
+		size(640, 360, OPENGL);
 		scene = new Scene(this);
 		//scene.camera().setKind(Camera.Kind.STANDARD);
-		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setGridIsDrawn(true);
 		scene.setAxisIsDrawn(true);		
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
@@ -24,6 +25,7 @@ public class FrameInteraction extends PApplet {
 		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		scene.setFrameSelectionHintIsDrawn(true);
 	}
 
 	public void draw() {		
