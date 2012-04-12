@@ -528,9 +528,10 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY = 0;
 		if(action != Scene.MouseAction.NO_MOUSE_ACTION)
-			deltaY = (int) (prevPos.y - eventPoint.y);
-	    //right_handed coordinate system should go like this:
-		  //deltaY = (int) (eventPoint.y - prevPos.y);
+			if( scene.isRightHanded() )
+				deltaY = (int) (eventPoint.y - prevPos.y);
+			else
+				deltaY = (int) (prevPos.y - eventPoint.y);
 
 		switch (action) {
 		case TRANSLATE: {
@@ -582,9 +583,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			PVector axis = transformOf(camera.frame().inverseTransformOf(
 					new PVector(0.0f, 0.0f, -1.0f)));
 			 
-			Quaternion rot = new Quaternion(axis, prev_angle - angle);
-		  //right_handed coordinate system should go like this:
-			//Quaternion rot = new Quaternion(axis, angle - prev_angle);
+			Quaternion rot;
+			if( scene.isRightHanded() )
+				rot = new Quaternion(axis, angle - prev_angle);
+			else
+				rot = new Quaternion(axis, prev_angle - angle);
 			
 			// #CONNECTION# These two methods should go together (spinning detection
 			// and activation)
@@ -819,10 +822,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		PVector axis = p2.cross(p1);
 
 		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
-
-  	//lef-handed coordinate system correction (next two lines)
-	  axis.y = -axis.y;
-	  angle = -angle;
+  	  
+   	//left-handed coordinate system correction
+		if( scene.isLeftHanded() ) {
+			axis.y = -axis.y;
+			angle = -angle;
+		}
 
 		return new Quaternion(axis, angle);
 	}

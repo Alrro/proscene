@@ -139,10 +139,12 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				|| (action == Scene.MouseAction.ZOOM_ON_REGION)
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
-		else {
-			int deltaY = (int) (eventPoint.y - prevPos.y);
-			// right_handed coordinate system should go like this:
-			// int deltaY = (int) (prevPos.y - eventPoint.y);
+		else {			
+			int deltaY;
+			if( scene.isRightHanded() )
+				deltaY = (int) (prevPos.y - eventPoint.y);
+			else
+				deltaY = (int) (eventPoint.y - prevPos.y);
 			switch (action) {
 			case TRANSLATE: {
 				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
@@ -201,9 +203,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 						(int) eventPoint.x - trans.x)
 						- PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x
 								- trans.x);
-
-				// lef-handed coordinate system correction
-				angle = -angle;
+				
+			  // left-handed coordinate system correction
+				if( scene.isLeftHanded() )
+					angle = -angle;
 
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 				// #CONNECTION# These two methods should go together (spinning detection

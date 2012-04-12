@@ -451,6 +451,9 @@ public class Scene implements PConstants {
 
 	// C O N S T R A I N T S
 	private boolean withConstraint;
+	
+  //LEFT vs RIGHT_HAND
+	protected boolean rightHanded;
 
 	// K E Y B O A R D A N D M O U S E
 	protected boolean mouseHandling;
@@ -614,10 +617,31 @@ public class Scene implements PConstants {
 		removeDrawHandler();
 	  // register animation method
 		removeAnimationHandler();
+		
+		//setRightHanded();
+		setLeftHanded();
 
 		// called only once
 		init();
 	}
+	
+	// 0. testing right and left handed	
+	public boolean isLeftHanded() {
+		return !this.rightHanded;
+	}
+	
+	public boolean isRightHanded() {
+		return this.rightHanded;
+	}
+	
+	public void setRightHanded() {
+		rightHanded = true;
+	}
+	
+	public void setLeftHanded() {
+		rightHanded = false;
+	}
+	
 	
 	// 1. Scene overloaded
 	
@@ -3488,14 +3512,16 @@ public class Scene implements PConstants {
 							new PVector(10.0f * camera().flySpeed(), 0.0f, 0.0f)));
 			break;
 		case MOVE_CAMERA_UP:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
+			if( this.isRightHanded() )
+				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
+			else
+				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
 			break;
 		case MOVE_CAMERA_DOWN:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
+			if( this.isRightHanded() )
+				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
+			else
+				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
 			break;
 		case INCREASE_ROTATION_SENSITIVITY:
 			camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);

@@ -1628,16 +1628,17 @@ public class Camera implements Cloneable {
 	 * @see #coneIsBackFacing(Cone)
 	 * @see #faceIsBackFacing(PVector, PVector, PVector)
 	 */
-	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {		
+	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {
+		//TODO fix me!
 		if( angle < PApplet.HALF_PI ) {			
-			float phi = PApplet.acos ( PVector.dot(axis, viewDirection ) );
+			float phi = PApplet.acos ( PVector.dot(axis, viewDirection) );
 			if(phi >= PApplet.HALF_PI)
 				return false;
 			if( (phi+angle) >= PApplet.HALF_PI)
 				return false;
 			return true;
 		}
-		return false;
+		return false;		
 	}
 	
 	/**
@@ -1654,6 +1655,7 @@ public class Camera implements Cloneable {
 	 * @param c third face vertex
 	 */
   public boolean faceIsBackFacing(PVector a, PVector b, PVector c) {
+  	//TODO test me
   	PVector v1 = PVector.sub(projectedCoordinatesOf(a), projectedCoordinatesOf(b));
     PVector v2 = PVector.sub(projectedCoordinatesOf(b), projectedCoordinatesOf(c));
     return v1.cross(v2).z <= 0;
@@ -2351,8 +2353,9 @@ public class Camera implements Cloneable {
 	public void convertClickToLine(final Point pixelInput, PVector orig, PVector dir) {
 		Point pixel = new Point(pixelInput.getX(), pixelInput.getY());
 		
-		//lef-handed coordinate system correction
-		pixel.y = screenHeight() - pixelInput.y;
+	  //left-handed coordinate system correction
+		if( scene.isLeftHanded() )
+			pixel.y = screenHeight() - pixelInput.y;
 		
 		switch (type()) {
 		case PERSPECTIVE:
@@ -2416,9 +2419,12 @@ public class Camera implements Cloneable {
 		} else
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 
-  	//lef-handed coordinate system correction
-		// TODO p5-v2 seems to be roght handed!
-		//xyz[1] = screenHeight() - xyz[1];
+		/**
+		// TODO needs further testing
+  	//left-handed coordinate system correction
+		if( scene.isLeftHanded() )
+			xyz[1] = screenHeight() - xyz[1];
+		*/
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
@@ -2473,9 +2479,14 @@ public class Camera implements Cloneable {
 		float xyz[] = new float[3];
 		viewport = getViewport();
 		
-		unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);		
-		//right_handed coordinate system should go like this:
-		//unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
+		/**
+		// TODO needs further testing
+		if( scene.isRightHanded() )
+			unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
+		else
+			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);
+		*/
+		unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
 		if (frame != null)
 			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1],

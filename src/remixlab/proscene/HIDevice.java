@@ -439,6 +439,7 @@ public class HIDevice {
 			feedZRotation(feedZRotation());
 		}
 		
+		/**
 		if ( mode() == Mode.ABSOLUTE ) {
 			tx = (translation.x - prevTranslation.x) * transSens.x;
 			ty = (translation.y - prevTranslation.y) * transSens.y;
@@ -453,6 +454,36 @@ public class HIDevice {
 			tz = translation.z * transSens.z;
 			roll = rotation.x * rotSens.x;
 			pitch = rotation.y * rotSens.y;
+			yaw = rotation.z * rotSens.z;
+		}
+		*/
+		
+		if ( mode() == Mode.ABSOLUTE ) {
+			tx = (translation.x - prevTranslation.x) * transSens.x;
+			if( scene.isRightHanded() )
+				ty = (prevTranslation.y - translation.y) * transSens.y;
+			else
+				ty = (translation.y - prevTranslation.y) * transSens.y;
+			tz = (translation.z - prevTranslation.z) * transSens.z;
+			roll = (rotation.x - prevRotation.x) * rotSens.x;			
+			if( scene.isRightHanded() )
+				pitch = (prevRotation.y - rotation.y) * rotSens.y;
+			else
+				pitch = (rotation.y - prevRotation.y) * rotSens.y;
+			yaw = (rotation.z - prevRotation.z) * rotSens.z;
+		}
+		else {
+			tx = translation.x * transSens.x;
+			if( scene.isRightHanded() )
+				ty = translation.y * (- transSens.y);
+			else
+				ty = translation.y * transSens.y;
+			tz = translation.z * transSens.z;
+			roll = rotation.x * rotSens.x;		  
+			if( scene.isRightHanded() )
+				pitch = rotation.y * (- rotSens.y);
+			else
+				pitch = rotation.y * rotSens.y;
 			yaw = rotation.z * rotSens.z;
 		}
 		
