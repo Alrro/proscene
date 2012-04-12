@@ -9,6 +9,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/jogl.all.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/opengl.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/opengl.jar" sourcepath="/home/pierre/Fun/software/processing-read-only/processing/java"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
