@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/jogl.all.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/opengl.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/Documents/sketchbook-2.0.a5/libraries/proscene/library/proscene.jar" sourcepath="/home/pierre/workspace/proscene/src"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/processing-2a5/proscene.jar" sourcepath="/home/pierre/workspace/proscene/src"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/processing-2a5/procontroll.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
