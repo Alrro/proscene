@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.2.0)      
+ *                     ProScene (version 1.9.90)      
  *    Copyright (c) 2010-2011 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.opengl.*;
 
  /**
 import remixlab.remixcam.core.*;
@@ -174,7 +175,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	public PGraphics3D pg3d;	
+	public PGraphicsOpenGL pg3d;	
 	protected boolean offscreen;
 	public Point upperLeftCorner;
 	protected SimpleFrame tmpFrame;
@@ -218,14 +219,14 @@ public class Scene extends AbstractScene implements PConstants {
 	 * would just fulfill all of your needs). All viewer parameters (display flags,
 	 * scene parameters, associated objects...) are set to their default values.
 	 * See the associated documentation. This is actually just a convenience
-	 * function that simply calls {@code this(p, (PGraphics3D) p.g)}. Call any
+	 * function that simply calls {@code this(p, (PGraphicsOpenGL) p.g)}. Call any
 	 * other constructor by yourself to possibly define an off-screen Scene.
 	 * 
-	 * @see #Scene(PApplet, PGraphics3D)
-	 * @see #Scene(PApplet, PGraphics3D, int, int)
+	 * @see #Scene(PApplet, PGraphicsOpenGL)
+	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
 	 */	
 	public Scene(PApplet p) {
-		this(p, (PGraphics3D) p.g);
+		this(p, (PGraphicsOpenGL) p.g);
 	}
 	
 	/**
@@ -238,9 +239,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * call {@link #Scene(PApplet)} instead.
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphics3D, int, int)
+	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
 	 */
-	public Scene(PApplet p, PGraphics3D renderer) {
+	public Scene(PApplet p, PGraphicsOpenGL renderer) {
 		this(p, renderer, 0, 0);
 	}
 
@@ -258,9 +259,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * plan to define an on-screen Scene, call {@link #Scene(PApplet)} instead. 
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphicsOpenGL)
 	 */
-	public Scene(PApplet p, PGraphics3D renderer, int x, int y) {
+	public Scene(PApplet p, PGraphicsOpenGL renderer, int x, int y) {
 		super(new P5Renderer(renderer));
 		parent = p;
 		pg3d = renderer;
@@ -463,7 +464,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Returns {@code true} if this Scene is associated to an offscreen 
 	 * renderer and {@code false} otherwise.
 	 * 
-	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphicsOpenGL)
 	 */
 	
 	public boolean isOffscreen() {
@@ -585,9 +586,9 @@ public class Scene extends AbstractScene implements PConstants {
 	/**
 	 * Returns the renderer context linked to this scene. 
 	 * 
-	 * @return PGraphics3D renderer.
+	 * @return PGraphicsOpenGL renderer.
 	 */
-	public PGraphics3D renderer() {
+	public PGraphicsOpenGL renderer() {
 		return pg3d;
 	}
 
@@ -1454,21 +1455,13 @@ public class Scene extends AbstractScene implements PConstants {
 		
 		startCoordCalls++;
 		
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
-		//if ( pg3d instanceof processing.core.PGraphics3D ) {
-			pg3d.hint(DISABLE_DEPTH_TEST);
-			pg3d.matrixMode(PApplet.PROJECTION);
-			pg3d.pushMatrix();
-			pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-			pg3d.matrixMode(PApplet.MODELVIEW);
-			pg3d.pushMatrix();
-		  // Camera needs to be reset!
-			pg3d.camera();
-			zC = 0.0f;
-		}
-		else {
-			zC = 0.1f;
-		}
+		pg3d.hint(DISABLE_DEPTH_TEST);
+		pg3d.pushProjection();
+		pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);		
+		pg3d.pushMatrix();
+	  // Camera needs to be reset!
+		pg3d.camera();
+		zC = 0.0f;		
 	}
 
 	/**
@@ -1483,13 +1476,9 @@ public class Scene extends AbstractScene implements PConstants {
 			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
 							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class ) {
-			pg3d.matrixMode(PApplet.PROJECTION);
-			pg3d.popMatrix();
-			pg3d.matrixMode(PApplet.MODELVIEW);  
-			pg3d.popMatrix();		  
-			pg3d.hint(ENABLE_DEPTH_TEST);
-		}
+		pg3d.popProjection();  
+		pg3d.popMatrix();		  
+		pg3d.hint(ENABLE_DEPTH_TEST);
 	}
 	
 	/**
@@ -1509,10 +1498,8 @@ public class Scene extends AbstractScene implements PConstants {
 	public Vector3D coords(Point p) {
 		if (startCoordCalls != 1)
 			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
-		if ( pg3d.getClass() == processing.core.PGraphics3D.class )
-			return new Vector3D(p.x, p.y, zC);
-		else
-			return camera().unprojectedCoordinatesOf(new Vector3D(p.x,p.y,zC));
+		
+		return new Vector3D(p.x, p.y, zC);
 	}	
 
 	// 7. Camera profiles
