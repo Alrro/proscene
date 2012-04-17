@@ -1,10 +1,12 @@
 package stdcam;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 
+// TODO fix me, add draw handler
 public class StandardCamera extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
@@ -13,7 +15,7 @@ public class StandardCamera extends PApplet {
 	  size(640, 720, P3D);
 
 	  canvas = createGraphics(640, 360, P3D);
-	  scene = new Scene(this, (PGraphics3D) canvas);
+	  scene = new Scene(this, (PGraphicsOpenGL) canvas);
 	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 	  // enable computation of the frustum planes equations (disabled by
 	  // default)
@@ -24,7 +26,7 @@ public class StandardCamera extends PApplet {
 	  auxCanvas = createGraphics(640, 360, P3D);
 	  // Note that we pass the upper left corner coordinates where the scene
 	  // is to be drawn (see drawing code below) to its constructor.
-	  auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, 360);
+	  auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas, 0, 360);
 	  auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
 	  auxScene.setAxisIsDrawn(false);
 	  auxScene.setGridIsDrawn(false);
@@ -36,7 +38,7 @@ public class StandardCamera extends PApplet {
 	}
 
 	void mainDrawing(Scene s) {		
-	  PGraphics3D p = s.renderer();
+	  PGraphicsOpenGL p = s.renderer();
 	  p.background(0);
 	  p.noStroke();
 	  // the main viewer camera is used to cull the sphere object against its

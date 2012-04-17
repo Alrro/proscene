@@ -6,9 +6,11 @@
 package cameracrane;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.proscene.*;
-import saito.objloader.*;
+//import saito.objloader.*;
 
+//TODO fix obj reading
 @SuppressWarnings("serial")
 public class CameraCrane extends PApplet {
 	boolean enabledLights = true;
@@ -18,12 +20,13 @@ public class CameraCrane extends PApplet {
 	Scene scene, auxScene, auxScene1, auxScene2;
 	PGraphics canvas, auxCanvas, auxCanvas1, auxCanvas2;
 	int mainWinHeight = 400; // should be less than the papplet height
-	OBJModel ahstray = new OBJModel(this, "cameracrane/Models/ahstray.obj",	"absolute", TRIANGLES);
+	//TODO fix obj reading
+	//OBJModel ahstray = new OBJModel(this, "cameracrane/Models/ahstray.obj",	"absolute", TRIANGLES);
 
 	public void setup() {
 		size(1024, 720, P3D); // size(640, 720, P3D)
 		canvas = createGraphics(width, mainWinHeight, P3D);
-		scene = new Scene(this, (PGraphics3D) canvas);
+		scene = new Scene(this, (PGraphicsOpenGL) canvas);
 		scene.setGridIsDrawn(false);
 		// the drawing function is shared among the two scenes
 		scene.addDrawHandler(this, "drawing");
@@ -35,7 +38,7 @@ public class CameraCrane extends PApplet {
 																				// -
 																				// canvas.height),
 																				// P3D)
-		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas);
 		auxScene.setRadius(50);
 		auxScene.setGridIsDrawn(false);
 		// same drawing function which is defined below
@@ -46,12 +49,14 @@ public class CameraCrane extends PApplet {
 																				// -
 																				// canvas.height),
 																				// P3D)
-		auxScene1 = new Scene(this, (PGraphics3D) auxCanvas1);
+		auxScene1 = new Scene(this, (PGraphicsOpenGL) auxCanvas1);
 		auxScene1.setRadius(50);
 		auxScene1.setGridIsDrawn(false);
 		// same drawing function which is defined below
 		auxScene1.addDrawHandler(this, "drawing");
-		ahstray.scale(3);
+		
+		//TODO fix obj reading
+		//ahstray.scale(3);
 
 		// robot stuff
 		robot = new RobotArm(scene, 60, -60, 2);
@@ -119,7 +124,7 @@ public class CameraCrane extends PApplet {
 
 	// the actual drawing function, shared by the two scenes
 	public void drawing(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.background(0);
 		if (enabledLights) {
 			pg3d.lights();
@@ -139,6 +144,9 @@ public class CameraCrane extends PApplet {
 		pg3d.fill(24, 184, 199);
 		pg3d.pushMatrix();
 		pg3d.rotateX(-HALF_PI);
+		
+		//TODO fix obj reading		
+		/**
 		for (int k = 0; k < ahstray.getFaceCount(); k++) {
 			PVector[] faceVertices = ahstray.getFaceVertices(k);
 			pg3d.beginShape(TRIANGLE_FAN);
@@ -148,6 +156,8 @@ public class CameraCrane extends PApplet {
 			}
 			pg3d.endShape();
 		}
+		*/
+		
 		pg3d.popMatrix();
 
 		// 2a. draw a ground

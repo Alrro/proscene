@@ -1,6 +1,7 @@
 package basicrane;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 import remixlab.proscene.*;
@@ -17,14 +18,14 @@ public class CameraCrane extends PApplet {
 	public void setup() {
 		size(640, 720, P3D);
 		canvas = createGraphics(width, mainWinHeight, P3D);
-		scene = new Scene(this, (PGraphics3D) canvas);
+		scene = new Scene(this, (PGraphicsOpenGL) canvas);
 		scene.setGridIsDrawn(false);
 		// the drawing function is shared among the two scenes
 		scene.addDrawHandler(this, "drawing");
 		// press 'i' to switch the interaction between the camera frame and the interactive frame
 		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		auxCanvas = createGraphics(width, (height - canvas.height), P3D);
-		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
+		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas);
 		auxScene.setRadius(50);
 		auxScene.setGridIsDrawn(false);
 		// same drawing function which is defined below
@@ -72,7 +73,7 @@ public class CameraCrane extends PApplet {
 
 	// the actual drawing function, shared by the two scenes
 	public void drawing(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.background(0);
 		if(enabledLights)
 			pg3d.lights();

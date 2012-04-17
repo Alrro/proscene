@@ -6,6 +6,7 @@
 package cameracrane;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.constraints.*;
@@ -102,7 +103,7 @@ public class RobotArm {
 
 	public void draw(Scene scn) {
 		// Robot arm's local frame
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 
 		pg3d.pushMatrix();
 		frame(0).applyTransformation();
@@ -176,7 +177,7 @@ public class RobotArm {
 	}
 
 	public void drawBase(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		drawCone(scn, 0, 3, 7, 7, 4);
 		drawCone(scn, 3, 5, 7, 5, 4);
 		drawCone(scn, 5, 6, 5, 1, 4);
@@ -193,7 +194,7 @@ public class RobotArm {
 	}
 
 	public void drawArm(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.translate(2, 0, 0);
 		drawCone(scn, 0, 50, 1, 1, 10);
 		pg3d.translate(-4, 0, 0);
@@ -215,7 +216,7 @@ public class RobotArm {
 	}
 
 	public void drawCylinder(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.pushMatrix();
 		pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
 		drawCone(scn, -5, 5, 2, 2, 20);
@@ -224,14 +225,14 @@ public class RobotArm {
 
 	public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2,
 			int nbSub) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.translate(0.0f, 0.0f, zMin);
 		scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
 		pg3d.translate(0.0f, 0.0f, -zMin);
 	}
 
 	public void setColor(Scene scn, boolean selected) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		if (selected) {
 			pg3d.fill(200, 200, 0);
 		} else {
@@ -247,7 +248,7 @@ public class RobotArm {
 	}
 
 	public void drawLongArm(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.translate(2, 0, -57);
 		drawCone(scn, 0, 70, 1, 1, 10);
 		pg3d.translate(-4, 0, 0);
@@ -259,7 +260,7 @@ public class RobotArm {
 	}
 
 	public void drawHolder(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.translate(0, 0, -13);
 		drawCylinder(scn);
 		pg3d.pushMatrix();
@@ -273,7 +274,7 @@ public class RobotArm {
 	}
 
 	public void drawTripod(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.pushMatrix();
 		pg3d.translate(0, 0, 21);
 		pg3d.rotateX(PApplet.PI);
@@ -286,7 +287,7 @@ public class RobotArm {
 	}
 
 	public void drawStick(Scene scn) {
-		PGraphics3D pg3d = scn.renderer();
+		PGraphicsOpenGL pg3d = scn.renderer();
 		pg3d.pushMatrix();
 		pg3d.rotateX((float) (PApplet.PI / 5.5));
 		drawCone(scn, 0, 25, 1, 1, 10);

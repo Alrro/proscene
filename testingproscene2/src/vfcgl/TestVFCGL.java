@@ -1,7 +1,6 @@
 package vfcgl;
 import processing.core.*;
 import processing.opengl.*;
-import codeanticode.glgraphics.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
