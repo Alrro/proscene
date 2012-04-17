@@ -1,15 +1,41 @@
+/**
+ *                     ProScene (version 1.9.90)      
+ *    Copyright (c) 2010-2011 by National University of Colombia
+ *                 @author Jean Pierre Charalambos      
+ *           http://www.disi.unal.edu.co/grupos/remixlab/
+ *                           
+ * This java package provides classes to ease the creation of interactive 3D
+ * scenes in Processing.
+ * 
+ * This source file is free software; you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation; either version 3 of the License, or (at your option)
+ * any later version.
+ * 
+ * This code is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+ * more details.
+ * 
+ * A copy of the GNU General Public License is available on the World Wide Web
+ * at <http://www.gnu.org/copyleft/gpl.html>. You can also obtain it by
+ * writing to the Free Software Foundation, 51 Franklin Street, Suite 500
+ * Boston, MA 02110-1335, USA.
+ */
+
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.opengl.*;
 import remixlab.remixcam.core.Renderable;
 import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 
 public class P5Renderer implements Renderable {
-	PGraphics3D pg3d;
+	PGraphicsOpenGL pg3d;
 
-	public P5Renderer(PGraphics3D p) {
-		pg3d = p;
+	public P5Renderer(PGraphicsOpenGL renderer) {
+		pg3d = renderer;
 	}	
 
 	@Override
@@ -141,7 +167,7 @@ public class P5Renderer implements Renderable {
 
 	@Override
 	public void matrixMode(int mode) {
-		pg3d.matrixMode(mode);
+		// TODO change API in remixcam so that it matches P5-2 std convention.
 	}
 	
 	@Override
