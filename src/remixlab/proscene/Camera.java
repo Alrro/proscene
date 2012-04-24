@@ -2486,6 +2486,7 @@ public class Camera implements Cloneable {
 		else
 			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);
 		*/
+		
 		unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
 		if (frame != null)

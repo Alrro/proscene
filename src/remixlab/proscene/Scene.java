@@ -4296,7 +4296,12 @@ public class Scene implements PConstants {
 			break;
 		case ORTHOGRAPHIC:
 			float[] wh = camera().getOrthoWidthHeight();
-			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
+			// 1. P5 1.5 version:
+			//pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
+			// 2. "screen drawing" (which is new in proscene specially designed to P5-2) version
+			// pg3d.ortho(-wh[0]/2, wh[0]/2, -wh[1]/2, wh[1]/2, camera().zNear(), camera().zFar());
+			// 3. As it is done in P5-a5 perspective vs ortho example
+			pg3d.ortho(0, wh[0], 0, wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
 		// if our camera() matrices are detached from the processing Camera
