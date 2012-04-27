@@ -1,6 +1,6 @@
 package basic;
 import processing.core.*;
-import processing.opengl.*;
+//import processing.opengl.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -10,8 +10,8 @@ public class FrameInteraction extends PApplet {
 	
 	public void setup()	{
 		//size(640, 360, P3D);
-		//size(400, 400, P3D);
-		size(640, 360, OPENGL);
+		size(400, 400, P3D);
+		//size(640, 360, OPENGL);
 		scene = new Scene(this);
 		//scene.camera().setKind(Camera.Kind.STANDARD);
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);

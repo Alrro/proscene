@@ -5,6 +5,7 @@ import java.nio.FloatBuffer;
 
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
+import javax.media.opengl.GL2ES2;
 import javax.media.opengl.glu.GLU;
 
 import processing.core.*;
@@ -61,7 +62,7 @@ public class PointUnderPixel extends PApplet {
 		//protected PGraphicsOpenGL pgl;
 		protected PGL pgl;
 		protected GL gl;
-		protected GL2 gl2;
+		protected GL2ES2 gl2;
 		protected GLU glu;
 
 		public GLCamera(Scene scn) {

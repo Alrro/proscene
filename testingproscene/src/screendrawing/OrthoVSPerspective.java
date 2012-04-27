@@ -1,10 +1,18 @@
 package screendrawing;
 
 import processing.core.*;
-
 import processing.opengl.*;
-public class OrthoVSPerspective extends PApplet {
-	private static final long serialVersionUID = 1L;
+
+@SuppressWarnings("serial")
+public class OrthoVSPerspective extends PApplet {	
+	float cameraFOV;
+	float cameraZ;
+	float cameraMaxFar;
+	float cameraNear;
+	float cameraFar;
+
+	float angleX = -PI/6;
+	float angleY = PI/3;
 	
 	PGraphicsOpenGL pgl;
 	float zC = 0;
@@ -14,18 +22,23 @@ public class OrthoVSPerspective extends PApplet {
 	  pgl = (PGraphicsOpenGL) g;
 	  noStroke();
 	  fill(204);
+	  
+	  cameraFOV = PI/3.0f; 
+	  cameraZ = (height/2.0f) / tan(cameraFOV/2.0f);
+	  cameraMaxFar = cameraZ * 2.0f;
+
+	  cameraNear = cameraZ / 2.0f;
+	  cameraFar = cameraZ * 2.0f;
 	}
 
 	public void draw() {
 	  background(250);  
 	  lights();
 	 
-	  if(mousePressed) {
-	    float fov = PI/3.0f; 
-	    float cameraZ = (height/2.0f) / tan(fov/2.0f); 
-	    perspective(fov, (float)width/ (float)height, cameraZ/2.0f, cameraZ*2.0f); 
-	  } else {
-	    ortho(0, width, 0, height, -200, +200);
+	  if(mousePressed) {   
+	    perspective(cameraFOV, (float)width / (float)height, cameraNear, cameraFar);
+	  } else {	    
+		  ortho(0, width, 0, height, cameraNear, cameraFar);
 	  }
 	  
 	  translate(width/2, height/2, 0);
@@ -34,46 +47,29 @@ public class OrthoVSPerspective extends PApplet {
 	  box(160);  
 	  
 	  stroke(200, 100, 10);
-	  beginScreenDrawing();
+	  beginP5ScreenDrawing();
 	  line(10, 10, zC, width-10, height-10, zC);
-	  endScreenDrawing();
+	  endP5ScreenDrawing();
 	  
-	  beginScreenDrawing();
+	  beginP5ScreenDrawing();
 	  line(10, height-10, zC, width-10, 10, zC);
-	  endScreenDrawing();
+	  endP5ScreenDrawing();
 	}
 
-	public void beginScreenDrawing() {
+	public void beginP5ScreenDrawing() {
 	  pgl.hint(DISABLE_DEPTH_TEST);
-	  pgl.pushProjection();
-	  pgl.ortho(-width/2, width/2, -height/2, height/2, -10, 10); 
+	  pgl.pushProjection();	  
+	  pgl.ortho(0, width, 0, height, cameraNear, cameraFar);
 	  pgl.pushMatrix();
 	  pgl.camera();
 	  zC = 0.0f;
 	}
 
-	public void endScreenDrawing() {
+	public void endP5ScreenDrawing() {
 	  pgl.popProjection();  
 	  pgl.popMatrix();   
 	  hint(ENABLE_DEPTH_TEST);
-	}
-
-	/**
-	public void beginScreenDrawing() {
-	  hint(DISABLE_DEPTH_TEST);
-	  pgl.pushProjection();
-	  ortho(-width/2, width/2, -height/2, height/2, -10, 10); 
-	  pushMatrix();
-	  camera();
-	  zC = 0.0f;
-	}
-
-	public void endScreenDrawing() {
-	  pgl.popProjection();  
-	  popMatrix();   
-	  hint(ENABLE_DEPTH_TEST);
-	}
-	*/
+	}	
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "screendrawing.OrthoVSPerspective" });
