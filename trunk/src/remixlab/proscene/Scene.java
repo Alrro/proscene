@@ -2556,11 +2556,19 @@ public class Scene implements PConstants {
 		*/
 		pg3d.hint(DISABLE_DEPTH_TEST);
 		pg3d.pushProjection();
-		pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);		
+		
+		//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
+		
+		// /**
+		float[] wh = camera().getOrthoWidthHeight();
+		pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
+		// */
+		
+		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);		
 		pg3d.pushMatrix();
 	  // Camera needs to be reset!
-		pg3d.camera();
-		zC = 0.0f;
+		pg3d.camera();		
+		zC = 0.0f;		
 	}
 
 	/**
@@ -4301,7 +4309,8 @@ public class Scene implements PConstants {
 			// 2. "screen drawing" (which is new in proscene specially designed to P5-2) version
 			// pg3d.ortho(-wh[0]/2, wh[0]/2, -wh[1]/2, wh[1]/2, camera().zNear(), camera().zFar());
 			// 3. As it is done in P5-a5 perspective vs ortho example
-			pg3d.ortho(0, wh[0], 0, wh[1], camera().zNear(), camera().zFar());
+			pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
+			//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
 			break;
 		}
 		// if our camera() matrices are detached from the processing Camera

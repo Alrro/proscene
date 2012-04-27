@@ -1838,11 +1838,14 @@ public class Camera implements Cloneable {
 	 * Current implementation always returns {@code WorlPoint.found = false}
 	 * (dummy value), meaning that no point was found under pixel.
 	 */
-	public WorldPoint pointUnderPixel(Point pixel) {		
+	public WorldPoint pointUnderPixel(Point pixel) {
+		// TODO broken
 		float[] depth = new float[1];
-		PGL pgl = scene.pg3d.beginPGL();
-		pgl.gl2.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1,	1, PGL.GL_DEPTH_COMPONENT24, PGL.GL_FLOAT, FloatBuffer.wrap(depth));
+		/**
+		PGL pgl = scene.pg3d.beginPGL();		
+		pgl.gl2x.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1,	1, PGL.GL_DEPTH_COMPONENT, PGL.GL_FLOAT, FloatBuffer.wrap(depth));
 	  scene.pg3d.endPGL();
+	  */
 		PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
 		point = unprojectedCoordinatesOf(point);		
 		return new WorldPoint(point, (depth[0] < 1.0f));
