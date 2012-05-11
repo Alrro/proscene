@@ -2559,12 +2559,25 @@ public class Scene implements PConstants {
 		
 		//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
 		
-		// /**
+		/**
 		float[] wh = camera().getOrthoWidthHeight();
 		pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
 		// */
 		
-		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);		
+		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
+		
+		//pg3d.ortho(0f, width, 0f, height, 0.0f, -1.0f);
+		//pg3d.ortho(0f, width, 0f, height, -1.0f, 0.0f);
+		//pg3d.ortho(0f, width, height, 0f, 0.0f, -1.0f);
+		
+		
+		float cameraZ = (height/2.0f) / PApplet.tan( camera().fieldOfView() /2.0f);
+		float cameraMaxFar = cameraZ * 2.0f;
+
+		float cameraNear = cameraZ / 2.0f;
+		float cameraFar = cameraZ * 2.0f;
+		pg3d.ortho(0, width, 0, height, cameraNear, cameraFar);
+		
 		pg3d.pushMatrix();
 	  // Camera needs to be reset!
 		pg3d.camera();		
