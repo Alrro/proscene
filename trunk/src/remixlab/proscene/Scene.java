@@ -2507,7 +2507,39 @@ public class Scene implements PConstants {
 		endScreenDrawing();
 
 		drawCross(color, center.x, center.y, 0.6f * length, strokeWeight);
+	}	
+	
+	/**
+	void QGLViewer::startScreenCoordinatesSystem(bool upward) const
+	{
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		if (tileRegion_ != NULL)
+		  if (upward)
+		    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMin, tileRegion_->yMax, 0.0, -1.0);
+		  else
+		    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMax, tileRegion_->yMin, 0.0, -1.0);
+		else
+		  if (upward)
+		    glOrtho(0, width(), 0, height(), 0.0, -1.0);
+		  else
+		    glOrtho(0, width(), height(), 0, 0.0, -1.0);
+
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
 	}
+	
+	void QGLViewer::stopScreenCoordinatesSystem() const
+	{
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+
+		glMatrixMode(GL_MODELVIEW);
+		glPopMatrix();
+	}
+	*/
 
 	/**
 	 * Computes the world coordinates of an screen object so that drawing can be
@@ -2571,12 +2603,19 @@ public class Scene implements PConstants {
 		//pg3d.ortho(0f, width, height, 0f, 0.0f, -1.0f);
 		
 		
+		// /**
 		float cameraZ = (height/2.0f) / PApplet.tan( camera().fieldOfView() /2.0f);
 		float cameraMaxFar = cameraZ * 2.0f;
-
 		float cameraNear = cameraZ / 2.0f;
 		float cameraFar = cameraZ * 2.0f;
-		pg3d.ortho(0, width, 0, height, cameraNear, cameraFar);
+	  pg3d.ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
+		//pg3d.ortho(0, width, 0, height, cameraNear, cameraFar);
+		// */
+		
+		/**
+		float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
+		pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
+		// */
 		
 		pg3d.pushMatrix();
 	  // Camera needs to be reset!
@@ -4309,6 +4348,11 @@ public class Scene implements PConstants {
 	 * {@link remixlab.proscene.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
+		// option 1 (only one of the following two lines)
+		// pg3d.projection.set(camera().getProjectionMatrix());
+		// camera().computeProjectionMatrix();		
+		// /**
+		// option 2
 		// compute the processing camera projection matrix from our camera()
 		// parameters
 		switch (camera().type()) {
@@ -4316,21 +4360,23 @@ public class Scene implements PConstants {
 			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
 			break;
 		case ORTHOGRAPHIC:
-			float[] wh = camera().getOrthoWidthHeight();
+			float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
 			// 1. P5 1.5 version:
-			//pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
-			// 2. "screen drawing" (which is new in proscene specially designed to P5-2) version
-			// pg3d.ortho(-wh[0]/2, wh[0]/2, -wh[1]/2, wh[1]/2, camera().zNear(), camera().zFar());
-			// 3. As it is done in P5-a5 perspective vs ortho example
-			pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
-			//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
+			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());			
+			// 2. As it is done in P5-a5 perspective vs ortho example, but using proscene w and h
+		  // ortho: screen drawing broken; frame translation fixed
+		  // persp: screen drawing broken; frame translation fixed
+			//pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());			
+		  // 3. As it is done in P5-a5 perspective vs ortho example
+			// ortho: screen drawing fixed; frame translation broken
+		  // persp: screen drawing broken; frame translation fixed
+			// pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
 			break;
 		}
-		// if our camera() matrices are detached from the processing Camera
-		// matrices,
+		// if our camera() matrices are detached from the processing Camera matrices,
 		// we cache the processing camera projection matrix into our camera()
-		camera().setProjectionMatrix(pg3d.projection);
-		// camera().setProjectionMatrix(((PGraphicsOpenGL) parent.g).projection);
+		// camera().setProjectionMatrix(pg3d.projection);//TODO no needed: camera matrices are references to P5 anyway	
+		// */
 	}
 
 	/**
@@ -4338,15 +4384,19 @@ public class Scene implements PConstants {
 	 * {@code PApplet.camera()}.
 	 */
 	protected void setPModelViewMatrix() {
+	  // option 1 (only one of the following two lines)
+		//pg3d.modelview.set(camera().getModelViewMatrix());
+	  //camera().computeModelViewMatrix();
+		// /**
+		// option 2
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
 		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
 				        camera().at().x, camera().at().y, camera().at().z,
 				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
-		// if our camera() matrices are detached from the processing Camera
-		// matrices,
+		// if our camera() matrices are detached from the processing Camera matrices,
 		// we cache the processing camera modelview matrix into our camera()
-		camera().setModelViewMatrix(pg3d.modelview);
-		// camera().setProjectionMatrix(((PGraphicsOpenGL) parent.g).modelview);
+		// camera().setModelViewMatrix(pg3d.modelview);//TODO no needed: camera matrices are references to P5 anyway		
+		// */
 	}
 }

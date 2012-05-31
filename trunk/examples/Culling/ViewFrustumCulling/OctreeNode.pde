@@ -19,7 +19,7 @@ public class OctreeNode {
     child = new OctreeNode[8];
   }
   
-  public void draw(PGraphics3D pg3d) {
+  public void draw(PGraphicsOpenGL pg3d) {
     pg3d.stroke(color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
     pg3d.strokeWeight(level+1);
     
@@ -47,7 +47,7 @@ public class OctreeNode {
     pg3d.endShape();
   }
   
-  public void drawIfAllChildrenAreVisible(PGraphics3D pg3d, Camera camera) {
+  public void drawIfAllChildrenAreVisible(PGraphicsOpenGL pg3d, Camera camera) {
     Camera.Visibility vis = camera.aaBoxIsVisible(p1, p2);
     if ( vis == Camera.Visibility.VISIBLE )
       draw(pg3d);
