@@ -29,7 +29,7 @@ import java.awt.event.*;
 
 import processing.core.PApplet;
 
-import remixlab.proscene.Scene.Button;
+import remixlab.proscene.AbstractScene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.KeyboardAction;

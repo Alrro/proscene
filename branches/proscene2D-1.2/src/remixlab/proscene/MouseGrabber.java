@@ -25,7 +25,7 @@
 
 package remixlab.proscene;
 
-import remixlab.proscene.Scene.Button;
+import remixlab.proscene.AbstractScene.Button;
 
 /**
  * Base class for mouse grabbers objects that implements the MouseGrabbable interface.

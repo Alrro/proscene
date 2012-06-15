@@ -1259,8 +1259,8 @@ public class Frame implements Cloneable {
 	 * {@link remixlab.proscene.Quaternion#fromTo(PVector, PVector)}.
 	 * 
 	 * @see #zAxis()
+	 * @see #setXAxis(PVector)
 	 * @see #setYAxis(PVector)
-	 * @see #setZAxis(PVector)
 	 */
 	public void setZAxis(PVector axis) {
 		rotate(new Quaternion(new PVector(0.0f, 0.0f, 1.0f), transformOf(axis)));
