@@ -51,7 +51,7 @@ public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements
 	 * @see remixlab.proscene.Scene#setAvatar(Trackable)
 	 * @see remixlab.proscene.Scene#setInteractiveFrame(InteractiveFrame)
 	 */
-	public InteractiveAvatarFrame(Scene scn) {
+	public InteractiveAvatarFrame(AbstractScene scn) {
 		super(scn);
 		q = new Quaternion();
 		q.fromTaitBryan(PApplet.QUARTER_PI, 0, 0);

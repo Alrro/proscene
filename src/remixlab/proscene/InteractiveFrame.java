@@ -26,6 +26,8 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.opengl.*;
+import remixlab.proscene.AxisPlaneConstraint.Type;
 
 import java.util.*;
 
@@ -80,7 +82,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	protected boolean isInCamPath;
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
-	public Scene scene;
+	public AbstractScene scene;
 
 	/**
 	 * Default constructor.
@@ -94,8 +96,18 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * <b>Note:</b> the InteractiveFrame is automatically added to
 	 * the {@link remixlab.proscene.Scene#mouseGrabberPool()}.
 	 */
-	public InteractiveFrame(Scene scn) {
+	public InteractiveFrame(AbstractScene scn) {		
 		scene = scn;
+		
+		// /**
+		if(scene.space() == Scene.Space.TWO_D) { //same as: if( scene instanceof remixlab.proscene.Scene2D ) {
+			WorldConstraint constraint2d = new WorldConstraint();
+			PVector direction = new PVector(0,0,1);
+			constraint2d.setRotationConstraint(Type.AXIS, direction);
+			//constraint2d.setTranslationConstraint(Type.PLANE, direction);
+			setConstraint(constraint2d);						
+		}
+		// */
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 		horiz = true;
@@ -131,7 +143,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * 
 	 * @see remixlab.proscene.Camera#addKeyFrameToPath(int)
 	 */
-	public InteractiveFrame(Scene scn, InteractiveCameraFrame iFrame) {
+	public InteractiveFrame(AbstractScene scn, InteractiveCameraFrame iFrame) {
 		super(iFrame.translation(), iFrame.rotation());
 		scene = scn;
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
@@ -165,7 +177,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see remixlab.proscene.Frame#applyTransformation(PApplet)
 	 */
 	public void applyTransformation() {
-		applyTransformation(scene.pg3d);
+		// TODO cast added (2d scene pending)
+		applyTransformation((PGraphicsOpenGL)scene.pg);
 	}
 
 	/**

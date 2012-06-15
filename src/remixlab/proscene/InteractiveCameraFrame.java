@@ -165,20 +165,18 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
+				translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				prevPos = eventPoint;
 				break;
 			}
 
 			case ZOOM: {
 				// #CONNECTION# wheelEvent() ZOOM case
-				float coef = PApplet.max(PApplet.abs((camera.frame()
-						.coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera
-						.sceneRadius());
+				float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
 				// Warning: same for left and right CoordinateSystemConvention:
-				PVector trans = new PVector(0.0f, 0.0f, -coef
-						* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
+				PVector trans = new PVector(0.0f, 0.0f, -coef	* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
+				float wh[] = camera.getOrthoWidthHeight();
+				if( ( (wh[0] > camera.sceneRadius()) && (wh[1] > camera.sceneRadius()) ) || (trans.z > 0) || scene.space() == Scene.Space.THREE_D )
 				translate(inverseTransformOf(trans));
 				prevPos = eventPoint;
 				break;
@@ -298,21 +296,23 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
-			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera
-					.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
-			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation)
-					* wheelSensitivity() * wheelSensitivityCoef);
+			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
+			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation) * wheelSensitivity() * wheelSensitivityCoef);
 			// right_handed coordinate system should go like this:
 			// PVector trans = new PVector(0.0f, 0.0f, coef * rotation *
 			// wheelSensitivity() * wheelSensitivityCoef);
-			translate(inverseTransformOf(trans));
+						 
+			float wh[] = camera.getOrthoWidthHeight();
+			//if( (position().z >= 10) || (trans.z > 0) || scene.space() == Scene.Space.THREE_D )
+			if( ( (wh[0] > camera.sceneRadius()) && (wh[1] > camera.sceneRadius()) ) || (trans.z > 0) || scene.space() == Scene.Space.THREE_D )
+				translate(inverseTransformOf(trans));			
+			
 			break;
 		}
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 			// #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed()
-					* (-rotation))));
+			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed() * (-rotation))));
 			break;
 		default:
 			break;
