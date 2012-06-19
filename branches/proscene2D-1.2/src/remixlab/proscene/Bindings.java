@@ -39,10 +39,10 @@ import java.util.HashMap;
  * (HashMap<K, A>). 
  */
 public class Bindings<K, A> {
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected HashMap<K, A> map;
 
-	protected Bindings(Scene scn) {
+	protected Bindings(AbstractScene scn) {
 		scene = scn;
 		map = new HashMap<K, A>();
 	}

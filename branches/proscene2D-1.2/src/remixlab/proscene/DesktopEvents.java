@@ -46,7 +46,7 @@ import remixlab.proscene.Scene.MouseAction;
  * {@link #mouseEvent(MouseEvent)}.  
  */
 public class DesktopEvents implements MouseWheelListener {
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected PApplet parent;
 	protected MouseAction camMouseAction;
 	protected boolean keyHandled;
@@ -54,7 +54,7 @@ public class DesktopEvents implements MouseWheelListener {
 	public Point fCorner;// also used for SCREEN_ROTATE
 	public Point lCorner;
 	
-	public DesktopEvents(Scene s) {
+	public DesktopEvents(AbstractScene s) {
 		scene = s;
 		parent = s.parent;
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;

@@ -206,7 +206,7 @@ import remixlab.proscene.Scene.MouseAction;
 public class CameraProfile {
 	public enum Mode {ARCBALL, WHEELED_ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}
 	protected String name;
-	protected Scene scene;
+	protected AbstractScene scene;
 	protected Mode mode;
 	protected Bindings<KeyboardShortcut, Scene.CameraKeyboardAction> keyboard;
 	protected Bindings<Integer, Scene.MouseAction> cameraActions;
@@ -242,7 +242,7 @@ public class CameraProfile {
 	 * @param n the camera profile name
 	 * @param m the camera profile mode
 	 */
-	public CameraProfile(Scene scn, String n, Mode m) {
+	public CameraProfile(AbstractScene scn, String n, Mode m) {
 		scene = scn;		
 		name = n;
 		mode = m;
