@@ -235,16 +235,7 @@ public class Camera implements Cloneable {
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public AbstractScene scene;
-	public PGraphicsOpenGL pg3d;
-
-	/**
-	 * Convenience constructor that simply calls {@code this(true, scn)}.
-	 * 
-	 * @see #Camera(Scene, boolean)
-	 */
-	public Camera(Scene scn) {
-		this(scn, true);
-	}
+	public PGraphics pg;
 
 	/**
 	 * Main constructor. {@code p} will be used for rendering purposes.
@@ -264,11 +255,17 @@ public class Camera implements Cloneable {
 	 * 
 	 * @see #Camera(Scene)
 	 */
-	public Camera(Scene scn, boolean attachedToScene) {
+	public Camera(AbstractScene scn) {
 		scene = scn;
-		// TODO scene2D
-		pg3d = (PGraphicsOpenGL) scene.pg;
-		attachedToPCam = attachedToScene;
+		
+		if (scene.space() == Scene.Space.THREE_D) {
+			pg = (PGraphicsOpenGL) scene.pg;
+			attachedToPCam = true;
+		}
+		else {
+			pg = scene.pg;
+			attachedToPCam = false;			
+		}
 		
 		enableFrustumEquationsUpdate(false);
 		optimizeUnprojectCache(false);
@@ -321,8 +318,8 @@ public class Camera implements Cloneable {
 		projectionTimesModelview = new PMatrix3D();
 		
 		if (isAttachedToP5Camera()) {
-			projectionMat = pg3d.projection;
-			modelViewMat = pg3d.modelview;
+			projectionMat = ((PGraphicsOpenGL)pg).projection;
+			modelViewMat = ((PGraphicsOpenGL)pg).modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		} else {
@@ -353,7 +350,7 @@ public class Camera implements Cloneable {
 	public boolean isAttachedToP5Camera() {
 		return attachedToPCam;
 	}
-
+	
 	/**
 	 * Set the Camera matrices as references to the processing camera matrices. If
 	 * the references are already set ({@link #isAttachedToP5Camera()}), silently
@@ -365,11 +362,11 @@ public class Camera implements Cloneable {
 	 * @see #detachFromP5Camera()
 	 * @see #isAttachedToP5Camera()
 	 */
-	public void attachToP5Camera() {
-		if (!isAttachedToP5Camera()) {
+	protected void attachToP5Camera() {
+		if (!isAttachedToP5Camera() && (scene.space() == Scene.Space.THREE_D)) {
 			attachedToPCam = true;
-			projectionMat = pg3d.projection;
-			modelViewMat = pg3d.modelview;
+			projectionMat = ((PGraphicsOpenGL)pg).projection;
+			modelViewMat = ((PGraphicsOpenGL)pg).modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
 		}
@@ -386,8 +383,8 @@ public class Camera implements Cloneable {
 	 * @see #attachToP5Camera()
 	 * @see #isAttachedToP5Camera()
 	 */
-	public void detachFromP5Camera() {
-		if (isAttachedToP5Camera()) {
+	protected void detachFromP5Camera() {
+		if (isAttachedToP5Camera() && (scene.space() == Scene.Space.THREE_D)) {
 			attachedToPCam = false;
 			modelViewMat = new PMatrix3D();
 			projectionMat = new PMatrix3D();

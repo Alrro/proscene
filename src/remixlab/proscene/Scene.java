@@ -275,29 +275,20 @@ public class Scene extends AbstractScene {
     public String description() {
         return description;
     }
-	}	
-
-	// S h o r t c u t k e y s
-	protected Bindings<KeyboardShortcut, KeyboardAction> gProfile;	
+	}		
 
 	// mouse actions
 	protected boolean arpFlag;
 	protected boolean pupFlag;
 	protected PVector pupVec;
 
-	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S			
-	public Point upperLeftCorner;
+	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S	
 	protected Frame tmpFrame;
 
 	// O B J E C T S		
 
 	// S C R E E N C O O R D I N A T E S	
-	protected float zC;
-
-	// E X C E P T I O N H A N D L I N G
-	protected int startCoordCalls;
-  protected int beginOffScreenDrawingCalls;
-		
+	protected float zC;		
 
 	/**
 	 * Constructor that defines an on-screen Scene (the one that most likely
@@ -434,24 +425,7 @@ public class Scene extends AbstractScene {
 		init();
 	}
 
-	// 2. Associated objects
-	
-	/**
-	 * Sets {@code frame} as the InteractiveFrame associated to this Scene. If
-	 * {@code frame} is instance of Trackable it is also automatically set as the
-	 * Scene {@link #avatar()} (by automatically calling {@code
-	 * setAvatar((Trackable) frame)}).
-	 * 
-	 * @see #interactiveFrame()
-	 * @see #setAvatar(Trackable)
-	 */
-	public void setInteractiveFrame(InteractiveFrame frame) {
-		glIFrame = frame;		
-		if (glIFrame == null)
-			iFrameIsDrwn = false;
-		else if (glIFrame instanceof Trackable)
-			setAvatar((Trackable) glIFrame);
-	}
+	// 2. Associated objects	
 	
 	/**
 	 * Sets the avatar object to be tracked by the Camera when
@@ -459,6 +433,7 @@ public class Scene extends AbstractScene {
 	 * 
 	 * @see #unsetAvatar()
 	 */
+	@Override
 	public void setAvatar(Trackable t) {
 		trck = t;
 		avatarIsInteractiveAvatarFrame = false;
@@ -616,21 +591,6 @@ public class Scene extends AbstractScene {
 			else
 				PApplet.println("Changing camera kind to Standard");
 		}
-	}
-
-	/**
-	 * Returns {@code true} if the camera key frame paths are currently being
-	 * drawn and {@code false} otherwise.
-	 */
-	public boolean cameraPathsAreDrawn() {
-		return cameraPathsAreDrwn;
-	}	
-
-	/**
-	 * Sets the display of the camera key frame paths according to {@code draw}
-	 */
-	public void setCameraPathsAreDrawn(boolean draw) {
-		cameraPathsAreDrwn = draw;
 	}	
 	
 	/**
@@ -671,6 +631,7 @@ public class Scene extends AbstractScene {
 	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
 	 * or {@link #draw()}.
 	 */
+	@Override
 	protected void displayVisualHints() {		
 		if (frameSelectionHintIsDrawn())
 			drawSelectionHints();
@@ -754,70 +715,7 @@ public class Scene extends AbstractScene {
 
 		if (frustumEquationsUpdateIsEnable())
 			camera().updateFrustumEquations();
-	}
-
-	/**
-	 * Paint method which is called just after your {@code PApplet.draw()} method.
-	 * This method is registered at the PApplet and hence you don't need to call
-	 * it. Calls {@link #drawCommon()}.
-	 * 
-	 * @see #drawCommon()
-	 */
-	public void draw() {
-		if (isOffscreen()) return;
-		drawCommon();
-	}
-	
-	/**
-	 * Internal method. Called by {@link #draw()} and {@link #beginDraw()}.
-	 * <p>
-	 * First performs any scheduled animation, then calls {@link #proscenium()}
-	 * which is the main drawing method that could be overloaded. Then, if
-	 * there's an additional drawing method registered at the Scene, calls it (see
-	 * {@link #addDrawHandler(Object, String)}). Finally, displays the
-	 * {@link #displayGlobalHelp()}, the axis, the grid, the interactive frames' selection
-	 * hints and camera paths, and some visual hints (such {@link #drawZoomWindowHint()},
-	 * {@link #drawScreenRotateLineHint()} and {@link #drawArcballReferencePointHint()})
-	 * according to user interaction and flags.
-	 * 
-	 * @see #proscenium()
-	 * @see #addDrawHandler(Object, String)
-	 * @see #gridIsDrawn()
-	 * @see #axisIsDrwn
-	 * @see #addDrawHandler(Object, String)
-	 * @see #addAnimationHandler(Object, String)
-	 */
-	protected void drawCommon() {
-		// 1. Animation
-		if( animationIsStarted() )
-			performAnimation();
-		
-		// 2. Alternative use only
-		proscenium();
-
-		// 3. Draw external registered method
-		if (drawHandlerObject != null) {
-			try {
-				drawHandlerMethod.invoke(drawHandlerObject, new Object[] { this });
-			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ drawHandlerMethodName + " method");
-				e.printStackTrace();
-			}
-		}
-		
-		// 4. HIDevices
-		for (HIDevice device : devices)
-			device.handle();
-		
-		// 5. Grid and axis drawing
-		if (gridIsDrawn())
-			drawGrid(camera().sceneRadius());
-		if (axisIsDrawn())
-			drawAxis(camera().sceneRadius());
-		
-		// 6. Display visual hints
-		displayVisualHints();
-	}
+	}	
 	
 	/**
 	 * Returns the renderer context linked to this scene. 
@@ -827,11 +725,12 @@ public class Scene extends AbstractScene {
 	public PGraphicsOpenGL renderer() {
 		return (PGraphicsOpenGL) pg;
 	}
-
+	
 	/**
 	 * This method should be called when using offscreen rendering 
 	 * right after renderer.beginDraw().
    */	
+	@Override
 	public void beginDraw() {
 		if (isOffscreen()) {
 			if (beginOffScreenDrawingCalls != 0)
@@ -851,23 +750,6 @@ public class Scene extends AbstractScene {
 			if (frustumEquationsUpdateIsEnable())
 				camera().updateFrustumEquations();	
 		}
-	}
-
-	/**
-	 * This method should be called when using offscreen rendering 
-	 * right before renderer.endDraw(). Calls {@link #drawCommon()}.
-	 * 
-	 * @see #drawCommon() 
-   */		
-	public void endDraw() {
-		beginOffScreenDrawingCalls--;
-		
-		if (beginOffScreenDrawingCalls != 0)
-			throw new RuntimeException(
-					"There should be exactly one beginDraw() call followed by a "
-							+ "endDraw() and they cannot be nested. Check your implementation!");
-		
-		drawCommon();
 	}
 	
 	// 4. Scene dimensions
@@ -1133,6 +1015,7 @@ public class Scene extends AbstractScene {
 	 * 
 	 * @see #drawGrid(float, int)
 	 */
+	@Override
 	public void drawAxis(float length) {
 		final float charWidth = length / 40.0f;
 		final float charHeight = length / 30.0f;
@@ -1257,6 +1140,7 @@ public class Scene extends AbstractScene {
 	 * 
 	 * @see #drawGrid(float, int)
 	 */
+	@Override
 	public void drawGrid(float size) {
 		drawGrid(size, 10);
 	}
@@ -1279,7 +1163,7 @@ public class Scene extends AbstractScene {
 	 * geometry.
 	 * 
 	 * @see #drawAxis(float)
-	 */
+	 */	
 	public void drawGrid(float size, int nbSubdivisions) {
 		pg.pushStyle();
 		pg.stroke(170, 170, 170);
@@ -1505,6 +1389,7 @@ public class Scene extends AbstractScene {
 
 	// 3. KEYFRAMEINTERPOLATOR CAMERA
 	
+	@Override
 	public void drawPath(List<Frame> path, int mask, int nbFrames, int nbSteps, float scale) {
 		if (mask != 0) {
 			renderer().pushStyle();
@@ -2088,7 +1973,8 @@ public class Scene extends AbstractScene {
 	 * Internal method that defines the default camera profiles: WHEELED_ARCBALL
 	 * and FIRST_PERSON.
 	 */
-	private void initDefaultCameraProfiles() {
+	@Override
+	protected void initDefaultCameraProfiles() {
 		cameraProfileMap = new HashMap<String, CameraProfile>();
 		cameraProfileNames = new ArrayList<String>();
 		currentCameraProfile = null;
@@ -2098,38 +1984,7 @@ public class Scene extends AbstractScene {
 		registerCameraProfile( new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON) );
 		//setCurrentCameraProfile("ARCBALL");
 		setCurrentCameraProfile("WHEELED_ARCBALL");
-	}
-
-	/**
-	 * Registers a camera profile. Returns true if succeeded. If there's a
-	 * registered camera profile with the same name, registration will fail. 
-	 * <p>
-	 * <b>Attention:</b> This method doesn't make current {@code cp}. For that call
-	 * {@link #setCurrentCameraProfile(CameraProfile)}.
-	 * 
-	 * @param cp camera profile
-	 * 
-	 * @see #setCurrentCameraProfile(CameraProfile)
-	 * @see #unregisterCameraProfile(CameraProfile) 
-	 */
-	public boolean registerCameraProfile(CameraProfile cp) {
-		// if(!isCameraProfileRegistered(cp)) {
-		if (cp == null)
-			return false;
-		if (!isCameraProfileRegistered(cp)) {
-			cameraProfileNames.add(cp.name());
-			cameraProfileMap.put(cp.name(), cp);
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Convenience function that simply returns {@code unregisterCameraProfile(cp.name())}.
-	 */
-	public boolean unregisterCameraProfile(CameraProfile cp) {
-		return unregisterCameraProfile(cp.name());
-	}
+	}	
 
 	/**
 	 * Unregisters the given camera profile by its name. Returns true if succeeded.
@@ -2143,6 +1998,7 @@ public class Scene extends AbstractScene {
 	 * @param cp camera profile
 	 * @return true if succeeded
 	 */
+	@Override
 	public boolean unregisterCameraProfile(String cp) {
 		if (!isCameraProfileRegistered(cp))
 			return false;
@@ -2154,8 +2010,7 @@ public class Scene extends AbstractScene {
 			if (camProfile.mode() != CameraProfile.Mode.THIRD_PERSON)
 				instancesDifferentThanThirdPerson++;
 
-		if ((cProfile.mode() != CameraProfile.Mode.THIRD_PERSON)
-				&& (instancesDifferentThanThirdPerson == 1))
+		if ((cProfile.mode() != CameraProfile.Mode.THIRD_PERSON) && (instancesDifferentThanThirdPerson == 1))
 			return false;
 
 		if (isCurrentCameraProfile(cp))
@@ -2167,80 +2022,7 @@ public class Scene extends AbstractScene {
 		}
 
 		return false;
-	}
-
-	/**
-	 * Returns the camera profile which name matches the one provided.
-	 * Returns null if there's no camera profile registered by this name.
-	 * 
-	 * @param name camera profile name
-	 * @return camera profile object
-	 */
-	public CameraProfile cameraProfile(String name) {
-		return cameraProfileMap.get(name);
-	}
-	
-	/**
-	 * Returns an array of the camera profile objects that are currently
-	 * registered at the Scene.
-	 */
-	public CameraProfile [] getCameraProfiles() {		
-		return cameraProfileMap.values().toArray(new CameraProfile[0]);
-	}
-
-	/**
-	 * Returns true the given camera profile is currently registered.
-	 */
-	public boolean isCameraProfileRegistered(CameraProfile cp) {
-		return cameraProfileMap.containsValue(cp);
-	}
-
-	/**
-	 * Returns true if currently there's a camera profile registered by
-	 * the given name.
-	 */
-	public boolean isCameraProfileRegistered(String name) {
-		return cameraProfileMap.containsKey(name);
-	}
-
-	/**
-	 * Returns the current camera profile object. Never null.
-	 */
-	public CameraProfile currentCameraProfile() {
-		return currentCameraProfile;
-	}
-
-	/**
-	 * Returns true if the {@link #currentCameraProfile()} matches 
-	 * the one by the given name.
-	 */
-	boolean isCurrentCameraProfile(String cp) {
-		return isCurrentCameraProfile(cameraProfileMap.get(cp));
-	}
-
-	/**
-	 * Returns true if the {@link #currentCameraProfile()} matches 
-	 * the one given.
-	 */
-	boolean isCurrentCameraProfile(CameraProfile cp) {
-		return currentCameraProfile() == cp;
-	}
-
-	/**
-	 * Set current the given camera profile. Returns true if succeeded.
-	 * <p>
-	 * Registers first the given camera profile if it is not registered.
-	 */
-	public boolean setCurrentCameraProfile(CameraProfile cp) {
-		if (cp == null) {
-			return false;
-		}
-		if (!isCameraProfileRegistered(cp))
-			if (!registerCameraProfile(cp))
-				return false;
-
-		return setCurrentCameraProfile(cp.name());
-	}
+	}	
 	
 	/**
 	 * Set current the camera profile associated to the given name.
@@ -2249,6 +2031,7 @@ public class Scene extends AbstractScene {
 	 * This method triggers smooth transition animations
 	 * when switching between camera profile modes.
 	 */
+	@Override
 	public boolean setCurrentCameraProfile(String cp) {
 		CameraProfile camProfile = cameraProfileMap.get(cp);
 		if (camProfile == null)
@@ -2301,85 +2084,9 @@ public class Scene extends AbstractScene {
 			}			
 			return true;
 		}
-	}   
-
-	/**
-	 * Sets the next registered camera profile as current.
-	 * <p>
-	 * Camera profiles are ordered by their registration order.
-	 */
-	public void nextCameraProfile() {
-		int currentCameraProfileIndex = cameraProfileNames
-				.indexOf(currentCameraProfile().name());
-		nextCameraProfile(++currentCameraProfileIndex);
-	}
-
-	/**
-	 * Internal use. Used by {@link #nextCameraProfile()}.
-	 */
-	private void nextCameraProfile(int index) {
-		if (!cameraProfileNames.isEmpty()) {
-			if (index == cameraProfileNames.size())
-				index = 0;
-
-			if (!setCurrentCameraProfile(cameraProfileNames.get(index)))
-				nextCameraProfile(++index);
-			// debug:
-			else
-				PApplet.println("Camera profile changed to: "
-						+ cameraProfileNames.get(index));
-		}
-	}
-
-	// 8. Keyboard customization
-
-	/**
-	 * Parses the sketch to find if any KeyXxxx method has been implemented. If
-	 * this is the case, print a warning message telling the user what to do to
-	 * avoid possible conflicts with proscene.
-	 * <p>
-	 * The methods sought are: {@code keyPressed}, {@code keyReleased}, and
-	 * {@code keyTyped}.
-	 */
-	protected void parseKeyXxxxMethods() {
-		boolean foundKP = true;
-		boolean foundKR = true;
-		boolean foundKT = true;
-
-		try {
-			parent.getClass().getDeclaredMethod("keyPressed");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundKP = false;
-		} catch (NoSuchMethodException e) {
-			foundKP = false;
-		}
-
-		try {
-			parent.getClass().getDeclaredMethod("keyReleased");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundKR = false;
-		} catch (NoSuchMethodException e) {
-			foundKR = false;
-		}
-
-		try {
-			parent.getClass().getDeclaredMethod("keyTyped");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundKT = false;
-		} catch (NoSuchMethodException e) {
-			foundKT = false;
-		}
-
-		if ( (foundKP || foundKR || foundKT) && keyboardIsHandled() ) {
-			// if( (foundKP || foundKR || foundKT) &&
-			// (!parent.getClass().getName().equals("remixlab.proscene.Viewer")) ) {
-			PApplet.println("Warning: it seems that you have implemented some KeyXxxxMethod in your sketch. You may temporarily disable proscene " +
-					"keyboard handling with Scene.disableKeyboardHandling() (you can re-enable it later with Scene.enableKeyboardHandling()).");
-		}
 	}	
+
+	// 8. Keyboard customization	
 
 	/**
 	 * Sets global default keyboard shortcuts and the default key-frame shortcut keys.
@@ -2403,6 +2110,7 @@ public class Scene extends AbstractScene {
 	 * <li><b>'ALT'+'[1..5]'</b>: Remove path [1..5].
 	 * </ul> 
 	 */
+	@Override
 	public void setDefaultShortcuts() {
 		// D e f a u l t s h o r t c u t s		
 		setShortcut('a', KeyboardAction.DRAW_AXIS);
@@ -2421,337 +2129,12 @@ public class Scene extends AbstractScene {
 		setPathKey('3', 3);
 		setPathKey('4', 4);
 		setPathKey('5', 5);
-	}
-
-	/**
-	 * Associates key-frame interpolator path to key. High-level version
-	 * of {@link #setPathKey(Integer, Integer)}.
-	 *  
-	 * @param key character (internally converted to a key coded) defining the shortcut
-	 * @param path key-frame interpolator path
-	 * 
-	 * @see #setPathKey(Integer, Integer)
-	 */
-	public void setPathKey(Character key, Integer path) {
-		setPathKey(DesktopEvents.getVKey(key), path);
-	}
-	
-	/**
-	 * Associates key-frame interpolator path to the given virtual key. Low-level version
-	 * of {@link #setPathKey(Character, Integer)}.
-	 * 
-	 * @param vKey shortcut
-	 * @param path key-frame interpolator path
-	 * 
-	 * @see #setPathKey(Character, Integer)
-	 */
-	public void setPathKey(Integer vKey, Integer path) {
-		if ( isPathKeyInUse(vKey) ) {
-			Integer p = path(vKey);
-			PApplet.println("Warning: overwritting path key which was previously binded to path " + p);
-		}
-		pathKeys.setBinding(vKey, path);
-	}
-
-	/**
-	 * Returns the key-frame interpolator path associated with key. High-level version
-	 * of {@link #path(Integer)}.
-	 * 
-	 * @param key character (internally converted to a key coded) defining the shortcut
-	 * 
-	 * @see #path(Integer)
-	 */
-	public Integer path(Character key) {
-		return path(DesktopEvents.getVKey(key));
-	}
-	
-	/**
-	 * Returns the key-frame interpolator path associated with key. Low-level version
-	 * of {@link #path(Character)}.
-	 * 
-	 * @param vKey shortcut
-	 * 
-	 * @see #path(Character)
-	 */
-	public Integer path(Integer vKey) {
-		return pathKeys.binding(vKey);
-	}
-
-	/**
-	 * Removes the key-frame interpolator shortcut. High-level version
-	 * of {@link #removePathKey(Integer)}.
-	 * 
-	 * @param key character (internally converted to a key coded) defining the shortcut
-	 * 
-	 * @see #removePathKey(Integer)
-	 */
-	public void removePathKey(Character key) {
-		removePathKey(DesktopEvents.getVKey(key));
-	}
-	
-	/**
-	 * Removes the key-frame interpolator shortcut. Low-level version
-	 * of {@link #removePathKey(Character)}.
-	 * 
-	 * @param vKey shortcut
-	 * 
-	 * @see #removePathKey(Character)
-	 */
-	public void removePathKey(Integer vKey) {
-		pathKeys.removeBinding(vKey);
-	}
-	
-	/**
-	 * Returns true if the given key binds a key-frame interpolator path. High-level version
-	 * of {@link #isPathKeyInUse(Integer)}.
-	 * 
-	 * @param key character (internally converted to a key coded) defining the shortcut
-	 * 
-	 * @see #isPathKeyInUse(Integer)
-	 */
-	public boolean isPathKeyInUse(Character key) {
-		return isPathKeyInUse(DesktopEvents.getVKey(key));
-	}
-	
-	/**
-	 * Returns true if the given virtual key binds a key-frame interpolator path. Low-level version
-	 * of {@link #isPathKeyInUse(Character)}.
-	 * 
-	 * @param vKey shortcut
-	 * 
-	 * @see #isPathKeyInUse(Character)
-	 */
-	public boolean isPathKeyInUse(Integer vKey) {
-		return pathKeys.isShortcutInUse(vKey);
-	}
-
-	/**
-	 * Sets the modifier key needed to play the key-frame interpolator paths.
-	 * 
-	 * @param modifier
-	 */
-	public void setAddKeyFrameKeyboardModifier(Modifier modifier) {
-		addKeyFrameKeyboardModifier = modifier;
-	}
-
-	/**
-	 * Sets the modifier key needed to delete the key-frame interpolator paths.
-	 * 
-	 * @param modifier
-	 */
-	public void setDeleteKeyFrameKeyboardModifier(Modifier modifier) {
-		deleteKeyFrameKeyboardModifier = modifier;
-	}
-
-  /**
-   * Defines a global keyboard shortcut to bind the given action.
-   * 
-   * @param key shortcut
-   * @param action keyboard action
-   */
-	public void setShortcut(Character key, KeyboardAction action) {
-		if ( isKeyInUse(key) ) {
-			KeyboardAction a = shortcut(key);
-			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
-		}
-		gProfile.setBinding(new KeyboardShortcut(key), action);
-	}
-	
-  /**
-   * Defines a global keyboard shortcut to bind the given action. High-level version
-   * of {@link #setShortcut(Integer, Integer, KeyboardAction)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param key character (internally converted to a coded key) defining the shortcut
-   * @param action keyboard action
-   * 
-   * @see #setShortcut(Integer, Integer, KeyboardAction)
-   */
-	public void setShortcut(Integer mask, Character key, KeyboardAction action) {
-		setShortcut(mask, DesktopEvents.getVKey(key), action);
-	}
-	
-  /**
-   * Defines a global keyboard shortcut to bind the given action. High-level version
-   * of {@link #setShortcut(Integer, Character, KeyboardAction)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param vKey coded key defining the shortcut
-   * @param action keyboard action
-   * 
-   * @see #setShortcut(Integer, Character, KeyboardAction)
-   */
-	public void setShortcut(Integer mask, Integer vKey, KeyboardAction action) {
-		if ( isKeyInUse(mask, vKey) ) {
-			KeyboardAction a = shortcut(mask, vKey);
-			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
-		}
-		gProfile.setBinding(new KeyboardShortcut(mask, vKey), action);
-	}
-
-	/**
-	 * Defines a global keyboard shortcut to bind the given action.
-	 * 
-	 * @param vKey coded key defining the shortcut
-	 * @param action keyboard action
-	 */
-	public void setShortcut(Integer vKey, KeyboardAction action) {
-		if ( isKeyInUse(vKey) ) {
-			KeyboardAction a = shortcut(vKey);
-			PApplet.println("Warning: overwritting shortcut which was previously binded to " + a);
-		}
-		gProfile.setBinding(new KeyboardShortcut(vKey), action);
-	}
-
-	/**
-	 * Removes all global keyboard shortcuts.
-	 */
-	public void removeAllShortcuts() {
-		gProfile.removeAllBindings();
-	}
-	
-	/**
-	 * Removes the global keyboard shortcut.
-	 * 
-	 * @param key shortcut
-	 */
-	public void removeShortcut(Character key) {
-		gProfile.removeBinding(new KeyboardShortcut(key));
-	}
-	
-  /**
-   * Removes the global keyboard shortcut. High-level version
-   * of {@link #removeShortcut(Integer, Integer)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param key character (internally converted to a coded key) defining the shortcut
-   * 
-   * @see #removeShortcut(Integer, Integer)
-   */
-	public void removeShortcut(Integer mask, Character key) {
-		removeShortcut(mask, DesktopEvents.getVKey(key));
-	}
-
-	/**
-   * Removes the global keyboard shortcut. Low-level version
-   * of {@link #removeShortcut(Integer, Character)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param vKey virtual coded-key defining the shortcut
-   * 
-   * @see #removeShortcut(Integer, Character)
-   */
-	public void removeShortcut(Integer mask, Integer vKey) {
-		gProfile.removeBinding(new KeyboardShortcut(mask, vKey));
-	}
-
-	/**
-	 * Removes the global keyboard shortcut.
-	 * 
-	 * @param vKey virtual coded-key defining the shortcut
-	 */
-	public void removeShortcut(Integer vKey) {
-		gProfile.removeBinding(new KeyboardShortcut(vKey));
-	}
-	
-	/**
-	 * Returns the action that is binded to the given global keyboard shortcut.
-	 * 
-	 * @param key shortcut
-	 */
-	public KeyboardAction shortcut(Character key) {
-		return gProfile.binding(new KeyboardShortcut(key));
-	}
-	
-  /**
-   * Returns the action that is binded to the given global keyboard shortcut.
-   * High-level version of {@link #shortcut(Integer, Integer)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param key character (internally converted to a coded key) defining the shortcut
-   * 
-   * @see #shortcut(Integer, Integer)
-   */
-	public KeyboardAction shortcut(Integer mask, Character key) {
-		return shortcut(mask, DesktopEvents.getVKey(key));
-	}
-
-	/**
-   * Returns the action that is binded to the given global keyboard shortcut.
-   * Low-level version of {@link #shortcut(Integer, Character)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param vKey virtual coded-key defining the shortcut
-   * 
-   * @see #shortcut(Integer, Character)
-   */
-	public KeyboardAction shortcut(Integer mask, Integer vKey) {
-		return gProfile.binding(new KeyboardShortcut(mask, vKey));
-	}
-
-	/**
-	 * Returns the action that is binded to the given global keyboard shortcut.
-	 * 
-	 * @param vKey virtual coded-key defining the shortcut
-	 */
-	public KeyboardAction shortcut(Integer vKey) {
-		return gProfile.binding(new KeyboardShortcut(vKey));
-	}
-
-	/**
-	 * Returns true if the given global keyboard shortcut binds an action.
-	 * 
-	 * @param key shortcut
-	 */
-	public boolean isKeyInUse(Character key) {
-		return gProfile.isShortcutInUse(new KeyboardShortcut(key));
-	}
-	
-  /**
-   * Returns true if the given global keyboard shortcut binds an action.
-   * High-level version of {@link #isKeyInUse(Integer, Integer)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param key character (internally converted to a coded key) defining the shortcut
-   * 
-   * @see #isKeyInUse(Integer, Integer)
-   */
-	public boolean isKeyInUse(Integer mask, Character key) {
-		return isKeyInUse(mask, DesktopEvents.getVKey(key));
-	}
-	
-	/**
-   * Returns true if the given global keyboard shortcut binds an action.
-   * Low-level version of {@link #isKeyInUse(Integer, Character)}.
-   * 
-   * @param mask modifier mask defining the shortcut
-   * @param vKey virtual coded-key defining the shortcut
-   * 
-   * @see #isKeyInUse(Integer, Character)
-   */
-	public boolean isKeyInUse(Integer mask, Integer vKey) {
-		return gProfile.isShortcutInUse(new KeyboardShortcut(mask, vKey));
-	}
-	
-	/**
-	 * Returns true if the given global keyboard shortcut binds an action.
-	 * 
-	 * @param vKey virtual coded-key defining the shortcut
-	 */
-	public boolean isKeyInUse(Integer vKey) {
-		return gProfile.isShortcutInUse(new KeyboardShortcut(vKey));
-	}
-
-	/**
-	 * Returns true if there is a global keyboard shortcut for the given action.
-	 */
-	public boolean isActionBinded(KeyboardAction action) {
-		return gProfile.isActionMapped(action);
-	}
+	}  
 
 	/**
 	 * Internal method. Handles the different global keyboard actions.
 	 */
+	@Override
 	protected void handleKeyboardAction(KeyboardAction id) {
 		if( !keyboardIsHandled() )
 			return;
@@ -2827,6 +2210,7 @@ public class Scene extends AbstractScene {
 	/**
 	 * Internal method. Handles the different camera keyboard actions.
 	 */
+	@Override
 	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
 		if( !keyboardIsHandled() )
 			return;
@@ -3080,77 +2464,12 @@ public class Scene extends AbstractScene {
 		return description;
 	}
 
-	// 9. Mouse customization
-
-	/**
-	 * Parses the sketch to find if any mouseXxxx method has been implemented. If
-	 * this is the case, print a warning message telling the user what to do to
-	 * avoid possible conflicts with proscene.
-	 * <p>
-	 * The methods sought are: {@code mouseDragged}, {@code mouseMoved}, {@code
-	 * mouseReleased}, {@code mousePressed}, and {@code mouseClicked}.
-	 */
-	protected void parseMouseXxxxMethods() {
-		boolean foundMD = true;
-		boolean foundMM = true;
-		boolean foundMR = true;
-		boolean foundMP = true;
-		boolean foundMC = true;
-
-		try {
-			parent.getClass().getDeclaredMethod("mouseDragged");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundMD = false;
-		} catch (NoSuchMethodException e) {
-			foundMD = false;
-		}
-
-		try {
-			parent.getClass().getDeclaredMethod("mouseMoved");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundMM = false;
-		} catch (NoSuchMethodException e) {
-			foundMM = false;
-		}
-
-		try {
-			parent.getClass().getDeclaredMethod("mouseReleased");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundMR = false;
-		} catch (NoSuchMethodException e) {
-			foundMR = false;
-		}
-
-		try {
-			parent.getClass().getDeclaredMethod("mousePressed");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundMP = false;
-		} catch (NoSuchMethodException e) {
-			foundMP = false;
-		}
-
-		try {
-			parent.getClass().getDeclaredMethod("mouseClicked");
-		} catch (SecurityException e) {
-			e.printStackTrace();
-			foundMC = false;
-		} catch (NoSuchMethodException e) {
-			foundMC = false;
-		}
-
-		if ( (foundMD || foundMM || foundMR || foundMP || foundMC) && mouseIsHandled() ) {			
-			PApplet.println("Warning: it seems that you have implemented some mouseXxxxMethod in your sketch. You may temporarily disable proscene " +
-			"mouse handling with Scene.disableMouseHandling() (you can re-enable it later with Scene.enableMouseHandling()).");
-		}
-	}	
+	// 9. Mouse customization	
 
 	/**
 	 * Internal method. Handles the different mouse click actions.
 	 */
+	@Override
 	protected void handleClickAction(ClickAction action) {
 		// public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT,
 		// SELECT, ARP_FROM_PIXEL, RESET_ARP,

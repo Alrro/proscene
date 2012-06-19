@@ -1,10 +1,10 @@
 package remixlab.proscene;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import processing.core.*;
-import processing.opengl.*;
-import remixlab.proscene.Scene.KeyboardAction;
 
 public class Scene2D extends AbstractScene {
 	/**
@@ -172,11 +172,219 @@ public class Scene2D extends AbstractScene {
 	// S h o r t c u t k e y s
 	protected Bindings<KeyboardShortcut, KeyboardAction> gProfile;
 	
+	/**
+	 * Constructor that defines an on-screen Scene (the one that most likely
+	 * would just fulfill all of your needs). All viewer parameters (display flags,
+	 * scene parameters, associated objects...) are set to their default values.
+	 * See the associated documentation. This is actually just a convenience
+	 * function that simply calls {@code this(p, (PGraphics) p.g)}. Call any
+	 * other constructor by yourself to possibly define an off-screen Scene.
+	 * 
+	 * @see #Scene(PApplet, PGraphics)
+	 * @see #Scene(PApplet, PGraphics, int, int)
+	 */	
+	public Scene2D(PApplet p) {
+		this(p, p.g);
+	}
 	
+	/**
+	 * This constructor is typically used to define an off-screen Scene. This is
+	 * accomplished simply by specifying a custom {@code renderer}, different
+	 * from the PApplet's renderer. All viewer parameters (display flags, scene
+	 * parameters, associated objects...) are set to their default values. This
+	 * is actually just a convenience function that simply calls
+	 * {@code this(p, renderer, 0, 0)}. If you plan to define an on-screen Scene,
+	 * call {@link #Scene(PApplet)} instead.
+	 * 
+	 * @see #Scene(PApplet)
+	 * @see #Scene(PApplet, PGraphics, int, int)
+	 */
+	public Scene2D(PApplet p, PGraphics renderer) {
+		this(p, renderer, 0, 0);
+	}
+
+	/**
+	 * This constructor is typically used to define an off-screen Scene. This is
+	 * accomplished simply by specifying a custom {@code renderer}, different
+	 * from the PApplet's renderer. All viewer parameters (display flags, scene
+	 * parameters, associated objects...) are set to their default values. The
+	 * {@code x} and {@code y} parameters define the position of the upper-left
+	 * corner where the off-screen Scene is expected to be displayed, e.g., for
+	 * instance with a call to the Processing built-in {@code image(img, x, y)}
+	 * function. If {@link #isOffscreen()} returns {@code false} (i.e.,
+	 * {@link #renderer()} equals the PApplet's renderer), the values of x and y
+	 * are meaningless (both are set to 0 to be taken as dummy values). If you
+	 * plan to define an on-screen Scene, call {@link #Scene(PApplet)} instead. 
+	 * 
+	 * @see #Scene(PApplet)
+	 * @see #Scene(PApplet, PGraphics)
+	 */
+	public Scene2D(PApplet p, PGraphics renderer, int x, int y) {
+		parent = p;
+		pg = renderer;
+		width = pg.width;
+		height = pg.height;
+		
+		space = Space.TWO_D;
+				
+		//event handler
+		dE = new DesktopEvents(this);
+		
+		//mouse grabber pool
+		MouseGrabberPool = new ArrayList<MouseGrabbable>();
+		
+		//devices
+		devices = new ArrayList<HIDevice>();
+
+		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
+		pathKeys = new Bindings<Integer, Integer>(this);		
+		setDefaultShortcuts();
+
+		avatarIsInteractiveDrivableFrame = false;// also init in setAvatar, but we
+		// need it here to properly init the camera
+		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
+		// need it here to properly init the camera
+		cam = new Camera(this);
+		setCamera(camera());//calls showAll();
+		setInteractiveFrame(null);
+		setAvatar(null);
+		
+  	// This scene is offscreen if the provided renderer is
+		// different from the main PApplet renderer.
+		offscreen = renderer != p.g;
+		if(offscreen)
+			upperLeftCorner = new Point(x, y);
+		else
+			upperLeftCorner = new Point(0, 0);
+		beginOffScreenDrawingCalls = 0;		
+		setMouseTracking(true);
+		setMouseGrabber(null);
+		
+		mouseGrabberIsAnIFrame = false;
+
+		initDefaultCameraProfiles();
+
+		//animation		
+		animationStarted = false;
+		setFrameRate(60, false);
+		setAnimationPeriod(1000/60, false); // 60Hz
+		stopAnimation();				
+
+		withConstraint = true;
+
+		setAxisIsDrawn(true);
+		setGridIsDrawn(true);
+		setFrameSelectionHintIsDrawn(false);
+		setCameraPathsAreDrawn(false);
+		
+		//disableFrustumEquationsUpdate();
+
+		// E X C E P T I O N H A N D L I N G
+		startCoordCalls = 0;
+
+		parent.registerPre(this);
+		parent.registerDraw(this);
+		// parent.registerPost(this);
+		enableKeyboardHandling();
+		enableMouseHandling();		
+		parseKeyXxxxMethods();
+		parseMouseXxxxMethods();
+
+		// register draw method
+		removeDrawHandler();
+	  // register animation method
+		removeAnimationHandler();
+		
+		//setRightHanded();
+		setLeftHanded();
+
+		// called only once
+		init();
+	}
+	
+	public void pre() {
+		
+	}	
 
 	@Override
-	public void drawPath(List<Frame> path, int mask, int nbFrames, int nbSteps,
-			float scale) {
+	public void drawPath(List<Frame> path, int mask, int nbFrames, int nbSteps,	float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setAvatar(Trackable t) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setDefaultShortcuts() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void initDefaultCameraProfiles() {
+		cameraProfileMap = new HashMap<String, CameraProfile>();
+		cameraProfileNames = new ArrayList<String>();
+		currentCameraProfile = null;
+		// register here the default profiles
+		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
+		setCurrentCameraProfile("WHEELED_ARCBALL");		
+	}
+
+	@Override
+	public boolean unregisterCameraProfile(String cp) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean setCurrentCameraProfile(String cp) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	protected void handleKeyboardAction(remixlab.proscene.Scene.KeyboardAction id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void handleCameraKeyboardAction(
+			remixlab.proscene.Scene.CameraKeyboardAction id) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void handleClickAction(remixlab.proscene.Scene.ClickAction action) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void beginDraw() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawGrid(float radius) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawAxis(float radius) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	protected void displayVisualHints() {
 		// TODO Auto-generated method stub
 		
 	}
