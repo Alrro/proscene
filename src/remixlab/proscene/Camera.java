@@ -298,10 +298,12 @@ public class Camera implements Cloneable {
 															// here
 		setStandardZFar(1000.0f);// only for standard kind, but we initialize it
 															// here
-
-		// Requires fieldOfView() when called with ORTHOGRAPHIC. Attention to
-		// projectionMat below.
-		setType(Camera.Type.PERSPECTIVE);
+		
+		if( scene.space() ==  Scene.Space.TWO_D)
+			setType(Camera.Type.ORTHOGRAPHIC);
+		else
+		// Requires fieldOfView() when called with ORTHOGRAPHIC. Attention to projectionMat below.
+			setType(Camera.Type.PERSPECTIVE);
 
 		setZNearCoefficient(0.005f);
 		setZClippingCoefficient(PApplet.sqrt(3.0f));
@@ -738,6 +740,8 @@ public class Camera implements Cloneable {
 	 * point.
 	 */
 	public final void setType(Type type) {
+		if(( scene.space() ==  Scene.Space.TWO_D) && ( type == Camera.Type.PERSPECTIVE ) )
+			return;
 		// make ORTHOGRAPHIC frustum fit PERSPECTIVE (at least in plane normal
 		// to viewDirection(), passing
 		// through RAP). Done only when CHANGING type since orthoCoef may have
@@ -1497,14 +1501,10 @@ public class Camera implements Cloneable {
 			normal[5] = PVector.mult(up, -1);
 
 			float[] wh = getOrthoWidthHeight();
-			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])),
-					normal[0]);
-			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])),
-					normal[1]);
-			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])),
-					normal[4]);
-			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])),
-					normal[5]);
+			dist[0] = PVector.dot(PVector.sub(pos, PVector.mult(right, wh[0])), normal[0]);
+			dist[1] = PVector.dot(PVector.add(pos, PVector.mult(right, wh[0])), normal[1]);
+			dist[4] = PVector.dot(PVector.add(pos, PVector.mult(up, wh[1])), normal[4]);
+			dist[5] = PVector.dot(PVector.sub(pos, PVector.mult(up, wh[1])), normal[5]);
 			break;
 		}
 
@@ -2495,8 +2495,7 @@ public class Camera implements Cloneable {
 		unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
 		if (frame != null)
-			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1],
-					(float) xyz[2]));
+			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]));
 		else
 			return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}

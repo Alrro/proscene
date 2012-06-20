@@ -300,14 +300,28 @@ public class Scene2D extends AbstractScene {
 
 		// called only once
 		init();
-	}
-	
-	public void pre() {
-		
 	}	
+	
+	@Override
+	protected void bindMatrices() {
+		camera().computeProjectionMatrix();
+		camera().computeModelViewMatrix();
+	}
 
 	@Override
 	public void drawPath(List<Frame> path, int mask, int nbFrames, int nbSteps,	float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void drawGrid(float radius) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawAxis(float radius) {
 		// TODO Auto-generated method stub
 		
 	}
@@ -363,25 +377,7 @@ public class Scene2D extends AbstractScene {
 	protected void handleClickAction(remixlab.proscene.Scene.ClickAction action) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void beginDraw() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawGrid(float radius) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawAxis(float radius) {
-		// TODO Auto-generated method stub
-		
-	}
+	}		
 
 	@Override
 	protected void displayVisualHints() {
