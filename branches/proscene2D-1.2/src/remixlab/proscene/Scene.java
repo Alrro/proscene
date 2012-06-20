@@ -452,91 +452,6 @@ public class Scene extends AbstractScene {
 	}
 
 	// 4. State of the viewer	
-	
-	/**
-	 * Returns {@code true} if automatic update of the camera frustum plane
-	 * equations is enabled and {@code false} otherwise. Computation of the
-	 * equations is expensive and hence is disabled by default.
-	 * 
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
-	 */
-	public boolean frustumEquationsUpdateIsEnable() {
-		return camera().frustumEquationsUpdateIsEnable();
-	}
-
-	/**
-	 * Toggles automatic update of the camera frustum plane equations every frame.
-	 * Computation of the equations is expensive and hence is disabled by default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
-	 */
-	public void toggleFrustumEquationsUpdate() {
-		if ( frustumEquationsUpdateIsEnable() )
-			disableFrustumEquationsUpdate();
-		else
-			enableFrustumEquationsUpdate();
-	}
-
-	/**
-	 * Disables automatic update of the camera frustum plane equations every
-	 * frame. Computation of the equations is expensive and hence is disabled by
-	 * default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
-	 */
-	public void disableFrustumEquationsUpdate() {
-		enableFrustumEquationsUpdate(false);
-	}
-
-	/**
-	 * Enables automatic update of the camera frustum plane equations every frame.
-	 * Computation of the equations is expensive and hence is disabled by default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate(boolean)
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
-	 */
-	public void enableFrustumEquationsUpdate() {
-		enableFrustumEquationsUpdate(true);
-	}
-
-	/**
-	 * Enables or disables automatic update of the camera frustum plane equations
-	 * every frame according to {@code flag}. Computation of the equations is
-	 * expensive and hence is disabled by default.
-	 * 
-	 * @see #frustumEquationsUpdateIsEnable()
-	 * @see #toggleFrustumEquationsUpdate()
-	 * @see #disableFrustumEquationsUpdate()
-	 * @see #enableFrustumEquationsUpdate()
-	 * @see remixlab.proscene.Camera#updateFrustumEquations()
-	 */
-	public void enableFrustumEquationsUpdate(boolean flag) {
-		camera().enableFrustumEquationsUpdate(flag);
-	}
-
-	/**
-	 * Toggles the state of {@link #cameraPathsAreDrawn()}.
-	 * 
-	 * @see #setCameraPathsAreDrawn(boolean)
-	 */
-	public void toggleCameraPathsAreDrawn() {
-		setCameraPathsAreDrawn(!cameraPathsAreDrawn());
-	}
 
 	/**
 	 * Toggles the {@link #camera()} type between PERSPECTIVE and ORTHOGRAPHIC.
@@ -656,6 +571,7 @@ public class Scene extends AbstractScene {
 	/**
 	 * Bind processing matrices to proscene matrices.
 	 */
+	@Override
 	protected void bindMatrices() {
 		// We set the processing camera matrices from our remixlab.proscene.Camera
 		setPProjectionMatrix();
@@ -668,53 +584,6 @@ public class Scene extends AbstractScene {
 		// camera().computeProjectionMatrix();
 		// camera().computeModelViewMatrix();
 		camera().cacheMatrices();
-	}
-
-	/**
-	 * Paint method which is called just before your {@code PApplet.draw()}
-	 * method. This method is registered at the PApplet and hence you don't need
-	 * to call it.
-	 * <p>
-	 * Sets the processing camera parameters from {@link #camera()} and updates
-	 * the frustum planes equations if {@link #enableFrustumEquationsUpdate(boolean)}
-	 * has been set to {@code true}.
-	 */
-	public void pre() {
-		if (isOffscreen()) return;
-		
-		// handle possible resize events
-		// weird: we need to bypass the handling of a resize event when running the
-		// applet from eclipse		
-		if ((parent.frame != null) && (parent.frame.isResizable())) {
-			if ((width != pg.width) || (height != pg.height)) {
-				width = pg.width;
-				height = pg.height;
-				// weirdly enough we need to bypass what processing does
-				// to the matrices when a resize event takes place
-				camera().detachFromP5Camera();
-				camera().setScreenWidthAndHeight(width, height);
-				camera().attachToP5Camera();
-			} else {
-				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-						&& (!camera().anyInterpolationIsStarted())) {
-					camera().setPosition(avatar().cameraPosition());
-					camera().setUpVector(avatar().upVector());
-					camera().lookAt(avatar().target());
-				}
-				bindMatrices();
-			}
-		} else {
-			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-					&& (!camera().anyInterpolationIsStarted())) {
-				camera().setPosition(avatar().cameraPosition());
-				camera().setUpVector(avatar().upVector());
-				camera().lookAt(avatar().target());
-			}
-			bindMatrices();			
-		}
-
-		if (frustumEquationsUpdateIsEnable())
-			camera().updateFrustumEquations();
 	}	
 	
 	/**
@@ -724,32 +593,6 @@ public class Scene extends AbstractScene {
 	 */
 	public PGraphicsOpenGL renderer() {
 		return (PGraphicsOpenGL) pg;
-	}
-	
-	/**
-	 * This method should be called when using offscreen rendering 
-	 * right after renderer.beginDraw().
-   */	
-	@Override
-	public void beginDraw() {
-		if (isOffscreen()) {
-			if (beginOffScreenDrawingCalls != 0)
-				throw new RuntimeException(
-						"There should be exactly one beginDraw() call followed by a "
-								+ "endDraw() and they cannot be nested. Check your implementation!");
-			
-			beginOffScreenDrawingCalls++;
-			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-					&& (!camera().anyInterpolationIsStarted())) {
-				camera().setPosition(avatar().cameraPosition());
-				camera().setUpVector(avatar().upVector());
-				camera().lookAt(avatar().target());
-			}
-			bindMatrices();
-
-			if (frustumEquationsUpdateIsEnable())
-				camera().updateFrustumEquations();	
-		}
 	}
 	
 	// 4. Scene dimensions
