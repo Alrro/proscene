@@ -29,9 +29,9 @@ import java.awt.event.*;
 import java.util.Map.Entry;
 
 import processing.core.PApplet;
-import remixlab.proscene.Scene.CameraKeyboardAction;
-import remixlab.proscene.Scene.ClickAction;
-import remixlab.proscene.Scene.MouseAction;
+import remixlab.proscene.AbstractScene.CameraKeyboardAction;
+import remixlab.proscene.AbstractScene.ClickAction;
+import remixlab.proscene.AbstractScene.MouseAction;
 
 /**
  * This class encapsulates a set of camera keyboard shortcuts, and camera and

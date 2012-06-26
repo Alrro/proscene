@@ -105,7 +105,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			PVector direction = new PVector(0,0,1);
 			constraint2d.setRotationConstraint(Type.AXIS, direction);
 			//constraint2d.setTranslationConstraint(Type.PLANE, direction);
-			setConstraint(constraint2d);						
+			setConstraint(constraint2d);
 		}
 		// */
 
@@ -589,12 +589,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		case SCREEN_ROTATE: {
 			// TODO: needs testing to see if it works correctly when left-handed is set
 			PVector trans = camera.projectedCoordinatesOf(position());
-			float prev_angle = PApplet
-					.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
-			float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
-					- trans.x);
-			PVector axis = transformOf(camera.frame().inverseTransformOf(
-					new PVector(0.0f, 0.0f, -1.0f)));
+			float prev_angle = PApplet.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
+			float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x - trans.x);
+			PVector axis = transformOf(camera.frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f)));
 			 
 			Quaternion rot;
 			if( scene.isRightHanded() )
