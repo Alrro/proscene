@@ -30,10 +30,10 @@ import java.awt.event.*;
 import processing.core.PApplet;
 
 import remixlab.proscene.AbstractScene.Button;
-import remixlab.proscene.Scene.CameraKeyboardAction;
-import remixlab.proscene.Scene.ClickAction;
-import remixlab.proscene.Scene.KeyboardAction;
-import remixlab.proscene.Scene.MouseAction;
+import remixlab.proscene.AbstractScene.CameraKeyboardAction;
+import remixlab.proscene.AbstractScene.ClickAction;
+import remixlab.proscene.AbstractScene.KeyboardAction;
+import remixlab.proscene.AbstractScene.MouseAction;
 
 /**
  * This class provides low level java.awt.* based input event handling.

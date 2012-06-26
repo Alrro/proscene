@@ -258,14 +258,25 @@ public class Camera implements Cloneable {
 	public Camera(AbstractScene scn) {
 		scene = scn;
 		
+		//TODO testing
+		/**
+		pg = scene.pg;
+		attachedToPCam = true;
+		// */
+		
+		// /**
 		if (scene.space() == Scene.Space.THREE_D) {
 			pg = (PGraphicsOpenGL) scene.pg;
 			attachedToPCam = true;
 		}
 		else {
 			pg = scene.pg;
-			attachedToPCam = false;			
+			if( scene.p5Renderer() == AbstractScene.P5Renderer.JAVA2D )
+				attachedToPCam = false;				
+			else
+				attachedToPCam = true;
 		}
+		// */
 		
 		enableFrustumEquationsUpdate(false);
 		optimizeUnprojectCache(false);
@@ -1807,10 +1818,16 @@ public class Camera implements Cloneable {
 	 * was set.
 	 */
 	public boolean setArcballReferencePointFromPixel(Point pixel) {
-		WorldPoint wP = pointUnderPixel(pixel);
-		if (wP.found)
-			setArcballReferencePoint(wP.point);
-		return wP.found;
+		if( scene.space() == AbstractScene.Space.TWO_D ) {
+			setArcballReferencePoint(new PVector(pixel.x, pixel.y, 0));
+			return true;
+		}
+		else {
+			WorldPoint wP = pointUnderPixel(pixel);
+			if (wP.found)
+				setArcballReferencePoint(wP.point);
+			return wP.found;
+		}
 	}
 
 	/**
@@ -1825,10 +1842,16 @@ public class Camera implements Cloneable {
 	 * was set.
 	 */
 	public boolean setSceneCenterFromPixel(Point pixel) {
-		WorldPoint wP = pointUnderPixel(pixel);
-		if (wP.found)
-			setSceneCenter(wP.point);
-		return wP.found;
+		if( scene.space() == AbstractScene.Space.TWO_D ) {
+			setSceneCenter(new PVector(pixel.x, pixel.y, 0));
+			return true;
+		}
+		else {
+			WorldPoint wP = pointUnderPixel(pixel);
+			if (wP.found)
+				setSceneCenter(wP.point);
+			return wP.found;
+		}
 	}
 
 	/**
@@ -2770,16 +2793,13 @@ public class Camera implements Cloneable {
 		interpolationKfi.deletePath();
 		interpolationKfi.addKeyFrame(frame(), false);
 
-		interpolationKfi.addKeyFrame(new Frame(PVector.add(PVector.mult(frame()
-				.position(), 0.3f), PVector.mult(target.point, 0.7f)), frame()
-				.orientation()), 0.4f, false);
+		interpolationKfi.addKeyFrame(new Frame(PVector.add(PVector.mult(frame().position(), 0.3f), PVector.mult(target.point, 0.7f)), frame().orientation()), 0.4f, false);
 
 		// Small hack: attach a temporary frame to take advantage of lookAt without
 		// modifying frame
 		tempFrame = new InteractiveCameraFrame(this);
 		InteractiveCameraFrame originalFrame = frame();
-		tempFrame.setPosition(PVector.add(PVector.mult(frame().position(), coef),
-				PVector.mult(target.point, (1.0f - coef))));
+		tempFrame.setPosition(PVector.add(PVector.mult(frame().position(), coef), PVector.mult(target.point, (1.0f - coef))));
 		tempFrame.setOrientation(new Quaternion(frame().orientation()));
 		setFrame(tempFrame);
 		lookAt(target.point);

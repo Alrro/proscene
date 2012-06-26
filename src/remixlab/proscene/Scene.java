@@ -31,10 +31,6 @@ import processing.opengl.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
-
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * A 3D interactive Processing scene.
@@ -95,200 +91,9 @@ import java.util.TimerTask;
  * otherwise), which is useful to notify the outside world when an animation event
  * occurs. See the example <i>Flock</i>.
  */
-public class Scene extends AbstractScene {	
-	/**
-	 * Defines the different actions that can be associated with a specific
-	 * keyboard key.
-	 */
-	public enum KeyboardAction {
-		/** Toggles the display of the world axis. */
-		DRAW_AXIS("Toggles the display of the world axis"),
-		/** Toggles the display of the XY grid. */
-		DRAW_GRID("Toggles the display of the XY grid"),
-		/** Cycles to the registered camera profiles. */
-		CAMERA_PROFILE("Cycles to the registered camera profiles"),
-		/** Toggles camera type (orthographic or perspective. */
-		CAMERA_TYPE("Toggles camera type (orthographic or perspective)"),
-		/** Toggles camera kind (proscene or standard). */
-		CAMERA_KIND("Toggles camera kind (proscene or standard)"),
-		/** Toggles animation. */
-		ANIMATION("Toggles animation"),
-		/** Set the arcball reference point from the pixel under the mouse. */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
-		/** Reset the arcball reference point to the 3d frame world origin. */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
-		/** Displays the global help. */
-		GLOBAL_HELP("Displays the global help"),
-		/** Displays the current camera profile help. */
-		CURRENT_CAMERA_PROFILE_HELP("Displays the current camera profile help"),
-		/** Toggles the key frame camera paths (if any) for edition. */
-		EDIT_CAMERA_PATH("Toggles the key frame camera paths (if any) for edition"),
-		/** Toggle interactivity between camera and interactive frame (if any). */
-		FOCUS_INTERACTIVE_FRAME("Toggle interactivity between camera and interactive frame (if any)"),
-		/** Toggle interactive frame selection region drawing. */
-		DRAW_FRAME_SELECTION_HINT("Toggle interactive frame selection region drawing"),
-		/** Toggles on and off frame constraints (if any). */
-		CONSTRAIN_FRAME("Toggles on and off frame constraints (if any)");
-		
-		private String description;
-		
-		KeyboardAction(String description) {
-       this.description = description;
-    }
-    
-    public String description() {
-      return description;
-    }
-	}
-
-	/**
-	 * Defines the different camera actions that can be associated with a specific
-	 * keyboard key. Actions are defined here, but bindings are defined at the CameraProfile level,
-	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
-	 */
-	public enum CameraKeyboardAction {
-		/** Interpolate the camera to zoom on pixel. */
-		INTERPOLATE_TO_ZOOM_ON_PIXEL("Interpolate the camera to zoom on pixel"),
-		/** Interpolate the camera to fit the whole scene. */
-		INTERPOLATE_TO_FIT_SCENE("Interpolate the camera to fit the whole scene"),
-		/** Show the whole scene. */
-		SHOW_ALL("Show the whole scene"),
-		/** Move camera to the left. */
-		MOVE_CAMERA_LEFT("Move camera to the left"),
-		/** Move camera to the right. */
-		MOVE_CAMERA_RIGHT("Move camera to the right"),
-		/** Move camera up. */
-		MOVE_CAMERA_UP("Move camera up"),
-		/** Move camera down. */
-		MOVE_CAMERA_DOWN("Move camera down"),
-		/** Increase camera rotation sensitivity (only meaningful in arcball mode). */
-		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)"),
-		/** Decrease camera rotation sensitivity (only meaningful in arcball mode). */
-		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)"),
-		/** Increase camera fly speed (only meaningful in first-person mode). */
-		INCREASE_CAMERA_FLY_SPEED("Increase camera fly speed (only meaningful in first-person mode)"),
-		/** Decrease camera fly speed (only meaningful in first-person mode). */
-		DECREASE_CAMERA_FLY_SPEED("Decrease camera fly speed (only meaningful in first-person mode)"),
-		/** Increase avatar fly speed (only meaningful in third-person mode). */
-		INCREASE_AVATAR_FLY_SPEED("Increase avatar fly speed (only meaningful in third-person mode)"),
-		/** Decrease avatar fly speed (only meaningful in third-person mode). */
-		DECREASE_AVATAR_FLY_SPEED("Decrease avatar fly speed (only meaningful in third-person mode)"),
-		/** Increase camera azymuth respect to the avatar (only meaningful in third-person mode). */
-		INCREASE_AZYMUTH("Increase camera azymuth respect to the avatar (only meaningful in third-person mode)"),
-		/** Decrease camera azymuth respect to the avatar (only meaningful in third-person mode). */
-		DECREASE_AZYMUTH("Decrease camera azymuth respect to the avatar (only meaningful in third-person mode)"),
-		/** Increase camera inclination respect to the avatar (only meaningful in third-person mode). */
-		INCREASE_INCLINATION("Increase camera inclination respect to the avatar (only meaningful in third-person mode)"),
-		/** Decrease camera inclination respect to the avatar (only meaningful in third-person mode). */
-		DECREASE_INCLINATION("Decrease camera inclination respect to the avatar (only meaningful in third-person mode)"),
-		/** Increase camera tracking distance respect to the avatar (only meaningful in third-person mode). */
-		INCREASE_TRACKING_DISTANCE("Increase camera tracking distance respect to the avatar (only meaningful in third-person mode)"),
-		/** Decrease camera tracking distance respect to the avatar (only meaningful in third-person mode). */
-		DECREASE_TRACKING_DISTANCE("Decrease camera tracking distance respect to the avatar (only meaningful in third-person mode)");
-		
-		private String description;
-		
-		CameraKeyboardAction(String description) {
-       this.description = description;
-    }
-		
-    public String description() {
-        return description;
-    }
-	}
-
-	/**
-	 * This enum defines mouse click actions to be binded to the mouse.
-	 * Actions are defined here, but bindings are defined at the CameraProfile level,
-	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
-	 */
-	public enum ClickAction {
-		/** No click action. */
-		NO_CLICK_ACTION("No click action"),
-		/** Zoom on pixel */
-		ZOOM_ON_PIXEL("Zoom on pixel"),
-		/** Zoom to fit the scene */
-		ZOOM_TO_FIT("Zoom to fit the scene"),
-		/** Set the arcball reference point from the pixel under the mouse */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse"),
-		/** Reset the arcball reference point to the 3d frame world origin */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin"),
-		/** Center frame */
-		CENTER_FRAME("Center frame"),
-		/** Center scene */
-		CENTER_SCENE("Center scene"),
-		/** Show the whole scene */
-		SHOW_ALL("Show the whole scene"),
-		/** Align interactive frame (if any) with world */
-		ALIGN_FRAME("Align interactive frame (if any) with world"),
-		/** Align camera with world */
-		ALIGN_CAMERA("Align camera with world");
-
-		private String description;
-		
-		ClickAction(String description) {
-       this.description = description;
-    }
-		
-    public String description() {
-        return description;
-    }
-	}
-
-	/**
-	 * This enum defines mouse actions (click + drag) to be binded to the mouse.
-	 * Actions are defined here, but bindings are defined at the CameraProfile level,
-	 * i.e., the scene acts like a bridge between the CameraProfile and proscene low-level classes.
-	 */
-	public enum MouseAction {
-		/** No mouse action. */
-		NO_MOUSE_ACTION("No mouse action"),
-		/** Rotate frame (camera or interactive frame. */
-		ROTATE("Rotate frame (camera or interactive frame)"),
-		/** Zoom. */
-		ZOOM("Zoom"),
-		/** Translate frame (camera or interactive frame). */
-		TRANSLATE("Translate frame (camera or interactive frame)"),
-		/** Move forward frame (camera or interactive frame). */
-		MOVE_FORWARD("Move forward frame (camera or interactive frame)"),
-		/** move backward frame (camera or interactive frame). */
-		MOVE_BACKWARD("move backward frame (camera or interactive frame)"),
-		/** Look around with frame (camera or interactive drivable frame). */
-		LOOK_AROUND("Look around with frame (camera or interactive drivable frame)"),
-		/** Screen rotate (camera or interactive frame). */
-		SCREEN_ROTATE("Screen rotate (camera or interactive frame)"),
-		/** Roll frame (camera or interactive drivable frame). */
-		ROLL("Roll frame (camera or interactive drivable frame)"),
-		/** Drive (camera or interactive drivable frame). */
-		DRIVE("Drive (camera or interactive drivable frame)"),
-		/** Screen translate frame (camera or interactive frame). */
-		SCREEN_TRANSLATE("Screen translate frame (camera or interactive frame)"),
-		/** Zoom on region (camera or interactive drivable frame). */
-		ZOOM_ON_REGION("Zoom on region (camera or interactive drivable frame)");		
-
-		private String description;
-		
-		MouseAction(String description) {
-       this.description = description;
-    }
-		
-    public String description() {
-        return description;
-    }
-	}		
-
-	// mouse actions
-	protected boolean arpFlag;
-	protected boolean pupFlag;
-	protected PVector pupVec;
-
+public class Scene extends AbstractScene {
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S	
-	protected Frame tmpFrame;
-
-	// O B J E C T S		
-
-	// S C R E E N C O O R D I N A T E S	
-	protected float zC;		
+	protected Frame tmpFrame;			
 
 	/**
 	 * Constructor that defines an on-screen Scene (the one that most likely
@@ -338,89 +143,18 @@ public class Scene extends AbstractScene {
 	 * @see #Scene(PApplet, PGraphicsOpenGL)
 	 */
 	public Scene(PApplet p, PGraphicsOpenGL renderer, int x, int y) {
-		parent = p;
-		pg = renderer;
-		width = pg.width;
-		height = pg.height;
-		
+		super(p, renderer, x, y);
 		space = Space.THREE_D;
+		p5renderer = P5Renderer.P3D;
 		
-		tmpFrame = new Frame();
-		
-		//event handler
-		dE = new DesktopEvents(this);
-		
-		//mouse grabber pool
-		MouseGrabberPool = new ArrayList<MouseGrabbable>();
-		
-		//devices
-		devices = new ArrayList<HIDevice>();
-
-		gProfile = new Bindings<KeyboardShortcut, KeyboardAction>(this);
-		pathKeys = new Bindings<Integer, Integer>(this);		
-		setDefaultShortcuts();
-
-		avatarIsInteractiveDrivableFrame = false;// also init in setAvatar, but we
-		// need it here to properly init the camera
-		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
-		// need it here to properly init the camera
 		cam = new Camera(this);
 		setCamera(camera());//calls showAll();
-		setInteractiveFrame(null);
-		setAvatar(null);
 		
-  	// This scene is offscreen if the provided renderer is
-		// different from the main PApplet renderer.
-		offscreen = renderer != p.g;
-		if(offscreen)
-			upperLeftCorner = new Point(x, y);
-		else
-			upperLeftCorner = new Point(0, 0);
-		beginOffScreenDrawingCalls = 0;		
-		setMouseTracking(true);
-		setMouseGrabber(null);
-		
-		mouseGrabberIsAnIFrame = false;
-
 		initDefaultCameraProfiles();
-
-		//animation		
-		animationStarted = false;
-		setFrameRate(60, false);
-		setAnimationPeriod(1000/60, false); // 60Hz
-		stopAnimation();
 		
-		arpFlag = false;
-		pupFlag = false;
-
-		withConstraint = true;
-
-		setAxisIsDrawn(true);
-		setGridIsDrawn(true);
-		setFrameSelectionHintIsDrawn(false);
-		setCameraPathsAreDrawn(false);
-		
+		tmpFrame = new Frame();		
 		disableFrustumEquationsUpdate();
-
-		// E X C E P T I O N H A N D L I N G
-		startCoordCalls = 0;
-
-		parent.registerPre(this);
-		parent.registerDraw(this);
-		// parent.registerPost(this);
-		enableKeyboardHandling();
-		enableMouseHandling();
-		parseKeyXxxxMethods();
-		parseMouseXxxxMethods();
-
-		// register draw method
-		removeDrawHandler();
-	  // register animation method
-		removeAnimationHandler();
 		
-		//setRightHanded();
-		setLeftHanded();
-
 		// called only once
 		init();
 	}
@@ -508,65 +242,7 @@ public class Scene extends AbstractScene {
 		}
 	}	
 	
-	/**
-	 * Toggles the {@link #interactiveFrame()} interactivity on and off.
-	 */
-	public void toggleDrawInteractiveFrame() {
-		if (interactiveFrameIsDrawn())
-			setDrawInteractiveFrame(false);
-		else
-			setDrawInteractiveFrame(true);
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code setDrawInteractiveFrame(true)}.
-	 * 
-	 * @see #setDrawInteractiveFrame(boolean)
-	 */
-	public void setDrawInteractiveFrame() {
-		setDrawInteractiveFrame(true);
-	}
-
-	/**
-	 * Sets the interactivity to the Scene {@link #interactiveFrame()} instance
-	 * according to {@code draw}
-	 */
-	public void setDrawInteractiveFrame(boolean draw) {
-		if (draw && (glIFrame == null))
-			return;
-		if (!draw && (currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-				&& interactiveFrame().equals(avatar()))// more natural than to bypass it
-			return;
-		iFrameIsDrwn = draw;
-	}
-	
-	// 5. Drawing methods
-
-	/**
-	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
-	 * or {@link #draw()}.
-	 */
-	@Override
-	protected void displayVisualHints() {		
-		if (frameSelectionHintIsDrawn())
-			drawSelectionHints();
-		if (cameraPathsAreDrawn()) {
-			camera().drawAllPaths();
-			drawCameraPathSelectionHints();
-		} else {
-			camera().hideAllPaths();
-		}
-		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)
-			drawZoomWindowHint();
-		if (dE.camMouseAction == MouseAction.SCREEN_ROTATE)
-			drawScreenRotateLineHint();
-		if (arpFlag)
-			drawArcballReferencePointHint();
-		if (pupFlag) {
-			PVector v = camera().projectedCoordinatesOf(pupVec);
-			drawCross(v.x, v.y);
-		}
-	}
+	// 5. Drawing methods	
 	
 	/**
 	 * Bind processing matrices to proscene matrices.
@@ -609,39 +285,7 @@ public class Scene extends AbstractScene {
 	 */
 	public void setBoundingBox(PVector min, PVector max) {
 		camera().setSceneBoundingBox(min, max);
-	}
-	
-	//TODO how to handle in 2D?
-	
-	/**
-	 * Returns the arcball reference point.
-	 * <p>
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().arcballReferencePoint()}
-	 * 
-	 * @see #setCenter(PVector) {@link #radius()}
-	 */
-	public PVector arcballReferencePoint() {
-		return camera().arcballReferencePoint();
-	}
-	
-	//TODO how to handle in 2D?
-	
-	/**
-	 * Convenience wrapper function that simply returns {@code
-	 * camera().setArcballReferencePointFromPixel(pixel)}.
-	 * <p>
-	 * Current implementation set no
-	 * {@link remixlab.proscene.Camera#arcballReferencePoint()}. Override
-	 * {@link remixlab.proscene.Camera#pointUnderPixel(Point)} in your openGL
-	 * based camera for this to work.
-	 * 
-	 * @see remixlab.proscene.Camera#setArcballReferencePointFromPixel(Point)
-	 * @see remixlab.proscene.Camera#pointUnderPixel(Point)
-	 */
-	public boolean setArcballReferencePointFromPixel(Point pixel) {
-		return camera().setArcballReferencePointFromPixel(pixel);
-	}
+	}	
 
 	// 6. Display of visual hints and Display methods
 	
@@ -1344,6 +988,7 @@ public class Scene extends AbstractScene {
 	 * Draws a rectangle on the screen showing the region where a zoom operation
 	 * is taking place.
 	 */
+	@Override
 	protected void drawZoomWindowHint() {
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
@@ -1372,6 +1017,7 @@ public class Scene extends AbstractScene {
 	 * Draws visual hint (a line on the screen) when a screen rotation is taking
 	 * place.
 	 */
+	@Override
 	protected void drawScreenRotateLineHint() {
 		float p1x = (float) dE.fCorner.getX();
 		float p1y = (float) dE.fCorner.getY();
@@ -1389,76 +1035,7 @@ public class Scene extends AbstractScene {
 		pg.endShape();
 		pg.popStyle();
 		endScreenDrawing();
-	}
-
-	/**
-	 * Draws visual hint (a cross on the screen) when the
-	 * {@link #arcballReferencePoint()} is being set.
-	 * <p>
-	 * Simply calls {@link #drawCross(float, float)} on {@code
-	 * camera().projectedCoordinatesOf(arcballReferencePoint())} {@code x} and
-	 * {@code y} coordinates.
-	 * 
-	 * @see #drawCross(float, float)
-	 */
-	protected void drawArcballReferencePointHint() {
-		PVector p = camera().projectedCoordinatesOf(arcballReferencePoint());
-		drawCross(p.x, p.y);
-	}
-
-	/**
-	 * Draws all InteractiveFrames' selection regions: a shooter target
-	 * visual hint of {@link remixlab.proscene.InteractiveFrame#grabsMouseThreshold()} pixels size.
-	 * 
-	 * <b>Attention:</b> If the InteractiveFrame is part of a Camera path draws
-	 * nothing.
-	 * 
-	 * @see #drawCameraPathSelectionHints()
-	 */
-	protected void drawSelectionHints() {
-		for (MouseGrabbable mg : MouseGrabberPool) {
-			if(mg instanceof InteractiveFrame) {
-				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
-				if (!iF.isInCameraPath()) {
-					PVector center = camera().projectedCoordinatesOf(iF.position());
-					if (mg.grabsMouse())
-						drawShooterTarget(pg.color(0, 255, 0), center, (iF.grabsMouseThreshold() + 1), 2);
-					else
-						drawShooterTarget(pg.color(240, 240, 240), center, iF.grabsMouseThreshold(), 1);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Draws the selection regions (a shooter target visual hint of
-	 * {@link remixlab.proscene.InteractiveFrame#grabsMouseThreshold()} pixels size) of all
-	 * InteractiveFrames forming part of the Camera paths.
-	 * 
-	 * @see #drawSelectionHints()
-	 */
-	protected void drawCameraPathSelectionHints() {
-		for (MouseGrabbable mg : MouseGrabberPool) {
-			if(mg instanceof InteractiveFrame) {
-				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
-				if (iF.isInCameraPath()) {
-					PVector center = camera().projectedCoordinatesOf(iF.position());
-					if (mg.grabsMouse())
-						drawShooterTarget(pg.color(0, 255, 255), center, (iF.grabsMouseThreshold() + 1), 2);
-					else
-						drawShooterTarget(pg.color(255, 255, 0), center, iF.grabsMouseThreshold(), 1);
-				}
-			}
-		}
-	}
-
-	/**
-	 * Convenience function that simply calls {@code
-	 * drawPointUnderPixelHint(pg3d.color(255,255,255),px,py,15,3)}.
-	 */
-	public void drawCross(float px, float py) {
-		drawCross(pg.color(255, 255, 255), px, py, 15, 3);
-	}
+	}	
 
 	/**
 	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
@@ -1467,6 +1044,7 @@ public class Scene extends AbstractScene {
 	 * 
 	 * @see #drawArcballReferencePointHint()
 	 */
+	@Override
 	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
 		beginScreenDrawing();
 		PVector p1 = coords(new Point(px - size, py));
@@ -1485,17 +1063,7 @@ public class Scene extends AbstractScene {
 		pg.endShape();
 		pg.popStyle();
 		endScreenDrawing();
-	}
-	
-	/**
-	 * Convenience function that simply calls
-	 * {@code drawFilledCircle(40, color, center, radius)}.
-	 * 
-	 * @see #drawFilledCircle(int, int, PVector, float)
-	 */
-	public void drawFilledCircle(int color, PVector center, float radius) {
-		drawFilledCircle(40, color, center, radius);
-	}
+	}	
 
 	/**
 	 * Draws a filled circle using screen coordinates.
@@ -1512,6 +1080,7 @@ public class Scene extends AbstractScene {
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
 	 */	
+	@Override
 	public void drawFilledCircle(int subdivisions, int color, PVector center, float radius) {
 		float precision = TWO_PI/subdivisions;
 		float x = center.x;
@@ -1549,6 +1118,7 @@ public class Scene extends AbstractScene {
 	 * @see #beginScreenDrawing()
 	 * @see #endScreenDrawing()
 	 */
+	@Override
 	public void drawFilledSquare(int color, PVector center, float edge) {
 		float x = center.x;
 		float y = center.y;
@@ -1582,6 +1152,7 @@ public class Scene extends AbstractScene {
 	 * @param strokeWeight
 	 *          Stroke weight
 	 */
+	@Override
 	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {
 		float x = center.x;
 		float y = center.y;
@@ -1667,149 +1238,6 @@ public class Scene extends AbstractScene {
 	}
 	*/
 
-	/**
-	 * Computes the world coordinates of an screen object so that drawing can be
-	 * done directly with 2D screen coordinates.
-	 * <p>
-	 * All screen drawing should be enclosed between {@link #beginScreenDrawing()}
-	 * and {@link #endScreenDrawing()}. Then you can just begin drawing your
-	 * screen shapes (defined between {@code PApplet.beginShape()} and {@code
-	 * PApplet.endShape()}).
-	 * <p>
-	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
-	 * first call {@code PVector p = coords(new Point(x, y))} then do your
-	 * drawing as {@code vertex(p.x, p.y, p.z)}.
-	 * <p>
-	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
-	 * 3d scene then draw first all your 3d before doing any call to a 
-	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.  
-	 * 
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public void beginScreenDrawing() {
-		//TODO fix me!
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-		
-		startCoordCalls++;
-		
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
-		//if ( pg3d instanceof processing.core.PGraphicsOpenGL ) {
-			pg3d.hint(DISABLE_DEPTH_TEST);
-			pg3d.matrixMode(PROJECTION);
-			pg3d.pushMatrix();
-			pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-			pg3d.matrixMode(MODELVIEW);
-			pg3d.pushMatrix();
-		  // Camera needs to be reset!
-			pg3d.camera();
-			zC = 0.0f;
-		}
-		else {
-			zC = 0.1f;
-		}
-		*/
-		pg.hint(DISABLE_DEPTH_TEST);
-		((PGraphicsOpenGL)pg).pushProjection();
-		
-		//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
-		
-		/**
-		float[] wh = camera().getOrthoWidthHeight();
-		pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
-		// */
-		
-		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-		
-		//pg3d.ortho(0f, width, 0f, height, 0.0f, -1.0f);
-		//pg3d.ortho(0f, width, 0f, height, -1.0f, 0.0f);
-		//pg3d.ortho(0f, width, height, 0f, 0.0f, -1.0f);
-		
-		
-		// /**
-		float cameraZ = (height/2.0f) / PApplet.tan( camera().fieldOfView() /2.0f);
-		float cameraMaxFar = cameraZ * 2.0f;
-		float cameraNear = cameraZ / 2.0f;
-		float cameraFar = cameraZ * 2.0f;
-	  pg.ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
-		//pg3d.ortho(0, width, 0, height, cameraNear, cameraFar);
-		// */
-		
-		/**
-		float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
-		pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
-		// */
-		
-		pg.pushMatrix();
-	  // Camera needs to be reset!
-		pg.camera();		
-		zC = 0.0f;		
-	}
-
-	/**
-	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public void endScreenDrawing() {
-		startCoordCalls--;
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
-			pg3d.matrixMode(PROJECTION);
-			pg3d.popMatrix();
-			pg3d.matrixMode(MODELVIEW);  
-			pg3d.popMatrix();		  
-			pg3d.hint(ENABLE_DEPTH_TEST);
-		}
-		*/		
-		((PGraphicsOpenGL)pg).popProjection();  
-		pg.popMatrix();		  
-		pg.hint(ENABLE_DEPTH_TEST);
-	}
-	
-	/**
-	 * Computes the world coordinates of the {@code p} screen Point.
-	 * <p>
-	 * This method is only useful when drawing directly on screen. It should be
-	 * used in conjunction with {@link #beginScreenDrawing()} and
-	 * {@link #endScreenDrawing()} (which may be consulted for details).
-	 * <P>
-	 * The method {@link #beginScreenDrawing()} should be called before, otherwise
-	 * a runtime exception is thrown.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public PVector coords(Point p) {
-		if (startCoordCalls != 1)
-			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class )
-			return new PVector(p.x, p.y, zC);
-		else
-			return camera().unprojectedCoordinatesOf(new PVector(p.x,p.y,zC));
-			*/
-		return new PVector(p.x, p.y, zC);
-	}	
-
-	/**
-	 * Called from the timer to stop displaying the point under pixel and arcball
-	 * reference point visual hints.
-	 */
-	protected void unSetTimerFlag() {
-		arpFlag = false;
-		pupFlag = false;
-	}
-
 	// 7. Camera profiles
 
 	/**
@@ -1827,44 +1255,6 @@ public class Scene extends AbstractScene {
 		registerCameraProfile( new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON) );
 		//setCurrentCameraProfile("ARCBALL");
 		setCurrentCameraProfile("WHEELED_ARCBALL");
-	}	
-
-	/**
-	 * Unregisters the given camera profile by its name. Returns true if succeeded.
-	 * Registration will fail in two cases: no camera profile is registered under
-	 * the provided name, or the camera profile is the only registered camera profile which
-	 * mode is different than THIRD_PERSON.
-	 * <p>
-	 * The last condition above guarantees that there should always be registered at least
-	 * one camera profile which mode is different than THIRD_PERSON. 
-	 * 
-	 * @param cp camera profile
-	 * @return true if succeeded
-	 */
-	@Override
-	public boolean unregisterCameraProfile(String cp) {
-		if (!isCameraProfileRegistered(cp))
-			return false;
-
-		CameraProfile cProfile = cameraProfile(cp);
-		int instancesDifferentThanThirdPerson = 0;
-
-		for (CameraProfile camProfile : cameraProfileMap.values())
-			if (camProfile.mode() != CameraProfile.Mode.THIRD_PERSON)
-				instancesDifferentThanThirdPerson++;
-
-		if ((cProfile.mode() != CameraProfile.Mode.THIRD_PERSON) && (instancesDifferentThanThirdPerson == 1))
-			return false;
-
-		if (isCurrentCameraProfile(cp))
-			nextCameraProfile();
-
-		if (cameraProfileNames.remove(cp)) {
-			cameraProfileMap.remove(cp);
-			return true;
-		}
-
-		return false;
 	}	
 	
 	/**
@@ -1931,470 +1321,7 @@ public class Scene extends AbstractScene {
 
 	// 8. Keyboard customization	
 
-	/**
-	 * Sets global default keyboard shortcuts and the default key-frame shortcut keys.
-	 * <p>
-	 * Default global keyboard shortcuts are:
-	 * <p>
-	 * <ul>
-	 * <li><b>'a'</b>: {@link remixlab.proscene.Scene.KeyboardAction#DRAW_AXIS}.
-	 * <li><b>'e'</b>: {@link remixlab.proscene.Scene.KeyboardAction#CAMERA_TYPE}.
-	 * <li><b>'g'</b>: {@link remixlab.proscene.Scene.KeyboardAction#DRAW_GRID}.
-	 * <li><b>'h'</b>: {@link remixlab.proscene.Scene.KeyboardAction#GLOBAL_HELP}
-	 * <li><b>'H'</b>: {@link remixlab.proscene.Scene.KeyboardAction#CURRENT_CAMERA_PROFILE_HELP}
-	 * <li><b>'r'</b>: {@link remixlab.proscene.Scene.KeyboardAction#EDIT_CAMERA_PATH}.
-	 * <li><b>space bar</b>: {@link remixlab.proscene.Scene.KeyboardAction#CAMERA_PROFILE}.
-	 * </ul> 
-	 * <p>
-	 * Default key-frame shortcuts keys are:
-	 * <ul>
-	 * <li><b>'[1..5]'</b>: Play path [1..5]. 
-	 * <li><b>'CTRL'+'[1..5]'</b>: Add key-frame to path [1..5].   
-	 * <li><b>'ALT'+'[1..5]'</b>: Remove path [1..5].
-	 * </ul> 
-	 */
-	@Override
-	public void setDefaultShortcuts() {
-		// D e f a u l t s h o r t c u t s		
-		setShortcut('a', KeyboardAction.DRAW_AXIS);
-		setShortcut('g', KeyboardAction.DRAW_GRID);
-		setShortcut(' ', KeyboardAction.CAMERA_PROFILE);
-		setShortcut('e', KeyboardAction.CAMERA_TYPE);		
-		setShortcut('h', KeyboardAction.GLOBAL_HELP);
-		setShortcut('H', KeyboardAction.CURRENT_CAMERA_PROFILE_HELP);
-		setShortcut('r', KeyboardAction.EDIT_CAMERA_PATH);
-
-		// K e y f r a m e s s h o r t c u t k e y s
-		setAddKeyFrameKeyboardModifier(Modifier.CTRL);
-		setDeleteKeyFrameKeyboardModifier(Modifier.ALT);
-		setPathKey('1', 1);
-		setPathKey('2', 2);
-		setPathKey('3', 3);
-		setPathKey('4', 4);
-		setPathKey('5', 5);
-	}  
-
-	/**
-	 * Internal method. Handles the different global keyboard actions.
-	 */
-	@Override
-	protected void handleKeyboardAction(KeyboardAction id) {
-		if( !keyboardIsHandled() )
-			return;
-		switch (id) {
-		case DRAW_AXIS:
-			toggleAxisIsDrawn();
-			break;
-		case DRAW_GRID:
-			toggleGridIsDrawn();
-			break;
-		case CAMERA_PROFILE:
-			nextCameraProfile();
-			break;
-		case CAMERA_TYPE:
-			toggleCameraType();
-			break;
-		case CAMERA_KIND:
-			toggleCameraKind();
-			break;
-		case ANIMATION:
-			toggleAnimation();
-			break;
-		case ARP_FROM_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else
-			*/
-			if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-				arpFlag = true;
-				Timer timer=new Timer();
-				TimerTask timerTask = new TimerTask() {
-					public void run() {
-						unSetTimerFlag();
-					}
-				};
-				timer.schedule(timerTask, 1000);
-			}
-			break;
-		case RESET_ARP:
-			camera().setArcballReferencePoint(new PVector(0, 0, 0));
-			arpFlag = true;
-			Timer timer=new Timer();
-			TimerTask timerTask = new TimerTask() {
-				public void run() {
-					unSetTimerFlag();
-				}
-			};
-			timer.schedule(timerTask, 1000);
-			break;
-		case GLOBAL_HELP:
-			displayGlobalHelp();
-			break;
-		case CURRENT_CAMERA_PROFILE_HELP:
-			displayCurrentCameraProfileHelp();
-			break;
-		case EDIT_CAMERA_PATH:
-			toggleCameraPathsAreDrawn();
-			break;
-		case FOCUS_INTERACTIVE_FRAME:
-			toggleDrawInteractiveFrame();
-			break;
-		case DRAW_FRAME_SELECTION_HINT:
-			toggleFrameSelectionHintIsDrawn();
-			break;
-		case CONSTRAIN_FRAME:
-			toggleDrawInteractiveFrame();
-			break;
-		}
-	}
-
-	/**
-	 * Internal method. Handles the different camera keyboard actions.
-	 */
-	@Override
-	protected void handleCameraKeyboardAction(CameraKeyboardAction id) {
-		if( !keyboardIsHandled() )
-			return;
-		switch (id) {
-		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else {
-			*/
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point;
-					pupFlag = true;
-					Timer timer=new Timer();
-					TimerTask timerTask = new TimerTask() {
-						public void run() {
-							unSetTimerFlag();
-						}
-					};
-					timer.schedule(timerTask, 1000);
-				}
-			//}
-			break;
-		case INTERPOLATE_TO_FIT_SCENE:
-			camera().interpolateToFitScene();
-			break;
-		case SHOW_ALL:
-			showAll();
-			break;
-		case MOVE_CAMERA_LEFT:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(-10.0f * camera().flySpeed(), 0.0f, 0.0f)));
-			break;
-		case MOVE_CAMERA_RIGHT:
-			camera().frame().translate(
-					camera().frame().inverseTransformOf(
-							new PVector(10.0f * camera().flySpeed(), 0.0f, 0.0f)));
-			break;
-		case MOVE_CAMERA_UP:
-			if( this.isRightHanded() )
-				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
-			else
-				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
-			break;
-		case MOVE_CAMERA_DOWN:
-			if( this.isRightHanded() )
-				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, -10.0f * camera().flySpeed(), 0.0f)));
-			else
-				camera().frame().translate(camera().frame().inverseTransformOf(new PVector(0.0f, 10.0f * camera().flySpeed(), 0.0f)));
-			break;
-		case INCREASE_ROTATION_SENSITIVITY:
-			camera().setRotationSensitivity(camera().rotationSensitivity() * 1.2f);
-			break;
-		case DECREASE_ROTATION_SENSITIVITY:
-			camera().setRotationSensitivity(camera().rotationSensitivity() / 1.2f);
-			break;
-		case INCREASE_CAMERA_FLY_SPEED:
-			camera().setFlySpeed(camera().flySpeed() * 1.2f);
-			break;
-		case DECREASE_CAMERA_FLY_SPEED:
-			camera().setFlySpeed(camera().flySpeed() / 1.2f);
-			break;
-		case INCREASE_AVATAR_FLY_SPEED:
-			if (avatar() != null)
-				if (avatarIsInteractiveDrivableFrame)
-					((InteractiveDrivableFrame) avatar())
-							.setFlySpeed(((InteractiveDrivableFrame) avatar()).flySpeed() * 1.2f);
-			break;
-		case DECREASE_AVATAR_FLY_SPEED:
-			if (avatar() != null)
-				if (avatarIsInteractiveDrivableFrame)
-					((InteractiveDrivableFrame) avatar())
-							.setFlySpeed(((InteractiveDrivableFrame) avatar()).flySpeed() / 1.2f);
-			break;
-		case INCREASE_AZYMUTH:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setAzimuth(((InteractiveAvatarFrame) avatar()).azimuth()
-									+ PApplet.PI / 64);
-			break;
-		case DECREASE_AZYMUTH:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setAzimuth(((InteractiveAvatarFrame) avatar()).azimuth()
-									- PApplet.PI / 64);
-			break;
-		case INCREASE_INCLINATION:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setInclination(((InteractiveAvatarFrame) avatar()).inclination()
-									+ PApplet.PI / 64);
-			break;
-		case DECREASE_INCLINATION:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setInclination(((InteractiveAvatarFrame) avatar()).inclination()
-									- PApplet.PI / 64);
-			break;
-		case INCREASE_TRACKING_DISTANCE:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setTrackingDistance(((InteractiveAvatarFrame) avatar())
-									.trackingDistance()
-									+ radius() / 50);
-			break;
-		case DECREASE_TRACKING_DISTANCE:
-			if (avatar() != null)
-				if (avatarIsInteractiveAvatarFrame)
-					((InteractiveAvatarFrame) avatar())
-							.setTrackingDistance(((InteractiveAvatarFrame) avatar())
-									.trackingDistance()
-									- radius() / 50);
-			break;
-		}
-	}
-
-	/**
-	 * Convenience funstion that simply calls {@code displayGlobalHelp(true)}.
-	 * 
-	 * @see #displayGlobalHelp(boolean)
-	 */
-	public void displayGlobalHelp() {
-		displayGlobalHelp(true);
-	}
-	
-	/**
-	 * Displays global keyboard bindings.
-	 * 
-	 * @param onConsole if this flag is true displays the help on console.
-	 * Otherwise displays it on the applet
-	 * 
-	 * @see #displayGlobalHelp()
-	 */
-	public void displayGlobalHelp(boolean onConsole) {
-		if (onConsole)
-			PApplet.println(globalHelp());
-		else { //on applet
-			pg.textFont(parent.createFont("Arial", 12));
-			pg.textMode(SCREEN);
-			pg.fill(0,255,0);
-			pg.textLeading(20);
-			pg.text(globalHelp(), 10, 10, (pg.width-20), (pg.height-20));
-		}
-	}
-	
-	/**
-	 * Returns a String with the global keyboard bindings.
-	 * 
-	 * @see #displayGlobalHelp()
-	 */
-	public String globalHelp() {
-		String description = new String();
-		description += "GLOBAL keyboard shortcuts\n";
-		for (Entry<KeyboardShortcut, Scene.KeyboardAction> entry : gProfile.map.entrySet()) {			
-			Character space = ' ';
-			if (!entry.getKey().description().equals(space.toString())) 
-				description += entry.getKey().description() + " -> " + entry.getValue().description() + "\n";
-			else
-				description += "space_bar" + " -> " + entry.getValue().description() + "\n";
-		}
-		
-		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
-			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
-		description += DesktopEvents.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
-		description += DesktopEvents.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
-		
-		return description;		
-	}
-	
-	/**
-	 * Convenience function that simply calls {@code displayCurrentCameraProfileHelp(true)}.
-	 * 
-	 * @see #displayCurrentCameraProfileHelp(boolean)
-	 */
-	public void displayCurrentCameraProfileHelp() {
-		displayCurrentCameraProfileHelp(true);
-	}
-	
-	/**
-	 * Displays the {@link #currentCameraProfile()} bindings.
-	 * 
-	 * @param onConsole if this flag is true displays the help on console.
-	 * Otherwise displays it on the applet
-	 * 
-	 * @see #displayCurrentCameraProfileHelp()
-	 */
-	public void displayCurrentCameraProfileHelp(boolean onConsole) {
-		if (onConsole)
-			PApplet.println(currentCameraProfileHelp());
-		else { //on applet
-			pg.textFont(parent.createFont("Arial", 12));
-			pg.textMode(SCREEN);
-			pg.fill(0,255,0);
-			pg.textLeading(20);
-			pg.text(currentCameraProfileHelp(), 10, 10, (pg.width-20), (pg.height-20));			
-		}
-	}
-	
-	/**
-	 * Returns a String with the {@link #currentCameraProfile()} keyboard and mouse bindings.
-	 * 
-	 * @see remixlab.proscene.CameraProfile#cameraMouseBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#frameMouseBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#mouseClickBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#keyboardShortcutsDescription()
-	 * @see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#frameWheelBindingsDescription()
-	 */
-	public String currentCameraProfileHelp() {
-		String description = new String();
-		description += currentCameraProfile().name() + " camera profile keyboard shortcuts and mouse bindings\n";
-		int index = 1;
-		if( currentCameraProfile().keyboardShortcutsDescription().length() != 0 ) {
-			description += index + ". " + "Keyboard shortcuts\n";
-			description += currentCameraProfile().keyboardShortcutsDescription();
-			index++;
-		}
-		if( currentCameraProfile().cameraMouseBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Camera mouse bindings\n";
-			description += currentCameraProfile().cameraMouseBindingsDescription();
-			index++;
-		}
-		if( currentCameraProfile().mouseClickBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Mouse click bindings\n";
-			description += currentCameraProfile().mouseClickBindingsDescription();
-			index++;
-		}
-		if( currentCameraProfile().frameMouseBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Interactive frame mouse bindings\n";
-			description += currentCameraProfile().frameMouseBindingsDescription();
-			index++;
-		}
-		if( currentCameraProfile().cameraWheelBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Camera mouse wheel bindings\n";
-			description += currentCameraProfile().cameraWheelBindingsDescription();
-			index++;
-		}
-		if( currentCameraProfile().frameWheelBindingsDescription().length() != 0 ) {
-			description += index + ". " + "Interactive frame mouse wheel bindings\n";
-			description += currentCameraProfile().frameWheelBindingsDescription();
-			index++;
-		}
-		return description;
-	}
-
 	// 9. Mouse customization	
-
-	/**
-	 * Internal method. Handles the different mouse click actions.
-	 */
-	@Override
-	protected void handleClickAction(ClickAction action) {
-		// public enum ClickAction { NO_CLICK_ACTION, ZOOM_ON_PIXEL, ZOOM_TO_FIT,
-		// SELECT, ARP_FROM_PIXEL, RESET_ARP,
-		// CENTER_FRAME, CENTER_SCENE, SHOW_ALL, ALIGN_FRAME, ALIGN_CAMERA }
-		if( !mouseIsHandled() )
-			return;
-		switch (action) {
-		case NO_CLICK_ACTION:
-			break;
-		case ZOOM_ON_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet
-						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else {
-			*/
-				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
-				if (wP.found) {
-					pupVec = wP.point;
-					pupFlag = true;
-					Timer timer=new Timer();
-					TimerTask timerTask = new TimerTask() {
-						public void run() {
-							unSetTimerFlag();
-						}
-					};
-					timer.schedule(timerTask, 1000);
-				}
-			//}
-			break;
-		case ZOOM_TO_FIT:
-			camera().interpolateToFitScene();
-			break;
-		case ARP_FROM_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else */
-			if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
-				arpFlag = true;
-				Timer timer=new Timer();
-				TimerTask timerTask = new TimerTask() {
-					public void run() {
-						unSetTimerFlag();
-					}
-				};
-				timer.schedule(timerTask, 1000);
-			}
-			break;
-		case RESET_ARP:
-			camera().setArcballReferencePoint(new PVector(0, 0, 0));
-			arpFlag = true;
-			Timer timer=new Timer();
-			TimerTask timerTask = new TimerTask() {
-				public void run() {
-					unSetTimerFlag();
-				}
-			};
-			timer.schedule(timerTask, 1000);
-			break;
-		case CENTER_FRAME:
-			if (interactiveFrame() != null)
-				interactiveFrame().projectOnLine(camera().position(),
-						camera().viewDirection());
-			break;
-		case CENTER_SCENE:
-			camera().centerScene();
-			break;
-		case SHOW_ALL:
-			camera().showEntireScene();
-			break;
-		case ALIGN_FRAME:
-			if (interactiveFrame() != null)
-				interactiveFrame().alignWithFrame(camera().frame());
-			break;
-		case ALIGN_CAMERA:
-			camera().frame().alignWithFrame(null, true);
-			break;
-		}
-	}
 
 	// 12. Processing objects
 

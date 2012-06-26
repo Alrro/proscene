@@ -154,9 +154,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				case PERSPECTIVE:
 					trans.mult(2.0f
 							* PApplet.tan(camera.fieldOfView() / 2.0f)
-							* PApplet.abs((camera.frame()
-									.coordinatesOf(arcballReferencePoint())).z)
-							/ camera.screenHeight());
+							* PApplet.abs((camera.frame().coordinatesOf(arcballReferencePoint())).z) / camera.screenHeight());
 					break;
 				case ORTHOGRAPHIC: {
 					float[] wh = camera.getOrthoWidthHeight();
@@ -184,10 +182,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 			case ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,
-						(int) eventPoint.y, trans.x, trans.y, camera);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
+				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,	(int) eventPoint.y, trans.x, trans.y, camera);
+				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);
 				setSpinningQuaternion(rot);
 				spin();
@@ -240,8 +236,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				}
 				}
 
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
+				translate(inverseTransformOf(PVector.mult(trans,	translationSensitivity())));
 				prevPos = eventPoint;
 				break;
 			}
