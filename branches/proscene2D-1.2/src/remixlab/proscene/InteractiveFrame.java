@@ -99,7 +99,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public InteractiveFrame(AbstractScene scn) {		
 		scene = scn;
 		
-		// /**
+		/**
 		if(scene.space() == Scene.Space.TWO_D) { //same as: if( scene instanceof remixlab.proscene.Scene2D ) {
 			WorldConstraint constraint2d = new WorldConstraint();
 			PVector direction = new PVector(0,0,1);
@@ -540,6 +540,10 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
 		int deltaY = 0;
+		
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		if(action != Scene.MouseAction.NO_MOUSE_ACTION)
 			if( scene.isRightHanded() )
 				deltaY = (int) (eventPoint.y - prevPos.y);
@@ -640,7 +644,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			break;
 		}
 
-		case ROTATE: {
+		case ROTATE: {			
 			PVector trans = camera.projectedCoordinatesOf(position());
 			Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y,	trans.x, trans.y, camera);
 			trans.set(-rot.x, -rot.y, -rot.z);
@@ -649,12 +653,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			rot.x = trans.x;
 			rot.y = trans.y;
 			rot.z = trans.z;
-			// #CONNECTION# These two methods should go together (spinning detection
-			// and activation)
+			// #CONNECTION# These two methods should go together (spinning detection and activation)			
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
-			prevPos = eventPoint;
+			prevPos = eventPoint;			
 			break;
 		}
 
@@ -690,7 +693,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE))
+		if (((action == Scene.MouseAction.ROTATE) 
+			|| (action == Scene.MouseAction.SCREEN_ROTATE)
+			|| (action == Scene.MouseAction.ROLL))
 				&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
 
@@ -706,6 +711,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #setWheelSensitivity(float)
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		if (action == Scene.MouseAction.ZOOM) {
 			float wheelSensitivityCoef = 8E-4f;
 			// PVector trans(0.0, 0.0,
@@ -743,6 +751,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	protected void startAction(Scene.MouseAction act, boolean withConstraint) {
 		action = act;
+		
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
 
 		if (withConstraint)
 			prevConstraint = null;

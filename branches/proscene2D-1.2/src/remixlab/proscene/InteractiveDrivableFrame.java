@@ -71,8 +71,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */
 	public InteractiveDrivableFrame clone() {
-		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super
-				.clone();
+		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
 		return clonedIAvtrFrame;
@@ -150,6 +149,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * {@link Scene.MouseAction#MOVE_FORWARD}).
 	 */
 	public void flyUpdate() {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
 		flyDisp.set(0.0f, 0.0f, 0.0f);
 		switch (action) {
 		case MOVE_FORWARD:
@@ -174,6 +175,10 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 */
 	protected void startAction(Scene.MouseAction a, boolean withConstraint) {
 		super.startAction(a, withConstraint);
+		
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		switch (action) {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
@@ -204,6 +209,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * and turning actions are implemented.
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		if ((action == Scene.MouseAction.TRANSLATE)
 				|| (action == Scene.MouseAction.ZOOM)
 				|| (action == Scene.MouseAction.SCREEN_ROTATE)
@@ -257,12 +265,11 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			}
 
 			case ROLL: {
-				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x)
-						/ camera.screenWidth();
+				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x) / camera.screenWidth();
 				
 			  //left-handed coordinate system correction
 				if ( scene.isLeftHanded() )
-				angle = -angle;
+					angle = -angle;
 				
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 				rotate(rot);
@@ -287,6 +294,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * {@link remixlab.proscene.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */
 	public void mouseReleased(Point eventPoint, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)) {
@@ -311,6 +321,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * #wheelSensitivity() the other two depend on #flySpeed().
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		switch (action) {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
@@ -374,8 +387,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * proportional to the horizontal mouse position.
 	 */
 	protected final Quaternion turnQuaternion(int x, Camera camera) {
-		return new Quaternion(new PVector(0.0f, 1.0f, 0.0f), rotationSensitivity()
-				* ((int)prevPos.x - x) / camera.screenWidth());
+		return new Quaternion(new PVector(0.0f, 1.0f, 0.0f), rotationSensitivity() * ((int)prevPos.x - x) / camera.screenWidth());
 	}
 
 	/**
@@ -389,10 +401,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		else
 			deltaY = (int) (y - prevPos.y);
 		
-		Quaternion rotX = new Quaternion(new PVector(1.0f, 0.0f, 0.0f),
-				rotationSensitivity() * deltaY / camera.screenHeight());
-		Quaternion rotY = new Quaternion(transformOf(flyUpVector()),
-				rotationSensitivity() * ((int)prevPos.x - x) / camera.screenWidth());
+		Quaternion rotX = new Quaternion(new PVector(1.0f, 0.0f, 0.0f),	rotationSensitivity() * deltaY / camera.screenHeight());
+		Quaternion rotY = new Quaternion(transformOf(flyUpVector()), rotationSensitivity() * ((int)prevPos.x - x) / camera.screenWidth());
 		return Quaternion.multiply(rotY, rotX);
 	}
 }
