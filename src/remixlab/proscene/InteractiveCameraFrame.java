@@ -131,6 +131,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * inverted from those of an InteractiveFrame.
 	 */
 	public void mouseDragged(Point eventPoint, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		if ((action == Scene.MouseAction.MOVE_FORWARD)
 				|| (action == Scene.MouseAction.MOVE_BACKWARD)
 				|| (action == Scene.MouseAction.DRIVE)
@@ -182,21 +185,18 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 			case ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,	(int) eventPoint.y, trans.x, trans.y, camera);
+				Quaternion rot = deformedBallQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);				
 				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);
 				setSpinningQuaternion(rot);
 				spin();
-				prevPos = eventPoint;
+				prevPos = eventPoint;				
 				break;
 			}
 
 			case SCREEN_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				float angle = PApplet.atan2((int) eventPoint.y - trans.y,
-						(int) eventPoint.x - trans.x)
-						- PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x
-								- trans.x);
+				float angle = PApplet.atan2((int) eventPoint.y - trans.y,	(int) eventPoint.x - trans.x) - PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x - trans.x);
 				
 			  // left-handed coordinate system correction
 				if( scene.isLeftHanded() )
@@ -253,6 +253,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * {@link remixlab.proscene.InteractiveFrame#mouseReleased(Point, Camera)}.
 	 */
 	public void mouseReleased(Point eventPoint, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		// Added by pierre: #CONNECTION# seems that startAction should always be
 		// called before :)
 		if (action == Scene.MouseAction.ZOOM_ON_REGION) {
@@ -287,6 +290,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * #wheelSensitivity() the other two depend on #flySpeed().
 	 */
 	public void mouseWheelMoved(int rotation, Camera camera) {
+		if( ( scene.space() == AbstractScene.Space.TWO_D ) && ( !action.isTwoD() ) )
+			return;
+		
 		switch (action) {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;

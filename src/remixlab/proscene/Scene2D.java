@@ -94,8 +94,10 @@ public class Scene2D extends AbstractScene {
 			//renderer().translate(-camera().position().x, -camera().position().y);
 			//renderer().translate(pg.width/2, pg.height/2);
 			
-			renderer().translate(pg.width/2 - camera().position().x, pg.height/2 - camera().position().y);
-			renderer().rotate( -camera().frame().rotation().angle() );
+			//renderer().translate(pg.width/2 - camera().position().x, pg.height/2 - camera().position().y);
+			
+			renderer().rotate(-camera().frame().rotation().angle());
+			renderer().translate(-camera().position().x, -camera().position().y);
 			
 			float rad = -camera().frame().rotation().angle();
 			float deg =  PApplet.degrees(rad);

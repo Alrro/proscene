@@ -117,9 +117,9 @@ public abstract class AbstractScene  implements PConstants {
 		/** Move camera down. */
 		MOVE_CAMERA_DOWN("Move camera down", true),
 		/** Increase camera rotation sensitivity (only meaningful in arcball mode). */
-		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)", true),
+		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)", false),
 		/** Decrease camera rotation sensitivity (only meaningful in arcball mode). */
-		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)", true),
+		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)", false),
 		/** Increase camera fly speed (only meaningful in first-person mode). */
 		INCREASE_CAMERA_FLY_SPEED("Increase camera fly speed (only meaningful in first-person mode)", false),
 		/** Decrease camera fly speed (only meaningful in first-person mode). */
@@ -171,9 +171,9 @@ public abstract class AbstractScene  implements PConstants {
 		/** Zoom to fit the scene */
 		ZOOM_TO_FIT("Zoom to fit the scene", true),
 		/** Set the arcball reference point from the pixel under the mouse */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse", true),
+		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse", false),
 		/** Reset the arcball reference point to the 3d frame world origin */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin", true),
+		RESET_ARP("Reset the arcball reference point to the 3d frame world origin", false),
 		/** Center frame */
 		CENTER_FRAME("Center frame", true),
 		/** Center scene */
@@ -211,7 +211,7 @@ public abstract class AbstractScene  implements PConstants {
 		/** No mouse action. */
 		NO_MOUSE_ACTION("No mouse action", true),
 		/** Rotate frame (camera or interactive frame. */
-		ROTATE("Rotate frame (camera or interactive frame)", true),
+		ROTATE("Rotate frame (camera or interactive frame)", false),
 		/** Zoom. */
 		ZOOM("Zoom", true),
 		/** Translate frame (camera or interactive frame). */
@@ -225,7 +225,7 @@ public abstract class AbstractScene  implements PConstants {
 		/** Screen rotate (camera or interactive frame). */
 		SCREEN_ROTATE("Screen rotate (camera or interactive frame)", true),
 		/** Roll frame (camera or interactive drivable frame). */
-		ROLL("Roll frame (camera or interactive drivable frame)", false),
+		ROLL("Roll frame (camera or interactive drivable frame)", true),
 		/** Drive (camera or interactive drivable frame). */
 		DRIVE("Drive (camera or interactive drivable frame)", false),
 		/** Screen translate frame (camera or interactive frame). */

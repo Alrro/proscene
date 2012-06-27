@@ -37,8 +37,7 @@ import processing.core.*;
  * {@link #trackingDistance()}) respect to the {@link #position()} (which
  * defines its {@link #target()}) of the InteractiveAvatarFrame.
  */
-public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements
-		Trackable {
+public class InteractiveAvatarFrame extends InteractiveDrivableFrame implements Trackable {
 	private Quaternion q;
 	private float trackingDist;
 	private PVector camRelPos;
