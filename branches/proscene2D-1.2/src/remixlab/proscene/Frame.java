@@ -1487,8 +1487,25 @@ public class Frame implements Cloneable {
 	 * @see #matrix()
 	 */
 	public void applyTransformation(PGraphicsOpenGL p3d) {
+		// /**
+		p3d.translate(translation().x, translation().y);
+		p3d.rotate(rotation().angle());
+		// */
+		/**
 		p3d.translate(translation().x, translation().y, translation().z);
 		p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
+		// */
+		/**
+		//TODO should move this key method to the scene
+		if( PGraphics2D.class == p3d.getClass() ) {
+			p3d.translate(translation().x, translation().y);
+			p3d.rotate(rotation().angle());
+		}
+		else {
+			p3d.translate(translation().x, translation().y, translation().z);
+			p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
+		}
+		// */
 	}
 
 	/**

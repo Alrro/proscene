@@ -1333,8 +1333,8 @@ public class Scene extends AbstractScene {
 	protected void setPProjectionMatrix() {
 		// option 1 (only one of the following two lines)
 		// pg3d.projection.set(camera().getProjectionMatrix());
-		// camera().computeProjectionMatrix();		
-		// /**
+		//camera().computeProjectionMatrix();		
+		///**
 		// option 2
 		// compute the processing camera projection matrix from our camera()
 		// parameters
@@ -1370,7 +1370,7 @@ public class Scene extends AbstractScene {
 	  // option 1 (only one of the following two lines)
 		//pg3d.modelview.set(camera().getModelViewMatrix());
 	  //camera().computeModelViewMatrix();
-		// /**
+		///**
 		// option 2
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
