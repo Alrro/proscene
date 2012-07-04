@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import processing.core.*;
+import processing.opengl.PGraphicsOpenGL;
 
 public class Scene2D extends AbstractScene {	
 	/**
@@ -67,6 +68,8 @@ public class Scene2D extends AbstractScene {
 		cam = new Camera(this);
 		setCamera(camera());//calls showAll();
 		
+		camera().setUpVector(new PVector(0,-1,0));
+		
 		initDefaultCameraProfiles();
 		
 		// called only once
@@ -121,8 +124,8 @@ public class Scene2D extends AbstractScene {
 		cameraProfileNames = new ArrayList<String>();
 		currentCameraProfile = null;
 		// register here the default profiles
-		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
-		setCurrentCameraProfile("WHEELED_ARCBALL");		
+		registerCameraProfile( new CameraProfile(this, "TWO_D", CameraProfile.Mode.TWO_D) );
+		setCurrentCameraProfile("TWO_D");		
 	}	
 
 	@Override
