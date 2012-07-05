@@ -70,17 +70,17 @@ public class ArmCam {
     PGraphics3D pg3d = scn.renderer();
 
     pg3d.pushMatrix();
-    frame(0).applyTransformation(pg3d);
+    frame(0).applyTransformation();
     setColor(scn, frame(0).grabsMouse());
     drawTripod(scn);
 
     pg3d.pushMatrix();
-    frame(1).applyTransformation(pg3d);
+    frame(1).applyTransformation();
     setColor(scn, frame(1).grabsMouse());
     drawBase(scn);
 
     pg3d.pushMatrix();
-    frame(2).applyTransformation(pg3d);
+    frame(2).applyTransformation();
     setColor(scn, frame(2).grabsMouse());
     drawLongArm(scn);
 
@@ -95,16 +95,16 @@ public class ArmCam {
 
     if (frame(3).localInverseCoordinatesOf(frame(3).coordinatesOf(frame(3).position())).z > -4)
       frame(3).setTranslation(0, 0, -4);
-    frame(3).applyTransformation(pg3d);
+    frame(3).applyTransformation();
     drawHolder(scn);
 
     pg3d.pushMatrix();
-    frame(4).applyTransformation(pg3d);
+    frame(4).applyTransformation();
     setColor(scn, frame(4).grabsMouse());
     drawInvertedBase(scn);
 
     pg3d.pushMatrix();
-    frame(5).applyTransformation(pg3d);
+    frame(5).applyTransformation();
     setColor(scn, frame(5).grabsMouse());
     drawHead(scn);
 

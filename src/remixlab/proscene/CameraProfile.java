@@ -303,10 +303,12 @@ public class CameraProfile {
 			twoDthreeDDefaultShortcuts();
 			//setCameraMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROLL);
 			setCameraMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.SCREEN_ROTATE);
-			setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROLL);
+			setCameraMouseBinding((AbstractScene.Button.RIGHT.ID | AbstractScene.Modifier.SHIFT.ID), AbstractScene.MouseAction.ROLL);
+			setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.SCREEN_ROTATE);
+			//setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROLL);	
 			setCameraWheelBinding( MouseAction.ZOOM );
 			//should work only iFrame is an instance of drivable
-			setFrameWheelBinding( MouseAction.ZOOM );		
+			setFrameWheelBinding(MouseAction.ZOOM);		
 			break;
 		case CUSTOM:
 			break;
@@ -320,6 +322,7 @@ public class CameraProfile {
 		twoDthreeDDefaultShortcuts();		
 
 		setCameraMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROTATE);
+		setCameraMouseBinding((AbstractScene.Button.RIGHT.ID | AbstractScene.Modifier.SHIFT.ID), AbstractScene.MouseAction.SCREEN_ROTATE);
 		
 		setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROTATE);		
 
@@ -336,8 +339,7 @@ public class CameraProfile {
 		setCameraMouseBinding(AbstractScene.Button.MIDDLE.ID, AbstractScene.MouseAction.ZOOM);
 		setCameraMouseBinding(AbstractScene.Button.RIGHT.ID, AbstractScene.MouseAction.TRANSLATE);
 		
-		setCameraMouseBinding( (AbstractScene.Button.LEFT.ID | AbstractScene.Modifier.SHIFT.ID), AbstractScene.MouseAction.ZOOM_ON_REGION);
-		setCameraMouseBinding( (AbstractScene.Button.RIGHT.ID | AbstractScene.Modifier.SHIFT.ID), AbstractScene.MouseAction.SCREEN_ROTATE);
+		setCameraMouseBinding((AbstractScene.Button.LEFT.ID | AbstractScene.Modifier.SHIFT.ID), AbstractScene.MouseAction.ZOOM_ON_REGION);		
 		
 		setFrameMouseBinding(AbstractScene.Button.MIDDLE.ID, AbstractScene.MouseAction.ZOOM);
 		setFrameMouseBinding(AbstractScene.Button.RIGHT.ID, AbstractScene.MouseAction.TRANSLATE);

@@ -758,7 +758,7 @@ public class Scene extends AbstractScene {
 		// pg3d.applyMatrix(camera.frame().worldMatrix());
 		// same as the previous line, but maybe more efficient
 		tmpFrame.fromMatrix(camera.frame().worldMatrix());
-		tmpFrame.applyTransformation((PGraphicsOpenGL)pg);
+		applyTransformation(tmpFrame);
 
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
 		PVector[] points = new PVector[2];
@@ -902,7 +902,7 @@ public class Scene extends AbstractScene {
 						renderer().pushMatrix();
 						
 					  //applyTransformation(myFr);
-						myFr.applyTransformation((PGraphicsOpenGL)pg);						
+						applyTransformation(myFr);						
 
 						if ((mask & 2) != 0)
 							drawKFICamera(scale);

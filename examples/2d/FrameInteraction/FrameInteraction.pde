@@ -21,10 +21,10 @@ void draw() {
   // Save the current model view matrix
   pushMatrix();
   // Multiply matrix to get in the frame coordinate system.
-  // applyMatrix(scene.interactiveFrame().matrix()) is handy but inefficient 
-  scene.interactiveFrame().applyTransformation(); //optimum
+  // applyMatrix(scene.interactiveFrame().matrix()) is handy but inefficient   
+  scene.interactiveFrame().applyTransformation();//optimum
   // Draw an axis using the Scene static function
-  scene.drawAxis(20);
+  scene.drawAxis(40);
   // Draw a second box attached to the interactive frame
   if (scene.interactiveFrame().grabsMouse()) {
     fill(255, 0, 0);

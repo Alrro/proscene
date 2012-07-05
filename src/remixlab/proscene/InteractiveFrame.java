@@ -26,8 +26,6 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import processing.opengl.*;
-import remixlab.proscene.AxisPlaneConstraint.Type;
 
 import java.util.*;
 
@@ -176,9 +174,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * 
 	 * @see remixlab.proscene.Frame#applyTransformation(PApplet)
 	 */
-	public void applyTransformation() {
-		// TODO cast added (2d scene pending)
-		applyTransformation((PGraphicsOpenGL)scene.pg);
+	public void applyTransformation() {		
+		applyTransformation(scene);
 	}
 
 	/**
