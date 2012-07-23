@@ -654,7 +654,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();
-			prevPos = eventPoint;			
+			prevPos = eventPoint;		
 			break;
 		}
 
@@ -781,8 +781,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * spinning in {@link #mouseReleased(Point, Camera)}.
 	 */
 	protected void computeMouseSpeed(Point eventPoint) {
-		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos
-				.getX(), prevPos.getY());
+		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos.getX(), prevPos.getY());
 
 		if (startedTime == 0) {
 			delay = 0;

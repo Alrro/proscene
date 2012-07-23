@@ -301,11 +301,13 @@ public class CameraProfile {
 			break;
 		case TWO_D:
 			twoDthreeDDefaultShortcuts();
-			//setCameraMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROLL);
+			
 			setCameraMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.SCREEN_ROTATE);
 			setCameraMouseBinding((AbstractScene.Button.RIGHT.ID | AbstractScene.Modifier.SHIFT.ID), AbstractScene.MouseAction.ROLL);
-			setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.SCREEN_ROTATE);
-			//setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROLL);	
+			setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.SCREEN_ROTATE);			
+						
+			//setFrameMouseBinding(AbstractScene.Button.LEFT.ID, AbstractScene.MouseAction.ROLL);
+			
 			setCameraWheelBinding( MouseAction.ZOOM );
 			//should work only iFrame is an instance of drivable
 			setFrameWheelBinding(MouseAction.ZOOM);		

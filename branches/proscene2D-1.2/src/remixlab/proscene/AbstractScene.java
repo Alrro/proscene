@@ -63,9 +63,9 @@ public abstract class AbstractScene  implements PConstants {
 		/** Toggles animation. */
 		ANIMATION("Toggles animation", true),
 		/** Set the arcball reference point from the pixel under the mouse. */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse", false),
+		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse", true),
 		/** Reset the arcball reference point to the 3d frame world origin. */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin", false),
+		RESET_ARP("Reset the arcball reference point to the 3d frame world origin", true),
 		/** Displays the global help. */
 		GLOBAL_HELP("Displays the global help", true),
 		/** Displays the current camera profile help. */
@@ -117,9 +117,9 @@ public abstract class AbstractScene  implements PConstants {
 		/** Move camera down. */
 		MOVE_CAMERA_DOWN("Move camera down", true),
 		/** Increase camera rotation sensitivity (only meaningful in arcball mode). */
-		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)", false),
+		INCREASE_ROTATION_SENSITIVITY("Increase camera rotation sensitivity (only meaningful in arcball mode)", true),
 		/** Decrease camera rotation sensitivity (only meaningful in arcball mode). */
-		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)", false),
+		DECREASE_ROTATION_SENSITIVITY("Decrease camera rotation sensitivity (only meaningful in arcball mode)", true),
 		/** Increase camera fly speed (only meaningful in first-person mode). */
 		INCREASE_CAMERA_FLY_SPEED("Increase camera fly speed (only meaningful in first-person mode)", false),
 		/** Decrease camera fly speed (only meaningful in first-person mode). */
@@ -171,9 +171,9 @@ public abstract class AbstractScene  implements PConstants {
 		/** Zoom to fit the scene */
 		ZOOM_TO_FIT("Zoom to fit the scene", true),
 		/** Set the arcball reference point from the pixel under the mouse */
-		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse", false),
+		ARP_FROM_PIXEL("Set the arcball reference point from the pixel under the mouse", true),
 		/** Reset the arcball reference point to the 3d frame world origin */
-		RESET_ARP("Reset the arcball reference point to the 3d frame world origin", false),
+		RESET_ARP("Reset the arcball reference point to the 3d frame world origin", true),
 		/** Center frame */
 		CENTER_FRAME("Center frame", true),
 		/** Center scene */
