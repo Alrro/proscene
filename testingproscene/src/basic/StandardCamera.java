@@ -3,6 +3,7 @@ package basic;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
+import remixlab.proscene.AxisPlaneConstraint.Type;
 
 @SuppressWarnings("serial")
 public class StandardCamera extends PApplet {
@@ -22,6 +23,14 @@ public class StandardCamera extends PApplet {
 		scene.enableFrustumEquationsUpdate();
 		scene.setGridIsDrawn(false);
 		scene.addDrawHandler(this, "mainDrawing");
+		
+		/**
+		WorldConstraint constraint2d = new WorldConstraint();
+		PVector direction = new PVector(0,0,1);
+		constraint2d.setRotationConstraint(Type.AXIS, direction);
+		//constraint2d.setTranslationConstraint(Type.PLANE, direction);
+		scene.camera().frame().setConstraint(constraint2d);
+		*/		
 
 		auxCanvas = createGraphics(640, 360, P3D);
 		//auxCanvas = createGraphics(640, 360, OPENGL);
@@ -38,7 +47,7 @@ public class StandardCamera extends PApplet {
 		handleMouse();
 	}
 
-	void mainDrawing(Scene s) {
+	public void mainDrawing(Scene s) {
 		PGraphicsOpenGL p = s.renderer();
 		p.background(0);
 		p.noStroke();
@@ -58,7 +67,7 @@ public class StandardCamera extends PApplet {
 		}
 	}
 
-	void auxiliarDrawing(Scene s) {
+	public void auxiliarDrawing(Scene s) {
 		mainDrawing(s);
 		s.drawCamera(scene.camera());
 	}

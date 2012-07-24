@@ -5,7 +5,6 @@
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/processing-2a5/proscene.jar" sourcepath="/home/pierre/workspace/proscene/src"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/processing-2a5/procontroll.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/processing-core"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/processing-opengl"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/jogl/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/jogl/jogl.all.jar"/>
 	<classpathentry kind="output" path="bin"/>

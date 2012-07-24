@@ -22,7 +22,7 @@ public class Sphere {
 	
 	public void draw(boolean drawAxis) {
 		parent.pushMatrix();
-		iFrame.applyTransformation(parent);
+		iFrame.applyTransformation();
 		
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, radius()*1.3f);

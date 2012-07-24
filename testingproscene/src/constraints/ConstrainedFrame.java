@@ -86,7 +86,7 @@ public class ConstrainedFrame extends PApplet {
 		pushMatrix();
 		//applyMatrix( frame.pMatrix() );
 		//Same as the previous commented line, but a lot more efficient:
-		frame.applyTransformation(this);		
+		frame.applyTransformation();		
 		scene.drawAxis(40);		
 		fill(204, 102, 0);
 		box(30, 30, 30);				

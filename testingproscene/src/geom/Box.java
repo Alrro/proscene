@@ -27,7 +27,7 @@ public class Box {
 		
 		//parent.applyMatrix( glIFrame.matrix() );
 		//Same as the previous commented line, but a lot more efficient:
-		iFrame.applyTransformation(parent);
+		iFrame.applyTransformation();
 		
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);

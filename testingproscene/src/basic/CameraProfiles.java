@@ -1,7 +1,8 @@
 package basic;
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.proscene.Scene.ClickAction;
+//import remixlab.proscene.Scene.ClickAction;
+import remixlab.proscene.AbstractScene.ClickAction;
 
 @SuppressWarnings("serial")
 public class CameraProfiles extends PApplet {

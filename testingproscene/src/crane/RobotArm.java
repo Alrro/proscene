@@ -14,7 +14,9 @@ public class RobotArm {
 		scene = mainScn;
 		// the instantiated cam is detached from the scene meaning
 		// that its matrices are independent from those of processing
-		cam = new Camera(scene, false);
+		// TODO not supported under proscene-2d
+		//cam = new Camera(scene, false);
+		cam = new Camera(scene);
 		frameArray = new InteractiveFrame[4];
 		for (int i = 0; i < 4; ++i) {
 			// last frame should be a camera frame:
@@ -57,24 +59,24 @@ public class RobotArm {
 		PGraphicsOpenGL pg3d = scn.renderer();	
 		
 		pg3d.pushMatrix();
-		frame(0).applyTransformation(pg3d);
+		frame(0).applyTransformation();
 		setColor(scn, frame(0).grabsMouse() );
 		drawBase(scn);
 
 		pg3d.pushMatrix();
-		frame(1).applyTransformation(pg3d);
+		frame(1).applyTransformation();
 		setColor(scn, frame(1).grabsMouse() );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
-		frame(2).applyTransformation(pg3d);
+		frame(2).applyTransformation();
 		setColor( scn, frame(2).grabsMouse() );
 		drawCylinder(scn);
 		drawArm(scn);
 
 		pg3d.pushMatrix();
-		frame(3).applyTransformation(pg3d);
+		frame(3).applyTransformation();
 		setColor( scn, frame(3).grabsMouse() );
 		drawHead(scn);
 

@@ -10,9 +10,10 @@ public class FrameInteraction extends PApplet {
 	
 	public void setup()	{
 		//size(640, 360, P3D);
-		size(400, 400, P3D);
+		size(640, 360, P3D);
 		//size(640, 360, OPENGL);
 		scene = new Scene(this);
+		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		//scene.camera().setKind(Camera.Kind.STANDARD);
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setGridIsDrawn(true);

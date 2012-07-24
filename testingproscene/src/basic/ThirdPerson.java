@@ -37,7 +37,7 @@ public class ThirdPerson extends PApplet {
 		pushMatrix();
 		// Multiply matrix to get in the frame coordinate system.
 		// applyMatrix(scene.interactiveFrame().matrix()) is possible but inefficient 
-		scene.interactiveFrame().applyTransformation(this);//very efficient
+		scene.interactiveFrame().applyTransformation();//very efficient
 		// Draw an axis using the Scene static function
 		scene.drawAxis(20);
 		if (scene.interactiveFrameIsDrawn())

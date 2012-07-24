@@ -53,7 +53,7 @@ public class AABox {
 	public void drawCube(PApplet parent, boolean drawBoundingVolumes, boolean drawAxis) {
 		TestVFCGL.renderedCubes++;
 		parent.pushMatrix();
-		frame.applyTransformation(parent);
+		frame.applyTransformation(scene);
 		if (drawAxis)
 			scene.drawAxis(PApplet.max(w, h, d) * 1.3f);
 		parent.noStroke();

@@ -46,24 +46,24 @@ public class Lamp {
 	public void draw() {
 		// Luxo's local frame
 		parent.pushMatrix();
-		frame(0).applyTransformation(parent);
+		frame(0).applyTransformation();
 		setColor( frame(0).grabsMouse() );
 		drawBase();
 		
 		parent.pushMatrix();//not really necessary here
-		frame(1).applyTransformation(parent);
+		frame(1).applyTransformation();
 		setColor( frame(1).grabsMouse() );
 		drawCylinder();
 		drawArm();		
 		
 		parent.pushMatrix();//not really necessary here
-		frame(2).applyTransformation(parent);
+		frame(2).applyTransformation();
 		setColor( frame(2).grabsMouse() );
 		drawCylinder();
 		drawArm();		
 		
 		parent.pushMatrix();//not really necessary here
-		frame(3).applyTransformation(parent);
+		frame(3).applyTransformation();
 		setColor( frame(3).grabsMouse() );
 		drawHead();
 		
