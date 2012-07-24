@@ -5,6 +5,5 @@
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/jogl/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/jogl/jogl.all.jar"/>
 	<classpathentry kind="src" path="/processing-core"/>
-	<classpathentry kind="src" path="/processing-opengl"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

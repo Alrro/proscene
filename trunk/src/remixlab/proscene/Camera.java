@@ -874,7 +874,7 @@ public class Camera implements Cloneable {
 		}
 
 		return target;
-	}
+	}	
 
 	/**
 	 * Returns the horizontal field of view of the Camera (in radians).
