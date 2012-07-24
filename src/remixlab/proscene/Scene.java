@@ -564,7 +564,8 @@ public class Scene implements PConstants {
 		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
-		cam = new Camera(this);
+		//TODO testing detached camera
+		cam = new Camera(this, false);
 		setCamera(camera());//calls showAll();
 		setInteractiveFrame(null);
 		setAvatar(null);
@@ -4348,13 +4349,13 @@ public class Scene implements PConstants {
 	 * {@link remixlab.proscene.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
-		// option 1 (only one of the following two lines)
-		// pg3d.projection.set(camera().getProjectionMatrix());
-		// camera().computeProjectionMatrix();		
+		// option 1 detached
+		//pg3d.projection.set(camera().getProjectionMatrix());	  
 		// /**
-		// option 2
+		// option 2 attached
 		// compute the processing camera projection matrix from our camera()
 		// parameters
+		// /**
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
@@ -4362,11 +4363,11 @@ public class Scene implements PConstants {
 		case ORTHOGRAPHIC:
 			float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
 			// 1. P5 1.5 version:
-			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());			
+			//pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());			
 			// 2. As it is done in P5-a5 perspective vs ortho example, but using proscene w and h
 		  // ortho: screen drawing broken; frame translation fixed
 		  // persp: screen drawing broken; frame translation fixed
-			//pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());			
+			pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());			
 		  // 3. As it is done in P5-a5 perspective vs ortho example
 			// ortho: screen drawing fixed; frame translation broken
 		  // persp: screen drawing broken; frame translation fixed
@@ -4384,11 +4385,10 @@ public class Scene implements PConstants {
 	 * {@code PApplet.camera()}.
 	 */
 	protected void setPModelViewMatrix() {
-	  // option 1 (only one of the following two lines)
-		//pg3d.modelview.set(camera().getModelViewMatrix());
-	  //camera().computeModelViewMatrix();
+	  // option 1 detached
+		// pg3d.modelview.set(camera().getModelViewMatrix());	  
 		// /**
-		// option 2
+		// option 2 attached
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
 		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
@@ -4396,7 +4396,7 @@ public class Scene implements PConstants {
 				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		// if our camera() matrices are detached from the processing Camera matrices,
 		// we cache the processing camera modelview matrix into our camera()
-		// camera().setModelViewMatrix(pg3d.modelview);//TODO no needed: camera matrices are references to P5 anyway		
+		camera().setModelViewMatrix(pg3d.modelview);//TODO no needed: camera matrices are references to P5 anyway		
 		// */
 	}
 }
