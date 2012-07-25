@@ -16,6 +16,8 @@ import remixlab.proscene.*;
 Scene scene;
 Board board;
 
+PFont font1, font2, font3;
+
 void setup() {
   size(800, 500, P3D); // window size
   scene = new Scene(this); // create a Scene instance
@@ -24,6 +26,9 @@ void setup() {
   board = new Board(3, null); // create a new 3x3 board
   scene.camera().setPosition(new PVector(-20, 100, 230)); // move the camera
   scene.camera().lookAt(new PVector(0, 0, 0)); // make the camera look at the center of the board
+  font1 = createFont("FFScala", 14);
+  font2 = createFont("FFScala", 30);
+  font3 = createFont("FFScala", 100 / board.getSize());
 }
 
 void draw() {
@@ -38,15 +43,13 @@ void draw() {
 }
 
 public void drawText() {
-  textMode(SCREEN); // screen coordinates for text output
   fill(#BBBBBB);
-  textFont(createFont("FFScala", 14));
+  textFont(font1);
   text("" + board.getMoves() + " moves.", 5, height - 20);
   text("Press 'i' to scramble, 'o' to order, 'p' to change mode, 'q' to increase size, 'w' to decrease size.", 5, height - 5);
-  textFont(createFont("FFScala", 30));
+  textFont(font2);
   fill(#EEEEEE);
   text(board.isOrdered() && board.getMoves() > 0 ? "COMPLETED!" : "", 5, 28);
-  textMode(MODEL); // back to model coordinates
 }
 
 void keyTyped() {
@@ -68,11 +71,13 @@ void keyTyped() {
   else if(key == 'q') {
     if(board.getSize() < 5) {
       board.setSize(board.getSize() + 1);
+      font3 = createFont("FFScala", 100 / board.getSize());
     }
   } 
   else if(key == 'w') {
     if(board.getSize() > 3) {
       board.setSize(board.getSize() - 1);
+      font3 = createFont("FFScala", 100 / board.getSize());
     }
   }
 }
