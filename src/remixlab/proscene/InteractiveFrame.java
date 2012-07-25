@@ -165,7 +165,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see remixlab.proscene.Frame#applyTransformation(PApplet)
 	 */
 	public void applyTransformation() {
-		applyTransformation(scene.pg3d);
+		applyTransformation(scene);
 	}
 
 	/**

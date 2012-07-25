@@ -266,7 +266,7 @@ public class Camera implements Cloneable {
 	 */
 	public Camera(Scene scn, boolean attachedToScene) {
 		scene = scn;
-		pg3d = scene.pg3d;
+		pg3d = scene.renderer();
 		attachedToPCam = attachedToScene;
 		
 		enableFrustumEquationsUpdate(false);
@@ -2177,34 +2177,38 @@ public class Camera implements Cloneable {
 	public void computeProjectionMatrix() {
 		float ZNear = zNear();
 		float ZFar = zFar();
-
+		
 		switch (type()) {
 		case PERSPECTIVE: {
-			// #CONNECTION# all non null coefficients were set to 0.0 in
-			// constructor.
+			// #CONNECTION# all non null coefficients were set to 0.0 in constructor.
 			float f = 1.0f / PApplet.tan(fieldOfView() / 2.0f);
 			projectionMat.m00 = f / aspectRatio();
-			projectionMat.m11 = f;
+			if( scene.isRightHanded() )
+				projectionMat.m11 = f;
+			else
+				projectionMat.m11 = -f;//TODO hack to make the projection fit in P5-v2
 			projectionMat.m22 = (ZNear + ZFar) / (ZNear - ZFar);
 			projectionMat.m32 = -1.0f;
 			projectionMat.m23 = 2.0f * ZNear * ZFar / (ZNear - ZFar);
 			projectionMat.m33 = 0.0f;
-			// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(),
-			// zNear(), zFar() );
+			// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(), zNear(), zFar() );
 			break;
-		}
+			}
 		case ORTHOGRAPHIC: {
 			float[] wh = getOrthoWidthHeight();
 			projectionMat.m00 = 1.0f / wh[0];
-			projectionMat.m11 = 1.0f / wh[1];
+			if( scene.isRightHanded() )
+				projectionMat.m11 = 1.0f / wh[1];
+			else
+				projectionMat.m11 = -1.0f / wh[1];//TODO hack to make the projection fit in P5-v2
 			projectionMat.m22 = -2.0f / (ZFar - ZNear);
 			projectionMat.m32 = 0.0f;
 			projectionMat.m23 = -(ZFar + ZNear) / (ZFar - ZNear);
 			projectionMat.m33 = 1.0f;
 			// same as glOrtho( -w, w, -h, h, zNear(), zFar() );
 			break;
-		}
-		}
+			}
+		}		
 	}
 
 	/**

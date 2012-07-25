@@ -414,7 +414,9 @@ public class Scene implements PConstants {
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	public PGraphicsOpenGL pg3d;
+	//TODO change!!!?
+	//public PGraphicsOpenGL pg3d;
+	public PGraphics pg3d;
 	protected int width, height;// size
 	protected boolean offscreen;
 	public Point upperLeftCorner;
@@ -564,8 +566,9 @@ public class Scene implements PConstants {
 		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
-		//TODO testing detached camera
-		cam = new Camera(this, false);
+		//TODO testing detached camera: needs fixing: screen drawing and mouse interaction as well
+		//cam = new Camera(this, false);
+		cam = new Camera(this);
 		setCamera(camera());//calls showAll();
 		setInteractiveFrame(null);
 		setAvatar(null);
@@ -1374,7 +1377,7 @@ public class Scene implements PConstants {
 	 * @return PGraphicsOpenGL renderer.
 	 */
 	public PGraphicsOpenGL renderer() {
-		return pg3d;
+		return (PGraphicsOpenGL)pg3d;
 	}
 
 	/**
@@ -2029,7 +2032,7 @@ public class Scene implements PConstants {
 		// pg3d.applyMatrix(camera.frame().worldMatrix());
 		// same as the previous line, but maybe more efficient
 		tmpFrame.fromMatrix(camera.frame().worldMatrix());
-		tmpFrame.applyTransformation(pg3d);
+		applyTransformation(tmpFrame);
 
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
 		PVector[] points = new PVector[2];
@@ -2146,6 +2149,44 @@ public class Scene implements PConstants {
 	}
 
 	// 3. KEYFRAMEINTERPOLATOR CAMERA
+	
+	public void drawPath(List<Frame> path, int mask, int nbFrames, int nbSteps, float scale) {
+		if (mask != 0) {
+			renderer().pushStyle();
+			renderer().strokeWeight(2);
+
+			if ((mask & 1) != 0) {
+				renderer().noFill();
+				renderer().stroke(170);
+				renderer().beginShape();
+				for (Frame myFr : path)
+					renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+				renderer().endShape();
+			}
+			if ((mask & 6) != 0) {
+				int count = 0;
+				if (nbFrames > nbSteps)
+					nbFrames = nbSteps;
+				float goal = 0.0f;
+
+				for (Frame myFr : path)
+					if ((count++) >= goal) {
+						goal += nbSteps / (float) nbFrames;
+						renderer().pushMatrix();
+											  
+						applyTransformation(myFr);						
+
+						if ((mask & 2) != 0)
+							drawKFICamera(scale);
+						if ((mask & 4) != 0)
+							drawAxis(scale / 10.0f);
+
+						renderer().popMatrix();
+					}
+			}
+			renderer().popStyle();
+		}
+	}
 
 	public void drawKFICamera(float scale) {
 		drawKFICamera(170, scale);
@@ -2563,65 +2604,25 @@ public class Scene implements PConstants {
 	 * @see #coords(Point)
 	 */
 	public void beginScreenDrawing() {
-		//TODO fix me!
 		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-		
-		startCoordCalls++;
-		
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
-		//if ( pg3d instanceof processing.core.PGraphicsOpenGL ) {
-			pg3d.hint(DISABLE_DEPTH_TEST);
-			pg3d.matrixMode(PROJECTION);
-			pg3d.pushMatrix();
-			pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-			pg3d.matrixMode(MODELVIEW);
-			pg3d.pushMatrix();
-		  // Camera needs to be reset!
-			pg3d.camera();
-			zC = 0.0f;
-		}
-		else {
-			zC = 0.1f;
-		}
-		*/
-		pg3d.hint(DISABLE_DEPTH_TEST);
-		pg3d.pushProjection();
-		
-		//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
-		
-		/**
-		float[] wh = camera().getOrthoWidthHeight();
-		pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
-		// */
-		
-		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-		
-		//pg3d.ortho(0f, width, 0f, height, 0.0f, -1.0f);
-		//pg3d.ortho(0f, width, 0f, height, -1.0f, 0.0f);
-		//pg3d.ortho(0f, width, height, 0f, 0.0f, -1.0f);
-		
-		
-		// /**
-		float cameraZ = (height/2.0f) / PApplet.tan( camera().fieldOfView() /2.0f);
-		float cameraMaxFar = cameraZ * 2.0f;
-		float cameraNear = cameraZ / 2.0f;
-		float cameraFar = cameraZ * 2.0f;
-	  pg3d.ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
-		//pg3d.ortho(0, width, 0, height, cameraNear, cameraFar);
-		// */
-		
-		/**
-		float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
-		pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
-		// */
-		
-		pg3d.pushMatrix();
-	  // Camera needs to be reset!
-		pg3d.camera();		
-		zC = 0.0f;		
+      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+
+    startCoordCalls++;
+
+    renderer().hint(DISABLE_DEPTH_TEST);
+    renderer().pushProjection();
+
+    
+    float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+    float cameraNear = cameraZ / 2.0f;
+    float cameraFar = cameraZ * 2.0f;
+    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);    
+
+    renderer().pushMatrix();
+    renderer().camera();      
+          
+    zC = 0.0f;		
 	}
 
 	/**
@@ -2632,22 +2633,12 @@ public class Scene implements PConstants {
 	 */
 	public void endScreenDrawing() {
 		startCoordCalls--;
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
-			pg3d.matrixMode(PROJECTION);
-			pg3d.popMatrix();
-			pg3d.matrixMode(MODELVIEW);  
-			pg3d.popMatrix();		  
-			pg3d.hint(ENABLE_DEPTH_TEST);
-		}
-		*/		
-		pg3d.popProjection();  
-		pg3d.popMatrix();		  
-		pg3d.hint(ENABLE_DEPTH_TEST);
+    if (startCoordCalls != 0)
+      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+    renderer().popProjection();
+    renderer().popMatrix();
+    renderer().hint(ENABLE_DEPTH_TEST);
 	}
 	
 	/**
@@ -4349,25 +4340,25 @@ public class Scene implements PConstants {
 	 * {@link remixlab.proscene.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
-		// option 1 detached
-		//pg3d.projection.set(camera().getProjectionMatrix());	  
-		// /**
-		// option 2 attached
+		// option 1 (only one of the following two lines)
+		// pg3d.projection.set(camera().getProjectionMatrix());
+		//camera().computeProjectionMatrix();		
+		///**
+		// option 2
 		// compute the processing camera projection matrix from our camera()
 		// parameters
-		// /**
 		switch (camera().type()) {
 		case PERSPECTIVE:
-			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
+			renderer().perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
 			break;
 		case ORTHOGRAPHIC:
 			float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
 			// 1. P5 1.5 version:
-			//pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());			
+			renderer().ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());			
 			// 2. As it is done in P5-a5 perspective vs ortho example, but using proscene w and h
 		  // ortho: screen drawing broken; frame translation fixed
 		  // persp: screen drawing broken; frame translation fixed
-			pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());			
+			//pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());			
 		  // 3. As it is done in P5-a5 perspective vs ortho example
 			// ortho: screen drawing fixed; frame translation broken
 		  // persp: screen drawing broken; frame translation fixed
@@ -4385,18 +4376,71 @@ public class Scene implements PConstants {
 	 * {@code PApplet.camera()}.
 	 */
 	protected void setPModelViewMatrix() {
-	  // option 1 detached
-		// pg3d.modelview.set(camera().getModelViewMatrix());	  
-		// /**
-		// option 2 attached
+	  // option 1 (only one of the following two lines)
+		//pg3d.modelview.set(camera().getModelViewMatrix());
+	  //camera().computeModelViewMatrix();
+		///**
+		// option 2
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
-		pg3d.camera(camera().position().x, camera().position().y, camera().position().z,
+		renderer().camera(camera().position().x, camera().position().y, camera().position().z,
 				        camera().at().x, camera().at().y, camera().at().z,
 				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		// if our camera() matrices are detached from the processing Camera matrices,
 		// we cache the processing camera modelview matrix into our camera()
-		camera().setModelViewMatrix(pg3d.modelview);//TODO no needed: camera matrices are references to P5 anyway		
+		// camera().setModelViewMatrix(pg3d.modelview);//TODO no needed: camera matrices are references to P5 anyway		
 		// */
 	}
+	
+	/**
+	 * Apply the transformation defined by this Frame to {@code p3d}. The Frame is
+	 * first translated and then rotated around the new translated origin.
+	 * <p>
+	 * Same as:
+	 * <p>
+	 * {@code p3d.translate(translation().x, translation().y, translation().z);} <br>
+	 * {@code p3d.rotate(rotation().angle(), rotation().axis().x,
+	 * rotation().axis().y, rotation().axis().z);} <br>
+	 * <p>
+	 * This method should be used in conjunction with PApplet to modify the
+	 * processing modelview matrix from a Frame hierarchy. For example, with this
+	 * Frame hierarchy:
+	 * <p>
+	 * {@code Frame body = new Frame();} <br>
+	 * {@code Frame leftArm = new Frame();} <br>
+	 * {@code Frame rightArm = new Frame();} <br>
+	 * {@code leftArm.setReferenceFrame(body);} <br>
+	 * {@code rightArm.setReferenceFrame(body);} <br>
+	 * <p>
+	 * The associated processing drawing code should look like:
+	 * <p>
+	 * {@code p3d.pushMatrix();//p is the PApplet instance} <br>
+	 * {@code body.applyTransformation(p);} <br>
+	 * {@code drawBody();} <br>
+	 * {@code p3d.pushMatrix();} <br>
+	 * {@code leftArm.applyTransformation(p);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * {@code p3d.pushMatrix();} <br>
+	 * {@code rightArm.applyTransformation(p);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * <p>
+	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()} blocks
+	 * to represent the frame hierarchy: {@code leftArm} and {@code rightArm} are
+	 * both correctly drawn with respect to the {@code body} coordinate system.
+	 * <p>
+	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method
+	 * should be used whenever possible (one can also use {@link #matrix()}
+	 * instead).
+	 * 
+	 * @see #matrix()
+	 */
+	public void applyTransformation(Frame frame) {
+		renderer().translate(frame.translation().x, frame.translation().y, frame.translation().z);
+		renderer().rotate(frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);		
+	}
+	
+	
 }
