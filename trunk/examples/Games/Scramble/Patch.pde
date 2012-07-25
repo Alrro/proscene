@@ -77,7 +77,7 @@ public class Patch extends InteractiveFrame {
     endShape(CLOSE);
 
     // draw front face
-    textureMode(NORMALIZED);
+    textureMode(NORMAL);
     beginShape();
     if(img != null) { // we've got an image, set it as a texture
       if(grabsMouse()) {
@@ -101,7 +101,7 @@ public class Patch extends InteractiveFrame {
     endShape(CLOSE);
 
     if(img == null) { // no image, render the patch number
-      textFont(createFont("FFScala", size / 1.5));
+      textFont(font3);
       strokeWeight(1);
       fill(0, 0, 20);
       text("" + number, -10, 10, 0.1);
