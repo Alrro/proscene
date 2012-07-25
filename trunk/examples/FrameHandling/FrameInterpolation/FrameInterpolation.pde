@@ -58,7 +58,7 @@ void setup() {
 void draw() {
   background(0);
   pushMatrix();
-  kfi.frame().applyTransformation(this);
+  kfi.frame().applyTransformation(scene);
   scene.drawAxis(30);
   popMatrix();
   
@@ -66,7 +66,7 @@ void draw() {
   
   for (int i=0; i<nbKeyFrames; ++i) {      
     pushMatrix();
-    kfi.keyFrame(i).applyTransformation(this);
+    kfi.keyFrame(i).applyTransformation(scene);
     
     if ( keyFrame[i].grabsMouse() )
       scene.drawAxis(40);

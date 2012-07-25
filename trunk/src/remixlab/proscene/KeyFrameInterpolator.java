@@ -826,43 +826,8 @@ public class KeyFrameInterpolator implements Cloneable {
 			}
 			pathIsValid = true;
 		}
-
-		if (mask != 0) {
-			scene.renderer().pushStyle();
-			scene.renderer().strokeWeight(2);
-
-			if ((mask & 1) != 0) {
-				scene.renderer().noFill();
-				scene.renderer().stroke(170);
-				scene.renderer().beginShape();
-				for (Frame myFr : path)
-					scene.renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
-				scene.renderer().endShape();
-			}
-			if ((mask & 6) != 0) {
-				int count = 0;
-				if (nbFrames > nbSteps)
-					nbFrames = nbSteps;
-				float goal = 0.0f;
-
-				for (Frame myFr : path)
-					if ((count++) >= goal) {
-						goal += nbSteps / (float) nbFrames;
-						scene.renderer().pushMatrix();
-
-						// pg3d.applyMatrix(myFr.matrix());
-						myFr.applyTransformation(scene.renderer());
-
-						if ((mask & 2) != 0)
-							scene.drawKFICamera(scale);
-						if ((mask & 4) != 0)
-							scene.drawAxis(scale / 10.0f);
-
-						scene.renderer().popMatrix();
-					}
-			}
-			scene.renderer().popStyle();
-		}
+		
+		scene.drawPath(path, mask, nbFrames, nbSteps, scale);	
 	}
 
 	/**
