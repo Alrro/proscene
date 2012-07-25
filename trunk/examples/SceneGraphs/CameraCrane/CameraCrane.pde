@@ -129,7 +129,7 @@ public void handleMouse() {
 
 // the actual drawing function, shared by the two scenes
 public void drawing(Scene scn) {
-  PGraphics3D pg3d = scn.renderer();
+  PGraphics3D pg3d = (PGraphics3D) scn.renderer();
   pg3d.background(0);
   if (enabledLights) {
     pg3d.lights();
