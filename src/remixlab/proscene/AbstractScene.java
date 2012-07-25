@@ -3035,65 +3035,28 @@ public abstract class AbstractScene  implements PConstants {
 	 * @see #coords(Point)
 	 */
 	public void beginScreenDrawing() {
-		//TODO fix me!
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-		
-		startCoordCalls++;
-		
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
-		//if ( pg3d instanceof processing.core.PGraphicsOpenGL ) {
-			pg3d.hint(DISABLE_DEPTH_TEST);
-			pg3d.matrixMode(PROJECTION);
-			pg3d.pushMatrix();
-			pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-			pg3d.matrixMode(MODELVIEW);
-			pg3d.pushMatrix();
-		  // Camera needs to be reset!
-			pg3d.camera();
-			zC = 0.0f;
-		}
-		else {
-			zC = 0.1f;
-		}
-		*/
-		pg.hint(DISABLE_DEPTH_TEST);
-		((PGraphicsOpenGL)pg).pushProjection();
-		
-		//pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
-		
-		/**
-		float[] wh = camera().getOrthoWidthHeight();
-		pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());
-		// */
-		
-		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);
-		
-		//pg3d.ortho(0f, width, 0f, height, 0.0f, -1.0f);
-		//pg3d.ortho(0f, width, 0f, height, -1.0f, 0.0f);
-		//pg3d.ortho(0f, width, height, 0f, 0.0f, -1.0f);
-		
-		
-		// /**
-		float cameraZ = (height/2.0f) / PApplet.tan( camera().fieldOfView() /2.0f);
-		float cameraMaxFar = cameraZ * 2.0f;
-		float cameraNear = cameraZ / 2.0f;
-		float cameraFar = cameraZ * 2.0f;
-	  pg.ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
-		//pg3d.ortho(0, width, 0, height, cameraNear, cameraFar);
-		// */
-		
-		/**
-		float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
-		pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
-		// */
-		
-		pg.pushMatrix();
-	  // Camera needs to be reset!
-		pg.camera();		
-		zC = 0.0f;		
+	  if (startCoordCalls != 0)
+      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+
+    startCoordCalls++;
+
+    //TODO implement 2d
+    /**
+    renderer().hint(DISABLE_DEPTH_TEST);
+    renderer().pushProjection();
+
+    
+    float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+    float cameraNear = cameraZ / 2.0f;
+    float cameraFar = cameraZ * 2.0f;
+    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);    
+
+    renderer().pushMatrix();
+    renderer().camera();      
+          
+    zC = 0.0f;
+    */		
 	}
 
 	/**
@@ -3104,22 +3067,17 @@ public abstract class AbstractScene  implements PConstants {
 	 */
 	public void endScreenDrawing() {
 		startCoordCalls--;
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class ) {
-			pg3d.matrixMode(PROJECTION);
-			pg3d.popMatrix();
-			pg3d.matrixMode(MODELVIEW);  
-			pg3d.popMatrix();		  
-			pg3d.hint(ENABLE_DEPTH_TEST);
-		}
-		*/		
-		((PGraphicsOpenGL)pg).popProjection();  
-		pg.popMatrix();		  
-		pg.hint(ENABLE_DEPTH_TEST);
+    if (startCoordCalls != 0)
+      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+    
+    //TODO implement 2d
+    
+    /**
+    renderer().popProjection();
+    renderer().popMatrix();
+    renderer().hint(ENABLE_DEPTH_TEST);
+    */
 	}
 	
 	/**

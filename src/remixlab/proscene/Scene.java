@@ -983,6 +983,66 @@ public class Scene extends AbstractScene {
 
 		pg.popStyle();
 	}
+	
+	/**
+	 * Computes the world coordinates of an screen object so that drawing can be
+	 * done directly with 2D screen coordinates.
+	 * <p>
+	 * All screen drawing should be enclosed between {@link #beginScreenDrawing()}
+	 * and {@link #endScreenDrawing()}. Then you can just begin drawing your
+	 * screen shapes (defined between {@code PApplet.beginShape()} and {@code
+	 * PApplet.endShape()}).
+	 * <p>
+	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
+	 * first call {@code PVector p = coords(new Point(x, y))} then do your
+	 * drawing as {@code vertex(p.x, p.y, p.z)}.
+	 * <p>
+	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
+	 * 3d scene then draw first all your 3d before doing any call to a 
+	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.  
+	 * 
+	 * @see #endScreenDrawing()
+	 * @see #coords(Point)
+	 */
+	@Override
+	public void beginScreenDrawing() {
+	  if (startCoordCalls != 0)
+      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+
+    startCoordCalls++;
+
+    renderer().hint(DISABLE_DEPTH_TEST);
+    renderer().pushProjection();
+
+    
+    float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+    float cameraNear = cameraZ / 2.0f;
+    float cameraFar = cameraZ * 2.0f;
+    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);    
+
+    renderer().pushMatrix();
+    renderer().camera();      
+          
+    zC = 0.0f;		
+	}
+
+	/**
+	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #coords(Point)
+	 */
+	@Override
+	public void endScreenDrawing() {
+		startCoordCalls--;
+    if (startCoordCalls != 0)
+      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+    renderer().popProjection();
+    renderer().popMatrix();
+    renderer().hint(ENABLE_DEPTH_TEST);
+	}
 
 	/**
 	 * Draws a rectangle on the screen showing the region where a zoom operation
