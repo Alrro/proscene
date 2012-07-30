@@ -9,8 +9,8 @@ import remixlab.proscene.*;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.KeyboardAction;
 */
-import remixlab.proscene.Scene.CameraKeyboardAction;
-import remixlab.proscene.Scene.KeyboardAction;
+import remixlab.proscene.AbstractScene.CameraKeyboardAction;
+import remixlab.proscene.AbstractScene.KeyboardAction;
 
 @SuppressWarnings("serial")
 public class BasicUseMofified extends PApplet {
