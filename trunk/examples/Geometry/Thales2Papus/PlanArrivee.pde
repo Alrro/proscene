@@ -33,4 +33,3 @@ class PlanArrivee {
     normale=  repere.inverseTransformOf(new PVector(0, 0, 1));
   }
 }
-

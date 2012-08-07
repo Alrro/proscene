@@ -16,13 +16,11 @@ class Homothetie {
     rapport=CA.dot(u)/CD.dot(u);
   }
 
-
-
   PVector imageVecteur(PVector v) {
     return PVector.add(centre, PVector.mult(v, rapport));
   }
-  PVector imagePoint(PVector p) {
 
+  PVector imagePoint(PVector p) {
     return imageVecteur(PVector.sub(p, centre));
   }
 
@@ -42,4 +40,3 @@ class Homothetie {
     return res;
   }
 }
-

@@ -18,9 +18,6 @@ class PointSphere {
     alidade1.setTranslation(new PVector(150*cos(fi), 150*sin(fi), 0));
     dragueur.setPosition(pos);
 
-
-
-
     planaire=new LocalConstraint();
     planaire.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0, 0, 1));
     planaire.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0, 0, 0));
@@ -28,10 +25,7 @@ class PointSphere {
     alidade1.setConstraint(planaire);
   }
 
-
   void draw(PVector posit) {
-
-
     scene.drawAxis();
     pushMatrix();
     dragueur.applyTransformation();
@@ -61,7 +55,6 @@ class PointSphere {
     popMatrix();
     stroke(0);
 
-
     PVector pa0=projectionSurDroite(alidade0.position(), repere.position());
     PVector pa1=projectionSurDroite(alidade1.position(), repere.position());
     PVector reppa0=repere.transformOf(comb(1, alidade0.position(), -1, pa0));
@@ -82,4 +75,3 @@ class PointSphere {
     quat2=new Quaternion(p, angleRot);
   }
 }
-

@@ -30,7 +30,6 @@ import java.util.Iterator;
 import java.util.List;
 
 import processing.core.*;
-import processing.opengl.*;
 
 /**
  * A Frame is a 3D coordinate system, represented by a {@link #position()} and
@@ -1404,7 +1403,7 @@ public class Frame implements Cloneable {
 	 * <p>
 	 * <b>Attention:</b> This technique is inefficient because {@code
 	 * p.applyMatrix} will try to calculate the inverse of the transform. Avoid it
-	 * whenever possible and instead use {@link #applyTransformation(PApplet)}
+	 * whenever possible and instead use {@link #applyTransformation(Scene)}
 	 * which is very efficient.
 	 * <p>
 	 * This matrix only represents the local Frame transformation (i.e., with
@@ -1418,7 +1417,7 @@ public class Frame implements Cloneable {
 	 * <p>
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 * 
-	 * @see #applyTransformation(PApplet)
+	 * @see #applyTransformation(Scene)
 	 */
 	public final PMatrix3D matrix() {
 		PMatrix3D pM = new PMatrix3D();
@@ -1436,7 +1435,7 @@ public class Frame implements Cloneable {
 	 * Convenience function that simply calls {@code scn.applyTransformation(this)}.
 	 * 
 	 * @see #matrix()
-	 * @see remixlab.proscene.AbstractScene#applyTransformation(Frame)
+	 * @see remixlab.proscene.Scene#applyTransformation(Frame)
 	 */
 	public void applyTransformation(Scene scn) {
 		scn.applyTransformation(this);

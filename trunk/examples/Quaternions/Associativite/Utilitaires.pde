@@ -1,4 +1,3 @@
-
 PVector comb(float t1, PVector v1, float t2, PVector v2) {
   PVector res=PVector.add(PVector.mult(v1, t1), PVector.mult(v2, t2));
   return res;
@@ -10,12 +9,12 @@ PVector comb(float t1, PVector v1, float t2, PVector v2, float t3, PVector v3) {
   return res;
 }
 
-
 PVector centreGravite(PVector u, PVector v, PVector r) {
   PVector gr= comb(0.5f, u, 0.5f, v);
   gr= comb(1.0f/3.0f, r, 2.0f/3.0f, gr);
   return gr;
-} 
+}
+
 PVector barycentre(float lamb, PVector u, PVector v) {
   return comb(lamb, u, 1-lamb, v);
 }
@@ -27,14 +26,16 @@ float  barycentre(float lamb, float u, float v) {
 void ligne(PVector a, PVector b) {
   line(a.x, a.y, a.z, b.x, b.y, b.z);
 }
+
 void afficher(PVector u) {
   println("vecteur = "+u.x+"    "+u.y+"   "+u.z);
 }
+
 void afficher(Quaternion q) {
   println("quaternion = x  "+q.x+"  y  "+q.y+" z  "+q.z+"... w  "+q.z);
 }
 
-void    rectangle(color c, float dx, float dy, float ax, float ay) {
+void rectangle(color c, float dx, float dy, float ax, float ay) {
   stroke(150);
   fill(c);
   beginShape();
@@ -46,7 +47,6 @@ void    rectangle(color c, float dx, float dy, float ax, float ay) {
   endShape(CLOSE);
 }
 
-//
 void triangle3D(PVector a, PVector b, PVector c) {
   beginShape();
   fill(255, 200, 0, 200);
@@ -56,7 +56,8 @@ void triangle3D(PVector a, PVector b, PVector c) {
   fill(155, 50, 250, 200);
   vertex( c.x, c.y, c.z);
   endShape();
-}     
+} 
+
 void triangle3D(PVector a, PVector b, PVector c, float k, float l, float m) {
   stroke(0, 100, 255);
   beginShape();
@@ -69,14 +70,12 @@ void triangle3D(PVector a, PVector b, PVector c, float k, float l, float m) {
   endShape();
 }  
 
-
 void triangles3D(PVector a, PVector b, PVector c) {
   PVector or=new PVector(0, 0, 0);
   triangle3D(a, b, or);
   triangle3D(b, c, or);
   triangle3D(a, c, or);
 }
-
 
 PVector symetriePlan(PVector m, PVector u, PVector v) {
   PVector normale=u.cross(v);
@@ -85,20 +84,16 @@ PVector symetriePlan(PVector m, PVector u, PVector v) {
   return comb(1, m, -2.0, pm);
 }
 
-
 PVector projectionSurDroite(PVector v, PVector droite) {
   PVector u=droite.get();
   u.normalize();
   return PVector.mult(u, u.dot(v));
 }
 
-
-float angleQuaternion(Quaternion q) 
-{	
+float angleQuaternion(Quaternion q) {	
   q.normalize();
   return (float) Math.acos(q.w)* 2.0f;
 }  
-
 
 PVector normaliser(PVector v, float f) {
   v.normalize();
@@ -118,4 +113,3 @@ void afficherL(String L, PVector po) {
   text(L, 10, 10);
   popMatrix();
 }
-

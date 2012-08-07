@@ -47,9 +47,7 @@ void rectangle(color c, float dx, float dy, float ax, float ay) {
   endShape(CLOSE);
 }
 
-//
 void triangle3d(PVector a, PVector b, PVector c) {
-
   beginShape();
   fill(255, 200, 0, 200);
   vertex( a.x, a.y, a.z);
@@ -58,7 +56,8 @@ void triangle3d(PVector a, PVector b, PVector c) {
   fill(155, 50, 250, 200);
   vertex( c.x, c.y, c.z);
   endShape();
-}    
+} 
+
 void triangle3d(PVector a, PVector b, PVector c, float k, float l, float m) {
   stroke(0, 100, 255);
   beginShape();
@@ -70,8 +69,8 @@ void triangle3d(PVector a, PVector b, PVector c, float k, float l, float m) {
   vertex( c.x, c.y, c.z);
   endShape();
 }    
-void triangles3D(PVector a, PVector b, PVector c) {
 
+void triangles3D(PVector a, PVector b, PVector c) {
   triangle3d(a, b, o);
   triangle3d(b, c, o);
   triangle3d(a, c, o);
@@ -84,9 +83,9 @@ PVector symetriePlan(PVector m, PVector u, PVector v) {
 
   return comb(1, m, -2.0, pm);
 }
+
 PVector projectionSurDroite(PVector v, PVector droite) {
   PVector u=droite.get();
   u.normalize();
   return PVector.mult(u, u.dot(v));
 }
-

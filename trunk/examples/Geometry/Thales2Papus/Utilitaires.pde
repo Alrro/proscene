@@ -21,16 +21,17 @@ void balle(int i) {
   sphere(14); 
   popStyle();
 }
+
 PVector comb(float t1, PVector v1, float t2, PVector v2) {
   PVector res=PVector.add(PVector.mult(v1, t1), PVector.mult(v2, t2));
   return res;
 }
+
 PVector comb(float t1, PVector v1, float t2, PVector v2, float t3, PVector v3) {
   PVector res=PVector.add(PVector.mult(v1, t1), PVector.mult(v2, t2));
   res=PVector.add(res, PVector.mult(v3, t3));
   return res;
 }
-
 
 float angleEntre(PVector u, PVector v) {
   u.normalize();
@@ -38,14 +39,14 @@ float angleEntre(PVector u, PVector v) {
   float sinus=u.y*v.z-u.z*v.y;
 
   return asin(sinus);
-}     //
-
+}
 
 PVector centreGravite(PVector u, PVector v, PVector r) {
   PVector gr= comb(0.5f, u, 0.5f, v);
   gr= comb(1.0f/3.0f, r, 2.0f/3.0f, gr);
   return gr;
 }
+
 PVector barycentre(float lamb, PVector u, PVector v) {
   return comb(lamb, u, 1-lamb, v);
 }
@@ -57,12 +58,15 @@ float  barycentre(float lamb, float u, float v) {
 void ligne(PVector a, PVector b) {
   line(a.x, a.y, a.z, b.x, b.y, b.z);
 }
+
 void afficher(PVector u) {
   println("vecteur = "+u.x+"    "+u.y+"   "+u.z);
 }
+
 void afficher(Quaternion q) {
   println("quaternion = x  "+q.x+"  y  "+q.y+" z  "+q.z+"... w  "+q.z);
 }
+
 PVector projection(PVector M) {
   return  projection( M, true);
 }
@@ -80,6 +84,7 @@ PVector projection(PVector M, boolean dess) {
   strokeWeight(1);
   return rep;
 }
+
 PVector intersectionDroite(PVector u1, PVector v1, PVector u2, PVector v2) {
   PVector uv1=comb(1, v1, -1, u1);
   PVector uv2=comb(1, v2, -1, u2);
@@ -89,6 +94,7 @@ PVector intersectionDroite(PVector u1, PVector v1, PVector u2, PVector v2) {
   float lambda=(u1u2.dot(nor))/(uv1.dot(nor));
   return comb(1, u1, lambda, uv1);
 }
+
 PVector intersectionDroiteDir2(PVector u1, PVector v1, PVector u2, PVector dir2) {
   PVector uv1=comb(1, v1, -1, u1);
   PVector uv2=dir2;
@@ -98,7 +104,8 @@ PVector intersectionDroiteDir2(PVector u1, PVector v1, PVector u2, PVector dir2)
   float lambda=(u1u2.dot(nor))/(uv1.dot(nor));
   return comb(1, u1, lambda, uv1);
 }
-void    rectangle(color c, float dx, float dy, float ax, float ay) {
+
+void rectangle(color c, float dx, float dy, float ax, float ay) {
   stroke(150);
   fill(c);
   beginShape();
@@ -110,9 +117,7 @@ void    rectangle(color c, float dx, float dy, float ax, float ay) {
   endShape(CLOSE);
 }
 
-//
 void triangle3d(PVector a, PVector b, PVector c) {
-
   beginShape();
   fill(255, 200, 0, 200);
   vertex( a.x, a.y, a.z);
@@ -121,7 +126,8 @@ void triangle3d(PVector a, PVector b, PVector c) {
   fill(155, 50, 250, 200);
   vertex( c.x, c.y, c.z);
   endShape();
-}    
+}
+
 void triangle3d(PVector a, PVector b, PVector c, color couleur) {
   stroke(0, 100, 255);
   beginShape();
@@ -131,4 +137,3 @@ void triangle3d(PVector a, PVector b, PVector c, color couleur) {
   vertex( c.x, c.y, c.z);
   endShape();
 } 
-

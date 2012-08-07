@@ -4432,15 +4432,13 @@ public class Scene implements PConstants {
 	 * both correctly drawn with respect to the {@code body} coordinate system.
 	 * <p>
 	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method
-	 * should be used whenever possible (one can also use {@link #matrix()}
-	 * instead).
+	 * should be used whenever possible (one can also use 
+	 * {@link remixlab.proscene.Frame#matrix()} instead).
 	 * 
-	 * @see #matrix()
+	 * @see remixlab.proscene.Frame#matrix()
 	 */
 	public void applyTransformation(Frame frame) {
 		renderer().translate(frame.translation().x, frame.translation().y, frame.translation().z);
 		renderer().rotate(frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);		
-	}
-	
-	
+	}	
 }

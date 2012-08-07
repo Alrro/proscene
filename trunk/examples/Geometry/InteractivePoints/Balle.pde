@@ -10,8 +10,7 @@ public class Balle {
 
     iFrame.setPosition(vecteurpos);
   }
-
-  //
+    
   public void draw() {
     draw(true);
   }
@@ -31,17 +30,11 @@ public class Balle {
     popStyle();
     popMatrix();
   }
-
-
-
-
-
+  
   public int getColor() {
     return c;
   }
-
-
-
+  
   public void setColor(int myC) {
     c = myC;
   }
@@ -49,8 +42,6 @@ public class Balle {
   public PVector getPosition() {
     return iFrame.position();
   }
-
-
 
   public void setPosition(PVector pos) {
     iFrame.setPosition(pos);
@@ -93,4 +84,3 @@ public class Balle {
     endShape(CLOSE);
   }
 }
-

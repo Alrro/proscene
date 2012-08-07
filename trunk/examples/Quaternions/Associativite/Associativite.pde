@@ -1,6 +1,6 @@
 /**
  * Associativite
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 import remixlab.proscene.*;
@@ -17,13 +17,13 @@ PFont font;
 
 void setup() {
   size(850, 850, P3D);
-  //font=loadFont("ArialMT-48.vlw");
   font = createFont("Arial", 48);
   raySphere=400;
   zplan=-500;
   nord=new PVector(0, 0, raySphere); 
   or=new PVector(0, 0, 0);
   scene=new Scene(this);
+  scene.setRadius(700);
   scene.setAxisIsDrawn(true);
   scene.setGridIsDrawn(false);
 
@@ -33,9 +33,6 @@ void setup() {
   drag=new WorldConstraint();
   drag.setTranslationConstraint(AxisPlaneConstraint.Type.FREE, new PVector(0, 0, 0));
   drag.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0, 0, 0));
-
-  // frameM.setPosition(pointM);
-
 
   arc1=new Arcad(new PVector(0, 150, 150), new PVector(raySphere*cos(PI/3.0)*cos(PI/8.0), raySphere*sin(PI/3.0)*cos(PI/8.0), -raySphere*sin(PI/8.0)), 2.8, "arc 1");
   arc2=new Arcad(new PVector(-50, 300, 10), new PVector(raySphere*cos(PI/4.0)*cos(PI/10.0), raySphere*sin(PI/4.0)*cos(PI/10.0), raySphere*sin(PI/10.0)), 1.2, "arc 2");
@@ -48,6 +45,7 @@ void setup() {
   scene.camera().setPosition(new PVector(0, 0, 1100));
   montretout=false;
 }
+
 void draw() {
   background(0, 0, 105);
   directionalLight(255, 255, 255, -1, 0, 0);
@@ -69,7 +67,7 @@ void draw() {
   ar12_3.init(Quaternion.multiply(arc3.quat, ar12.quat), ar12.depart, arc3.arrivee);
   ar12_3.draw();
 }
+
 void keyPressed() {
   montretout=!montretout;
 }
-

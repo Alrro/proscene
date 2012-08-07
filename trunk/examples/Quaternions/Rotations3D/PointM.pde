@@ -47,7 +47,6 @@ class PointM {
     popMatrix();
   }
 
-
   void arcad(float ray, float an, float zz, int co, boolean boo, float rhoo) {
     fill(155, 0, 0, 254);
     noStroke();
@@ -73,20 +72,7 @@ class PointM {
       noStroke();
       rotateY(PI);
       scene.drawArrow(70);
-
-
-
       popMatrix();
     }
-    /* beginShape(TRIANGLE_FAN);
-     //noFill();  stroke(0,100,50,250);
-     fill(55, 170, 170);
-     vertex(0, 0, zz);
-     for (int i=0; i<51;i++) {
-     fill(55+3*i, 170+i, 170+i);
-     vertex(ray*cos(alph*i), ray*sin(alph*i), 0);
-     }
-     endShape();*/
   }
 }
-

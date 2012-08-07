@@ -42,10 +42,7 @@ class Plan {
     reperes[4].setConstraint(contrainte4);
   }
 
-
-
   void draw() {
-
     rotateY(-PI/4);
     rectangle(color(0, 0, 255, 98));
     rotateX(-PI/4);
@@ -87,9 +84,6 @@ class Plan {
 
     popMatrix();// retour au monde
   }
-  //
-
-  //
 
   void   drawLine(int n, color c) {
     if (n!=4) {
@@ -101,21 +95,17 @@ class Plan {
     stroke(0);
     line(-200, 0, 0, 200, 0, 0);
   }
-  //
-  //
+
   float det(float a, float b, float ap, float bp) {
     return a*bp-ap*b;
   }
-  //
-  //
+
   PVector cramer(float a, float b, float c, float ap, float bp, float cp) {
     float d=det(a, ap, b, bp);
     float dx=det(c, cp, b, bp);
     float dy=det(a, ap, c, cp);
     return new PVector(dx/d, dy/d, 0);
   }
-  //
-  //
 
   PVector intersection(InteractiveFrame f1, InteractiveFrame f2) {
     Quaternion q1=f1.rotation();
@@ -128,6 +118,7 @@ class Plan {
     -s2, c2, -s2*f2.translation().x+c2*f2.translation().y);
     return res;
   }
+
   void creerTable() {
     for (int i=0;i<nb;i++) {
       for (int j=0;j<nb;j++) {
@@ -135,8 +126,7 @@ class Plan {
       }
     }
   }
-  //
-  //
+
   void  calculerIntersections() {
     for (int i=1;i<nb;i++) {
       for (int j=i+1;j<nb;j++) {
@@ -150,7 +140,8 @@ class Plan {
       }
     }
   }
-  void    rectangle(color c) {
+
+  void rectangle(color c) {
     fill(c);
     beginShape();
     vertex(0, 0, 0);
@@ -160,4 +151,3 @@ class Plan {
     endShape(CLOSE);
   }
 }
-

@@ -1,10 +1,9 @@
 /**
  * CrankAndNut
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 import remixlab.proscene.*;
-
 
 Scene scene;
 Manivelle manivelle;
@@ -14,10 +13,11 @@ InteractiveFrame vis, manette;
 WorldConstraint cPlane, cMain;
 float angleVis, angle, delta;
 PVector prevdif;
-void setup() {
 
+void setup() {
   size(800, 800, P3D);
   scene=new Scene(this);
+  scene.setRadius(220);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
   scene.camera().setPosition(new PVector(0, 0, 600));
@@ -86,9 +86,6 @@ void draw() {
   float ny=manette.position().y*100/ray;
   manette.setPosition(new PVector(nx, ny, manette.position().z));
 }
-//
-//
-//
 
 PVector comb(float t1, PVector v1, float t2, PVector v2) {
   PVector res=PVector.add(PVector.mult(v1, t1), PVector.mult(v2, t2));
@@ -100,6 +97,4 @@ float angleEntre(PVector u, PVector v) {
   v.normalize();
   float sinus=u.x*v.y-u.y*v.x;
   return asin(sinus);
-}     //
-//
-
+}

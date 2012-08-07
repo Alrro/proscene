@@ -1,11 +1,10 @@
 /**
  * Rotations3D
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 import remixlab.proscene.*;
 Scene scene;
-
 
 PointSphere pt1, pt2;
 PointM pointm;
@@ -17,6 +16,7 @@ boolean avancer2, avancer1, avancer3;
 void setup() {
   size(850, 850, P3D);
   scene=new Scene(this);
+  scene.setRadius(400);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(true);
   pointm=new PointM();
@@ -39,14 +39,12 @@ void setup() {
   frameRate(20);
 }
 
-
 void draw() {
   background(255);
   directionalLight(185, 175, 255, -0.3, 1, -1);
   directionalLight(155, 255, 195, 0.2, 1, -0.5);
   directionalLight(255, 150, 195, -1, -1, -0.5);
   directionalLight(255, 255, 195, 1, -3, 1);
-
 
   pointm.draw();
   pt1.draw(pointm.mpos);
@@ -95,4 +93,3 @@ void draw() {
     }
   }
 }
-
