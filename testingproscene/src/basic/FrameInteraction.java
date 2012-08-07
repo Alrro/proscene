@@ -63,6 +63,11 @@ public class FrameInteraction extends PApplet {
 		
 		popMatrix();	
 		
+		int c = color(120,50,87);
+		PVector center = new PVector(30,30);
+		//scene.drawFilledCircle(20, c, center, 15);		
+		scene.drawFilledSquare(c, center, 15);
+		
 		/**
 		stroke(255);
 		scene.beginScreenDrawing();
