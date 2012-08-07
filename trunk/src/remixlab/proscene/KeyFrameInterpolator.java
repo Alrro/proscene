@@ -827,7 +827,7 @@ public class KeyFrameInterpolator implements Cloneable {
 			pathIsValid = true;
 		}
 		
-		scene.drawPath(path, mask, nbFrames, nbSteps, scale);	
+		scene.drawPath(path, mask, nbFrames, nbSteps, scale);
 	}
 
 	/**
