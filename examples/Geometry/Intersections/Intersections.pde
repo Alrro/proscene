@@ -1,26 +1,19 @@
 /**
  * Intersections
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 import remixlab.proscene.*;
 
-
 Scene scene;
 Plan plan;
-
 
 void setup() {
   size (800, 640, P3D); 
   scene = new Scene(this);
-
-
-  scene.setRadius(20);
   scene.setGridIsDrawn(false);
-
   plan=new Plan();
 }
-
 
 void draw() {
   background(255);
@@ -33,4 +26,3 @@ void draw() {
   scene.drawAxis(80); 
   plan.draw();
 }
-

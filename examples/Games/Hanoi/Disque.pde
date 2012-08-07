@@ -1,16 +1,10 @@
 class Disque {
-
-
-
-
-
   float rayon;
   float hauteur=10;
   int numero, surLePiquet;
   InteractiveFrame repere;
   color c;
-
-
+  
   Disque(int surLePiquet, int numer, InteractiveFrame ir) {
     surLePiquet=0;
     numero=numer;
@@ -18,10 +12,7 @@ class Disque {
     repere=ir;
     c=color(random(50, 150), random(50, 150), random(50, 150));
   }
-
-
-
-
+  
   void draw() {
     pushMatrix();
     repere.applyTransformation();
@@ -37,10 +28,7 @@ class Disque {
     ellipse(0, 0, rayon*2, rayon*2);
     popMatrix();
   }
-
-
-
-
+  
   void collerAuPiquet() {
     float  dis=sqrt(sq(repere.position().x)+sq(repere.position().y));
     float  disd=sqrt(sq(repere.position().x-150)+sq(repere.position().y));
@@ -61,4 +49,3 @@ class Disque {
     }
   }
 }
-

@@ -5,26 +5,20 @@
 
 import remixlab.proscene.*;
 
-
-
 Scene scene;
 int nbdisques=5;
 Systeme systeme;
 InteractiveFrame[] frames;
 WorldConstraint contrainteGuide, contraintePlan, immobile ;
 
-
-
-
-
-
 void setup() {
   size(850, 850, P3D);
   scene=new Scene(this);
   scene.setAxisIsDrawn(false);
-  scene.setGridIsDrawn(false);
-
+  scene.setGridIsDrawn(false);  
+  scene.setRadius(300);
   scene.camera().setPosition(new PVector(0, 0, 600));
+  scene.showAll();
 
   frames=new InteractiveFrame[nbdisques];
   //les contraintes
@@ -49,9 +43,6 @@ void setup() {
   systeme=new Systeme();
 }
 
-
-
-
 void draw()
 {
   background(50, 50, 130);
@@ -71,4 +62,3 @@ void draw()
   popMatrix();
   systeme.draw();
 }
-

@@ -11,7 +11,6 @@ class Arcal {
     arrivee=arr;
     quat=q;
     axe=quat.axis();
-    // angle=angleQuaternion(quat);
     angle=quat.angle();
     texte=tex;
     ocentre=projectionSurDroite(depart, axe);
@@ -24,8 +23,7 @@ class Arcal {
   }
 
   void draw() {
-
-    pushMatrix();//------------------------------
+    pushMatrix();
     repere.applyTransformation();
     if (montretout) {
       fill(0, 255, 0, 50);
@@ -36,20 +34,17 @@ class Arcal {
     dessinerArc();
   }
 
-
-
   void dessinerArc() {
     stroke(255, 0, 0);
     strokeWeight(6);
     ligne(repere.position(), or);
     strokeWeight(1);  
-    pushMatrix();//---------------
+    pushMatrix();
     repere.applyTransformation();
     fill(215, 210, 255, 30);
     float r=raycercle;
     noStroke();
     fill(255, 0, 0);
-
 
     beginShape(QUAD_STRIP); 
 
@@ -59,7 +54,6 @@ class Arcal {
       vertex(r*cos(aa), r*sin(aa), 23);
     }
     endShape();
-
 
     fill(255, 100, 100, 100);
     beginShape(TRIANGLE_FAN); 
@@ -73,9 +67,8 @@ class Arcal {
     endShape();
     translate(r*cos(angle/2.0), r*sin(angle/2.0), 0);
     text(texte, 30, 30);
-    popMatrix();//-------------------------------
+    popMatrix();
   }
-
 
   void init(Quaternion q, PVector dep, PVector arr) { 
     quat=q;
@@ -92,4 +85,3 @@ class Arcal {
     repere.setXAxis(comb(1, depart, -1, ocentre));
   }
 }
-

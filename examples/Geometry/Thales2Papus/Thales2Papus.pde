@@ -1,6 +1,6 @@
 /**
  * Thales2Papus
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 import remixlab.proscene.*;
@@ -21,7 +21,7 @@ void setup() {
   scene=new Scene(this);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
-  scene.setRadius(80);
+  scene.setRadius(850);
   soleil=new InteractiveFrame(scene);
   soleil.setPosition(new PVector(300, -700, 700));
   contrainteX=new WorldConstraint();
@@ -47,7 +47,7 @@ void setup() {
 
   plan1.setLongueur(800);
   scene.camera().setOrientation(new Quaternion( sin(-PI/10), 0, 0, cos(-PI/10)));
-  scene.camera().setPosition(new PVector(300, 1000, 1500));//-746, 1550, 813
+  scene.camera().setPosition(new PVector(600, 3000, 3600));
 }
 
 void draw() {
@@ -68,4 +68,3 @@ void placeSoleil() {
   sphere(20);
   popMatrix();
 }
-

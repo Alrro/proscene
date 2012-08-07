@@ -56,8 +56,7 @@ class Plan {
     figure1();
   }
 
-
-  void  figure0() {
+  void figure0() {
     stroke(180, 180, 255);
     strokeWeight(3);
     ligne(pst(1), pst(4));
@@ -73,8 +72,6 @@ class Plan {
     ligne(pst(1), pst(0));
     ligne(pst(5), pst(0));
   }
-
-
 
   void projetantes() {
     PVector pv;   
@@ -93,9 +90,7 @@ class Plan {
     ligne(pabs[1], pabs[5]);
     ligne(pabs[3], pabs[6]);
     strokeWeight(1);
-  } 
-
-
+  }
 
   void figure1() {
     PVector a2=intersectionDroite(pabs[2], pabs[5], pabs[3], pabs[4]);
@@ -119,15 +114,19 @@ class Plan {
     ligne(pabs[1], pabs[0]);
     ligne(pabs[5], pabs[0]);
   } 
+
   void setLargeur(float lar) {
     largeur=lar;
   }
+
   void setLongueur(float lar) {
     longueur=lar;
   }
+
   void setCouleur(color c) {
     col=c;
   }
+
   void getNormaleDansWorld() {
     normale=  repere.inverseTransformOf(new PVector(0, 0, 1));
   }
@@ -162,7 +161,6 @@ class Plan {
   }
 
   void actualiser() {
-
     PVector adirec=direc.get();
     direc=comb(1, pst(1), -1, pst(0));
     adirec.normalize();
@@ -184,13 +182,11 @@ class Plan {
     replaceC1A1();
   }
 
-
-
-
   PVector pst(int i) {
     return pointSensible[i].translation();
   }
-  void    replaceC1A1() {
+
+  void replaceC1A1() {
     PVector dir1=comb(1, pst(4), -1, pst(3));
     PVector ww=intersectionDroiteDir2(pst(4), pst(0), pst(2), dir1);//C1
     pointSensible[5].setTranslation(ww);//C1
@@ -201,7 +197,7 @@ class Plan {
     pointSensible[6].setTranslation(ww);//A1
   }
 
-  void  rectanglesoleil() {
+  void rectanglesoleil() {
     PVector soleilrep = repere.coordinatesOf(soleil.position());//coordonnées de soleil dans repere
     PVector ptr=  comb(1, soleilrep, 1, new PVector(0, -100, 0));//dans repere un point à projeter
     PVector sr =repere.inverseCoordinatesOf(ptr);//dans absolu le poinr à projeter
@@ -215,4 +211,3 @@ class Plan {
     endShape(CLOSE);
   }
 }
-

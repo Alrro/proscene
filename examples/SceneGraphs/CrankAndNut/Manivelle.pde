@@ -1,5 +1,6 @@
 class Manivelle {
   float hauteur, rayon;
+  
   Manivelle() {
     hauteur=50;
     rayon =50;
@@ -25,5 +26,4 @@ class Manivelle {
     scene.cone(20, 0, 0, 10, 15, 50);
     popMatrix();
   }
-}//fin de classe
-
+}

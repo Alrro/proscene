@@ -5,6 +5,7 @@ class Tige {
     hauteur=200;
     pas=15;
   }
+  
   void draw() {
     pushMatrix();
     pushStyle();
@@ -21,5 +22,4 @@ class Tige {
     popStyle();
     popMatrix();
   }
-}//fin de classe
-
+}

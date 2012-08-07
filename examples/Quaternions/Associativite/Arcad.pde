@@ -5,8 +5,7 @@ class Arcad {
   InteractiveFrame repere, dragueur, rotateur;
   String texte;
 
-  Arcad (PVector ax, PVector dep, float ang, String tex) 
-  {
+  Arcad (PVector ax, PVector dep, float ang, String tex) {
     depart=dep;
     axe=ax;
     angle=ang;
@@ -31,13 +30,10 @@ class Arcad {
     textFont(font, 48);
   }
 
-
-
-  void draw()
-  {
+  void draw() {
     init();  
 
-    pushMatrix();//------------------------------------------
+    pushMatrix();
     repere.applyTransformation();
     directionalLight(255, 200, 200, 1, -1, -2);
 
@@ -46,10 +42,7 @@ class Arcad {
       stroke(0);
       ellipse(0, 0, 2*raycercle, 2*raycercle);
     }
-
-
-
-
+    
     rotateur.setTranslation(normaliser(rotateur.translation(), raycercle));//replacer rotateur sur le Cercle
     float co=rotateur.translation().x/raycercle;
     float si=rotateur.translation().y/raycercle;
@@ -62,15 +55,15 @@ class Arcad {
     noStroke();  
     sphere(15);
     text(texte, 30, 30);
-    popMatrix();//----------------------------------------------------  
+    popMatrix();  
 
-    pushMatrix();//----------------------------------------------------
+    pushMatrix();
     float lon=dragueur.position().mag();
     if (lon<raySphere) dragueur.setPosition(PVector.mult(dragueur.position(), raySphere/lon));
     dragueur.applyTransformation();
     fill(255, 0, 255);
     sphere(15);
-    popMatrix();//------------------------------------------------------ 
+    popMatrix(); 
     stroke(255);
     strokeWeight(6);
     ligne(dragueur.position(), or);
@@ -151,4 +144,3 @@ class Arcad {
     repere.setXAxis(comb(1, depart, -1, ocentre));
   }
 }
-

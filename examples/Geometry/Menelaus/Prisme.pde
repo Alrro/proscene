@@ -1,21 +1,15 @@
 class Prisme {
-
-
   int nb=4;
   InteractiveFrame[] reperes ;
   AxisPlaneConstraint contrainteX, contrainteZ, contrainte4;
   PVector inter12, inter23, inter13;
   float tanang0, haut12, haut13, haut23;
 
-  //
-  //
-  //
   Prisme() {  
     reperes=new InteractiveFrame[nb];
     for (int i=0;i<nb;i++) {
       reperes[i]=new InteractiveFrame(scene);
     }
-
 
     reperes[0].setTranslation(-100, 100, 0);
     reperes[1].setTranslation(80, 100, 0);
@@ -91,8 +85,7 @@ class Prisme {
     popMatrix();
   }
 
-
-  void    rectangle(color c, float dx, float dy, float ax, float ay) {
+  void rectangle(color c, float dx, float dy, float ax, float ay) {
     stroke(150);
     fill(c);
     beginShape();
@@ -103,7 +96,8 @@ class Prisme {
     vertex(dx, ay, 0);
     endShape(CLOSE);
   }
-  void    rectanglev(color c, float dy, float dz, float ay, float az) {
+
+  void rectanglev(color c, float dy, float dz, float ay, float az) {
     stroke(150);
     fill(c);
     beginShape();
@@ -114,9 +108,7 @@ class Prisme {
     vertex(0, dy, az);
     endShape(CLOSE);
   }
-  //
-  //
-  //
+
   PVector intersection(int i, int j) {
     float lambda ; 
     Quaternion q0= reperes[i].orientation();
@@ -132,8 +124,6 @@ class Prisme {
     return res;
   }
 
-  //
-  //
   void balle(PVector res) {
     pushStyle(); 
     pushMatrix();
@@ -151,6 +141,7 @@ class Prisme {
     popMatrix(); 
     popStyle();
   }
+
   void dessinerPrisme() {
     stroke(150);
     triangle(inter12, 1, haut12);
@@ -160,11 +151,8 @@ class Prisme {
     triangle(inter23, 2, haut23);
     triangle(inter23, 3, haut23);
   }
-  //
-  //
-  //
-  void triangle(PVector inter, int n, float haut) {
 
+  void triangle(PVector inter, int n, float haut) {
     beginShape();
     fill(255, 200, 0, 60);
     vertex( inter.x, inter.y, inter.z);
@@ -174,5 +162,4 @@ class Prisme {
     vertex(reperes[n].position().x, reperes[n].position().y, reperes[n].position().z);
     endShape();
   }
-}//fin de la classe
-
+}

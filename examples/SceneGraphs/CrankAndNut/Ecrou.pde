@@ -1,10 +1,11 @@
 class Ecrou {
-
   float positionZ, pas;
+
   Ecrou() {
     positionZ=-180;
     pas=15;
   }
+
   void draw() {
     pushStyle();  
     pushMatrix();
@@ -15,4 +16,3 @@ class Ecrou {
     popStyle();
   }
 }
-

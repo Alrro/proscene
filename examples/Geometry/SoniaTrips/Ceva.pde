@@ -25,8 +25,6 @@ class Ceva {
   }//fin constructeur
 
   void cevaDraw() {
-    //rectangle(-100, -100, 100, 100);
-
     for ( int i=0;i<nb;i++) {        
       pushMatrix();
       reperes[i].applyTransformation();
@@ -47,15 +45,9 @@ class Ceva {
 
 
     calculerIntersections();
-  }//fin de ceva draw
+  }
 
-
-
-
-
-  //
-  //
-  void    rectangle( float dx, float dy, float ax, float ay) {
+  void rectangle( float dx, float dy, float ax, float ay) {
     stroke(150);
 
     beginShape();
@@ -67,23 +59,17 @@ class Ceva {
     vertex(dx, ay, 0);
     endShape(CLOSE);
   }
-  //------------------------------        
 
-  //
-  //
   float det(float a, float b, float ap, float bp) {
     return a*bp-ap*b;
   }
-  //
-  //
+
   PVector cramer(float a, float b, float c, float ap, float bp, float cp) {
     float d=det(a, ap, b, bp);
     float dx=det(c, cp, b, bp);
     float dy=det(a, ap, c, cp);
     return new PVector(dx/d, dy/d, 0);
   }
-  //
-  //
 
   PVector intersection(int i, int j, int k) {
     PVector f1=reperes[i].position();
@@ -99,10 +85,7 @@ class Ceva {
     return res;
   }
 
-  //
-  //
-  void  calculerIntersections() {
-
+  void calculerIntersections() {
     intersection12=intersection(1, 2, 3);
     intersection13=intersection(1, 3, 2);
     intersection23=intersection(2, 3, 1);
@@ -135,7 +118,6 @@ class Ceva {
     line(intersection13.x, intersection13.y, intersection13.z, f2.x, f2.y, f2.z);         
     line(intersection23.x, intersection23.y, intersection23.z, f1.x, f1.y, f1.z);
 
-
     h12=new Homothetie(intersection12, f1, f2);
     h23=new Homothetie(intersection23, f2, f3);
     h31=new Homothetie(intersection13, f3, f1);
@@ -146,7 +128,6 @@ class Ceva {
   }     
 
   void homothese() {
-
     PVector v0=h12.imagePoint(reperes[0].position());
     PVector v4=h12.imagePoint(reperes[4].position());
     PVector v1=h12.imagePoint(reperes[1].position());
@@ -165,23 +146,19 @@ class Ceva {
 
     placePhoto(v0, v1, v2, v3);
 
-
-
     PVector w0=h23.imagePoint(v0);
     PVector w1=h23.imagePoint(v1);
     PVector w2=h23.imagePoint(v2);
     PVector w3=h23.imagePoint(v3);
+
     placePhoto(w0, w1, w2, w3);
-
-
 
     PVector u0=h31.imagePoint(w0);
     PVector u1=h31.imagePoint(w1);
     PVector u2=h31.imagePoint(w2);
     PVector u3=h31.imagePoint(w3);
+
     placePhoto(u0, u1, u2, u3);
-
-
 
     traceCercle(av, bv);
     int tt=int(temps);
@@ -208,17 +185,13 @@ class Ceva {
       pyramide(bv, av, bv, bhv, ahv);
       break;
 
-
-
     default:          
       temps=0.0; 
-
       break;
     }
   }
 
   void triangleCeva(PVector av, PVector bv, PVector cv) {
-
     beginShape();
     fill(255, 0, 0, 99);
     vertex( av.x, av.y, av.z);
@@ -228,7 +201,6 @@ class Ceva {
     vertex(cv.x, cv.y, cv.z);
     endShape();
   }
-
 
   void placePhoto(PVector aw, PVector bw, PVector bhw, PVector ahw) {
     noFill();
@@ -240,8 +212,6 @@ class Ceva {
     vertex(ahw.x, ahw.y, ahw.z, 300, 0);
     endShape();
   }
-  //
-
 
   void traceCercle(PVector a, PVector b) {
     PVector d=PVector.sub(b, a);
@@ -264,7 +234,8 @@ class Ceva {
     popMatrix();
     strokeWeight(1);
   }
-  void   pyramide(PVector s, PVector a, PVector b, PVector c, PVector d) {
+
+  void pyramide(PVector s, PVector a, PVector b, PVector c, PVector d) {
     stroke(50, 155, 155, 99);
     strokeWeight(3);
     beginShape(TRIANGLE_FAN);
@@ -280,10 +251,9 @@ class Ceva {
     vertex(a.x, a.y, a.z);
     endShape();
     strokeWeight(1);
-  }//
+  }
 
   void mobile(PVector a, PVector aa, PVector b, PVector bb, PVector c, PVector cc, PVector d, PVector dd, float t) {
-
     PVector as=comb(1-t, a, t, aa);
     PVector bs=comb(1-t, b, t, bb);
     PVector cs=comb(1-t, c, t, cc);
@@ -291,10 +261,8 @@ class Ceva {
     placePhoto(as, bs, cs, ds);
   } 
 
-
   PVector comb(float t1, PVector v1, float t2, PVector v2) {
     PVector res=PVector.add(PVector.mult(v1, t1), PVector.mult(v2, t2));
     return res;
   }
-}//fin de la classe
-
+}

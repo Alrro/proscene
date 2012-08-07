@@ -1,10 +1,9 @@
 /**
  * Menelaus
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 import remixlab.proscene.*;
-
 
 Scene scene;
 Prisme prisme;
@@ -22,7 +21,5 @@ void setup() {
 void draw() {
   background(240, 230, 220);
   lights();
-
   prisme.draw();
 }
-

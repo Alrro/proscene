@@ -5,9 +5,7 @@ class Rail {
   AxisPlaneConstraint contrainte;
   PVector direc, pos;
 
-
   public Rail( int n0, int n1) {
-
     ndepart=n0;
     narrivee=n1;
     lambda=0.5;
@@ -22,6 +20,7 @@ class Rail {
     contrainte.setTranslationConstraintDirection(direc);  
     repere.setConstraint(contrainte);
   }
+  
   void actualiser() {
     PVector adirec=direc.get();
     direc=PVector.sub(balles[ndepart].iFrame.position(), balles[narrivee].iFrame.position());
@@ -42,4 +41,3 @@ class Rail {
     lambda=(f1f2.dot(f1f3))/(f1f2.dot(f1f2));
   }
 }
-

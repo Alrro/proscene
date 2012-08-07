@@ -21,11 +21,8 @@ class Systeme {
       disques[i]=new Disque(0, i, frames[i]);
     }
   }
-
-
-
-
-  void    draw() {
+  
+  void draw() {
     pilote();
     for (int i=0;i<4;i++) {
       for (int j=0;j<nbdisques;j++) {
@@ -35,26 +32,13 @@ class Systeme {
     // imprimeEtat();
   }
 
-
-
-
-
   int getEtat(int i, int j) {
     return etat[i][j];
   }
-
-
-
-
-
+  
   void setEtat(int i, int j, int d) {
     etat[i][j]=d;
   }
-
-
-
-
-
 
   int surLaPile( int numd) {
     int piquet=disques[numd].surLePiquet;
@@ -67,9 +51,6 @@ class Systeme {
     return reponse;
   }
 
-
-
-
   int calculHauteur(int n) {
     int rep=0;
     for (int i=0;i<nbdisques;i++) {
@@ -77,14 +58,8 @@ class Systeme {
     }
     return rep;
   }
-
-
-
-
-
-  void decollage(int disqueEnPrise)
-  {
-
+  
+  void decollage(int disqueEnPrise) {
     int  piquet=disques[disqueEnPrise].surLePiquet;
     int h=surLaPile(disqueEnPrise);
     PVector zplus15= PVector.add(disques[disqueEnPrise].repere.position(), new PVector(0, 0, 15));
@@ -94,14 +69,8 @@ class Systeme {
     setEtat(piquet, h, 5);
     situation=1;
   }
-
-
-
-
-
-
-  void attenteDeClic()
-  {
+  
+  void attenteDeClic() {
     int i=0;
     while ( (i<nbdisques)&& (!disques[i].repere.grabsMouse()))
     {
@@ -120,14 +89,7 @@ class Systeme {
     }
   }
 
-
-
-
-
-
-
   void atterrissage() {
-
     int  disc = getEtat(3, 0);
     int piquet=disques[disc].surLePiquet;
     int h=calculHauteur(piquet);
@@ -136,8 +98,6 @@ class Systeme {
     setEtat(piquet, h, disc);
     disques[disc].repere.setConstraint(immobile);
   }
-
-
 
   void dragageGuide() {
     int  disc = getEtat(3, 0);
@@ -178,8 +138,6 @@ class Systeme {
     return rep;
   }
 
-
-
   void dragageLibre() {
     int  d = getEtat(3, 0);
     disques[d].repere.setConstraint(contraintePlan);
@@ -211,11 +169,6 @@ class Systeme {
     }
   }
 
-
-
-
-
-
   void pilote() {
     switch(situation) {
     case 0:
@@ -231,10 +184,7 @@ class Systeme {
       atterrissage();
     }
   }
-
-
-
-
+  
   void imprimeEtat() {
     String s="piquet 0 ---> "+getEtat(0, 0)+"   "+getEtat(0, 1)+"   "+getEtat(0, 2)+"   "+getEtat(0, 3)+"   "+getEtat(0, 4) ;
     println(s);
@@ -247,47 +197,4 @@ class Systeme {
     println(s);
     println();
   }
-}//fin de classe
-
-
-/* int piquet=0;
- if ((n<5)&& (disques[n].repere.position().z<120)) {
- switch(int(disques[n].repere.position().x)) {
- case -150:
- piquet=0;              
- break;
- case 0:
- piquet=1;              
- break;
- case 150:
- piquet=2;              
- break;
- }//fin du switch*/
-
-
-/*
-     void placerLesContraintes()
- {
- int n=getEtat(3, 0);//getEtat(3,0) est 5 ou un numero de disque 0,1,2,3,4 
- // il y a un disque en mouvement
- if (getEtat(3, 0)<5)
- {
- for (int i=0;i<nbdisques;i++)
- {
- if (i!=n)disques[i].repere.setConstraint(immobile);
- }
- if (disques[n].repere.position().z<120)
- disques[n].repere.setConstraint(contrainteGuide);
- else
- disques[n].repere.setConstraint(contraintePlan);
- }
- else
- {
- for (int i=0;i<nbdisques;i++)
- { 
- disques[i].repere.setConstraint(immobile);
- }
- }
- }
- 
- */
+}

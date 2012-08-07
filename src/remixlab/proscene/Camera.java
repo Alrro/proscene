@@ -28,7 +28,8 @@ package remixlab.proscene;
 import processing.core.*;
 import processing.opengl.*;
 
-import java.nio.FloatBuffer;
+//TODO pend
+//import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;

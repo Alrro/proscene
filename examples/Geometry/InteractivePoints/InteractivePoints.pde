@@ -1,6 +1,6 @@
 /**
  * InteractivePoints
- * By Jaques Marie
+ * By Jacques Maire
  */
 
 //Un point  règlable toujours aligné avec deux points baladeurs
@@ -31,7 +31,7 @@ void setup() {
   }
   r=3;
   scene = new Scene(this);
-  scene.setRadius(90);
+  scene.setRadius(130);
   scene.showAll();
   scene.setCameraType(Camera.Type.PERSPECTIVE);
   scene.setGridIsDrawn(false);
@@ -51,6 +51,7 @@ void setup() {
   guides[4]=new Rail(1, 3);
   guides[5]=new Rail(2, 3);
 }
+
 void draw() {
   background(255, 200, 200);
   directionalLight(100, 100, 0, 1, -1, 1);
@@ -82,7 +83,8 @@ void ligne(PVector u, PVector v) {
   strokeWeight(2);
   line(2.0*u.x-v.x, 2.0*u.y-v.y, 2.0*u.z-v.z, 2.0*v.x-u.x, 2.0*v.y-u.y, 2.0*v.z-u.z);
 }
-void  dessinerFaces() {
+
+void dessinerFaces() {
   noStroke();
 
   for (int i=0;i<nb;i++) {
@@ -105,11 +107,9 @@ void  dessinerFaces() {
         beginShape(); 
         vertex(guides[i].repere.position().x, guides[i].repere.position().y, guides[i].repere.position().z); 
         vertex(guides[k].repere.position().x, guides[k].repere.position().y, guides[k].repere.position().z);
-
         vertex(guides[j].repere.position().x, guides[j].repere.position().y, guides[j].repere.position().z);
         endShape(CLOSE);
       }
     }
   }
 }
-
