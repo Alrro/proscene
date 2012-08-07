@@ -23,7 +23,6 @@ public class Button2D extends MouseGrabber {
     myText = t;    
     myFont = createFont("FFScala", fontSize);
     textFont(myFont);
-    textMode(SCREEN);
     textAlign(CENTER);
     setText(t);    
   }
@@ -40,7 +39,9 @@ public class Button2D extends MouseGrabber {
       fill(255);
     else
       fill(100);
+    scene.beginScreenDrawing();
     text(myText, position.x, position.y, myWidth, myHeight);
+    scene.endScreenDrawing();
     popStyle();
   }
 

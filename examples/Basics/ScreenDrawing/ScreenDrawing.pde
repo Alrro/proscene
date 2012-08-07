@@ -5,11 +5,10 @@
  * This example illustrates how to combine 2D and 3D drawing.
  * 
  * All screen drawing should be enclosed between Scene.beginScreenDrawing() and
- * Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
- * (defined between beginShape() and endShape()). Just note that to specify a
- * (x,y) vertex screen coordinate you should first call:
- * PVector p = coords(new Point(x, y)), then do your drawing as:
- * vertex(p.x, p.y, p.z).
+ * Scene.endScreenDrawing(). Then the x and y coordinates (e.g., as within vertex())
+ * are expressed in pixels screen coordinates. In this mode, you should use z
+ * values that are in the [0.0, 1.0] range (0.0 corresponding to the near
+ * clipping plane and 1.0 being just beyond the far clipping plane).
  *
  * In addition, if you want your screen drawing to appear on top of your 3d scene
  * then draw first all your 3d before doing any call to a beginScreenDrawing()
@@ -52,21 +51,15 @@ void draw() {
   // B. 2D drawing on top of the 3d scene 
   // All screen drawing should be enclosed between Scene.beginScreenDrawing() and
   // Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
-  // (defined between beginShape() and endShape()). Just note that to specify a
-  // (x,y) vertex screen coordinate you should first call:
-  // PVector p = coords(new Point(x, y)), then do your drawing as:
-  // vertex(p.x, p.y, p.z).
+  // (defined between beginShape() and endShape()).
   scene.beginScreenDrawing();
   pushStyle();
   strokeWeight(8);
   stroke(183,67,158,127);
   noFill();
   beginShape();
-  PVector p = new PVector();
-  for (int i = 0; i < points.size(); i++) {
-    p.set(scene.coords(new Point((float) ((Point) points.get(i)).x, (float) ((Point) points.get(i)).y)));
-    vertex(p.x, p.y, p.z);
-  }
+  for (int i = 0; i < points.size(); i++)    
+    vertex((float) ((Point) points.get(i)).x, (float) ((Point) points.get(i)).y, 1);
   endShape();  
   popStyle();
   scene.endScreenDrawing();
