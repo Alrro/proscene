@@ -26,9 +26,14 @@ import remixlab.proscene.*;
 Scene scene;
 Box [] boxes;
 ArrayList points;
+PFont font;
+boolean onScreen = false;
+boolean additionalInstructions = false;
 	
 void setup() {
   size(640, 360, P3D);
+  font = createFont("Arial", 16);
+  textFont(font, 16);
   scene = new Scene(this);
   // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
@@ -63,11 +68,25 @@ void draw() {
   endShape();  
   popStyle();
   scene.endScreenDrawing();
+  
+  // C. Render text instructions.
+  scene.beginScreenDrawing();
+  if(onScreen)
+    text("Press 'x' handle 3d scene", 5, 17);
+  else
+    text("Press 'x' to begin screen drawing", 5, 17);
+  if(additionalInstructions)
+    text("Press 'y' to clear screen", 5, 35);
+  scene.endScreenDrawing();  
 }
 
 void keyPressed() {
-  if ((key == 'x') || (key == 'x'))
+  if ((key == 'x') || (key == 'x')) {
     scene.toggleMouseHandling();
+    onScreen = !onScreen;
+    if(!additionalInstructions)
+      additionalInstructions = true;
+  }
   if ((key == 'y') || (key == 'Y'))
     points.clear();
 }
