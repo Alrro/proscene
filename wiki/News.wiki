@@ -1,5 +1,15 @@
 #summary Wiki page containing all the project news.
 
+=20/01/2012 Release of *Proscene v1.1.1*=
+
+Following our six months release cycle, we are pleased to announce the immediate availability of proscene v1.1.1 (download it [http://proscene.googlecode.com/files/proscene-1.1.1.zip here]). This is mostly a bug-fix release. Changelog:
+
+ # *Fixed* excessive instantiation of timers that were performed in various places throughout the library. Now they're only instantiated when they're needed :)
+ # A *_cache_* for some camera matrix operations that are commonly employed has been implemented. Applications continuously calling `camera().project` (e.g., those using multiple ―perhaps thousands of― mouse grabbers) should immediately perceive the benefit. Following the same pattern, `camera.unproject` has also been optimized, but to enable caching of the involved operations `camera().unprojectCacheIsOptimized` must explicitly be called. The latter is disabled by default, since applications heavily relying on this operation (such as the [http://disi.unal.edu.co/grupos/remixlab/local/projects/proscene-1.1.0/demos/PointUnderPixel/applet/index.html PointUnderPixel] example) are not the most common.
+ # The new method `scene.hideCursorOnFirstPerson(boolean hide)` allows the `Scene.MouseAction.LOOK_AROUND` to be performed by just moving the mouse (instead of dragging it). The *ThirdPersonCamera* example illustrates this feature. Note that `scene.hasMouseTracking()` is not affected by this new method. The `scene.cursorIsHiddenOnFirstPerson()` is `false` by default.
+
+This version of *proscene* only works with *Processing-1.5.x* and (hopefully) will be the last version supporting it. Development from now on is heading towards *Processing-2.x*. To all *proscene* users thank you for your continuous feedback and for playing around with it!
+
 =28/06/2011 Release of *Proscene v1.1.0*=
 
 We are pleased to announce the immediate availability of proscene v1.1.0 (download it [http://proscene.googlecode.com/files/proscene-v1.1.0.zip here]). Changelog:
