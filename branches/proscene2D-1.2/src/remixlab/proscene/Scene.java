@@ -882,7 +882,7 @@ public class Scene extends AbstractScene {
 			renderer().pushStyle();
 			renderer().strokeWeight(2);
 
-			if ((mask & 1) != 0) {
+			if ( ((mask & 1) != 0) && path.size() > 1 ) {			
 				renderer().noFill();
 				renderer().stroke(170);
 				renderer().beginShape();
@@ -1009,18 +1009,13 @@ public class Scene extends AbstractScene {
 	  if (startCoordCalls != 0)
       throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
                        + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-
     startCoordCalls++;
-
     renderer().hint(DISABLE_DEPTH_TEST);
-    renderer().pushProjection();
-
-    
+    renderer().pushProjection();    
     float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
-    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);    
-
+    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
     renderer().pushMatrix();
     renderer().camera();      
           
@@ -1083,16 +1078,11 @@ public class Scene extends AbstractScene {
 		float p1y = (float) dE.fCorner.getY();
 		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
-		PVector p1s = coords(new Point(p1x, p1y));
-		PVector p2s = coords(new Point(p2.x, p2.y));
 		pg.pushStyle();
 		pg.stroke(255, 255, 255);
 		pg.strokeWeight(2);
 		pg.noFill();
-		pg.beginShape(LINE);
-		pg.vertex(p1s.x, p1s.y, p1s.z);
-		pg.vertex(p2s.x, p2s.y, p2s.z);
-		pg.endShape();
+		pg.line(p2.x, p2.y, p1x, p1y);
 		pg.popStyle();
 		endScreenDrawing();
 	}	

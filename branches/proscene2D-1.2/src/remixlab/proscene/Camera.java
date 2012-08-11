@@ -655,6 +655,8 @@ public class Camera implements Cloneable {
 	 * Sets the kind of the Camera: PROSCENE or STANDARD.
 	 */
 	public void setKind(Kind k) {
+		if ((scene.space() == Scene.Space.TWO_D) && k==Kind.STANDARD)
+			return;
 		if(k!=knd)
 			lastFrameUpdate = scene.parent.frameCount;
 		knd = k;		
@@ -851,7 +853,7 @@ public class Camera implements Cloneable {
 	 * When the Camera {@link #kind()} is PROSCENE, these values are proportional
 	 * to the Camera (z projected) distance to the
 	 * {@link #arcballReferencePoint()}. When zooming on the object, the Camera is
-	 * translated forward \e and its frustum is narrowed, making the object appear
+	 * translated forward and its frustum is narrowed, making the object appear
 	 * bigger on screen, as intuitively expected.
 	 * <p>
 	 * When the Camera {@link #kind()} is STANDARD, these values are defined as

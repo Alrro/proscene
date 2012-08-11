@@ -177,8 +177,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				// Warning: same for left and right CoordinateSystemConvention:
 				PVector trans = new PVector(0.0f, 0.0f, -coef	* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
 				float wh[] = camera.getOrthoWidthHeight();
-				if( ( (wh[0] > camera.sceneRadius()) && (wh[1] > camera.sceneRadius()) ) || (trans.z > 0) || scene.space() == Scene.Space.THREE_D )
-				translate(inverseTransformOf(trans));
+				if( ( (wh[0] > camera.sceneRadius()) && (wh[1] > camera.sceneRadius()) ) ||
+						(trans.z > 0) || scene.space() == Scene.Space.THREE_D )
+					translate(inverseTransformOf(trans));
 				prevPos = eventPoint;
 				break;
 			}
@@ -202,14 +203,14 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				if( scene.isLeftHanded() )
 					angle = -angle;
 
-				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
+				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);				
+				
 				computeMouseSpeed(eventPoint);
 				setSpinningQuaternion(rot);
 				spin();
 				updateFlyUpVector();
 				prevPos = eventPoint;
+				
 				break;
 			}
 
