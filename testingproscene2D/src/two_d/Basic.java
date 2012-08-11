@@ -9,24 +9,18 @@ public class Basic extends PApplet {
 	Scene2D scene;
 
 	public void setup() {
-		//size(640, 360, JAVA2D);
-		size(640, 360, P2D);
+		size(640, 360, JAVA2D);
+		//size(640, 360, P2D);
 		scene = new Scene2D(this);
 		//scene.camera().centerScene();
-		scene.showAll();
-		if ( scene.camera().isAttachedToP5Camera() )
-			println("is attached to P5 camera");
-		else
-			println("is detached from P5 camera");		
-		if( scene.p5Renderer() == AbstractScene.P5Renderer.JAVA2D )
-			println("JAVA2D");
-		else
-			println("P2D");		
+		scene.showAll();		
 	}	
 
 	public void draw() {
 		background(150);
 		rect(0, 0, 55, 55);
+		
+		//println(scene.camera().frame().orientation().angle());
 		
 		/**
 		println("proscene projection matrix:");
@@ -48,6 +42,13 @@ public class Basic extends PApplet {
 		*/
 		
 		//println(scene.camera().position().x + " " + scene.camera().position().y + " " + scene.camera().position().z + " " );
+	}
+	
+	public void keyPressed() {
+		if(key == 'u' || key == 'U') {			
+			println("axis: " + scene.camera().frame().orientation().axis()					
+		          + " angle: " + scene.camera().frame().orientation().angle() );
+		}			
 	}
 	
 	public static void main(String args[]) {

@@ -25,7 +25,14 @@ public class BasicUse extends PApplet {
 	public void draw() {
 	  background(0);
 	  fill(204, 102, 0);
-	  box(20, 30, 50);
+	  box(20, 30, 50);	  
+	}
+	
+	public void keyPressed() {
+		if(key == 'u' || key == 'U') {			
+			println("axis: " + scene.camera().frame().orientation().axis()					
+		          + " angle: " + scene.camera().frame().orientation().angle() );
+		}			
 	}
 	
 	public static void main(String args[]) {
