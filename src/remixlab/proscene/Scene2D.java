@@ -88,34 +88,21 @@ public class Scene2D extends AbstractScene {
 	@Override
 	protected void bindMatrices() {
 		camera().computeProjectionMatrix();
-		camera().computeModelViewMatrix();
-		// /**
-		if ( this.p5Renderer() == P5Renderer.JAVA2D ) {			
-			//renderer().translate( camera().frame().translation().x, camera().frame().translation().y);
-			//renderer().rotate( camera().frame().rotation().angle());			
+		camera().computeModelViewMatrix();		
+		if ( this.p5Renderer() == P5Renderer.JAVA2D ) {
+			float[] wh = camera().getOrthoWidthHeight();			
+			PVector pos = camera().position();
+			Quaternion quat = camera().frame().orientation();
 			
-			//renderer().translate(-camera().position().x, -camera().position().y);
-			//renderer().translate(pg.width/2, pg.height/2);
-			
-			//renderer().translate(pg.width/2 - camera().position().x, pg.height/2 - camera().position().y);
-			
-			renderer().rotate(-camera().frame().rotation().angle());
-			renderer().translate(-camera().position().x, -camera().position().y);
-			
-			float rad = -camera().frame().rotation().angle();
-			float deg =  PApplet.degrees(rad);
-			//PApplet.println(rad + " radians is " + deg + " degrees");
-			//renderer().rotate( rad );
-			//renderer().rotate( -camera().frame().rotation().angle() );			
-									
-			float[] wh = camera().getOrthoWidthHeight();// return halfWidth halfHeight
-			//renderer().scale( 1/(2*wh[0]), 1/(2*wh[1]));
-			//renderer().scale( 1/(wh[0]), 1/(wh[1]));
-			//renderer().scale( wh[0], wh[1] );
-		  //renderer().scale( (2*wh[0])/pg.width, (2*wh[1])/pg.height);
-			//renderer().scale( pg.width/(2*wh[0]), -pg.height/(2*wh[1]));
+			renderer().translate(renderer().width/2, renderer().height/2);			
+			if(camera().frame().orientation().axis().z > 0)
+			  renderer().rotate(-quat.angle());
+		  //TODO: hack! to compensate when axis gets reverted
+			else
+				renderer().rotate(quat.angle());
+			renderer().translate(-pos.x, -pos.y);	
+			renderer().scale(wh[0]/(renderer().width/2), wh[1]/(renderer().height/2));
 		}
-		// */
 	}
 
 	@Override
