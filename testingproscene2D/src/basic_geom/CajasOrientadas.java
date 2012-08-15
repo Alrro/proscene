@@ -97,17 +97,7 @@ public class CajasOrientadas extends PApplet {
 		float c2y = camera.unprojectedCoordinatesOf(new PVector(0,height-8,0.1f)).y;		
 		stroke(255);
 		line(c1x, c1y, 0.1f, c2x, c2y, 0.1f);
-		// */
-				
-		// /**
-		scene.beginScreenDrawing();		
-		stroke(255);
-		PVector coord1 = scene.coords(new Point(8,8));
-		PVector coord2 = scene.coords(new Point(width-8,height-8));
-		line(coord1.x, coord1.y, coord1.z,
-		     coord2.x, coord2.y, coord2.z);
-		scene.endScreenDrawing();
-		// */
+		// */		
 		
 		popStyle();
 	}

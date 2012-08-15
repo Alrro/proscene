@@ -11,9 +11,14 @@ public class ScreenDrawing extends PApplet {
 	Point[] points;
 	int LINE_ITEMS = 500;
 	int index;
+	PFont font;
+	boolean onScreen = false;
+	boolean additionalInstructions = false;
 	
 	public void setup()	{
 		size(640, 360, P3D);
+		font = createFont("Arial", 16);
+		textFont(font, 16);
 		scene = new Scene(this);
 		scene.setRadius(150);
 		scene.showAll();
@@ -26,24 +31,35 @@ public class ScreenDrawing extends PApplet {
 
 	public void draw() {	
 		background(0);
-		for (int i = 0; i < boxes.length; i++)			
-			boxes[i].draw();
-		
-		//2D drawing
-		scene.beginScreenDrawing();
-		pushStyle();
-		strokeWeight(8);
-		stroke(183,67,158,127);
-		noFill();
-		beginShape();
-		PVector p = new PVector();
-		for (int i=0; i<index; i++) {
-			p.set(scene.coords(new Point(points[i].x, points[i].y)));
-			vertex(p.x, p.y, p.z);
-		}
-		endShape();
-		popStyle();		
-		scene.endScreenDrawing();
+		  // A. 3D drawing
+		  for (int i = 0; i < boxes.length; i++)
+		    boxes[i].draw();
+		    
+		  // B. 2D drawing on top of the 3d scene 
+		  // All screen drawing should be enclosed between Scene.beginScreenDrawing() and
+		  // Scene.endScreenDrawing(). Then you can just begin drawing your screen shapes
+		  // (defined between beginShape() and endShape()).
+		  scene.beginScreenDrawing();
+		  pushStyle();
+		  strokeWeight(8);
+		  stroke(183,67,158,127);
+		  noFill();
+		  beginShape();
+		  for (int i = 0; i < points.length; i++)    
+		    vertex((float) ((Point) points[i]).x, (float) ((Point) points[i]).y, 1);
+		  endShape();  
+		  popStyle();
+		  scene.endScreenDrawing();
+		  
+		  // C. Render text instructions.
+		  scene.beginScreenDrawing();
+		  if(onScreen)
+		    text("Press 'x' handle 3d scene", 5, 17);
+		  else
+		    text("Press 'x' to begin screen drawing", 5, 17);
+		  if(additionalInstructions)
+		    text("Press 'y' to clear screen", 5, 35);
+		  scene.endScreenDrawing();  
 	}
 	
 	// /**
