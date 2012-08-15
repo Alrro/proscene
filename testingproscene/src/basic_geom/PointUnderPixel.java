@@ -1,15 +1,7 @@
 package basic_geom;
 import geom.Box;
 
-import java.nio.FloatBuffer;
-
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
-import javax.media.opengl.GL2ES2;
-import javax.media.opengl.glu.GLU;
-
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -35,7 +27,7 @@ public class PointUnderPixel extends PApplet {
 	    camProfiles[i].setClickBinding( Scene.Modifier.SHIFT.ID, Scene.Button.MIDDLE, 2, Scene.ClickAction.RESET_ARP );
 	  }
 	  
-	  // /**
+	  /**
 	  GLCamera glCam = new GLCamera(scene);	  
 	  // */
 	  
@@ -57,40 +49,33 @@ public class PointUnderPixel extends PApplet {
 	    boxes[i].draw();
 	}
 
-	// /**
+	/**
 	class GLCamera extends Camera {
 		//protected PGraphicsOpenGL pgl;
 		protected PGL pgl;
 		protected GL gl;
-		protected GL2ES2 gl2;
+		//protected GL2ES2 gl2;
 		protected GLU glu;
 
 		public GLCamera(Scene scn) {
 			super(scn);
-			// /**
-			pgl = scn.renderer().pgl;
-			gl = pgl.gl;
-			gl2 = pgl.gl2;
-			glu = pgl.glu;
-			// */
+			//pgl = scn.renderer().pgl;
+			//gl = pgl.gl;
+			// //gl2 = pgl.gl2;
+			// glu = pgl.glu;
 		}
 		
 		@Override
 		public WorldPoint pointUnderPixel(Point pixel) {
-			float[] depth = new float[1];
-			
-			//pgl.beginGL();
-			/**
-			pgl = scene.pg3d.beginPGL();
+			float[] depth = new float[1];			
+						
+			pgl = ((Scene)scene).renderer().beginPGL();
 			gl = pgl.gl;
-			gl2 = pgl.gl2;
 			glu = pgl.glu;
-			*/			
 			
-			gl2.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, GL2.GL_DEPTH_COMPONENT, GL.GL_FLOAT, FloatBuffer.wrap(depth));
+			gl.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, GL2.GL_DEPTH_COMPONENT, GL2.GL_FLOAT, FloatBuffer.wrap(depth));
 			
-			//pgl.endGL();
-			//scene.pg3d.endPGL();
+			((Scene)scene).renderer().endPGL();
 			
 			PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
 			point = unprojectedCoordinatesOf(point);

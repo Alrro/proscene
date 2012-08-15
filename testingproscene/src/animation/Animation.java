@@ -18,7 +18,7 @@ public class Animation extends PApplet {
 	}
 
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "Animation" });
+		PApplet.main(new String[] { "--present", "animation.Animation" });
 	}
 	
 	public void keyPressed() {
