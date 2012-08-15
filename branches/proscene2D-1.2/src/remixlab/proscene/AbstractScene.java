@@ -34,16 +34,12 @@ import java.util.TimerTask;
 import java.util.Map.Entry;
 
 import processing.core.*;
-import processing.opengl.*;
 
 public abstract class AbstractScene  implements PConstants {
 	//mouse actions
 	protected boolean arpFlag;
 	protected boolean pupFlag;
-	protected PVector pupVec;
-	
-	//S C R E E N C O O R D I N A T E S	
-	protected float zC;
+	protected PVector pupVec;	
 	
 	/**
 	 * Defines the different actions that can be associated with a specific
@@ -2213,7 +2209,7 @@ public abstract class AbstractScene  implements PConstants {
 	 * @see #addDrawHandler(Object, String)
 	 * @see #addAnimationHandler(Object, String)
 	 */
-	protected void drawCommon() {
+	protected void drawCommon() {		
 		// 1. Animation
 		if( animationIsStarted() )
 			performAnimation();
@@ -2913,9 +2909,9 @@ public abstract class AbstractScene  implements PConstants {
 			drawCameraPathSelectionHints();
 		} else {
 			camera().hideAllPaths();
-		}
+		}		
 		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)
-			drawZoomWindowHint();
+			drawZoomWindowHint();		
 		if (dE.camMouseAction == MouseAction.SCREEN_ROTATE)
 			drawScreenRotateLineHint();
 		if (arpFlag)
@@ -3021,90 +3017,25 @@ public abstract class AbstractScene  implements PConstants {
 	 * All screen drawing should be enclosed between {@link #beginScreenDrawing()}
 	 * and {@link #endScreenDrawing()}. Then you can just begin drawing your
 	 * screen shapes (defined between {@code PApplet.beginShape()} and {@code
-	 * PApplet.endShape()}).
-	 * <p>
-	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
-	 * first call {@code PVector p = coords(new Point(x, y))} then do your
-	 * drawing as {@code vertex(p.x, p.y, p.z)}.
-	 * <p>
+	 * PApplet.endShape()}): the x and y coordinates (e.g., as within vertex())
+   * are expressed in pixels screen coordinates. In this mode, z values (if used
+   * at all) are in the [0.0, 1.0] range (0.0 corresponding to the near
+   * clipping plane and 1.0 being just beyond the far clipping plane).
+	 * <p>	 
 	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
 	 * 3d scene then draw first all your 3d before doing any call to a 
 	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.  
 	 * 
 	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
 	 */
-	public void beginScreenDrawing() {
-	  if (startCoordCalls != 0)
-      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-
-    startCoordCalls++;
-
-    //TODO implement 2d
-    /**
-    renderer().hint(DISABLE_DEPTH_TEST);
-    renderer().pushProjection();
-
-    
-    float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
-    float cameraNear = cameraZ / 2.0f;
-    float cameraFar = cameraZ * 2.0f;
-    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);    
-
-    renderer().pushMatrix();
-    renderer().camera();      
-          
-    zC = 0.0f;
-    */		
-	}
+	abstract public void beginScreenDrawing();
 
 	/**
 	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
 	 * 
 	 * @see #beginScreenDrawing()
-	 * @see #coords(Point)
 	 */
-	public void endScreenDrawing() {
-		startCoordCalls--;
-    if (startCoordCalls != 0)
-      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-    
-    //TODO implement 2d
-    
-    /**
-    renderer().popProjection();
-    renderer().popMatrix();
-    renderer().hint(ENABLE_DEPTH_TEST);
-    */
-	}
-	
-	/**
-	 * Computes the world coordinates of the {@code p} screen Point.
-	 * <p>
-	 * This method is only useful when drawing directly on screen. It should be
-	 * used in conjunction with {@link #beginScreenDrawing()} and
-	 * {@link #endScreenDrawing()} (which may be consulted for details).
-	 * <P>
-	 * The method {@link #beginScreenDrawing()} should be called before, otherwise
-	 * a runtime exception is thrown.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public PVector coords(Point p) {
-		if (startCoordCalls != 1)
-			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
-		/**
-		if ( pg3d.getClass() == processing.core.PGraphicsOpenGL.class )
-			return new PVector(p.x, p.y, zC);
-		else
-			return camera().unprojectedCoordinatesOf(new PVector(p.x,p.y,zC));
-			*/
-		return new PVector(p.x, p.y, zC);
-	}
+	abstract public void endScreenDrawing();
 	
 	/**
 	 * Sets global default keyboard shortcuts and the default key-frame shortcut keys.
@@ -3218,15 +3149,187 @@ public abstract class AbstractScene  implements PConstants {
 	
 	protected abstract void initDefaultCameraProfiles();
 
-	public abstract void drawCross(int color, float px, float py, float size,	int strokeWeight);
+	/**
+	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
+	 * of size {@code size}. {@code strokeWeight} defined the weight of the
+	 * stroke.
+	 * 
+	 * @see #drawArcballReferencePointHint()
+	 */
+	public void drawCross(int color, float px, float py, float size,	int strokeWeight) {
+		beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(color);
+		pg.strokeWeight(strokeWeight);
+		pg.noFill();
+		pg.beginShape(LINES);
+		pg.vertex(px - size, py);
+		pg.vertex(px + size, py);
+		pg.vertex(px, py - size);
+		pg.vertex(px, py + size);
+		pg.endShape();
+		pg.popStyle();
+		endScreenDrawing();
+	}
 
-	public abstract void drawFilledCircle(int subdivisions, int color, PVector center,	float radius);
+	/**
+	 * Draws a filled circle using screen coordinates.
+	 * 
+	 * @param subdivisions
+	 *          Number of triangles aproximating the circle. 
+	 * @param color
+	 *          Color used to fill the circle.
+	 * @param center
+	 *          Circle screen center.
+	 * @param radius
+	 *          Circle screen radius.
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 */	
+	public void drawFilledCircle(int subdivisions, int color, PVector center,	float radius) {
+		float precision = TWO_PI/subdivisions;
+		float x = center.x;
+		float y = center.y;
+		float angle, x2, y2;
+		beginScreenDrawing();
+		pg.pushStyle();
+		pg.noStroke();
+		pg.fill(color);
+		pg.beginShape(TRIANGLE_FAN);		
+		pg.vertex(x, y);
+		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
+			x2 = x + PApplet.sin(angle) * radius;
+			y2 = y + PApplet.cos(angle) * radius;			
+			pg.vertex(x2, y2);
+		}
+		pg.endShape();
+		pg.popStyle();
+		endScreenDrawing();
+	}
+	
+	/**
+	 * Draws a filled square using screen coordinates.
+	 * 
+	 * @param color
+	 *          Color used to fill the square.
+	 * @param center
+	 *          Square screen center.
+	 * @param edge
+	 *          Square edge length.
+	 * 
+	 * @see #beginScreenDrawing()
+	 * @see #endScreenDrawing()
+	 */
+	public void drawFilledSquare(int color, PVector center, float edge) {
+		float x = center.x;
+		float y = center.y;
+		beginScreenDrawing();		
+		pg.pushStyle();
+		pg.noStroke();
+		pg.fill(color);
+		pg.beginShape(QUADS);
+		pg.vertex(x - edge, y + edge);
+		pg.vertex(x + edge, y + edge);
+		pg.vertex(x + edge, y - edge);
+		pg.vertex(x - edge, y - edge);
+		pg.endShape();
+		pg.popStyle();
+		endScreenDrawing();
+	}
 
-	public abstract void drawFilledSquare(int color, PVector center, float edge);
+	/**
+	 * Draws the classical shooter target on the screen.
+	 * 
+	 * @param color
+	 *          Color of the target
+	 * @param center
+	 *          Center of the target on the screen
+	 * @param length
+	 *          Length of the target in pixels
+	 * @param strokeWeight
+	 *          Stroke weight
+	 */
+	public void drawShooterTarget(int color, PVector center, float length,	int strokeWeight) {
+		float x = center.x;
+		float y = center.y;
+		beginScreenDrawing();
+		
+		pg.pushStyle();
 
-	public abstract void drawShooterTarget(int color, PVector center, float length,	int strokeWeight);
+		pg.stroke(color);
+		pg.strokeWeight(strokeWeight);
+		pg.noFill();
 
-	protected abstract void drawZoomWindowHint();
+		pg.beginShape();
+		pg.vertex((x - length), (y - length) + (0.6f * length));
+		pg.vertex((x - length), (y - length));
+		pg.vertex((x - length) + (0.6f * length), (y - length));
+		pg.endShape();
 
-	protected abstract void drawScreenRotateLineHint();
+		pg.beginShape();
+		pg.vertex((x + length) - (0.6f * length), (y - length));
+		pg.vertex((x + length), (y - length));
+		pg.vertex((x + length), ((y - length) + (0.6f * length)));
+		pg.endShape();
+		
+		pg.beginShape();
+		pg.vertex((x + length), ((y + length) - (0.6f * length)));
+		pg.vertex((x + length), (y + length));
+		pg.vertex(((x + length) - (0.6f * length)), (y + length));
+		pg.endShape();
+
+		pg.beginShape();
+		pg.vertex((x - length) + (0.6f * length), (y + length));
+		pg.vertex((x - length), (y + length));
+		pg.vertex((x - length), ((y + length) - (0.6f * length)));
+		pg.endShape();
+
+		pg.popStyle();
+		endScreenDrawing();
+
+		drawCross(color, center.x, center.y, 0.6f * length, strokeWeight);
+	}
+
+	/**
+	 * Draws a rectangle on the screen showing the region where a zoom operation
+	 * is taking place.
+	 */
+	protected void drawZoomWindowHint() {
+		float p1x = (float) dE.fCorner.getX();
+		float p1y = (float) dE.fCorner.getY();
+		float p2x = (float) dE.lCorner.getX();
+		float p2y = (float) dE.lCorner.getY();
+		beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(255, 255, 255);
+		pg.strokeWeight(2);
+		pg.noFill();
+		pg.beginShape();
+		pg.vertex(p1x, p1y);
+		pg.vertex(p2x, p1y);
+		pg.vertex(p2x, p2y);		
+		pg.vertex(p1x, p2y);
+		pg.endShape(CLOSE);
+		pg.popStyle();
+		endScreenDrawing();
+	}
+
+	/**
+	 * Draws visual hint (a line on the screen) when a screen rotation is taking
+	 * place.
+	 */
+	protected void drawScreenRotateLineHint() {
+		float p1x = (float) dE.fCorner.getX();
+		float p1y = (float) dE.fCorner.getY();
+		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
+		beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(255, 255, 255);
+		pg.strokeWeight(2);
+		pg.noFill();
+		pg.line(p2.x, p2.y, p1x, p1y);
+		pg.popStyle();
+		endScreenDrawing();
+	}
 }

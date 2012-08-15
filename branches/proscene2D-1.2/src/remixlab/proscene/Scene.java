@@ -984,309 +984,32 @@ public class Scene extends AbstractScene {
 		pg.popStyle();
 	}
 	
-	/**
-	 * Computes the world coordinates of an screen object so that drawing can be
-	 * done directly with 2D screen coordinates.
-	 * <p>
-	 * All screen drawing should be enclosed between {@link #beginScreenDrawing()}
-	 * and {@link #endScreenDrawing()}. Then you can just begin drawing your
-	 * screen shapes (defined between {@code PApplet.beginShape()} and {@code
-	 * PApplet.endShape()}).
-	 * <p>
-	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
-	 * first call {@code PVector p = coords(new Point(x, y))} then do your
-	 * drawing as {@code vertex(p.x, p.y, p.z)}.
-	 * <p>
-	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
-	 * 3d scene then draw first all your 3d before doing any call to a 
-	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.  
-	 * 
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
 	@Override
 	public void beginScreenDrawing() {
-	  if (startCoordCalls != 0)
-      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-    startCoordCalls++;
-    renderer().hint(DISABLE_DEPTH_TEST);
-    renderer().pushProjection();    
-    float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
-    float cameraNear = cameraZ / 2.0f;
-    float cameraFar = cameraZ * 2.0f;
-    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
-    renderer().pushMatrix();
-    renderer().camera();      
-          
-    zC = 0.0f;		
+		if (startCoordCalls != 0)
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+	  	+ "endScreenDrawing() and they cannot be nested. Check your implementation!");
+		startCoordCalls++;
+		renderer().hint(DISABLE_DEPTH_TEST);
+		renderer().pushProjection();
+		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+		float cameraNear = cameraZ / 2.0f;
+		float cameraFar = cameraZ * 2.0f;
+		renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
+		renderer().pushMatrix();
+		renderer().camera();
 	}
-
-	/**
-	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #coords(Point)
-	 */
+	
 	@Override
 	public void endScreenDrawing() {
 		startCoordCalls--;
-    if (startCoordCalls != 0)
-      throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-                       + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-    renderer().popProjection();
-    renderer().popMatrix();
-    renderer().hint(ENABLE_DEPTH_TEST);
-	}
-
-	/**
-	 * Draws a rectangle on the screen showing the region where a zoom operation
-	 * is taking place.
-	 */
-	@Override
-	protected void drawZoomWindowHint() {
-		float p1x = (float) dE.fCorner.getX();
-		float p1y = (float) dE.fCorner.getY();
-		float p2x = (float) dE.lCorner.getX();
-		float p2y = (float) dE.lCorner.getY();
-		beginScreenDrawing();
-		PVector p1 = coords(new Point(p1x, p1y));
-		PVector p2 = coords(new Point(p2x, p2y));
-		PVector p3 = coords(new Point(p2x, p1y));
-		PVector p4 = coords(new Point(p1x, p2y));
-		pg.pushStyle();
-		pg.stroke(255, 255, 255);
-		pg.strokeWeight(2);
-		pg.noFill();
-		pg.beginShape();
-		pg.vertex(p1.x, p1.y, p1.z);
-		pg.vertex(p3.x, p3.y, p3.z);//p3
-		pg.vertex(p2.x, p2.y, p2.z);
-		pg.vertex(p4.x, p4.y, p4.z);//p4
-		pg.endShape(CLOSE);
-		pg.popStyle();
-		endScreenDrawing();
-	}
-
-	/**
-	 * Draws visual hint (a line on the screen) when a screen rotation is taking
-	 * place.
-	 */
-	@Override
-	protected void drawScreenRotateLineHint() {
-		float p1x = (float) dE.fCorner.getX();
-		float p1y = (float) dE.fCorner.getY();
-		PVector p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
-		beginScreenDrawing();
-		pg.pushStyle();
-		pg.stroke(255, 255, 255);
-		pg.strokeWeight(2);
-		pg.noFill();
-		pg.line(p2.x, p2.y, p1x, p1y);
-		pg.popStyle();
-		endScreenDrawing();
+		if (startCoordCalls != 0)
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+		  + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+		renderer().popProjection();
+		renderer().popMatrix();
+		renderer().hint(ENABLE_DEPTH_TEST);
 	}	
-
-	/**
-	 * Draws a cross on the screen centered under pixel {@code (px, py)}, and edge
-	 * of size {@code size}. {@code strokeWeight} defined the weight of the
-	 * stroke.
-	 * 
-	 * @see #drawArcballReferencePointHint()
-	 */
-	@Override
-	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
-		beginScreenDrawing();
-		PVector p1 = coords(new Point(px - size, py));
-		PVector p2 = coords(new Point(px + size, py));
-		PVector p3 = coords(new Point(px, py - size));
-		PVector p4 = coords(new Point(px, py + size));
-		pg.pushStyle();
-		pg.stroke(color);
-		pg.strokeWeight(strokeWeight);
-		pg.noFill();
-		pg.beginShape(LINES);
-		pg.vertex(p1.x, p1.y, p1.z);
-		pg.vertex(p2.x, p2.y, p2.z);
-		pg.vertex(p3.x, p3.y, p3.z);
-		pg.vertex(p4.x, p4.y, p4.z);
-		pg.endShape();
-		pg.popStyle();
-		endScreenDrawing();
-	}	
-
-	/**
-	 * Draws a filled circle using screen coordinates.
-	 * 
-	 * @param subdivisions
-	 *          Number of triangles aproximating the circle. 
-	 * @param color
-	 *          Color used to fill the circle.
-	 * @param center
-	 *          Circle screen center.
-	 * @param radius
-	 *          Circle screen radius.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
-	 */	
-	@Override
-	public void drawFilledCircle(int subdivisions, int color, PVector center, float radius) {
-		float precision = TWO_PI/subdivisions;
-		float x = center.x;
-		float y = center.y;
-		float angle, x2, y2;
-		beginScreenDrawing();
-		pg.pushStyle();
-		pg.noStroke();
-		pg.fill(color);
-		pg.beginShape(TRIANGLE_FAN);
-		PVector c = coords(new Point(x, y));
-		pg.vertex(c.x, c.y, c.z);
-		PVector aux = new PVector();
-		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
-			x2 = x + PApplet.sin(angle) * radius;
-			y2 = y + PApplet.cos(angle) * radius;
-			aux.set(coords(new Point(x2, y2)));
-			pg.vertex(aux.x, aux.y, aux.z);
-		}
-		pg.endShape();
-		pg.popStyle();
-		endScreenDrawing();
-	}
-
-	/**
-	 * Draws a filled square using screen coordinates.
-	 * 
-	 * @param color
-	 *          Color used to fill the square.
-	 * @param center
-	 *          Square screen center.
-	 * @param edge
-	 *          Square edge length.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
-	 */
-	@Override
-	public void drawFilledSquare(int color, PVector center, float edge) {
-		float x = center.x;
-		float y = center.y;
-		beginScreenDrawing();
-		PVector p1 = coords(new Point(x - edge, y + edge));
-		PVector p2 = coords(new Point(x + edge, y + edge));
-		PVector p3 = coords(new Point(x + edge, y - edge));
-		PVector p4 = coords(new Point(x - edge, y - edge));
-		pg.pushStyle();
-		pg.noStroke();
-		pg.fill(color);
-		pg.beginShape(QUADS);
-		pg.vertex(p1.x, p1.y, p1.z);
-		pg.vertex(p2.x, p2.y, p2.z);
-		pg.vertex(p3.x, p3.y, p3.z);
-		pg.vertex(p4.x, p4.y, p4.z);
-		pg.endShape();
-		pg.popStyle();
-		endScreenDrawing();
-	}
-
-	/**
-	 * Draws the classical shooter target on the screen.
-	 * 
-	 * @param color
-	 *          Color of the target
-	 * @param center
-	 *          Center of the target on the screen
-	 * @param length
-	 *          Length of the target in pixels
-	 * @param strokeWeight
-	 *          Stroke weight
-	 */
-	@Override
-	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {
-		float x = center.x;
-		float y = center.y;
-		beginScreenDrawing();
-		PVector p1 = coords(new Point((x - length), (y - length) + (0.6f * length)));
-		PVector p2 = coords(new Point((x - length), (y - length)));
-		PVector p3 = coords(new Point((x - length) + (0.6f * length), (y - length)));
-		PVector p4 = coords(new Point(((x + length) - (0.6f * length)), (y - length)));
-		PVector p5 = coords(new Point((x + length), (y - length)));
-		PVector p6 = coords(new Point((x + length), ((y - length) + (0.6f * length))));
-		PVector p7 = coords(new Point((x + length), ((y + length) - (0.6f * length))));
-		PVector p8 = coords(new Point((x + length), (y + length)));
-		PVector p9 = coords(new Point(((x + length) - (0.6f * length)), (y + length)));
-		PVector p10 = coords(new Point(((x - length) + (0.6f * length)), (y + length)));
-		PVector p11 = coords(new Point((x - length), (y + length)));
-		PVector p12 = coords(new Point((x - length), ((y + length) - (0.6f * length))));
-		
-		pg.pushStyle();
-
-		pg.stroke(color);
-		pg.strokeWeight(strokeWeight);
-		pg.noFill();
-
-		pg.beginShape();
-		pg.vertex(p1.x, p1.y, p1.z);
-		pg.vertex(p2.x, p2.y, p2.z);
-		pg.vertex(p3.x, p3.y, p3.z);
-		pg.endShape();
-
-		pg.beginShape();
-		pg.vertex(p4.x, p4.y, p4.z);
-		pg.vertex(p5.x, p5.y, p5.z);
-		pg.vertex(p6.x, p6.y, p6.z);
-		pg.endShape();
-
-		pg.beginShape();
-		pg.vertex(p7.x, p7.y, p7.z);
-		pg.vertex(p8.x, p8.y, p8.z);
-		pg.vertex(p9.x, p9.y, p9.z);
-		pg.endShape();
-
-		pg.beginShape();
-		pg.vertex(p10.x, p10.y, p10.z);
-		pg.vertex(p11.x, p11.y, p11.z);
-		pg.vertex(p12.x, p12.y, p12.z);
-		pg.endShape();
-
-		pg.popStyle();
-		endScreenDrawing();
-
-		drawCross(color, center.x, center.y, 0.6f * length, strokeWeight);
-	}	
-	
-	/**
-	void QGLViewer::startScreenCoordinatesSystem(bool upward) const
-	{
-		glMatrixMode(GL_PROJECTION);
-		glPushMatrix();
-		glLoadIdentity();
-		if (tileRegion_ != NULL)
-		  if (upward)
-		    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMin, tileRegion_->yMax, 0.0, -1.0);
-		  else
-		    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMax, tileRegion_->yMin, 0.0, -1.0);
-		else
-		  if (upward)
-		    glOrtho(0, width(), 0, height(), 0.0, -1.0);
-		  else
-		    glOrtho(0, width(), height(), 0, 0.0, -1.0);
-
-		glMatrixMode(GL_MODELVIEW);
-		glPushMatrix();
-		glLoadIdentity();
-	}
-	
-	void QGLViewer::stopScreenCoordinatesSystem() const
-	{
-		glMatrixMode(GL_PROJECTION);
-		glPopMatrix();
-
-		glMatrixMode(GL_MODELVIEW);
-		glPopMatrix();
-	}
-	*/
 
 	// 7. Camera profiles
 
