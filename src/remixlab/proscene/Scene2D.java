@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import processing.core.*;
-import processing.opengl.PGraphicsOpenGL;
+//import processing.opengl.*;
 
-public class Scene2D extends AbstractScene {	
+public class Scene2D extends AbstractScene {
 	/**
 	 * Constructor that defines an on-screen Scene (the one that most likely
 	 * would just fulfill all of your needs). All viewer parameters (display flags,
@@ -104,6 +104,61 @@ public class Scene2D extends AbstractScene {
 			renderer().scale(wh[0]/(renderer().width/2), wh[1]/(renderer().height/2));
 		}
 	}
+	
+	@Override
+	public void beginScreenDrawing() {
+		if (startCoordCalls != 0)
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+	  	+ "endScreenDrawing() and they cannot be nested. Check your implementation!");
+		startCoordCalls++;
+		
+		/**
+		if ( this.p5Renderer() == P5Renderer.P2D ) {
+			
+		}
+		else {
+		*/
+			float[] wh = camera().getOrthoWidthHeight();
+			PVector pos = camera().position();
+			Quaternion quat = camera().frame().orientation();
+			renderer().scale((renderer().width/2)/wh[0], (renderer().height/2)/wh[1]);
+			renderer().translate(pos.x, pos.y);
+			if(camera().frame().orientation().axis().z > 0)
+				renderer().rotate(quat.angle());
+			//TODO: hack! to compensate when axis gets reverted
+			else
+				renderer().rotate(-quat.angle());
+			renderer().translate(-renderer().width/2, -renderer().height/2);
+		//}
+	}
+	
+	@Override
+	public void endScreenDrawing() {
+		startCoordCalls--;
+		if (startCoordCalls != 0)
+			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
+		  + "endScreenDrawing() and they cannot be nested. Check your implementation!");
+		
+		/**
+		if ( this.p5Renderer() == P5Renderer.P2D ) {
+			
+		}
+		else {
+		*/
+			float[] wh = camera().getOrthoWidthHeight();
+			PVector pos = camera().position();
+			Quaternion quat = camera().frame().orientation();
+			
+			renderer().translate(renderer().width/2, renderer().height/2);
+			if(camera().frame().orientation().axis().z > 0)
+				renderer().rotate(-quat.angle());
+			//TODO: hack! to compensate when axis gets reverted
+			else
+				renderer().rotate(quat.angle());
+			renderer().translate(-pos.x, -pos.y);
+			renderer().scale(wh[0]/(renderer().width/2), wh[1]/(renderer().height/2));
+		//}
+	}
 
 	@Override
 	protected void initDefaultCameraProfiles() {
@@ -199,40 +254,4 @@ public class Scene2D extends AbstractScene {
 		// TODO Auto-generated method stub
 		
 	}	
-
-	@Override
-	public void drawCross(int color, float px, float py, float size, int strokeWeight) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawFilledCircle(int subdivisions, int color, PVector center, float radius) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawFilledSquare(int color, PVector center, float edge) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawShooterTarget(int color, PVector center, float length, int strokeWeight) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void drawZoomWindowHint() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	protected void drawScreenRotateLineHint() {
-		// TODO Auto-generated method stub
-		
-	}
 }
