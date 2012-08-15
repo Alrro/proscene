@@ -28,8 +28,10 @@ package remixlab.proscene;
 import processing.core.*;
 import processing.opengl.*;
 
-//TODO pend
-//import java.nio.FloatBuffer;
+import javax.media.opengl.GL;
+import javax.media.opengl.GL2;
+import java.nio.FloatBuffer;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -1833,22 +1835,19 @@ public class Camera implements Cloneable {
 	/**
 	 * Returns the coordinates of the 3D point located at {@code pixel} (x,y) on
 	 * screen.
-	 * <p>
-	 * Override this method in your jogl-based camera class.
-	 * <p>
-	 * Current implementation always returns {@code WorlPoint.found = false}
-	 * (dummy value), meaning that no point was found under pixel.
 	 */
 	public WorldPoint pointUnderPixel(Point pixel) {
-		// TODO broken
-		float[] depth = new float[1];
-		/**
-		PGL pgl = scene.pg3d.beginPGL();		
-		pgl.gl2x.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1,	1, PGL.GL_DEPTH_COMPONENT, PGL.GL_FLOAT, FloatBuffer.wrap(depth));
-	  scene.pg3d.endPGL();
-	  */
+		float[] depth = new float[1];			
+		
+		PGL pgl = scene.renderer().beginPGL();
+		GL gl = pgl.gl;
+		
+		gl.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, GL2.GL_DEPTH_COMPONENT, GL2.GL_FLOAT, FloatBuffer.wrap(depth));
+		
+		scene.renderer().endPGL();
+		
 		PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
-		point = unprojectedCoordinatesOf(point);		
+		point = unprojectedCoordinatesOf(point);
 		return new WorldPoint(point, (depth[0] < 1.0f));
 	}
 
