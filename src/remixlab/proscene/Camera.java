@@ -1837,14 +1837,12 @@ public class Camera implements Cloneable {
 	 * screen.
 	 */
 	public WorldPoint pointUnderPixel(Point pixel) {
-		float[] depth = new float[1];			
+		float[] depth = new float[1];		
 		
-		PGL pgl = scene.renderer().beginPGL();
-		GL gl = pgl.gl;
-		
-		gl.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, GL2.GL_DEPTH_COMPONENT, GL2.GL_FLOAT, FloatBuffer.wrap(depth));
-		
-		scene.renderer().endPGL();
+		PGraphicsOpenGL pg = (PGraphicsOpenGL) scene.parent.g;
+		PGL pgl = pg.beginPGL();
+		pgl.readPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
+		pg.endPGL();
 		
 		PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
 		point = unprojectedCoordinatesOf(point);
