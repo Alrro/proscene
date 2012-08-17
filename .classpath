@@ -2,14 +2,9 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/core.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/home/pierre/Fun/software/processing-1.5.1-read-only/build/javadoc/core/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar" sourcepath="/remixcam"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/gluegen-rt.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/jogl.all.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2a5/jar/opengl.jar" sourcepath="/home/pierre/Fun/software/processing-read-only/processing/java"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/core.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/gluegen-rt.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/jogl-all.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
