@@ -28,14 +28,14 @@ package remixlab.proscene;
 import processing.core.*;
 import processing.opengl.*;
 
- /**
+// /**
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.devices.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.*;
 // */
 
-// /*
+/*
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
@@ -47,7 +47,7 @@ import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
-//import remixlab.remixcam.geom.Matrix3D;
+import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
 // */
@@ -118,8 +118,49 @@ import java.util.Map.Entry;
  * occurs. See the example <i>Flock</i>.
  */
 public class Scene extends AbstractScene implements PConstants {
+	//TODO hack to make remixcam camera projection matrix compatible with that of P5
+	public class P5Camera extends Camera {
+		public P5Camera(AbstractScene scn) {
+			super(scn);
+		}
+		
+		@Override
+		public void computeProjectionMatrix() {
+			float ZNear = zNear();
+			float ZFar = zFar();
+
+			switch (type()) {
+			case PERSPECTIVE: {
+				// #CONNECTION# all non null coefficients were set to 0.0 in
+				// constructor.
+				float f = 1.0f / (float) Math.tan(fieldOfView() / 2.0f);
+				projectionMat.mat[0] = f / aspectRatio();
+				projectionMat.mat[5] = -f;
+				projectionMat.mat[10] = (ZNear + ZFar) / (ZNear - ZFar);
+				projectionMat.mat[11] = -1.0f;
+				projectionMat.mat[14] = 2.0f * ZNear * ZFar / (ZNear - ZFar);
+				projectionMat.mat[15] = 0.0f;
+				// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(),
+				// zNear(), zFar() );
+				break;
+			}
+			case ORTHOGRAPHIC: {
+				float[] wh = getOrthoWidthHeight();
+				projectionMat.mat[0] = 1.0f / wh[0];
+				projectionMat.mat[5] = -1.0f / wh[1];
+				projectionMat.mat[10] = -2.0f / (ZFar - ZNear);
+				projectionMat.mat[11] = 0.0f;
+				projectionMat.mat[14] = -(ZFar + ZNear) / (ZFar - ZNear);
+				projectionMat.mat[15] = 1.0f;
+				// same as glOrtho( -w, w, -h, h, zNear(), zFar() );
+				break;
+			}
+			}
+		}
+	}	
+	
 	// proscene version
-	public static final String version = "1.2.0";
+	public static final String version = "1.9.60";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -182,9 +223,6 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// O B J E C T S
 	protected AWTWheeledDesktopEvents dE;
-
-	// S C R E E N C O O R D I N A T E S	
-	protected float zC;
 
 	// E X C E P T I O N H A N D L I N G
 	protected int startCoordCalls;
@@ -268,6 +306,7 @@ public class Scene extends AbstractScene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;	
 		
+		setAWTTimers();
 		setLeftHanded();
 		
 		/**
@@ -294,7 +333,7 @@ public class Scene extends AbstractScene implements PConstants {
 		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
-		cam = new Camera(this);
+		cam = new P5Camera(this);
 		setCamera(camera());//calls showAll();
 		setInteractiveFrame(null);
 		setAvatar(null);
@@ -841,54 +880,55 @@ public class Scene extends AbstractScene implements PConstants {
 	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawGrid(float, int)}.
 	 */
 	@Override
-	public void drawGrid(float size, int nbSubdivisions) {
-		/**
-		pg3d.pushStyle();
-		pg3d.stroke(170, 170, 170);
-		pg3d.strokeWeight(1);
-		pg3d.beginShape(LINES);
-		for (int i = 0; i <= nbSubdivisions; ++i) {
-			final float pos = size * (2.0f * i / nbSubdivisions - 1.0f);
-			pg3d.vertex(pos, -size);
-			pg3d.vertex(pos, +size);
-			pg3d.vertex(-size, pos);
-			pg3d.vertex(size, pos);
-		}
-		pg3d.endShape();
-		pg3d.popStyle();
-		// */		
-		
-		float posi, posj;
-		pg3d.pushStyle();
-		pg3d.stroke(170);
-		pg3d.strokeWeight(2);
-		pg3d.beginShape(POINTS);
-		for (int i = 0; i <= nbSubdivisions; ++i) {
-			posi = size * (2.0f * i / nbSubdivisions - 1.0f);
-			for(int j = 0; j <= nbSubdivisions; ++j) {
-				posj = size * (2.0f * j / nbSubdivisions - 1.0f);
-				pg3d.vertex(posi, posj);
-			}			
-		}
-		pg3d.endShape();
-		//pg3d.popStyle();
-		
-		int internalSub = 5;
-		int subSubdivisions = nbSubdivisions * internalSub;
-		//pg3d.pushStyle();
-		pg3d.stroke(100);
-		pg3d.strokeWeight(1);
-		pg3d.beginShape(POINTS);
-		for (int i = 0; i <= subSubdivisions; ++i) {
-			posi = size * (2.0f * i / subSubdivisions - 1.0f);
-			for(int j = 0; j <= subSubdivisions; ++j) {
-				posj = size * (2.0f * j / subSubdivisions - 1.0f);
-				if(( (i%internalSub) != 0 ) || ( (j%internalSub) != 0 ) )
+	public void drawGrid(float size, int nbSubdivisions) {		
+		if ( gridIsDotted() ) {
+			float posi, posj;
+			pg3d.pushStyle();
+			pg3d.stroke(170);
+			pg3d.strokeWeight(2);
+			pg3d.beginShape(POINTS);
+			for (int i = 0; i <= nbSubdivisions; ++i) {
+				posi = size * (2.0f * i / nbSubdivisions - 1.0f);
+				for(int j = 0; j <= nbSubdivisions; ++j) {
+					posj = size * (2.0f * j / nbSubdivisions - 1.0f);
 					pg3d.vertex(posi, posj);
-			}			
+				}
+			}
+			pg3d.endShape();
+			//pg3d.popStyle();
+			
+			int internalSub = 5;
+			int subSubdivisions = nbSubdivisions * internalSub;
+			//pg3d.pushStyle();
+			pg3d.stroke(100);
+			pg3d.strokeWeight(1);
+			pg3d.beginShape(POINTS);
+			for (int i = 0; i <= subSubdivisions; ++i) {
+				posi = size * (2.0f * i / subSubdivisions - 1.0f);
+				for(int j = 0; j <= subSubdivisions; ++j) {
+					posj = size * (2.0f * j / subSubdivisions - 1.0f);
+					if(( (i%internalSub) != 0 ) || ( (j%internalSub) != 0 ) )
+						pg3d.vertex(posi, posj);
+				}
+			}
+			pg3d.endShape();
+			pg3d.popStyle();
 		}
-		pg3d.endShape();
-		pg3d.popStyle();
+		else {
+			pg3d.pushStyle();
+			pg3d.stroke(170, 170, 170);
+			pg3d.strokeWeight(1);
+			pg3d.beginShape(LINES);
+			for (int i = 0; i <= nbSubdivisions; ++i) {
+				final float pos = size * (2.0f * i / nbSubdivisions - 1.0f);
+				pg3d.vertex(pos, -size);
+				pg3d.vertex(pos, +size);
+				pg3d.vertex(-size, pos);
+				pg3d.vertex(size, pos);
+			}
+			pg3d.endShape();
+			pg3d.popStyle();
+		}
 	}
 	
 	// 2. CAMERA
@@ -1089,19 +1129,15 @@ public class Scene extends AbstractScene implements PConstants {
 		float p2x = (float) dE.lCorner.getX();
 		float p2y = (float) dE.lCorner.getY();
 		beginScreenDrawing();
-		Vector3D p1 = coords(new Point(p1x, p1y));
-		Vector3D p2 = coords(new Point(p2x, p2y));
-		Vector3D p3 = coords(new Point(p2x, p1y));
-		Vector3D p4 = coords(new Point(p1x, p2y));
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
 		pg3d.noFill();
 		pg3d.beginShape();
-		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
-		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);//p3
-		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
-		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);//p4
+		pg3d.vertex(p1x, p1y);
+		pg3d.vertex(p2x, p1y);
+		pg3d.vertex(p2x, p2y);		
+		pg3d.vertex(p1x, p2y);
 		pg3d.endShape(CLOSE);
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1113,16 +1149,11 @@ public class Scene extends AbstractScene implements PConstants {
 		float p1y = (float) dE.fCorner.getY();
 		Vector3D p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
 		beginScreenDrawing();
-		Vector3D p1s = coords(new Point(p1x, p1y));
-		Vector3D p2s = coords(new Point(p2.vec[0], p2.vec[1]));
 		pg3d.pushStyle();
 		pg3d.stroke(255, 255, 255);
 		pg3d.strokeWeight(2);
 		pg3d.noFill();
-		pg3d.beginShape(LINE);
-		pg3d.vertex(p1s.vec[0], p1s.vec[1], p1s.vec[2]);
-		pg3d.vertex(p2s.vec[0], p2s.vec[1], p2s.vec[2]);
-		pg3d.endShape();
+		pg3d.line(p2.x(), p2.y(), p1x, p1y);
 		pg3d.popStyle();
 		endScreenDrawing();
 	}
@@ -1262,17 +1293,15 @@ public class Scene extends AbstractScene implements PConstants {
 	@Override
 	public void drawCross(float px, float py, float size) {
 		beginScreenDrawing();
-		Vector3D p1 = coords(new Point(px - size, py));
-		Vector3D p2 = coords(new Point(px + size, py));
-		Vector3D p3 = coords(new Point(px, py - size));
-		Vector3D p4 = coords(new Point(px, py + size));
-		pg3d.pushStyle();
+		pg3d.pushStyle();		
+		//pg3d.stroke(color);
+		//pg3d.strokeWeight(strokeWeight);
 		pg3d.noFill();
 		pg3d.beginShape(LINES);
-		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
-		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
-		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);
-		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);
+		pg3d.vertex(px - size, py);
+		pg3d.vertex(px + size, py);
+		pg3d.vertex(px, py - size);
+		pg3d.vertex(px, py + size);
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1284,22 +1313,19 @@ public class Scene extends AbstractScene implements PConstants {
 	@Override
 	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
 		float precision = PApplet.TWO_PI/subdivisions;
-		float x = center.vec[0];
-		float y = center.vec[1];
+		float x = center.x();
+		float y = center.y();
 		float angle, x2, y2;
 		beginScreenDrawing();
 		pg3d.pushStyle();
 		pg3d.noStroke();
 		//pg3d.fill(color);
-		pg3d.beginShape(TRIANGLE_FAN);
-		Vector3D c = coords(new Point(x, y));
-		pg3d.vertex(c.vec[0], c.vec[1], c.vec[2]);
-		Vector3D aux = new Vector3D();
+		pg3d.beginShape(TRIANGLE_FAN);		
+		pg3d.vertex(x, y);
 		for (angle = 0.0f; angle <= PApplet.TWO_PI + 1.1*precision; angle += precision) {			
-			x2 = x + (float) Math.sin(angle) * radius;
-			y2 = y + (float) Math.cos(angle) * radius;
-			aux.set(coords(new Point(x2, y2)));
-			pg3d.vertex(aux.vec[0], aux.vec[1], aux.vec[2]);
+			x2 = x + PApplet.sin(angle) * radius;
+			y2 = y + PApplet.cos(angle) * radius;			
+			pg3d.vertex(x2, y2);
 		}
 		pg3d.endShape();
 		pg3d.popStyle();
@@ -1311,21 +1337,17 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void drawFilledSquare(Vector3D center, float edge) {
-		float x = center.vec[0];
-		float y = center.vec[1];
-		beginScreenDrawing();
-		Vector3D p1 = coords(new Point(x - edge, y + edge));
-		Vector3D p2 = coords(new Point(x + edge, y + edge));
-		Vector3D p3 = coords(new Point(x + edge, y - edge));
-		Vector3D p4 = coords(new Point(x - edge, y - edge));
+		float x = center.x();
+		float y = center.y();
+		beginScreenDrawing();		
 		pg3d.pushStyle();
 		pg3d.noStroke();
 		//pg3d.fill(color);
 		pg3d.beginShape(QUADS);
-		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
-		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
-		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);
-		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);
+		pg3d.vertex(x - edge, y + edge);
+		pg3d.vertex(x + edge, y + edge);
+		pg3d.vertex(x + edge, y - edge);
+		pg3d.vertex(x - edge, y - edge);
 		pg3d.endShape();
 		pg3d.popStyle();
 		endScreenDrawing();
@@ -1336,54 +1358,44 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	@Override
 	public void drawShooterTarget(Vector3D center, float length) {
-		float x = center.vec[0];
-		float y = center.vec[1];
+		float x = center.x();
+		float y = center.y();
 		beginScreenDrawing();
-		Vector3D p1 = coords(new Point((x - length), (y - length) + (0.6f * length)));
-		Vector3D p2 = coords(new Point((x - length), (y - length)));
-		Vector3D p3 = coords(new Point((x - length) + (0.6f * length), (y - length)));
-		Vector3D p4 = coords(new Point(((x + length) - (0.6f * length)), (y - length)));
-		Vector3D p5 = coords(new Point((x + length), (y - length)));
-		Vector3D p6 = coords(new Point((x + length), ((y - length) + (0.6f * length))));
-		Vector3D p7 = coords(new Point((x + length), ((y + length) - (0.6f * length))));
-		Vector3D p8 = coords(new Point((x + length), (y + length)));
-		Vector3D p9 = coords(new Point(((x + length) - (0.6f * length)), (y + length)));
-		Vector3D p10 = coords(new Point(((x - length) + (0.6f * length)), (y + length)));
-		Vector3D p11 = coords(new Point((x - length), (y + length)));
-		Vector3D p12 = coords(new Point((x - length), ((y + length) - (0.6f * length))));
 		
 		pg3d.pushStyle();
-		
+
+		//pg3d.stroke(color);
+		//pg3d.strokeWeight(strokeWeight);
 		pg3d.noFill();
 
 		pg3d.beginShape();
-		pg3d.vertex(p1.vec[0], p1.vec[1], p1.vec[2]);
-		pg3d.vertex(p2.vec[0], p2.vec[1], p2.vec[2]);
-		pg3d.vertex(p3.vec[0], p3.vec[1], p3.vec[2]);
+		pg3d.vertex((x - length), (y - length) + (0.6f * length));
+		pg3d.vertex((x - length), (y - length));
+		pg3d.vertex((x - length) + (0.6f * length), (y - length));
 		pg3d.endShape();
 
 		pg3d.beginShape();
-		pg3d.vertex(p4.vec[0], p4.vec[1], p4.vec[2]);
-		pg3d.vertex(p5.vec[0], p5.vec[1], p5.vec[2]);
-		pg3d.vertex(p6.vec[0], p6.vec[1], p6.vec[2]);
+		pg3d.vertex((x + length) - (0.6f * length), (y - length));
+		pg3d.vertex((x + length), (y - length));
+		pg3d.vertex((x + length), ((y - length) + (0.6f * length)));
+		pg3d.endShape();
+		
+		pg3d.beginShape();
+		pg3d.vertex((x + length), ((y + length) - (0.6f * length)));
+		pg3d.vertex((x + length), (y + length));
+		pg3d.vertex(((x + length) - (0.6f * length)), (y + length));
 		pg3d.endShape();
 
 		pg3d.beginShape();
-		pg3d.vertex(p7.vec[0], p7.vec[1], p7.vec[2]);
-		pg3d.vertex(p8.vec[0], p8.vec[1], p8.vec[2]);
-		pg3d.vertex(p9.vec[0], p9.vec[1], p9.vec[2]);
-		pg3d.endShape();
-
-		pg3d.beginShape();
-		pg3d.vertex(p10.vec[0], p10.vec[1], p10.vec[2]);
-		pg3d.vertex(p11.vec[0], p11.vec[1], p11.vec[2]);
-		pg3d.vertex(p12.vec[0], p12.vec[1], p12.vec[2]);
+		pg3d.vertex((x - length) + (0.6f * length), (y + length));
+		pg3d.vertex((x - length), (y + length));
+		pg3d.vertex((x - length), ((y + length) - (0.6f * length)));
 		pg3d.endShape();
 
 		pg3d.popStyle();
 		endScreenDrawing();
 
-		drawCross(center.vec[0], center.vec[1], 0.6f * length);
+		drawCross(center.x(), center.y(), 0.6f * length);
 	}
 	
 	/**
@@ -1394,13 +1406,13 @@ public class Scene extends AbstractScene implements PConstants {
 		if (mask != 0) {
 			renderer().pushStyle();
 			renderer().strokeWeight(2);
-
-			if ((mask & 1) != 0) {
-				renderer().noFill();
-				renderer().stroke(170);
+			renderer().noFill();
+			renderer().stroke(170);
+			
+			if (((mask & 1) != 0) && path.size() > 1 ) {				
 				renderer().beginShape();
 				for (SimpleFrame myFr : path)
-					renderer().vertex(myFr.position().vec[0], myFr.position().vec[1], myFr.position().vec[2]);
+					renderer().vertex(myFr.position().x(), myFr.position().y(), myFr.position().z());
 				renderer().endShape();
 			}
 			if ((mask & 6) != 0) {
@@ -1413,8 +1425,8 @@ public class Scene extends AbstractScene implements PConstants {
 					if ((count++) >= goal) {
 						goal += nbSteps / (float) nbFrames;
 						renderer().pushMatrix();
-						
-						applyTransformation(myFr);
+											  
+						applyTransformation(myFr);						
 
 						if ((mask & 2) != 0)
 							drawKFICamera(scale);
@@ -1457,11 +1469,14 @@ public class Scene extends AbstractScene implements PConstants {
 		
 		pg3d.hint(DISABLE_DEPTH_TEST);
 		pg3d.pushProjection();
-		pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);		
+		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);				
+		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+    float cameraNear = cameraZ / 2.0f;
+    float cameraFar = cameraZ * 2.0f;
+    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
 		pg3d.pushMatrix();
 	  // Camera needs to be reset!
 		pg3d.camera();
-		zC = 0.0f;		
 	}
 
 	/**
@@ -1479,28 +1494,7 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.popProjection();  
 		pg3d.popMatrix();		  
 		pg3d.hint(ENABLE_DEPTH_TEST);
-	}
-	
-	/**
-	 * Computes the world coordinates of the {@code p} screen Point.
-	 * <p>
-	 * This method is only useful when drawing directly on screen. It should be
-	 * used in conjunction with {@link #beginScreenDrawing()} and
-	 * {@link #endScreenDrawing()} (which may be consulted for details).
-	 * <P>
-	 * The method {@link #beginScreenDrawing()} should be called before, otherwise
-	 * a runtime exception is thrown.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public Vector3D coords(Point p) {
-		if (startCoordCalls != 1)
-			throw new RuntimeException("beginScreenDrawing() should be called before this method!");
-		
-		return new Vector3D(p.x, p.y, zC);
-	}	
+	}		
 
 	// 7. Camera profiles
 
@@ -2526,17 +2520,17 @@ public class Scene extends AbstractScene implements PConstants {
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
 		camera().getProjectionMatrix(mat, true);
-		mat.transpose();
+		mat.transpose();		
 		float[] target = new float[16];
-		pg3d.projection.set(mat.get(target));
-		// */
+		pg3d.projection.set(mat.get(target));		
+		// */	  
 		
-		/**		
+		// /**		
 		// Option 2		
 		pg3d.projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
 		// */		
 		
-		// /**
+		/**
 		// Option 3
 		// compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
@@ -2570,12 +2564,12 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.modelview.set(mat.get(target));
 		// */
 		
-		/**		
+		// /**		
 		// Option 2
 		pg3d.modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
 		// */	  
 		
-		// /**
+		/**
 	  // Option 3
 		// compute the processing camera modelview matrix from our camera() parameters
 		pg3d.camera(camera().position().x(), camera().position().y(), camera().position().z(),
