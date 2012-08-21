@@ -157,6 +157,37 @@ public class Scene extends AbstractScene implements PConstants {
 			}
 			}
 		}
+		
+		@Override
+		public void ortho(float left, float right, float bottom, float top,   float near, float far) {
+			float x = +2.0f / (right - left);
+			float y = +2.0f / (top - bottom);
+			float z = -2.0f / (far - near);
+			
+			float tx = -(right + left) / (right - left);
+			float ty = -(top + bottom) / (top - bottom);
+			float tz = -(far + near)   / (far - near);
+			
+			// The minus sign is needed to invert the Y axis.
+			projectionMat.set(x,  0, 0, tx,
+	                      0, -y, 0, ty,
+	                      0,  0, z, tz,
+	                      0,  0, 0,  1);
+		}
+		
+		@Override
+		public void frustum(float left, float right, float bottom, float top,  float znear, float zfar) {
+			float n2 = 2 * znear;
+			float w = right - left;
+			float h = top - bottom;
+			float d = zfar - znear;
+			
+		  // The minus sign (-n2 / h) is needed to invert the Y axis.
+			projectionMat.set(n2 / w,       0,  (right + left) / w,                0,
+	                           0, -n2 / h,  (top + bottom) / h,                0,
+	                           0,       0, -(zfar + znear) / d, -(n2 * zfar) / d,
+	                           0,       0,                  -1,                0);
+		}
 	}	
 	
 	// proscene version
@@ -1439,6 +1470,16 @@ public class Scene extends AbstractScene implements PConstants {
 			renderer().popStyle();
 		}
 	}
+	
+	@Override
+	public int getWidth() {
+		return pg3d.width;
+	}
+
+	@Override
+	public int getHeight() {
+		return pg3d.height;
+	}
 
 	/**
 	 * Computes the world coordinates of an screen object so that drawing can be
@@ -1467,9 +1508,9 @@ public class Scene extends AbstractScene implements PConstants {
 		
 		startCoordCalls++;
 		
+		// /**
 		pg3d.hint(DISABLE_DEPTH_TEST);
 		pg3d.pushProjection();
-		//pg3d.ortho(-width/2, width/2, -height/2, height/2, -10, 10);				
 		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
@@ -1477,6 +1518,43 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.pushMatrix();
 	  // Camera needs to be reset!
 		pg3d.camera();
+		// */
+		
+		/**
+		pg3d.hint(DISABLE_DEPTH_TEST);
+		pg3d.pushProjection();
+		matrixMode(remixlab.remixcam.core.Constants.PROJECTION);
+		pushMatrix();								
+		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+    float cameraNear = cameraZ / 2.0f;
+    float cameraFar = cameraZ * 2.0f;
+    camera().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
+		pg3d.pushMatrix();
+	  // Camera needs to be reset!
+		//pg3d.projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		pg3d.modelview.reset();
+		// */
+		
+		
+		/**
+		glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	if (tileRegion_ != NULL)
+	  if (upward)
+	    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMin, tileRegion_->yMax, 0.0, -1.0);
+	  else
+	    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMax, tileRegion_->yMin, 0.0, -1.0);
+	else
+	  if (upward)
+	    glOrtho(0, width(), 0, height(), 0.0, -1.0);
+	  else
+	    glOrtho(0, width(), height(), 0, 0.0, -1.0);
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+		 */
 	}
 
 	/**
@@ -1491,6 +1569,10 @@ public class Scene extends AbstractScene implements PConstants {
 			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
 							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 
+		
+		//matrixMode(remixlab.remixcam.core.Constants.PROJECTION);
+		//popMatrix();
+		
 		pg3d.popProjection();  
 		pg3d.popMatrix();		  
 		pg3d.hint(ENABLE_DEPTH_TEST);
