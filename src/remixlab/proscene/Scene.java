@@ -159,7 +159,7 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 		
 		@Override
-		public void ortho(float left, float right, float bottom, float top,   float near, float far) {
+		public void ortho(float left, float right, float bottom, float top, float near, float far) {
 			float x = +2.0f / (right - left);
 			float y = +2.0f / (top - bottom);
 			float z = -2.0f / (far - near);
@@ -175,6 +175,117 @@ public class Scene extends AbstractScene implements PConstants {
 	                      0,  0, 0,  1);
 		}
 		
+		public PMatrix3D getOrtho(float left, float right, float bottom, float top, float near, float far) {
+			float x = +2.0f / (right - left);
+			float y = +2.0f / (top - bottom);
+			float z = -2.0f / (far - near);
+			
+			float tx = -(right + left) / (right - left);
+			float ty = -(top + bottom) / (top - bottom);
+			float tz = -(far + near)   / (far - near);
+			
+			// The minus sign is needed to invert the Y axis.
+			return new PMatrix3D(x,  0, 0, tx,
+	                         0, -y, 0, ty,
+	                         0,  0, z, tz,
+	                         0,  0, 0,  1);
+		}
+		
+		public PMatrix3D getCamera() {
+			 return getCamera(width/2f, height/2f, (height/2f) / (float)Math.tan(PI*60 / 360), width/2f, height/2f, 0, 0, 1, 0);
+		}
+		
+		public PMatrix3D getCamera(float eyeX, float eyeY, float eyeZ,
+        float centerX, float centerY, float centerZ,
+        float upX, float upY, float upZ) {
+			
+			/**
+			if (hints[DISABLE_TRANSFORM_CACHE]) {
+        flush();
+      }
+			*/
+			
+			// Calculating Z vector
+			float z0 = eyeX - centerX;
+			float z1 = eyeY - centerY;
+			float z2 = eyeZ - centerZ;
+			float mag = PApplet.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
+			if (nonZero(mag)) {
+				z0 /= mag;
+				z1 /= mag;
+				z2 /= mag;
+			}
+			/**
+			cameraEyeX = eyeX;
+			cameraEyeY = eyeY;
+			cameraEyeZ = eyeZ;
+			*/
+			
+			// Calculating Y vector
+			float y0 = upX;
+			float y1 = upY;
+			float y2 = upZ;
+			
+			// Computing X vector as Y cross Z
+			float x0 =  y1 * z2 - y2 * z1;
+			float x1 = -y0 * z2 + y2 * z0;
+			float x2 =  y0 * z1 - y1 * z0;
+			
+			// Recompute Y = Z cross X
+			y0 =  z1 * x2 - z2 * x1;
+			y1 = -z0 * x2 + z2 * x0;
+			y2 =  z0 * x1 - z1 * x0;
+			
+			// Cross product gives area of parallelogram, which is < 1.0 for
+			// non-perpendicular unit-length vectors; so normalize x, y here:
+			mag = PApplet.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
+			if (nonZero(mag)) {
+				x0 /= mag;
+				x1 /= mag;
+				x2 /= mag;
+			}
+			
+			mag = PApplet.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
+			if (nonZero(mag)) {
+				y0 /= mag;
+				y1 /= mag;
+				y2 /= mag;
+			}
+			
+			/**
+			modelview.set(x0, x1, x2, 0,
+					          y0, y1, y2, 0,
+                    z0, z1, z2, 0,
+                     0,  0,  0, 1);
+						
+			float tx = -eyeX;
+			float ty = -eyeY;
+			float tz = -eyeZ;
+			modelview.translate(tx, ty, tz);			
+			
+			modelviewInv.set(modelview);
+			modelviewInv.invert();
+			
+			camera.set(modelview);
+			cameraInv.set(modelviewInv);
+			
+			calcProjmodelview();
+			*/			
+			
+			PMatrix3D mv = new PMatrix3D(x0, x1, x2, 0,
+                                   y0, y1, y2, 0,
+                                   z0, z1, z2, 0,
+                                    0,  0,  0, 1);
+			
+			float tx = -eyeX;
+			float ty = -eyeY;
+			float tz = -eyeZ;
+			
+			mv.translate(tx, ty, tz);
+			
+			return mv;
+		}
+		
 		@Override
 		public void frustum(float left, float right, float bottom, float top,  float znear, float zfar) {
 			float n2 = 2 * znear;
@@ -188,6 +299,10 @@ public class Scene extends AbstractScene implements PConstants {
 	                           0,       0, -(zfar + znear) / d, -(n2 * zfar) / d,
 	                           0,       0,                  -1,                0);
 		}
+		
+		protected boolean nonZero(float a) {
+	    return 0x0.000002P-126f <= Math.abs(a);
+	  }
 	}	
 	
 	// proscene version
@@ -1508,33 +1623,32 @@ public class Scene extends AbstractScene implements PConstants {
 		
 		startCoordCalls++;
 		
-		// /**
-		pg3d.hint(DISABLE_DEPTH_TEST);
-		pg3d.pushProjection();
+		/**
+		renderer().hint(DISABLE_DEPTH_TEST);
+		renderer().pushProjection();
 		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
     renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
-		pg3d.pushMatrix();
+    renderer().pushMatrix();
 	  // Camera needs to be reset!
-		pg3d.camera();
+    renderer().camera();
 		// */
 		
-		/**
-		pg3d.hint(DISABLE_DEPTH_TEST);
-		pg3d.pushProjection();
-		matrixMode(remixlab.remixcam.core.Constants.PROJECTION);
-		pushMatrix();								
+		// /**
+		renderer().hint(DISABLE_DEPTH_TEST);
+		renderer().pushProjection();
 		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
-    camera().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
-		pg3d.pushMatrix();
+    //renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
+    renderer().projection.set(((P5Camera)camera()).getOrtho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar));
+    renderer().pushMatrix();
 	  // Camera needs to be reset!
-		//pg3d.projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
-		pg3d.modelview.reset();
-		// */
-		
+    //hack: it's trickier, but works ;)
+    //renderer().camera();
+    renderer().modelview.set(((P5Camera)camera()).getCamera());
+    // */
 		
 		/**
 		glMatrixMode(GL_PROJECTION);
@@ -1568,14 +1682,10 @@ public class Scene extends AbstractScene implements PConstants {
 		if (startCoordCalls != 0)
 			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
 							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-
 		
-		//matrixMode(remixlab.remixcam.core.Constants.PROJECTION);
-		//popMatrix();
-		
-		pg3d.popProjection();  
-		pg3d.popMatrix();		  
-		pg3d.hint(ENABLE_DEPTH_TEST);
+		renderer().popProjection();  
+		renderer().popMatrix();		  
+		renderer().hint(ENABLE_DEPTH_TEST);
 	}		
 
 	// 7. Camera profiles
