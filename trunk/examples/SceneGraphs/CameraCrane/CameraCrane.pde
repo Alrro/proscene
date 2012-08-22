@@ -22,7 +22,6 @@
  */
 
 import remixlab.proscene.*;
-import saito.objloader.*;
 
 boolean enabledLights = true;
 boolean drawRobotCamFrustum = false;
@@ -31,11 +30,11 @@ HeliCam heliCam;
 PGraphics canvas, armCanvas, heliCanvas;
 Scene mainScene, armScene, heliScene;
 int mainWinHeight = 400; // should be less than the PApplet height
-OBJModel model;
+PShape teapot;
 
 void setup() {
   size(1024, 720, P3D);
-  model = new OBJModel(this, "teapot.obj", "relative", TRIANGLES);
+  teapot = loadShape("teapot.obj");
   
   canvas = createGraphics(width, mainWinHeight, P3D);
   mainScene = new Scene(this, (PGraphics3D) canvas);
@@ -59,8 +58,7 @@ void setup() {
   heliScene = new Scene(this, (PGraphics3D) heliCanvas, canvas.width / 2, canvas.height);
   heliScene.setRadius(50);
   heliScene.setGridIsDrawn(false);
-  heliScene.setAxisIsDrawn(false);
-  model.scale(0.5);
+  heliScene.setAxisIsDrawn(false); 
 
   // Frame linking
   armCam = new ArmCam(60, -60, 2);
@@ -95,7 +93,6 @@ void draw() {
   heliCanvas.endDraw();
   // We retrieve the scene upper left coordinates defined above.
   image(heliCanvas, heliScene.upperLeftCorner.x, heliScene.upperLeftCorner.y);
-  heliCanvas.beginDraw();
 }
 
 public void handleMouse() {
@@ -128,8 +125,8 @@ public void handleMouse() {
 }
 
 // the actual drawing function, shared by the two scenes
-public void drawing(Scene scn) {
-  PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+public void drawing(Scene scn) {  
+  PGraphicsOpenGL pg3d = scn.renderer();
   pg3d.background(0);
   if (enabledLights) {
     pg3d.lights();
@@ -146,14 +143,10 @@ public void drawing(Scene scn) {
   pg3d.fill(24, 184, 199);
   pg3d.pushMatrix();
   pg3d.translate(0,0,20);
-  pg3d.rotateX(-HALF_PI);  
-  for (int k = 0; k < model.getFaceCount(); k++) {
-    PVector[] faceVertices = model.getFaceVertices(k);
-    pg3d.beginShape(TRIANGLES);
-    for (int i = 0; i < faceVertices.length; i++)
-      pg3d.vertex(faceVertices[i].x, faceVertices[i].y, faceVertices[i].z);
-    pg3d.endShape();
-  }
+  pg3d.scale(2.5);
+  pg3d.rotateX(HALF_PI); 
+  
+  pg3d.shape(teapot);
   pg3d.popMatrix();
 
   // 2a. draw a ground

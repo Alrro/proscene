@@ -59,27 +59,27 @@ public class HeliCam {
 
   public void draw(Scene scn) {
     // Robot arm's local frame
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
 
     pg3d.pushMatrix();
-    frame(0).applyTransformation(pg3d);
+    frame(0).applyTransformation();
     setColor(scn, frame(0).grabsMouse());
     drawBody(scn);
 
     pg3d.pushMatrix();
-    frame(1).applyTransformation(pg3d);
+    frame(1).applyTransformation();
     setColor(scn, frame(1).grabsMouse());
     drawSmallCylinder(scn);
     drawOneArm(scn);
 
     pg3d.pushMatrix();
-    frame(2).applyTransformation(pg3d);
+    frame(2).applyTransformation();
     setColor(scn, frame(2).grabsMouse());
     drawSmallCylinder(scn);
     drawOneArm(scn);
 
     pg3d.pushMatrix();
-    frame(3).applyTransformation(pg3d);
+    frame(3).applyTransformation();
     setColor(scn, frame(3).grabsMouse());
     drawHead(scn);
 
@@ -96,7 +96,7 @@ public class HeliCam {
     // now it is at frame(0), so we draw the propeller
 
     pg3d.pushMatrix();
-    frame(4).applyTransformation(pg3d);
+    frame(4).applyTransformation();
     setColor(scn, frame(4).grabsMouse());
     drawPropeller(scn);
 
@@ -113,12 +113,12 @@ public class HeliCam {
   }
 
   public void drawBody(Scene scn) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.sphere(7);
   }
 
   public void drawPropeller(Scene scn) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.pushMatrix();
     pg3d.sphere(2);
     drawCone(scn, 0, 5, 1, 1, 10);
@@ -135,7 +135,7 @@ public class HeliCam {
   }
 
   public void drawBlade(Scene scn) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.pushMatrix();
     pg3d.translate(0, 0, 5);
     pg3d.rotateX(PApplet.HALF_PI);
@@ -144,7 +144,7 @@ public class HeliCam {
   }
 
   public void drawArm(Scene scn) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.translate(2, 0, 0);
     drawCone(scn, 0, 50, 1, 1, 10);
     pg3d.translate(-4, 0, 0);
@@ -168,7 +168,7 @@ public class HeliCam {
   }
 
   public void drawCylinder(Scene scn) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.pushMatrix();
     pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
     drawCone(scn, -5, 5, 2, 2, 20);
@@ -176,7 +176,7 @@ public class HeliCam {
   }
 
   public void drawSmallCylinder(Scene scn) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.pushMatrix();
     pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
     drawCone(scn, -2, 2, 2, 2, 20);
@@ -184,14 +184,14 @@ public class HeliCam {
   }
 
   public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, int nbSub) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     pg3d.translate(0.0f, 0.0f, zMin);
     scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
     pg3d.translate(0.0f, 0.0f, -zMin);
   }
 
   public void setColor(Scene scn, boolean selected) {
-    PGraphics3D pg3d = (PGraphics3D) scn.renderer();
+    PGraphicsOpenGL pg3d = scn.renderer();
     if (selected)
       pg3d.fill(200, 200, 0);
     else

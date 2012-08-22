@@ -2154,10 +2154,10 @@ public class Scene implements PConstants {
 		if (mask != 0) {
 			renderer().pushStyle();
 			renderer().strokeWeight(2);
+			renderer().noFill();
+			renderer().stroke(170);
 
-			if (((mask & 1) != 0) && path.size() > 1 ) {
-				renderer().noFill();
-				renderer().stroke(170);
+			if (((mask & 1) != 0) && path.size() > 1 ) {				
 				renderer().beginShape();
 				for (Frame myFr : path)
 					renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
