@@ -16,7 +16,7 @@ import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.geom.Matrix3D;
 // */
 
-public class Renderer3D extends P5Renderer {	
+public class Renderer3D extends Renderer {	
 	protected SimpleFrame tmpFrame;
 	
 	public Renderer3D(AbstractScene scn, PGraphics3D renderer) {
