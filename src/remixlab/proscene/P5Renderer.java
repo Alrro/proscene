@@ -25,112 +25,136 @@
 
 package remixlab.proscene;
 
+import java.util.List;
+
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
+/**
+import remixlab.remixcam.core.AbstractScene;
+import remixlab.remixcam.core.Renderable;
+import remixlab.remixcam.core.Camera;
+import remixlab.remixcam.core.ViewPort;
+import remixlab.remixcam.core.SimpleFrame;
+import remixlab.remixcam.geom.Matrix3D;
+import remixlab.remixcam.geom.Vector3D;
+// */
 
-public class P5Renderer implements Renderable {
-	PGraphicsOpenGL pg3d;
+public class P5Renderer implements Renderable, PConstants {
+	protected AbstractScene scene;
+	protected PGraphics pg;	
 
-	public P5Renderer(PGraphicsOpenGL renderer) {
-		pg3d = renderer;
-	}	
+	public P5Renderer(AbstractScene scn, PGraphics renderer) {
+		pg = renderer;
+		scene = scn;
+	}
+	
+	@Override
+	public AbstractScene scene() {
+		return scene;
+	}
+	
+	public PGraphics pGraphics() {
+		return pg;
+	}
+	
+	@Override
+	public void beginScreenDrawing() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void endScreenDrawing() {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+  public boolean is2D() {
+  	return !is3D();
+  }
+	
+  @Override
+	public boolean is3D() {
+		if( pg instanceof PGraphics3D )
+  		return true;
+  	return false;		
+	}
 
 	@Override
 	public void pushMatrix() {
-		pg3d.pushMatrix();
+		pg.pushMatrix();
 	}
 
 	@Override
 	public void popMatrix() {
-		pg3d.popMatrix();
-	}
-	
-	@Override
-	public void pushProjection() {
-		pg3d.pushProjection();
-	}
-
-	@Override
-	public void popProjection() {
-		pg3d.popProjection();
-	}
+		pg.popMatrix();
+	}	
 
 	@Override
 	public void translate(float tx, float ty) {
-		pg3d.translate(tx, ty);
+		pg.translate(tx, ty);
 	}
 
 	@Override
 	public void translate(float tx, float ty, float tz) {
-		pg3d.translate(tx, ty, tz);
+		pg.translate(tx, ty, tz);
 	}
 
 	@Override
 	public void rotate(float angle) {
-		pg3d.rotate(angle);
+		pg.rotate(angle);
 	}
 
 	@Override
 	public void rotateX(float angle) {
-		pg3d.rotateX(angle);
+		pg.rotateX(angle);
 	}
 
 	@Override
 	public void rotateY(float angle) {
-		pg3d.rotateY(angle);
+		pg.rotateY(angle);
 	}
 
 	@Override
 	public void rotateZ(float angle) {
-		pg3d.rotateZ(angle);
+		pg.rotateZ(angle);
 	}
 
 	@Override
 	public void rotate(float angle, float vx, float vy, float vz) {
-		pg3d.rotate(angle, vx, vy, vz);
+		pg.rotate(angle, vx, vy, vz);
 	}
 
 	@Override
 	public void scale(float s) {
-		pg3d.scale(s);
+		pg.scale(s);
 	}
 
 	@Override
 	public void scale(float sx, float sy) {
-		pg3d.scale(sx, sy);
+		pg.scale(sx, sy);
 	}
 
 	@Override
 	public void scale(float x, float y, float z) {
-		pg3d.scale(x, y, z);
+		pg.scale(x, y, z);
 	}	
 
 	@Override
 	public void resetMatrix() {
-		pg3d.resetMatrix();
-	}
-
-	@Override
-	public void resetProjection() {
-		pg3d.projection.reset();
-	}
+		pg.resetMatrix();
+	}	
 
 	@Override
 	public void loadMatrix(Matrix3D source) {
 		PMatrix3D pM = new PMatrix3D();
 		pM.set(source.getTransposed(new float[16]));
-		pg3d.setMatrix(pM);
+		pg.setMatrix(pM);
 	}
-	
-	@Override
-	public void loadProjection(Matrix3D source) {
-		PMatrix3D pM = new PMatrix3D();
-		pM.set(source.getTransposed(new float[16]));
-		pg3d.setProjection(pM);
-	}
-
+		
 	@Override
 	public void multiplyMatrix(Matrix3D source) {
 		this.applyMatrix(source);
@@ -145,63 +169,36 @@ public class P5Renderer implements Renderable {
 	public void applyMatrix(Matrix3D source) {
 		PMatrix3D pM = new PMatrix3D();
 		pM.set(source.getTransposed(new float[16]));
-		pg3d.applyMatrix(pM);
+		pg.applyMatrix(pM);
 	}
 	
-	@Override
-	public void applyProjection(Matrix3D source) {
-		PMatrix3D pM = new PMatrix3D();
-		pM.set(source.getTransposed(new float[16]));
-		pg3d.applyProjection(pM);
-	}
-
 	@Override
 	public void applyMatrixRowMajorOrder(float n00, float n01, float n02, float n03,
 			                                 float n10, float n11, float n12, float n13,
 			                                 float n20, float n21, float n22, float n23,
 			                                 float n30, float n31, float n32, float n33) {
-		pg3d.applyMatrix(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22,	n23, n30, n31, n32, n33);
+		pg.applyMatrix(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22,	n23, n30, n31, n32, n33);
 	}
 	
 	@Override
-	public void applyProjectionRowMajorOrder(float n00, float n01, float n02, float n03,
-			                                 float n10, float n11, float n12, float n13,
-			                                 float n20, float n21, float n22, float n23,
-			                                 float n30, float n31, float n32, float n33) {		
-		pg3d.applyProjection(new PMatrix3D(n00, n01, n02, n03, n10, n11, n12, n13, n20, n21, n22,	n23, n30, n31, n32, n33));
-	}
-
-	@Override
 	public void frustum(float left, float right, float bottom, float top,	float znear, float zfar) {
-		pg3d.frustum(left, right, bottom, top, znear, zfar);
+		//pg.frustum(left, right, bottom, top, znear, zfar);
+		//TODO
 	}
 
 	@Override
 	public Matrix3D getMatrix() {
-		PMatrix3D pM = (PMatrix3D) pg3d.getMatrix();
+		PMatrix3D pM = (PMatrix3D) pg.getMatrix();
 		return new Matrix3D(pM.get(new float[16]), true);// set it transposed
 	}
 	
-	@Override
-	public Matrix3D getProjection() {
-		PMatrix3D pM = pg3d.projection.get();
-		return new Matrix3D(pM.get(new float[16]), true);// set it transposed
-	}
-
 	@Override
 	public Matrix3D getMatrix(Matrix3D target) {
-		PMatrix3D pM = (PMatrix3D) pg3d.getMatrix();
+		PMatrix3D pM = (PMatrix3D) pg.getMatrix();
 		target.setTransposed(pM.get(new float[16]));
 		return target;
 	}
 	
-	@Override
-	public Matrix3D getProjection(Matrix3D target) {
-		PMatrix3D pM = pg3d.projection.get();
-		target.setTransposed(pM.get(new float[16]));
-		return target;
-	}
-
 	@Override
 	public void setMatrix(Matrix3D source) {
 		resetMatrix();
@@ -216,11 +213,321 @@ public class P5Renderer implements Renderable {
 
 	@Override
 	public void printMatrix() {
-		pg3d.printMatrix();
+		pg.printMatrix();
 	}
 	
 	@Override
 	public void printProjection() {
-		pg3d.printProjection();
+		pg.printProjection();
 	}
+	
+	//---
+
+	// /**
+	@Override
+	public void cylinder(float w, float h) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cone(int detail, float x, float y, float r, float h) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void cone(int detail, float x, float y, float r1, float r2, float h) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawAxis(float length) {
+		pg.pushStyle();				
+		pg.strokeWeight(2);			  
+		
+	  // X Axis
+		pg.stroke(200, 0, 0);
+		pg.line(0, 0, length, 0);
+	  // Y Axis
+		pg.stroke(0, 200, 0);		
+		pg.line(0, 0, 0, length);		
+
+		pg.popStyle();		
+	}
+
+	@Override
+	public void drawGrid(float size, int nbSubdivisions) {
+		pg.pushStyle();
+		pg.stroke(170, 170, 170);
+		pg.strokeWeight(1);
+		pg.beginShape(LINES);
+		for (int i = 0; i <= nbSubdivisions; ++i) {
+			final float pos = size * (2.0f * i / nbSubdivisions - 1.0f);
+			pg.vertex(pos, -size);
+			pg.vertex(pos, +size);
+			pg.vertex(-size, pos);
+			pg.vertex(size, pos);
+		}
+		pg.endShape();
+		pg.popStyle();		
+	}
+	
+	@Override
+	public void drawDottedGrid(float size, int nbSubdivisions) {
+		float posi, posj;
+		pg.pushStyle();
+		pg.stroke(170);
+		pg.strokeWeight(2);
+		pg.beginShape(POINTS);
+		for (int i = 0; i <= nbSubdivisions; ++i) {
+			posi = size * (2.0f * i / nbSubdivisions - 1.0f);
+			for(int j = 0; j <= nbSubdivisions; ++j) {
+				posj = size * (2.0f * j / nbSubdivisions - 1.0f);
+				pg.vertex(posi, posj);
+			}
+		}
+		pg.endShape();
+		//pg3d.popStyle();
+		
+		int internalSub = 5;
+		int subSubdivisions = nbSubdivisions * internalSub;
+		//pg3d.pushStyle();
+		pg.stroke(100);
+		pg.strokeWeight(1);
+		pg.beginShape(POINTS);
+		for (int i = 0; i <= subSubdivisions; ++i) {
+			posi = size * (2.0f * i / subSubdivisions - 1.0f);
+			for(int j = 0; j <= subSubdivisions; ++j) {
+				posj = size * (2.0f * j / subSubdivisions - 1.0f);
+				if(( (i%internalSub) != 0 ) || ( (j%internalSub) != 0 ) )
+					pg.vertex(posi, posj);
+			}
+		}
+		pg.endShape();
+		pg.popStyle();
+	}
+
+	@Override
+	public void drawViewPort(ViewPort camera, float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawKFIViewport(float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void drawZoomWindowHint() {
+		//TODO hack
+		float p1x = (float) ((Scene)scene).dE.fCorner.getX();
+		float p1y = (float) ((Scene)scene).dE.fCorner.getY();
+		float p2x = (float) ((Scene)scene).dE.lCorner.getX();
+		float p2y = (float) ((Scene)scene).dE.lCorner.getY();
+		scene.beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(255, 255, 255);
+		pg.strokeWeight(2);
+		pg.noFill();
+		pg.beginShape();
+		pg.vertex(p1x, p1y);
+		pg.vertex(p2x, p1y);
+		pg.vertex(p2x, p2y);		
+		pg.vertex(p1x, p2y);
+		pg.endShape(CLOSE);
+		pg.popStyle();
+		scene.endScreenDrawing();		
+	}
+
+	@Override
+	public void drawScreenRotateLineHint() {
+		float p1x = (float) ((Scene)scene).dE.fCorner.getX();
+		float p1y = (float) ((Scene)scene).dE.fCorner.getY();
+		Vector3D p2 = scene.camera().projectedCoordinatesOf(scene.arcballReferencePoint());
+		scene.beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(255, 255, 255);
+		pg.strokeWeight(2);
+		pg.noFill();
+		pg.line(p2.x(), p2.y(), p1x, p1y);
+		pg.popStyle();
+		scene.endScreenDrawing();
+	}
+
+	@Override
+	public void drawArcballReferencePointHint() {
+		Vector3D p = scene.camera().projectedCoordinatesOf(scene.arcballReferencePoint());
+		pg.pushStyle();
+		pg.stroke(255);
+		pg.strokeWeight(3);
+		scene.drawCross(p.vec[0], p.vec[1]);
+		pg.popStyle();
+	}
+
+	@Override
+	public void drawCross(float px, float py, float size) {
+		scene.beginScreenDrawing();
+		pg.pushStyle();		
+		//pg3d.stroke(color);
+		//pg3d.strokeWeight(strokeWeight);
+		pg.noFill();
+		pg.beginShape(LINES);
+		pg.vertex(px - size, py);
+		pg.vertex(px + size, py);
+		pg.vertex(px, py - size);
+		pg.vertex(px, py + size);
+		pg.endShape();
+		pg.popStyle();
+		scene.endScreenDrawing();		
+	}
+
+	@Override
+	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
+		float precision = TWO_PI/subdivisions;
+		float x = center.x();
+		float y = center.y();
+		float angle, x2, y2;
+		scene.beginScreenDrawing();
+		pg.pushStyle();
+		pg.noStroke();
+		//pg3d.fill(color);
+		pg.beginShape(TRIANGLE_FAN);		
+		pg.vertex(x, y);
+		for (angle = 0.0f; angle <= TWO_PI + 1.1*precision; angle += precision) {			
+			x2 = x + PApplet.sin(angle) * radius;
+			y2 = y + PApplet.cos(angle) * radius;			
+			pg.vertex(x2, y2);
+		}
+		pg.endShape();
+		pg.popStyle();
+		scene.endScreenDrawing();
+	}
+
+	@Override
+	public void drawFilledSquare(Vector3D center, float edge) {
+		float x = center.x();
+		float y = center.y();
+		scene.beginScreenDrawing();		
+		pg.pushStyle();
+		pg.noStroke();
+		//pg3d.fill(color);
+		pg.beginShape(QUADS);
+		pg.vertex(x - edge, y + edge);
+		pg.vertex(x + edge, y + edge);
+		pg.vertex(x + edge, y - edge);
+		pg.vertex(x - edge, y - edge);
+		pg.endShape();
+		pg.popStyle();
+		scene.endScreenDrawing();
+	}
+
+	@Override
+	public void drawShooterTarget(Vector3D center, float length) {
+		float x = center.x();
+		float y = center.y();
+		scene.beginScreenDrawing();
+		
+		pg.pushStyle();
+
+		//pg3d.stroke(color);
+		//pg3d.strokeWeight(strokeWeight);
+		pg.noFill();
+
+		pg.beginShape();
+		pg.vertex((x - length), (y - length) + (0.6f * length));
+		pg.vertex((x - length), (y - length));
+		pg.vertex((x - length) + (0.6f * length), (y - length));
+		pg.endShape();
+
+		pg.beginShape();
+		pg.vertex((x + length) - (0.6f * length), (y - length));
+		pg.vertex((x + length), (y - length));
+		pg.vertex((x + length), ((y - length) + (0.6f * length)));
+		pg.endShape();
+		
+		pg.beginShape();
+		pg.vertex((x + length), ((y + length) - (0.6f * length)));
+		pg.vertex((x + length), (y + length));
+		pg.vertex(((x + length) - (0.6f * length)), (y + length));
+		pg.endShape();
+
+		pg.beginShape();
+		pg.vertex((x - length) + (0.6f * length), (y + length));
+		pg.vertex((x - length), (y + length));
+		pg.vertex((x - length), ((y + length) - (0.6f * length)));
+		pg.endShape();
+
+		pg.popStyle();
+		scene.endScreenDrawing();
+
+		drawCross(center.x(), center.y(), 0.6f * length);
+	}
+
+	@Override
+	public void drawPath(List<SimpleFrame> path, int mask, int nbFrames, int nbSteps, float scale) {
+		// TODO Auto-generated method stub
+		
+	}
+	// */
+
+	@Override
+	public void pushProjection() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void popProjection() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void resetProjection() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void loadProjection(Matrix3D source) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyProjection(Matrix3D source) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void applyProjectionRowMajorOrder(float n00, float n01, float n02,
+			float n03, float n10, float n11, float n12, float n13, float n20,
+			float n21, float n22, float n23, float n30, float n31, float n32,
+			float n33) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Matrix3D getProjection() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Matrix3D getProjection(Matrix3D target) {
+		// TODO Auto-generated method stub
+		return null;
+	}	
 }
