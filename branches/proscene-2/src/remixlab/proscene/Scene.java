@@ -40,22 +40,23 @@ import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
 import remixlab.remixcam.core.InteractiveFrame;
-import remixlab.remixcam.core.SimpleFrame;
-import remixlab.remixcam.core.KeyFrameInterpolator;
+//import remixlab.remixcam.core.SimpleFrame;
+//import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.devices.DeviceGrabbable;
 import remixlab.remixcam.devices.Bindings;
 import remixlab.remixcam.util.AbstractTimerJob;
 import remixlab.remixcam.util.SingleThreadedTaskableTimer;
 import remixlab.remixcam.util.SingleThreadedTimer;
-import remixlab.remixcam.geom.Matrix3D;
+//import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Point;
 // */
 
 import java.lang.reflect.Method;
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+//import java.util.List;
 import java.util.Map.Entry;
 
 /**
@@ -118,193 +119,6 @@ import java.util.Map.Entry;
  * occurs. See the example <i>Flock</i>.
  */
 public class Scene extends AbstractScene implements PConstants {
-	//TODO hack to make remixcam camera projection matrix compatible with that of P5
-	public class P5Camera extends Camera {
-		public P5Camera(AbstractScene scn) {
-			super(scn);
-		}
-		
-		@Override
-		public void computeProjectionMatrix() {
-			float ZNear = zNear();
-			float ZFar = zFar();
-
-			switch (type()) {
-			case PERSPECTIVE: {
-				// #CONNECTION# all non null coefficients were set to 0.0 in
-				// constructor.
-				float f = 1.0f / (float) Math.tan(fieldOfView() / 2.0f);
-				projectionMat.mat[0] = f / aspectRatio();
-				projectionMat.mat[5] = -f;
-				projectionMat.mat[10] = (ZNear + ZFar) / (ZNear - ZFar);
-				projectionMat.mat[11] = -1.0f;
-				projectionMat.mat[14] = 2.0f * ZNear * ZFar / (ZNear - ZFar);
-				projectionMat.mat[15] = 0.0f;
-				// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(),
-				// zNear(), zFar() );
-				break;
-			}
-			case ORTHOGRAPHIC: {
-				float[] wh = getOrthoWidthHeight();
-				projectionMat.mat[0] = 1.0f / wh[0];
-				projectionMat.mat[5] = -1.0f / wh[1];
-				projectionMat.mat[10] = -2.0f / (ZFar - ZNear);
-				projectionMat.mat[11] = 0.0f;
-				projectionMat.mat[14] = -(ZFar + ZNear) / (ZFar - ZNear);
-				projectionMat.mat[15] = 1.0f;
-				// same as glOrtho( -w, w, -h, h, zNear(), zFar() );
-				break;
-			}
-			}
-		}
-		
-		@Override
-		public void ortho(float left, float right, float bottom, float top, float near, float far) {
-			float x = +2.0f / (right - left);
-			float y = +2.0f / (top - bottom);
-			float z = -2.0f / (far - near);
-			
-			float tx = -(right + left) / (right - left);
-			float ty = -(top + bottom) / (top - bottom);
-			float tz = -(far + near)   / (far - near);
-			
-			// The minus sign is needed to invert the Y axis.
-			projectionMat.set(x,  0, 0, tx,
-	                      0, -y, 0, ty,
-	                      0,  0, z, tz,
-	                      0,  0, 0,  1);
-		}
-		
-		public PMatrix3D getOrtho(float left, float right, float bottom, float top, float near, float far) {
-			float x = +2.0f / (right - left);
-			float y = +2.0f / (top - bottom);
-			float z = -2.0f / (far - near);
-			
-			float tx = -(right + left) / (right - left);
-			float ty = -(top + bottom) / (top - bottom);
-			float tz = -(far + near)   / (far - near);
-			
-			// The minus sign is needed to invert the Y axis.
-			return new PMatrix3D(x,  0, 0, tx,
-	                         0, -y, 0, ty,
-	                         0,  0, z, tz,
-	                         0,  0, 0,  1);
-		}
-		
-		public PMatrix3D getCamera() {
-			 return getCamera(width/2f, height/2f, (height/2f) / (float)Math.tan(PI*60 / 360), width/2f, height/2f, 0, 0, 1, 0);
-		}
-		
-		public PMatrix3D getCamera(float eyeX, float eyeY, float eyeZ,
-        float centerX, float centerY, float centerZ,
-        float upX, float upY, float upZ) {
-			
-			/**
-			if (hints[DISABLE_TRANSFORM_CACHE]) {
-        flush();
-      }
-			*/
-			
-			// Calculating Z vector
-			float z0 = eyeX - centerX;
-			float z1 = eyeY - centerY;
-			float z2 = eyeZ - centerZ;
-			float mag = PApplet.sqrt(z0 * z0 + z1 * z1 + z2 * z2);
-			if (nonZero(mag)) {
-				z0 /= mag;
-				z1 /= mag;
-				z2 /= mag;
-			}
-			/**
-			cameraEyeX = eyeX;
-			cameraEyeY = eyeY;
-			cameraEyeZ = eyeZ;
-			*/
-			
-			// Calculating Y vector
-			float y0 = upX;
-			float y1 = upY;
-			float y2 = upZ;
-			
-			// Computing X vector as Y cross Z
-			float x0 =  y1 * z2 - y2 * z1;
-			float x1 = -y0 * z2 + y2 * z0;
-			float x2 =  y0 * z1 - y1 * z0;
-			
-			// Recompute Y = Z cross X
-			y0 =  z1 * x2 - z2 * x1;
-			y1 = -z0 * x2 + z2 * x0;
-			y2 =  z0 * x1 - z1 * x0;
-			
-			// Cross product gives area of parallelogram, which is < 1.0 for
-			// non-perpendicular unit-length vectors; so normalize x, y here:
-			mag = PApplet.sqrt(x0 * x0 + x1 * x1 + x2 * x2);
-			if (nonZero(mag)) {
-				x0 /= mag;
-				x1 /= mag;
-				x2 /= mag;
-			}
-			
-			mag = PApplet.sqrt(y0 * y0 + y1 * y1 + y2 * y2);
-			if (nonZero(mag)) {
-				y0 /= mag;
-				y1 /= mag;
-				y2 /= mag;
-			}
-			
-			/**
-			modelview.set(x0, x1, x2, 0,
-					          y0, y1, y2, 0,
-                    z0, z1, z2, 0,
-                     0,  0,  0, 1);
-						
-			float tx = -eyeX;
-			float ty = -eyeY;
-			float tz = -eyeZ;
-			modelview.translate(tx, ty, tz);			
-			
-			modelviewInv.set(modelview);
-			modelviewInv.invert();
-			
-			camera.set(modelview);
-			cameraInv.set(modelviewInv);
-			
-			calcProjmodelview();
-			*/			
-			
-			PMatrix3D mv = new PMatrix3D(x0, x1, x2, 0,
-                                   y0, y1, y2, 0,
-                                   z0, z1, z2, 0,
-                                    0,  0,  0, 1);
-			
-			float tx = -eyeX;
-			float ty = -eyeY;
-			float tz = -eyeZ;
-			
-			mv.translate(tx, ty, tz);
-			
-			return mv;
-		}
-		
-		@Override
-		public void frustum(float left, float right, float bottom, float top,  float znear, float zfar) {
-			float n2 = 2 * znear;
-			float w = right - left;
-			float h = top - bottom;
-			float d = zfar - znear;
-			
-		  // The minus sign (-n2 / h) is needed to invert the Y axis.
-			projectionMat.set(n2 / w,       0,  (right + left) / w,                0,
-	                           0, -n2 / h,  (top + bottom) / h,                0,
-	                           0,       0, -(zfar + znear) / d, -(n2 * zfar) / d,
-	                           0,       0,                  -1,                0);
-		}
-		
-		protected boolean nonZero(float a) {
-	    return 0x0.000002P-126f <= Math.abs(a);
-	  }
-	}	
-	
 	// proscene version
 	public static final String version = "1.9.60";
 	/**
@@ -361,18 +175,18 @@ public class Scene extends AbstractScene implements PConstants {
 	private CameraProfile currentCameraProfile;		
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
-	public PApplet parent;
-	public PGraphicsOpenGL pg3d;	
+	public PApplet parent;	
 	protected boolean offscreen;
-	public Point upperLeftCorner;
-	protected SimpleFrame tmpFrame;
+	public Point upperLeftCorner;	
 
 	// O B J E C T S
 	protected AWTWheeledDesktopEvents dE;
 
-	// E X C E P T I O N H A N D L I N G
-	protected int startCoordCalls;
+	// E X C E P T I O N H A N D L I N G	
   protected int beginOffScreenDrawingCalls;  
+  
+  //I S 2 D O R 3 D
+  protected boolean is2d;
 	
 	/**
 	// M O U S E   G R A B B E R   H I N T   C O L O R S
@@ -406,11 +220,12 @@ public class Scene extends AbstractScene implements PConstants {
 	 * function that simply calls {@code this(p, (PGraphicsOpenGL) p.g)}. Call any
 	 * other constructor by yourself to possibly define an off-screen Scene.
 	 * 
-	 * @see #Scene(PApplet, PGraphicsOpenGL)
-	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
+	 * @see #Scene(PApplet, PGraphics)
+	 * @see #Scene(PApplet, PGraphics, int, int)
 	 */	
 	public Scene(PApplet p) {
-		this(p, (PGraphicsOpenGL) p.g);
+		this(p, (PGraphics) p.g);
+		
 	}
 	
 	/**
@@ -423,9 +238,9 @@ public class Scene extends AbstractScene implements PConstants {
 	 * call {@link #Scene(PApplet)} instead.
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
+	 * @see #Scene(PApplet, PGraphics, int, int)
 	 */
-	public Scene(PApplet p, PGraphicsOpenGL renderer) {
+	public Scene(PApplet p, PGraphics renderer) {	
 		this(p, renderer, 0, 0);
 	}
 
@@ -445,12 +260,21 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #Scene(PApplet)
 	 * @see #Scene(PApplet, PGraphicsOpenGL)
 	 */
-	public Scene(PApplet p, PGraphicsOpenGL renderer, int x, int y) {
-		super(new P5Renderer(renderer));
+	public Scene(PApplet p, PGraphics pg, int x, int y) {
 		parent = p;
-		pg3d = renderer;
-		width = pg3d.width;
-		height = pg3d.height;	
+	  //pg3d = renderer;
+		
+		if( pg instanceof PGraphicsJava2D )
+			setRenderer( new RendererJava2D(this, (PGraphicsJava2D)pg) );	
+		else
+			if( pg instanceof PGraphics2D )
+				setRenderer( new Renderer2D(this, (PGraphics2D)pg) );
+			else
+				if( pg instanceof PGraphics3D )
+					setRenderer( new Renderer3D(this, (PGraphics3D)pg) );			
+		
+		width = pg.width;
+		height = pg.height;	
 		
 		setAWTTimers();
 		setLeftHanded();
@@ -462,9 +286,7 @@ public class Scene extends AbstractScene implements PConstants {
 		setMouseGrabberOffSelectionHintColor(pg3d.color(255, 0, 0));
 		setMouseGrabberCameraPathOnSelectionHintColor(pg3d.color(255, 255, 0));
 		setMouseGrabberCameraPathOffSelectionHintColor(pg3d.color(0, 255, 255));
-		*/
-		
-		tmpFrame = new SimpleFrame();
+		*/		
 		
 		//event handler
 		dE = new AWTWheeledDesktopEvents(this);
@@ -479,14 +301,14 @@ public class Scene extends AbstractScene implements PConstants {
 		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
-		cam = new P5Camera(this);
+		cam = new Camera(this);		
 		setCamera(camera());//calls showAll();
 		setInteractiveFrame(null);
 		setAvatar(null);
 		
   	// This scene is offscreen if the provided renderer is
 		// different from the main PApplet renderer.
-		offscreen = renderer != p.g;
+		offscreen = pg != p.g;
 		if(offscreen)
 			upperLeftCorner = new Point(x, y);
 		else
@@ -514,10 +336,7 @@ public class Scene extends AbstractScene implements PConstants {
 		setFrameSelectionHintIsDrawn(false);
 		setCameraPathsAreDrawn(false);
 		
-		disableFrustumEquationsUpdate();
-
-		// E X C E P T I O N H A N D L I N G
-		startCoordCalls = 0;
+		disableFrustumEquationsUpdate();		
 
 		parent.registerPre(this);
 		parent.registerDraw(this);
@@ -535,6 +354,11 @@ public class Scene extends AbstractScene implements PConstants {
 		// called only once
 		init();
 	}
+	
+	//TODO set is2d
+  public boolean is2D() {
+  	return is2d;
+  }
 
 	// 2. Associated objects	
 	
@@ -636,7 +460,7 @@ public class Scene extends AbstractScene implements PConstants {
 		camera.setSceneRadius(radius());		
 		camera.setSceneCenter(center());
 
-		camera.setScreenWidthAndHeight(pg3d.width, pg3d.height);
+		camera.setScreenWidthAndHeight(pGraphics().width, pGraphics().height);
 
 		cam = camera;		
 
@@ -694,11 +518,11 @@ public class Scene extends AbstractScene implements PConstants {
 			drawArcballReferencePointHint();
 		if (pupFlag) {
 			Vector3D v = camera().projectedCoordinatesOf(pupVec);
-			pg3d.pushStyle();			
-			pg3d.stroke(255);
-			pg3d.strokeWeight(3);
+			pGraphics().pushStyle();		
+			pGraphics().stroke(255);
+			pGraphics().strokeWeight(3);
 			drawCross(v.vec[0], v.vec[1]);
-			pg3d.popStyle();
+			pGraphics().popStyle();
 		}
 	}	
 
@@ -719,9 +543,9 @@ public class Scene extends AbstractScene implements PConstants {
 		// weird: we need to bypass the handling of a resize event when running the
 		// applet from eclipse		
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
-			if ((width != pg3d.width) || (height != pg3d.height)) {
-				width = pg3d.width;
-				height = pg3d.height;				
+			if ((width != pGraphics().width) || (height != pGraphics().height)) {
+				width = pGraphics().width;
+				height = pGraphics().height;				
 				camera().setScreenWidthAndHeight(width, height);				
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
@@ -766,16 +590,7 @@ public class Scene extends AbstractScene implements PConstants {
 					e.printStackTrace();
 				}
 			}	
-	}
-	
-	/**
-	 * Returns the renderer context linked to this scene. 
-	 * 
-	 * @return PGraphicsOpenGL renderer.
-	 */
-	public PGraphicsOpenGL renderer() {
-		return pg3d;
-	}
+	}	
 
 	/**
 	 * This method should be called when using offscreen rendering 
@@ -838,471 +653,14 @@ public class Scene extends AbstractScene implements PConstants {
 	 * the processing display window.
 	 */
 	public float aspectRatio() {
-		return (float) pg3d.width / (float) pg3d.height;
+		return (float) pGraphics().width / (float) pGraphics().height;
 	}
 
-	// 6. Display of visual hints and Display methods
+	// 6. Display of visual hints and Display methods		
 	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#cylinder(float, float)}.
-	 * <p>
-	 * Code adapted from http://www.processingblogs.org/category/processing-java/ 
-	 */
-	@Override
-	public void cylinder(float w, float h) {		
-		float px, py;
-
-		pg3d.beginShape(QUAD_STRIP);
-		for (float i = 0; i < 13; i++) {
-			px = (float) Math.cos(PApplet.radians(i * 30)) * w;
-			py = (float) Math.sin(PApplet.radians(i * 30)) * w;
-			pg3d.vertex(px, py, 0);
-			pg3d.vertex(px, py, h);
-		}
-		pg3d.endShape();
-
-		pg3d.beginShape(TRIANGLE_FAN);
-		pg3d.vertex(0, 0, 0);
-		for (float i = 12; i > -1; i--) {
-			px = (float) Math.cos(PApplet.radians(i * 30)) * w;
-			py = (float) Math.sin(PApplet.radians(i * 30)) * w;
-			pg3d.vertex(px, py, 0);
-		}
-		pg3d.endShape();
-
-		pg3d.beginShape(TRIANGLE_FAN);
-		pg3d.vertex(0, 0, h);
-		for (float i = 0; i < 13; i++) {
-			px = (float) Math.cos(PApplet.radians(i * 30)) * w;
-			py = (float) Math.sin(PApplet.radians(i * 30)) * w;
-			pg3d.vertex(px, py, h);
-		}
-		pg3d.endShape();
-	}					
+	// 2. CAMERA	
 	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#cone(int, float, float, float, float)}.
-	 * <p>
-	 * The code of this function was adapted from
-	 * http://processinghacks.com/hacks:cone Thanks to Tom Carden.
-	 * 
-	 * @see #cone(int, float, float, float, float, float)
-	 */
-	@Override
-	public void cone(int detail, float x, float y, float r, float h) {
-		float unitConeX[] = new float[detail + 1];
-		float unitConeY[] = new float[detail + 1];
-
-		for (int i = 0; i <= detail; i++) {
-			float a1 = PApplet.TWO_PI * i / detail;
-			unitConeX[i] = r * (float) Math.cos(a1);
-			unitConeY[i] = r * (float) Math.sin(a1);
-		}
-
-		pg3d.pushMatrix();
-		pg3d.translate(x, y);
-		pg3d.beginShape(TRIANGLE_FAN);
-		pg3d.vertex(0, 0, h);
-		for (int i = 0; i <= detail; i++) {
-			pg3d.vertex(unitConeX[i], unitConeY[i], 0.0f);
-		}
-		pg3d.endShape();
-		pg3d.popMatrix();
-	}	
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#cone(int, float, float, float, float, float)}.
-	 */
-	@Override
-	public void cone(int detail, float x, float y,	float r1, float r2, float h) {
-		float firstCircleX[] = new float[detail + 1];
-		float firstCircleY[] = new float[detail + 1];
-		float secondCircleX[] = new float[detail + 1];
-		float secondCircleY[] = new float[detail + 1];
-
-		for (int i = 0; i <= detail; i++) {
-			float a1 = PApplet.TWO_PI * i / detail;
-			firstCircleX[i] = r1 * (float) Math.cos(a1);
-			firstCircleY[i] = r1 * (float) Math.sin(a1);
-			secondCircleX[i] = r2 * (float) Math.cos(a1);
-			secondCircleY[i] = r2 * (float) Math.sin(a1);
-		}
-
-		pg3d.pushMatrix();
-		pg3d.translate(x, y);
-		pg3d.beginShape(QUAD_STRIP);
-		for (int i = 0; i <= detail; i++) {
-			pg3d.vertex(firstCircleX[i], firstCircleY[i], 0);
-			pg3d.vertex(secondCircleX[i], secondCircleY[i], h);
-		}
-		pg3d.endShape();
-		pg3d.popMatrix();
-	}		
-	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawAxis(float)}.
-	 */
-	@Override
-	public void drawAxis(float length) {		
-		final float charWidth = length / 40.0f;
-		final float charHeight = length / 30.0f;
-		final float charShift = 1.04f * length;
-
-		// pg3d.noLights();
-
-		pg3d.pushStyle();
-		
-		pg3d.beginShape(LINES);		
-		pg3d.strokeWeight(2);
-		// The X
-		pg3d.stroke(200, 0, 0);
-		pg3d.vertex(charShift, charWidth, -charHeight);
-		pg3d.vertex(charShift, -charWidth, charHeight);
-		pg3d.vertex(charShift, -charWidth, -charHeight);
-		pg3d.vertex(charShift, charWidth, charHeight);
-		// The Y
-		pg3d.stroke(0, 200, 0);
-		pg3d.vertex(charWidth, charShift, charHeight);
-		pg3d.vertex(0.0f, charShift, 0.0f);
-		pg3d.vertex(-charWidth, charShift, charHeight);
-		pg3d.vertex(0.0f, charShift, 0.0f);
-		pg3d.vertex(0.0f, charShift, 0.0f);
-		pg3d.vertex(0.0f, charShift, -charHeight);
-		// The Z
-		pg3d.stroke(0, 100, 200);
-		
-		//left_handed
-		pg3d.vertex(-charWidth, -charHeight, charShift);
-		pg3d.vertex(charWidth, -charHeight, charShift);
-		pg3d.vertex(charWidth, -charHeight, charShift);
-		pg3d.vertex(-charWidth, charHeight, charShift);
-		pg3d.vertex(-charWidth, charHeight, charShift);
-		pg3d.vertex(charWidth, charHeight, charShift);
-	  //right_handed coordinate system should go like this:
-		//pg3d.vertex(-charWidth, charHeight, charShift);
-		//pg3d.vertex(charWidth, charHeight, charShift);
-		//pg3d.vertex(charWidth, charHeight, charShift);
-		//pg3d.vertex(-charWidth, -charHeight, charShift);
-		//pg3d.vertex(-charWidth, -charHeight, charShift);
-		//pg3d.vertex(charWidth, -charHeight, charShift);
-		
-		pg3d.endShape();
-		
-	  /**
-		// Z axis
-		pg3d.noStroke();
-		pg3d.fill(0, 100, 200);
-		drawArrow(length, 0.01f * length);
-
-		// X Axis
-		pg3d.fill(200, 0, 0);
-		pg3d.pushMatrix();
-		pg3d.rotateY(HALF_PI);
-		drawArrow(length, 0.01f * length);
-		pg3d.popMatrix();
-
-		// Y Axis
-		pg3d.fill(0, 200, 0);
-		pg3d.pushMatrix();
-		pg3d.rotateX(-HALF_PI);
-		drawArrow(length, 0.01f * length);
-		pg3d.popMatrix();
-		// */
-		
-	  // X Axis
-		pg3d.stroke(200, 0, 0);
-		pg3d.line(0, 0, 0, length, 0, 0);
-	  // Y Axis
-		pg3d.stroke(0, 200, 0);		
-		pg3d.line(0, 0, 0, 0, length, 0);
-		// Z Axis
-		pg3d.stroke(0, 100, 200);
-		pg3d.line(0, 0, 0, 0, 0, length);		
-
-		pg3d.popStyle();	  
-	}	
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawGrid(float, int)}.
-	 */
-	@Override
-	public void drawGrid(float size, int nbSubdivisions) {		
-		if ( gridIsDotted() ) {
-			float posi, posj;
-			pg3d.pushStyle();
-			pg3d.stroke(170);
-			pg3d.strokeWeight(2);
-			pg3d.beginShape(POINTS);
-			for (int i = 0; i <= nbSubdivisions; ++i) {
-				posi = size * (2.0f * i / nbSubdivisions - 1.0f);
-				for(int j = 0; j <= nbSubdivisions; ++j) {
-					posj = size * (2.0f * j / nbSubdivisions - 1.0f);
-					pg3d.vertex(posi, posj);
-				}
-			}
-			pg3d.endShape();
-			//pg3d.popStyle();
-			
-			int internalSub = 5;
-			int subSubdivisions = nbSubdivisions * internalSub;
-			//pg3d.pushStyle();
-			pg3d.stroke(100);
-			pg3d.strokeWeight(1);
-			pg3d.beginShape(POINTS);
-			for (int i = 0; i <= subSubdivisions; ++i) {
-				posi = size * (2.0f * i / subSubdivisions - 1.0f);
-				for(int j = 0; j <= subSubdivisions; ++j) {
-					posj = size * (2.0f * j / subSubdivisions - 1.0f);
-					if(( (i%internalSub) != 0 ) || ( (j%internalSub) != 0 ) )
-						pg3d.vertex(posi, posj);
-				}
-			}
-			pg3d.endShape();
-			pg3d.popStyle();
-		}
-		else {
-			pg3d.pushStyle();
-			pg3d.stroke(170, 170, 170);
-			pg3d.strokeWeight(1);
-			pg3d.beginShape(LINES);
-			for (int i = 0; i <= nbSubdivisions; ++i) {
-				final float pos = size * (2.0f * i / nbSubdivisions - 1.0f);
-				pg3d.vertex(pos, -size);
-				pg3d.vertex(pos, +size);
-				pg3d.vertex(-size, pos);
-				pg3d.vertex(size, pos);
-			}
-			pg3d.endShape();
-			pg3d.popStyle();
-		}
-	}
-	
-	// 2. CAMERA
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCamera(Camera, boolean, float)}
-	 */	
-	@Override
-	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {		
-		pg3d.pushMatrix();
-
-		// pg3d.applyMatrix(camera.frame().worldMatrix());
-		// same as the previous line, but maybe more efficient
-		tmpFrame.fromMatrix(camera.frame().worldMatrix());
-		applyTransformation(tmpFrame);
-
-		// 0 is the upper left coordinates of the near corner, 1 for the far one
-		PVector[] points = new PVector[2];
-		points[0] = new PVector();
-		points[1] = new PVector();
-
-		points[0].z = scale * camera.zNear();
-		points[1].z = scale * camera.zFar();
-
-		switch (camera.type()) {
-		case PERSPECTIVE: {
-			points[0].y = points[0].z * PApplet.tan(camera.fieldOfView() / 2.0f);
-			points[0].x = points[0].y * camera.aspectRatio();
-			float ratio = points[1].z / points[0].z;
-			points[1].y = ratio * points[0].y;
-			points[1].x = ratio * points[0].x;
-			break;
-		}
-		case ORTHOGRAPHIC: {
-			float[] wh = camera.getOrthoWidthHeight();
-			points[0].x = points[1].x = scale * wh[0];
-			points[0].y = points[1].y = scale * wh[1];
-			break;
-		}
-		}
-
-		int farIndex = drawFarPlane ? 1 : 0;
-		
-	  // Frustum lines
-		pg3d.strokeWeight(2);
-		switch (camera.type()) {
-			case PERSPECTIVE:
-				pg3d.beginShape(PApplet.LINES);
-				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(points[farIndex].x, points[farIndex].y, -points[farIndex].z);
-				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(-points[farIndex].x, points[farIndex].y, -points[farIndex].z);
-				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(-points[farIndex].x, -points[farIndex].y,	-points[farIndex].z);
-				pg3d.vertex(0.0f, 0.0f, 0.0f);
-				pg3d.vertex(points[farIndex].x, -points[farIndex].y, -points[farIndex].z);
-				pg3d.endShape();
-				break;
-			case ORTHOGRAPHIC:
-				if (drawFarPlane) {
-					pg3d.beginShape(PApplet.LINES);
-					pg3d.vertex(points[0].x, points[0].y, -points[0].z);
-					pg3d.vertex(points[1].x, points[1].y, -points[1].z);
-					pg3d.vertex(-points[0].x, points[0].y, -points[0].z);
-					pg3d.vertex(-points[1].x, points[1].y, -points[1].z);
-					pg3d.vertex(-points[0].x, -points[0].y, -points[0].z);
-					pg3d.vertex(-points[1].x, -points[1].y, -points[1].z);
-					pg3d.vertex(points[0].x, -points[0].y, -points[0].z);
-					pg3d.vertex(points[1].x, -points[1].y, -points[1].z);
-					pg3d.endShape();
-				}
-		}
-
-		// Near and (optionally) far plane(s)
-		pg3d.pushStyle();
-		pg3d.noStroke();
-		pg3d.beginShape(PApplet.QUADS);
-		for (int i = farIndex; i >= 0; --i) {
-			pg3d.normal(0.0f, 0.0f, (i == 0) ? 1.0f : -1.0f);
-			pg3d.vertex(points[i].x, points[i].y, -points[i].z);
-			pg3d.vertex(-points[i].x, points[i].y, -points[i].z);
-			pg3d.vertex(-points[i].x, -points[i].y, -points[i].z);
-			pg3d.vertex(points[i].x, -points[i].y, -points[i].z);
-		}
-		pg3d.endShape();
-
-		// Up arrow
-		float arrowHeight = 1.5f * points[0].y;
-		float baseHeight = 1.2f * points[0].y;
-		float arrowHalfWidth = 0.5f * points[0].x;
-		float baseHalfWidth = 0.3f * points[0].x;
-
-		// pg3d.noStroke();
-		// Base
-		pg3d.beginShape(PApplet.QUADS);
-		
-		pg3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
-		pg3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
-		pg3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
-		pg3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
-  	//right_handed coordinate system should go like this:
-		//pg3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
-		//pg3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
-		//pg3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
-		//pg3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
-		
-		pg3d.endShape();
-
-		// Arrow
-		pg3d.beginShape(PApplet.TRIANGLES);
-		
-		pg3d.vertex(0.0f, -arrowHeight, -points[0].z);
-		pg3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
-		pg3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
-  	//right_handed coordinate system should go like this:
-		//pg3d.vertex(0.0f, arrowHeight, -points[0].z);
-		//pg3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
-		//pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
-		
-		pg3d.endShape();	
-		pg3d.popStyle();
-		pg3d.popMatrix();
-	}
-
 	// 3. KEYFRAMEINTERPOLATOR CAMERA
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawKFICamera(int, float)}.
-	 */
-	@Override
-	public void drawKFICamera(float scale) {
-		float halfHeight = scale * 0.07f;
-		float halfWidth = halfHeight * 1.3f;
-		float dist = halfHeight / (float) Math.tan(PApplet.PI / 8.0f);
-
-		float arrowHeight = 1.5f * halfHeight;
-		float baseHeight = 1.2f * halfHeight;
-		float arrowHalfWidth = 0.5f * halfWidth;
-		float baseHalfWidth = 0.3f * halfWidth;
-
-		// Frustum outline
-		pg3d.pushStyle();
-
-		pg3d.noFill();		
-		pg3d.beginShape();
-		pg3d.vertex(-halfWidth, halfHeight, -dist);
-		pg3d.vertex(-halfWidth, -halfHeight, -dist);
-		pg3d.vertex(0.0f, 0.0f, 0.0f);
-		pg3d.vertex(halfWidth, -halfHeight, -dist);
-		pg3d.vertex(-halfWidth, -halfHeight, -dist);
-		pg3d.endShape();
-		pg3d.noFill();
-		pg3d.beginShape();
-		pg3d.vertex(halfWidth, -halfHeight, -dist);
-		pg3d.vertex(halfWidth, halfHeight, -dist);
-		pg3d.vertex(0.0f, 0.0f, 0.0f);
-		pg3d.vertex(-halfWidth, halfHeight, -dist);
-		pg3d.vertex(halfWidth, halfHeight, -dist);
-		pg3d.endShape();
-
-		// Up arrow
-		pg3d.noStroke();
-		pg3d.fill(170);
-		// Base
-		pg3d.beginShape(PApplet.QUADS);
-		
-		pg3d.vertex(baseHalfWidth, -halfHeight, -dist);
-		pg3d.vertex(-baseHalfWidth, -halfHeight, -dist);
-		pg3d.vertex(-baseHalfWidth, -baseHeight, -dist);
-		pg3d.vertex(baseHalfWidth, -baseHeight, -dist);
-  	//right_handed coordinate system should go like this:
-		//pg3d.vertex(-baseHalfWidth, halfHeight, -dist);
-		//pg3d.vertex(baseHalfWidth, halfHeight, -dist);
-		//pg3d.vertex(baseHalfWidth, baseHeight, -dist);
-		//pg3d.vertex(-baseHalfWidth, baseHeight, -dist);
-		
-		pg3d.endShape();
-		// Arrow
-		pg3d.beginShape(PApplet.TRIANGLES);
-		
-		pg3d.vertex(0.0f, -arrowHeight, -dist);
-		pg3d.vertex(arrowHalfWidth, -baseHeight, -dist);
-		pg3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
-	  //right_handed coordinate system should go like this:
-		//pg3d.vertex(0.0f, arrowHeight, -dist);
-		//pg3d.vertex(-arrowHalfWidth, baseHeight, -dist);
-		//pg3d.vertex(arrowHalfWidth, baseHeight, -dist);
-		
-		pg3d.endShape();
-
-		pg3d.popStyle();
-	}
-	
-	@Override
-	protected void drawZoomWindowHint() {
-		float p1x = (float) dE.fCorner.getX();
-		float p1y = (float) dE.fCorner.getY();
-		float p2x = (float) dE.lCorner.getX();
-		float p2y = (float) dE.lCorner.getY();
-		beginScreenDrawing();
-		pg3d.pushStyle();
-		pg3d.stroke(255, 255, 255);
-		pg3d.strokeWeight(2);
-		pg3d.noFill();
-		pg3d.beginShape();
-		pg3d.vertex(p1x, p1y);
-		pg3d.vertex(p2x, p1y);
-		pg3d.vertex(p2x, p2y);		
-		pg3d.vertex(p1x, p2y);
-		pg3d.endShape(CLOSE);
-		pg3d.popStyle();
-		endScreenDrawing();
-	}
-
-	@Override
-	protected void drawScreenRotateLineHint() {
-		float p1x = (float) dE.fCorner.getX();
-		float p1y = (float) dE.fCorner.getY();
-		Vector3D p2 = camera().projectedCoordinatesOf(arcballReferencePoint());
-		beginScreenDrawing();
-		pg3d.pushStyle();
-		pg3d.stroke(255, 255, 255);
-		pg3d.strokeWeight(2);
-		pg3d.noFill();
-		pg3d.line(p2.x(), p2.y(), p1x, p1y);
-		pg3d.popStyle();
-		endScreenDrawing();
-	}
 	
 	/**
 	 * Sets the mouse grabber on selection hint {@code color}
@@ -1364,6 +722,38 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
   //public int mouseGrabberCameraPathOffSelectionHintColor() {	return cameraPathOffSelectionHintColor;	}
 	
+	public PGraphics pGraphics() {
+		return ((P5Renderer)renderer()).pGraphics();
+	}
+	
+	public PGraphicsJava2D pgj2d() {
+		if (pGraphics() instanceof PGraphicsJava2D)
+			return (PGraphicsJava2D) pGraphics();
+		else 
+			throw new RuntimeException("pGraphics is not instance of PGraphicsJava2D");		
+	}
+	
+	public PGraphicsOpenGL pgOpenGL() {
+		if (pGraphics() instanceof PGraphicsOpenGL)
+			return (PGraphicsOpenGL) pGraphics();
+		else 
+			throw new RuntimeException("pGraphics is not instance of PGraphicsOpenGL");		
+	}
+	
+	public PGraphics2D pg2d() {
+		if (pGraphics() instanceof PGraphics2D)
+			return ((Renderer2D) renderer()).pg2d();
+		else 
+			throw new RuntimeException("pGraphics is not instance of PGraphics2D");		
+	}
+	
+	public PGraphics3D pg3d() {
+		if (pGraphics() instanceof PGraphics3D)
+			return ((Renderer3D) renderer()).pg3d();
+		else 
+			throw new RuntimeException("pGraphics is not instance of PGraphics3D");		
+	}
+	
 	@Override
 	protected void drawSelectionHints() {
 		for (DeviceGrabbable mg : msGrabberPool) {
@@ -1372,20 +762,20 @@ public class Scene extends AbstractScene implements PConstants {
 				if (!iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse()) {						
-						pg3d.pushStyle();
+						pGraphics().pushStyle();
 					  //pg3d.stroke(mouseGrabberOnSelectionHintColor());
-						pg3d.stroke(pg3d.color(0, 255, 0));
-						pg3d.strokeWeight(2);
+						pGraphics().stroke(pGraphics().color(0, 255, 0));
+						pGraphics().strokeWeight(2);
 						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1));
-						pg3d.popStyle();					
+						pGraphics().popStyle();					
 					}
 					else {						
-						pg3d.pushStyle();
+						pGraphics().pushStyle();
 					  //pg3d.stroke(mouseGrabberOffSelectionHintColor());
-						pg3d.stroke(pg3d.color(240, 240, 240));
-						pg3d.strokeWeight(1);
+						pGraphics().stroke(pGraphics().color(240, 240, 240));
+						pGraphics().strokeWeight(1);
 						drawShooterTarget(center, iF.grabsMouseThreshold());
-						pg3d.popStyle();
+						pGraphics().popStyle();
 					}
 				}
 			}
@@ -1400,293 +790,35 @@ public class Scene extends AbstractScene implements PConstants {
 				if (iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse()) {
-						pg3d.pushStyle();						
+						pGraphics().pushStyle();						
 					  //pg3d.stroke(mouseGrabberCameraPathOnSelectionHintColor());
-						pg3d.stroke(pg3d.color(0, 255, 255));
-						pg3d.strokeWeight(2);
+						pGraphics().stroke(pGraphics().color(0, 255, 255));
+						pGraphics().strokeWeight(2);
 						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1));
-						pg3d.popStyle();
+						pGraphics().popStyle();
 					}
 					else {
-						pg3d.pushStyle();
+						pGraphics().pushStyle();
 					  //pg3d.stroke(mouseGrabberCameraPathOffSelectionHintColor());
-						pg3d.stroke(pg3d.color(255, 255, 0));
-						pg3d.strokeWeight(1);
+						pGraphics().stroke(pGraphics().color(255, 255, 0));
+						pGraphics().strokeWeight(1);
 						drawShooterTarget(center, iF.grabsMouseThreshold());
-						pg3d.popStyle();
+						pGraphics().popStyle();
 					}
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawArcballReferencePointHint()}.
-	 */
-	@Override
-	public void drawArcballReferencePointHint() {
-		Vector3D p = camera().projectedCoordinatesOf(arcballReferencePoint());
-		pg3d.pushStyle();
-		pg3d.stroke(255);
-		pg3d.strokeWeight(3);
-		drawCross(p.vec[0], p.vec[1]);
-		pg3d.popStyle();
 	}	
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawCross(int, float, float, float, int)}.
-	 */
-	@Override
-	public void drawCross(float px, float py, float size) {
-		beginScreenDrawing();
-		pg3d.pushStyle();		
-		//pg3d.stroke(color);
-		//pg3d.strokeWeight(strokeWeight);
-		pg3d.noFill();
-		pg3d.beginShape(LINES);
-		pg3d.vertex(px - size, py);
-		pg3d.vertex(px + size, py);
-		pg3d.vertex(px, py - size);
-		pg3d.vertex(px, py + size);
-		pg3d.endShape();
-		pg3d.popStyle();
-		endScreenDrawing();
-	}	
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawFilledCircle(int, int, Vector3D, float)}.
-	 */	
-	@Override
-	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
-		float precision = PApplet.TWO_PI/subdivisions;
-		float x = center.x();
-		float y = center.y();
-		float angle, x2, y2;
-		beginScreenDrawing();
-		pg3d.pushStyle();
-		pg3d.noStroke();
-		//pg3d.fill(color);
-		pg3d.beginShape(TRIANGLE_FAN);		
-		pg3d.vertex(x, y);
-		for (angle = 0.0f; angle <= PApplet.TWO_PI + 1.1*precision; angle += precision) {			
-			x2 = x + PApplet.sin(angle) * radius;
-			y2 = y + PApplet.cos(angle) * radius;			
-			pg3d.vertex(x2, y2);
-		}
-		pg3d.endShape();
-		pg3d.popStyle();
-		endScreenDrawing();
-	}
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawFilledSquare(Vector3D, float)}.	 
-	 */
-	@Override
-	public void drawFilledSquare(Vector3D center, float edge) {
-		float x = center.x();
-		float y = center.y();
-		beginScreenDrawing();		
-		pg3d.pushStyle();
-		pg3d.noStroke();
-		//pg3d.fill(color);
-		pg3d.beginShape(QUADS);
-		pg3d.vertex(x - edge, y + edge);
-		pg3d.vertex(x + edge, y + edge);
-		pg3d.vertex(x + edge, y - edge);
-		pg3d.vertex(x - edge, y - edge);
-		pg3d.endShape();
-		pg3d.popStyle();
-		endScreenDrawing();
-	}
-
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawShooterTarget(Vector3D, float, int)}.
-	 */
-	@Override
-	public void drawShooterTarget(Vector3D center, float length) {
-		float x = center.x();
-		float y = center.y();
-		beginScreenDrawing();
-		
-		pg3d.pushStyle();
-
-		//pg3d.stroke(color);
-		//pg3d.strokeWeight(strokeWeight);
-		pg3d.noFill();
-
-		pg3d.beginShape();
-		pg3d.vertex((x - length), (y - length) + (0.6f * length));
-		pg3d.vertex((x - length), (y - length));
-		pg3d.vertex((x - length) + (0.6f * length), (y - length));
-		pg3d.endShape();
-
-		pg3d.beginShape();
-		pg3d.vertex((x + length) - (0.6f * length), (y - length));
-		pg3d.vertex((x + length), (y - length));
-		pg3d.vertex((x + length), ((y - length) + (0.6f * length)));
-		pg3d.endShape();
-		
-		pg3d.beginShape();
-		pg3d.vertex((x + length), ((y + length) - (0.6f * length)));
-		pg3d.vertex((x + length), (y + length));
-		pg3d.vertex(((x + length) - (0.6f * length)), (y + length));
-		pg3d.endShape();
-
-		pg3d.beginShape();
-		pg3d.vertex((x - length) + (0.6f * length), (y + length));
-		pg3d.vertex((x - length), (y + length));
-		pg3d.vertex((x - length), ((y + length) - (0.6f * length)));
-		pg3d.endShape();
-
-		pg3d.popStyle();
-		endScreenDrawing();
-
-		drawCross(center.x(), center.y(), 0.6f * length);
-	}
-	
-	/**
-	 * Overriding of {@link remixlab.remixcam.core.AbstractScene#drawPath(KeyFrameInterpolator, int, int, float)}.
-	 */
-	@Override
-	public void drawPath(List<SimpleFrame> path, int mask, int nbFrames, int nbSteps, float scale) {
-		if (mask != 0) {
-			renderer().pushStyle();
-			renderer().strokeWeight(2);
-			renderer().noFill();
-			renderer().stroke(170);
-			
-			if (((mask & 1) != 0) && path.size() > 1 ) {				
-				renderer().beginShape();
-				for (SimpleFrame myFr : path)
-					renderer().vertex(myFr.position().x(), myFr.position().y(), myFr.position().z());
-				renderer().endShape();
-			}
-			if ((mask & 6) != 0) {
-				int count = 0;
-				if (nbFrames > nbSteps)
-					nbFrames = nbSteps;
-				float goal = 0.0f;
-
-				for (SimpleFrame myFr : path)
-					if ((count++) >= goal) {
-						goal += nbSteps / (float) nbFrames;
-						renderer().pushMatrix();
-											  
-						applyTransformation(myFr);						
-
-						if ((mask & 2) != 0)
-							drawKFICamera(scale);
-						if ((mask & 4) != 0)
-							drawAxis(scale / 10.0f);
-
-						renderer().popMatrix();
-					}
-			}
-			renderer().popStyle();
-		}
-	}
 	
 	@Override
 	public int getWidth() {
-		return pg3d.width;
+		return pGraphics().width;
 	}
 
 	@Override
 	public int getHeight() {
-		return pg3d.height;
-	}
-
-	/**
-	 * Computes the world coordinates of an screen object so that drawing can be
-	 * done directly with 2D screen coordinates.
-	 * <p>
-	 * All screen drawing should be enclosed between {@link #beginScreenDrawing()}
-	 * and {@link #endScreenDrawing()}. Then you can just begin drawing your
-	 * screen shapes (defined between {@code PApplet.beginShape()} and {@code
-	 * PApplet.endShape()}).
-	 * <p>
-	 * <b>Note:</b> To specify a {@code (x,y)} vertex screen coordinate you should 
-	 * first call {@code Vector3D p = coords(new Point(x, y))} then do your
-	 * drawing as {@code vertex(p.x, p.y, p.z)}.
-	 * <p>
-	 * <b>Attention:</b> If you want your screen drawing to appear on top of your
-	 * 3d scene then draw first all your 3d before doing any call to a 
-	 * {@link #beginScreenDrawing()} and {@link #endScreenDrawing()} pair.  
-	 * 
-	 * @see #endScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public void beginScreenDrawing() {
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-		
-		startCoordCalls++;
-		
-		/**
-		renderer().hint(DISABLE_DEPTH_TEST);
-		renderer().pushProjection();
-		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
-    float cameraNear = cameraZ / 2.0f;
-    float cameraFar = cameraZ * 2.0f;
-    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);		
-    renderer().pushMatrix();
-	  // Camera needs to be reset!
-    renderer().camera();
-		// */
-		
-		// /**
-		renderer().hint(DISABLE_DEPTH_TEST);
-		renderer().pushProjection();
-		float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
-    float cameraNear = cameraZ / 2.0f;
-    float cameraFar = cameraZ * 2.0f;
-    //renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
-    renderer().projection.set(((P5Camera)camera()).getOrtho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar));
-    renderer().pushMatrix();
-	  // Camera needs to be reset!
-    //hack: it's trickier, but works ;)
-    //renderer().camera();
-    renderer().modelview.set(((P5Camera)camera()).getCamera());
-    // */
-		
-		/**
-		glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-	glLoadIdentity();
-	if (tileRegion_ != NULL)
-	  if (upward)
-	    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMin, tileRegion_->yMax, 0.0, -1.0);
-	  else
-	    glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMax, tileRegion_->yMin, 0.0, -1.0);
-	else
-	  if (upward)
-	    glOrtho(0, width(), 0, height(), 0.0, -1.0);
-	  else
-	    glOrtho(0, width(), height(), 0, 0.0, -1.0);
-
-	glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity();
-		 */
-	}
-
-	/**
-	 * Ends screen drawing. See {@link #beginScreenDrawing()} for details.
-	 * 
-	 * @see #beginScreenDrawing()
-	 * @see #coords(Point)
-	 */
-	public void endScreenDrawing() {
-		startCoordCalls--;
-		if (startCoordCalls != 0)
-			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
-							                 + "endScreenDrawing() and they cannot be nested. Check your implementation!");
-		
-		renderer().popProjection();  
-		renderer().popMatrix();		  
-		renderer().hint(ENABLE_DEPTH_TEST);
-	}		
+		return pGraphics().height;
+	}			
 
 	// 7. Camera profiles
 
@@ -2383,11 +1515,14 @@ public class Scene extends AbstractScene implements PConstants {
 		if (onConsole)
 			PApplet.println(globalHelp());
 		else { //on applet
-			pg3d.textFont(parent.createFont("Arial", 12));
-			pg3d.textMode(SCREEN);
-			pg3d.fill(0,255,0);
-			pg3d.textLeading(20);
-			pg3d.text(globalHelp(), 10, 10, (pg3d.width-20), (pg3d.height-20));
+			pGraphics().textFont(parent.createFont("Arial", 12));
+			//pGraphics().textMode(SCREEN);
+			//TODO test me!
+			renderer().beginScreenDrawing();
+			pGraphics().fill(0,255,0);
+			pGraphics().textLeading(20);
+			pGraphics().text(globalHelp(), 10, 10, (pGraphics().width-20), (pGraphics().height-20));
+			renderer().endScreenDrawing();
 		}
 	}
 	
@@ -2428,11 +1563,14 @@ public class Scene extends AbstractScene implements PConstants {
 		if (onConsole)
 			PApplet.println(currentCameraProfileHelp());
 		else { //on applet
-			pg3d.textFont(parent.createFont("Arial", 12));
-			pg3d.textMode(SCREEN);
-			pg3d.fill(0,255,0);
-			pg3d.textLeading(20);
-			pg3d.text(currentCameraProfileHelp(), 10, 10, (pg3d.width-20), (pg3d.height-20));			
+			pGraphics().textFont(parent.createFont("Arial", 12));
+			//pGraphics().textMode(SCREEN);
+			//TODO test me!
+			renderer().beginScreenDrawing();
+			pGraphics().fill(0,255,0);
+			pGraphics().textLeading(20);
+			pGraphics().text(currentCameraProfileHelp(), 10, 10, (pGraphics().width-20), (pGraphics().height-20));
+			renderer().endScreenDrawing();
 		}
 	}
 	
@@ -2646,7 +1784,7 @@ public class Scene extends AbstractScene implements PConstants {
 			try {
 				animateHandlerMethod.invoke(animateHandlerObject, new Object[] { this });
 			} catch (Exception e) {
-				PApplet.println("Something went wrong when invoking your "	+ animateHandlerMethodName + " method");
+				PApplet.println("Something went wrong when invoking your " + animateHandlerMethodName + " method");
 				e.printStackTrace();
 			}
 		}
@@ -2697,6 +1835,25 @@ public class Scene extends AbstractScene implements PConstants {
 			return false;
 		return true;
 	}
+	
+	//
+	
+	/**
+	 * Returns the coordinates of the 3D point located at {@code pixel} (x,y) on
+	 * screen.
+	 */
+	@Override
+	protected Camera.WorldPoint pointUnderPixel(Point pixel) {
+		float[] depth = new float[1];		
+				
+		PGL pgl = pgOpenGL().beginPGL();
+		pgl.readPixels((int) pixel.x, (camera().screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
+		pgOpenGL().endPGL();
+		
+		Vector3D point = new Vector3D((int) pixel.x, (int) pixel.y, depth[0]);
+		point = camera().unprojectedCoordinatesOf(point);
+		return camera().new WorldPoint(point, (depth[0] < 1.0f));		
+	}
 
 	// 12. Processing objects
 
@@ -2717,9 +1874,10 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.projection.set(mat.get(target));		
 		// */	  
 		
+		//TODO fix 2d, hack in the meantime
 		// /**		
 		// Option 2		
-		pg3d.projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		((PGraphics3D)pGraphics()).projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
 		// */		
 		
 		/**
@@ -2756,9 +1914,10 @@ public class Scene extends AbstractScene implements PConstants {
 		pg3d.modelview.set(mat.get(target));
 		// */
 		
+	  //TODO fix 2d, hack in the meantime
 		// /**		
 		// Option 2
-		pg3d.modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
+		((PGraphics3D)pGraphics()).modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
 		// */	  
 		
 		/**
