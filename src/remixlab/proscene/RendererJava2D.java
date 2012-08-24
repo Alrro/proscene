@@ -16,7 +16,7 @@ import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Matrix3D;
 */
 
-public class RendererJava2D extends P5Renderer {
+public class RendererJava2D extends Renderer {
 	public RendererJava2D(AbstractScene scn, PGraphicsJava2D renderer) {
 		super(scn, renderer);
 	}

@@ -41,11 +41,11 @@ import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 // */
 
-public class P5Renderer implements Renderable, PConstants {
+public class Renderer implements Renderable, PConstants {
 	protected AbstractScene scene;
 	protected PGraphics pg;	
 
-	public P5Renderer(AbstractScene scn, PGraphics renderer) {
+	public Renderer(AbstractScene scn, PGraphics renderer) {
 		pg = renderer;
 		scene = scn;
 	}
