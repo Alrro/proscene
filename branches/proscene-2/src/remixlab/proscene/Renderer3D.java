@@ -26,27 +26,83 @@ public class Renderer3D extends Renderer {
 	
 	public PGraphics3D pg3d() {
 	  return (PGraphics3D) pg();	
-	}	
+	}
+	
+	@Override
+	public void bindMatrices() {
+		setProjectionMatrix();
+		setModelViewMatrix();
+		scene.camera().cacheMatrices();
+	}
 	
 	/**
-	glMatrixMode(GL_PROJECTION);
-	glPushMatrix();
-  glLoadIdentity();
-  if (tileRegion_ != NULL)
-    if (upward)
-      glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMin, tileRegion_->yMax, 0.0, -1.0);
-    else
-      glOrtho(tileRegion_->xMin, tileRegion_->xMax, tileRegion_->yMax, tileRegion_->yMin, 0.0, -1.0);
-  else
-    if (upward)
-      glOrtho(0, width(), 0, height(), 0.0, -1.0);
-    else
-      glOrtho(0, width(), height(), 0, 0.0, -1.0);
+	 * Sets the processing camera projection matrix from {@link #camera()}. Calls
+	 * {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
+	 * {@link remixlab.remixcam.core.Camera#type()}.
+	 */
+	protected void setProjectionMatrix() {
+	  // All options work seemlessly
+		/**		
+		// Option 1
+		Matrix3D mat = new Matrix3D();		
+		scene.camera().getProjectionMatrix(mat, true);
+		mat.transpose();		
+		float[] target = new float[16];
+		pg3d().projection.set(mat.get(target));		
+		// */	  
+				
+		// /**		
+		// Option 2		
+		pg3d().projection.set(scene.camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		// */		
+		
+		/**
+		// Option 3
+		// compute the processing camera projection matrix from our camera() parameters
+		switch (scene.camera().type()) {
+		case PERSPECTIVE:
+			pg3d().perspective(scene.camera().fieldOfView(), scene.camera().aspectRatio(), scene.camera().zNear(), scene.camera().zFar());
+			break;
+		case ORTHOGRAPHIC:
+			float[] wh = scene.camera().getOrthoWidthHeight();
+			pg3d().ortho(-wh[0], wh[0], -wh[1], wh[1], scene.camera().zNear(), scene.camera().zFar());
+			break;
+		}
+		// We cache the processing camera projection matrix into our camera()
+		scene.camera().setProjectionMatrix( pg3d().projection.get(new float[16]), true ); // set it transposed				 
+		// */
+	}
 
-  glMatrixMode(GL_MODELVIEW);
-  glPushMatrix();
-  glLoadIdentity();
-	*/
+	/**
+	 * Sets the processing camera matrix from {@link #camera()}. Simply calls
+	 * {@code PApplet.camera()}.
+	 */	
+	protected void setModelViewMatrix() {
+	  // All options work seamlessly
+		/**		
+		// Option 1
+		Matrix3D mat = new Matrix3D();		
+		scene.camera().getViewMatrix(mat, true);
+		mat.transpose();// experimental
+		float[] target = new float[16];
+		pg3d().modelview.set(mat.get(target));
+		// */
+			  
+		// /**		
+		// Option 2
+		pg3d().modelview.set(scene.camera().getViewMatrix(true).getTransposed(new float[16]));
+		// */	  
+		
+		/**
+	  // Option 3
+		// compute the processing camera modelview matrix from our camera() parameters
+		pg3d().camera(scene.camera().position().x(), scene.camera().position().y(), scene.camera().position().z(),
+				scene.camera().at().x(), scene.camera().at().y(), scene.camera().at().z(),
+				scene.camera().upVector().x(), scene.camera().upVector().y(), scene.camera().upVector().z());
+		// We cache the processing camera modelview matrix into our camera()
+		scene.camera().setViewMatrix( pg3d().modelview.get(new float[16]), true );// set it transposed
+		// */
+	}	
 	
 	@Override
 	public void beginScreenDrawing() {

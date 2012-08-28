@@ -23,21 +23,39 @@ public class RendererJava2D extends Renderer {
 	
 	public PGraphicsJava2D pgj2d() {
 	  return (PGraphicsJava2D) pg();	
-	}	
+	}
+	
+	public void bindMatrices() {
+		scene.camera().computeProjectionMatrix();
+		scene.camera().computeViewMatrix();
+		
+		float[] wh = scene.camera().getOrthoWidthHeight();
+		Vector3D pos = scene.camera().position();
+		Quaternion quat = scene.camera().frame().orientation();
+		
+		translate(scene.width()/2, scene.height()/2);
+		if(scene.camera().frame().orientation().axis().z() > 0)
+			rotate(-quat.angle());
+		//TODO: hack! to compensate when axis gets reverted
+		else
+			rotate(quat.angle());
+		translate(-pos.x(), -pos.y());
+		scale(wh[0]/(scene.width()/2), wh[1]/(scene.height()/2));
+	}
 	
 	@Override
 	public void beginScreenDrawing() {
 		float[] wh = scene.camera().getOrthoWidthHeight();
 		Vector3D pos = scene.camera().position();
 		Quaternion quat = scene.camera().frame().orientation();
-		scale((scene.getWidth()/2)/wh[0], (scene.getHeight()/2)/wh[1]);
+		scale((scene.width()/2)/wh[0], (scene.height()/2)/wh[1]);
 		translate(pos.x(), pos.y());
 		if(scene.camera().frame().orientation().axis().z() > 0)
 			rotate(quat.angle());
 		//TODO: hack! to compensate when axis gets reverted
 		else
 			rotate(-quat.angle());
-		translate(-scene.getWidth()/2, -scene.getHeight()/2);		
+		translate(-scene.width()/2, -scene.height()/2);		
 	}
 	
 	@Override
@@ -46,14 +64,14 @@ public class RendererJava2D extends Renderer {
 		Vector3D pos = scene.camera().position();
 		Quaternion quat = scene.camera().frame().orientation();
 		
-		translate(scene.getWidth()/2, scene.getHeight()/2);
+		translate(scene.width()/2, scene.height()/2);
 		if(scene.camera().frame().orientation().axis().z() > 0)
 			rotate(-quat.angle());
 		//TODO: hack! to compensate when axis gets reverted
 		else
 			rotate(quat.angle());
 		translate(-pos.x(), -pos.y());
-		scale(wh[0]/(scene.getWidth()/2), wh[1]/(scene.getHeight()/2));		
+		scale(wh[0]/(scene.width()/2), wh[1]/(scene.height()/2));		
 	}
 
 	@Override

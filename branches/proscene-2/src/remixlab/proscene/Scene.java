@@ -221,8 +221,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * @see #Scene(PApplet, PGraphics, int, int)
 	 */	
 	public Scene(PApplet p) {
-		this(p, (PGraphics) p.g);
-		
+		this(p, (PGraphics) p.g);		
 	}
 	
 	/**
@@ -259,7 +258,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
 	public Scene(PApplet p, PGraphics pg, int x, int y) {
 		parent = p;
-	  //pg3d = renderer;
+		p5Scene = true;
 		
 		if( pg instanceof PGraphicsJava2D )
 			setRenderer( new RendererJava2D(this, (PGraphicsJava2D)pg) );	
@@ -807,12 +806,12 @@ public class Scene extends AbstractScene implements PConstants {
 	}	
 	
 	@Override
-	public int getWidth() {
+	public int width() {
 		return pg().width;
 	}
 
 	@Override
-	public int getHeight() {
+	public int height() {
 		return pg().height;
 	}			
 
@@ -1849,104 +1848,5 @@ public class Scene extends AbstractScene implements PConstants {
 		Vector3D point = new Vector3D((int) pixel.x, (int) pixel.y, depth[0]);
 		point = camera().unprojectedCoordinatesOf(point);
 		return camera().new WorldPoint(point, (depth[0] < 1.0f));		
-	}
-
-	// 12. Processing objects
-	
-	@Override
-	protected void bindMatrices() {
-		if( pg() instanceof PGraphicsOpenGL )
-			super.bindMatrices();
-		else {
-			camera().computeProjectionMatrix();
-			camera().computeViewMatrix();
-			
-			float[] wh = camera().getOrthoWidthHeight();
-			Vector3D pos = camera().position();
-			Quaternion quat = camera().frame().orientation();
-			
-			renderer().translate(getWidth()/2, getHeight()/2);
-			if(camera().frame().orientation().axis().z() > 0)
-				renderer().rotate(-quat.angle());
-			//TODO: hack! to compensate when axis gets reverted
-			else
-				renderer().rotate(quat.angle());
-			renderer().translate(-pos.x(), -pos.y());
-			renderer().scale(wh[0]/(getWidth()/2), wh[1]/(getHeight()/2));			
-		}			
-	}
-
-	/**
-	 * Sets the processing camera projection matrix from {@link #camera()}. Calls
-	 * {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
-	 * {@link remixlab.remixcam.core.Camera#type()}.
-	 */
-	@Override
-	protected void setProjectionMatrix() {
-	  // All options work seemlessly
-		/**		
-		// Option 1
-		Matrix3D mat = new Matrix3D();		
-		camera().getProjectionMatrix(mat, true);
-		mat.transpose();		
-		float[] target = new float[16];
-		pg3d.projection.set(mat.get(target));		
-		// */	  
-				
-		// /**		
-		// Option 2		
-		pggl().projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
-		// */		
-		
-		/**
-		// Option 3
-		// compute the processing camera projection matrix from our camera() parameters
-		switch (camera().type()) {
-		case PERSPECTIVE:
-			pg3d.perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
-			break;
-		case ORTHOGRAPHIC:
-			float[] wh = camera().getOrthoWidthHeight();
-			pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
-			break;
-		}
-		// if our camera() matrices are detached from the processing Camera
-		// matrices, we cache the processing camera projection matrix into our camera()
-		camera().setProjectionMatrix( pg3d.projection.get(new float[16]), true ); // set it transposed				 
-		// */
-	}
-
-	/**
-	 * Sets the processing camera matrix from {@link #camera()}. Simply calls
-	 * {@code PApplet.camera()}.
-	 */
-	@Override
-	protected void setModelViewMatrix() {
-	  // All options work seamlessly
-		/**		
-		// Option 1
-		Matrix3D mat = new Matrix3D();		
-		camera().getViewMatrix(mat, true);
-		mat.transpose();// experimental
-		float[] target = new float[16];
-		pg3d.modelview.set(mat.get(target));
-		// */
-		
-	  //TODO fix 2d, hack in the meantime
-		// /**		
-		// Option 2
-		pggl().modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
-		// */	  
-		
-		/**
-	  // Option 3
-		// compute the processing camera modelview matrix from our camera() parameters
-		pg3d.camera(camera().position().x(), camera().position().y(), camera().position().z(),
-				        camera().at().x(), camera().at().y(), camera().at().z(),
-				        camera().upVector().x(), camera().upVector().y(), camera().upVector().z());
-		// if our camera() matrices are detached from the processing Camera
-		// matrices, we cache the processing camera modelview matrix into our camera()
-		camera().setViewMatrix( pg3d.modelview.get(new float[16]), true );// set it transposed
-		// */
-	}
+	}	
 }
