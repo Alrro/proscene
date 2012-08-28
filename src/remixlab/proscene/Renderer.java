@@ -60,15 +60,18 @@ public class Renderer implements Renderable, PConstants {
 	}
 	
 	@Override
+	public void bindMatrices() {
+		// TODO Auto-generated method stub		
+	}
+	
+	@Override
 	public void beginScreenDrawing() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public void endScreenDrawing() {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 	
 	@Override
@@ -523,5 +526,5 @@ public class Renderer implements Renderable, PConstants {
 	public Matrix3D getProjection(Matrix3D target) {
 		// TODO Auto-generated method stub
 		return null;
-	}	
+	}		
 }

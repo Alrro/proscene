@@ -44,7 +44,7 @@ public class Renderer2D extends Renderer {
 	}
 	
 	public PMatrix3D getCamera() {
-		 return getCamera(scene().getWidth()/2f, scene.getHeight()/2f, (scene().getHeight()/2f) / (float)Math.tan(PI*60 / 360), scene().getWidth()/2f, scene.getHeight()/2f, 0, 0, 1, 0);
+		 return getCamera(scene().width()/2f, scene.height()/2f, (scene().height()/2f) / (float)Math.tan(PI*60 / 360), scene().width()/2f, scene.height()/2f, 0, 0, 1, 0);
 	}
 	
 	public PMatrix3D getCamera(float eyeX, float eyeY, float eyeZ,
@@ -177,6 +177,56 @@ public class Renderer2D extends Renderer {
 		pg2d().popProjection();  
 		pg2d().popMatrix();		  
 		pg2d().hint(ENABLE_DEPTH_TEST);
+	}
+	
+	@Override
+	public void bindMatrices() {
+		setProjectionMatrix();
+		setModelViewMatrix();
+		scene.camera().cacheMatrices();
+	}
+	
+	/**
+	 * Sets the processing camera projection matrix from {@link #camera()}. Calls
+	 * {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
+	 * {@link remixlab.remixcam.core.Camera#type()}.
+	 */
+	protected void setProjectionMatrix() {
+	  // All options work seemlessly
+		/**		
+		// Option 1
+		Matrix3D mat = new Matrix3D();		
+		scene.camera().getProjectionMatrix(mat, true);
+		mat.transpose();		
+		float[] target = new float[16];
+		pg2d().projection.set(mat.get(target));		
+		// */	  
+				
+		// /**		
+		// Option 2		
+		pg2d().projection.set(scene.camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		// */		
+	}
+
+	/**
+	 * Sets the processing camera matrix from {@link #camera()}. Simply calls
+	 * {@code PApplet.camera()}.
+	 */	
+	protected void setModelViewMatrix() {
+	  // All options work seamlessly
+		/**		
+		// Option 1
+		Matrix3D mat = new Matrix3D();		
+		scene.camera().getViewMatrix(mat, true);
+		mat.transpose();// experimental
+		float[] target = new float[16];
+		pg2d().modelview.set(mat.get(target));
+		// */
+			  
+		// /**		
+		// Option 2
+		pg2d().modelview.set(scene.camera().getViewMatrix(true).getTransposed(new float[16]));
+		// */
 	}
 
 	@Override
