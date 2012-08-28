@@ -3,7 +3,6 @@ package remixlab.proscene;
 import java.util.List;
 
 import processing.core.*;
-import processing.opengl.PGraphics2D;
 
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
@@ -54,8 +53,7 @@ public class RendererJava2D extends Renderer {
 		else
 			rotate(quat.angle());
 		translate(-pos.x(), -pos.y());
-		scale(wh[0]/(scene.getWidth()/2), wh[1]/(scene.getHeight()/2));
-		
+		scale(wh[0]/(scene.getWidth()/2), wh[1]/(scene.getHeight()/2));		
 	}
 
 	@Override
