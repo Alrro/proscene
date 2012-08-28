@@ -20,14 +20,10 @@ import remixlab.remixcam.geom.Vector3D;
 public class Renderer2D extends Renderer {	
 	public Renderer2D(AbstractScene scn, PGraphics2D renderer) {
 		super(scn, renderer);
-	}		
-	
-	public PGraphics2D pGraphics() {
-		return (PGraphics2D) pGraphics();
-	}
+	}	
 	
 	public PGraphics2D pg2d() {
-	  return (PGraphics2D) pGraphics();	
+	  return (PGraphics2D) pg();	
 	}
 	
   //--	
@@ -250,25 +246,7 @@ public class Renderer2D extends Renderer {
 	public void cone(int detail, float x, float y, float r1, float r2, float h) {
 		// TODO Auto-generated method stub
 		
-	}
-
-	@Override
-	public void drawAxis(float length) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawGrid(float size, int nbSubdivisions) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawViewPort(ViewPort camera, float scale) {
-		// TODO Auto-generated method stub
-		
-	}
+	}	
 
 	@Override
 	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {

@@ -55,7 +55,7 @@ public class Renderer implements Renderable, PConstants {
 		return scene;
 	}
 	
-	public PGraphics pGraphics() {
+	public PGraphics pg() {
 		return pg;
 	}
 	
@@ -307,13 +307,7 @@ public class Renderer implements Renderable, PConstants {
 		}
 		pg.endShape();
 		pg.popStyle();
-	}
-
-	@Override
-	public void drawViewPort(ViewPort camera, float scale) {
-		// TODO Auto-generated method stub
-		
-	}
+	}	
 
 	@Override
 	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {
