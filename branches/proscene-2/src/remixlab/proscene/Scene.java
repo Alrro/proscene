@@ -184,10 +184,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 	// E X C E P T I O N H A N D L I N G	
   protected int beginOffScreenDrawingCalls;  
-  
-  //I S 2 D O R 3 D
-  protected boolean is2d;
-	
+  	
 	/**
 	// M O U S E   G R A B B E R   H I N T   C O L O R S
 	private int onSelectionHintColor;
@@ -303,6 +300,10 @@ public class Scene extends AbstractScene implements PConstants {
 		// need it here to properly init the camera
 		cam = new Camera(this);		
 		setCamera(camera());//calls showAll();
+		//TODO hack
+		if(is2D())
+			camera().setUpVector(new Vector3D(0,-1,0));
+		
 		setInteractiveFrame(null);
 		setAvatar(null);
 		
@@ -353,12 +354,7 @@ public class Scene extends AbstractScene implements PConstants {
 
 		// called only once
 		init();
-	}
-	
-	//TODO set is2d
-  public boolean is2D() {
-  	return is2d;
-  }
+	}	
 
 	// 2. Associated objects	
 	
@@ -460,7 +456,7 @@ public class Scene extends AbstractScene implements PConstants {
 		camera.setSceneRadius(radius());		
 		camera.setSceneCenter(center());
 
-		camera.setScreenWidthAndHeight(pGraphics().width, pGraphics().height);
+		camera.setScreenWidthAndHeight(pg().width, pg().height);
 
 		cam = camera;		
 
@@ -518,11 +514,11 @@ public class Scene extends AbstractScene implements PConstants {
 			drawArcballReferencePointHint();
 		if (pupFlag) {
 			Vector3D v = camera().projectedCoordinatesOf(pupVec);
-			pGraphics().pushStyle();		
-			pGraphics().stroke(255);
-			pGraphics().strokeWeight(3);
+			pg().pushStyle();		
+			pg().stroke(255);
+			pg().strokeWeight(3);
 			drawCross(v.vec[0], v.vec[1]);
-			pGraphics().popStyle();
+			pg().popStyle();
 		}
 	}	
 
@@ -543,9 +539,9 @@ public class Scene extends AbstractScene implements PConstants {
 		// weird: we need to bypass the handling of a resize event when running the
 		// applet from eclipse		
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
-			if ((width != pGraphics().width) || (height != pGraphics().height)) {
-				width = pGraphics().width;
-				height = pGraphics().height;				
+			if ((width != pg().width) || (height != pg().height)) {
+				width = pg().width;
+				height = pg().height;				
 				camera().setScreenWidthAndHeight(width, height);				
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
@@ -653,7 +649,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * the processing display window.
 	 */
 	public float aspectRatio() {
-		return (float) pGraphics().width / (float) pGraphics().height;
+		return (float) pg().width / (float) pg().height;
 	}
 
 	// 6. Display of visual hints and Display methods		
@@ -722,33 +718,33 @@ public class Scene extends AbstractScene implements PConstants {
 	 */
   //public int mouseGrabberCameraPathOffSelectionHintColor() {	return cameraPathOffSelectionHintColor;	}
 	
-	public PGraphics pGraphics() {
-		return ((Renderer)renderer()).pGraphics();
+	public PGraphics pg() {
+		return ((Renderer)renderer()).pg();
 	}
 	
 	public PGraphicsJava2D pgj2d() {
-		if (pGraphics() instanceof PGraphicsJava2D)
-			return (PGraphicsJava2D) pGraphics();
+		if (pg() instanceof PGraphicsJava2D)
+			return (PGraphicsJava2D) pg();
 		else 
 			throw new RuntimeException("pGraphics is not instance of PGraphicsJava2D");		
 	}
 	
-	public PGraphicsOpenGL pgOpenGL() {
-		if (pGraphics() instanceof PGraphicsOpenGL)
-			return (PGraphicsOpenGL) pGraphics();
+	public PGraphicsOpenGL pggl() {
+		if (pg() instanceof PGraphicsOpenGL)
+			return (PGraphicsOpenGL) pg();
 		else 
 			throw new RuntimeException("pGraphics is not instance of PGraphicsOpenGL");		
 	}
 	
 	public PGraphics2D pg2d() {
-		if (pGraphics() instanceof PGraphics2D)
+		if (pg() instanceof PGraphics2D)
 			return ((Renderer2D) renderer()).pg2d();
 		else 
 			throw new RuntimeException("pGraphics is not instance of PGraphics2D");		
 	}
 	
 	public PGraphics3D pg3d() {
-		if (pGraphics() instanceof PGraphics3D)
+		if (pg() instanceof PGraphics3D)
 			return ((Renderer3D) renderer()).pg3d();
 		else 
 			throw new RuntimeException("pGraphics is not instance of PGraphics3D");		
@@ -762,20 +758,20 @@ public class Scene extends AbstractScene implements PConstants {
 				if (!iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse()) {						
-						pGraphics().pushStyle();
+						pg().pushStyle();
 					  //pg3d.stroke(mouseGrabberOnSelectionHintColor());
-						pGraphics().stroke(pGraphics().color(0, 255, 0));
-						pGraphics().strokeWeight(2);
+						pg().stroke(pg().color(0, 255, 0));
+						pg().strokeWeight(2);
 						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1));
-						pGraphics().popStyle();					
+						pg().popStyle();					
 					}
 					else {						
-						pGraphics().pushStyle();
+						pg().pushStyle();
 					  //pg3d.stroke(mouseGrabberOffSelectionHintColor());
-						pGraphics().stroke(pGraphics().color(240, 240, 240));
-						pGraphics().strokeWeight(1);
+						pg().stroke(pg().color(240, 240, 240));
+						pg().strokeWeight(1);
 						drawShooterTarget(center, iF.grabsMouseThreshold());
-						pGraphics().popStyle();
+						pg().popStyle();
 					}
 				}
 			}
@@ -790,20 +786,20 @@ public class Scene extends AbstractScene implements PConstants {
 				if (iF.isInCameraPath()) {
 					Vector3D center = camera().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse()) {
-						pGraphics().pushStyle();						
+						pg().pushStyle();						
 					  //pg3d.stroke(mouseGrabberCameraPathOnSelectionHintColor());
-						pGraphics().stroke(pGraphics().color(0, 255, 255));
-						pGraphics().strokeWeight(2);
+						pg().stroke(pg().color(0, 255, 255));
+						pg().strokeWeight(2);
 						drawShooterTarget(center, (iF.grabsMouseThreshold() + 1));
-						pGraphics().popStyle();
+						pg().popStyle();
 					}
 					else {
-						pGraphics().pushStyle();
+						pg().pushStyle();
 					  //pg3d.stroke(mouseGrabberCameraPathOffSelectionHintColor());
-						pGraphics().stroke(pGraphics().color(255, 255, 0));
-						pGraphics().strokeWeight(1);
+						pg().stroke(pg().color(255, 255, 0));
+						pg().strokeWeight(1);
 						drawShooterTarget(center, iF.grabsMouseThreshold());
-						pGraphics().popStyle();
+						pg().popStyle();
 					}
 				}
 			}
@@ -812,12 +808,12 @@ public class Scene extends AbstractScene implements PConstants {
 	
 	@Override
 	public int getWidth() {
-		return pGraphics().width;
+		return pg().width;
 	}
 
 	@Override
 	public int getHeight() {
-		return pGraphics().height;
+		return pg().height;
 	}			
 
 	// 7. Camera profiles
@@ -1515,13 +1511,13 @@ public class Scene extends AbstractScene implements PConstants {
 		if (onConsole)
 			PApplet.println(globalHelp());
 		else { //on applet
-			pGraphics().textFont(parent.createFont("Arial", 12));
+			pg().textFont(parent.createFont("Arial", 12));
 			//pGraphics().textMode(SCREEN);
 			//TODO test me!
 			renderer().beginScreenDrawing();
-			pGraphics().fill(0,255,0);
-			pGraphics().textLeading(20);
-			pGraphics().text(globalHelp(), 10, 10, (pGraphics().width-20), (pGraphics().height-20));
+			pg().fill(0,255,0);
+			pg().textLeading(20);
+			pg().text(globalHelp(), 10, 10, (pg().width-20), (pg().height-20));
 			renderer().endScreenDrawing();
 		}
 	}
@@ -1563,13 +1559,13 @@ public class Scene extends AbstractScene implements PConstants {
 		if (onConsole)
 			PApplet.println(currentCameraProfileHelp());
 		else { //on applet
-			pGraphics().textFont(parent.createFont("Arial", 12));
+			pg().textFont(parent.createFont("Arial", 12));
 			//pGraphics().textMode(SCREEN);
 			//TODO test me!
 			renderer().beginScreenDrawing();
-			pGraphics().fill(0,255,0);
-			pGraphics().textLeading(20);
-			pGraphics().text(currentCameraProfileHelp(), 10, 10, (pGraphics().width-20), (pGraphics().height-20));
+			pg().fill(0,255,0);
+			pg().textLeading(20);
+			pg().text(currentCameraProfileHelp(), 10, 10, (pg().width-20), (pg().height-20));
 			renderer().endScreenDrawing();
 		}
 	}
@@ -1846,9 +1842,9 @@ public class Scene extends AbstractScene implements PConstants {
 	protected Camera.WorldPoint pointUnderPixel(Point pixel) {
 		float[] depth = new float[1];		
 				
-		PGL pgl = pgOpenGL().beginPGL();
+		PGL pgl = pggl().beginPGL();
 		pgl.readPixels((int) pixel.x, (camera().screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
-		pgOpenGL().endPGL();
+		pggl().endPGL();
 		
 		Vector3D point = new Vector3D((int) pixel.x, (int) pixel.y, depth[0]);
 		point = camera().unprojectedCoordinatesOf(point);
@@ -1856,6 +1852,29 @@ public class Scene extends AbstractScene implements PConstants {
 	}
 
 	// 12. Processing objects
+	
+	@Override
+	protected void bindMatrices() {
+		if( pg() instanceof PGraphicsOpenGL )
+			super.bindMatrices();
+		else {
+			camera().computeProjectionMatrix();
+			camera().computeViewMatrix();
+			
+			float[] wh = camera().getOrthoWidthHeight();
+			Vector3D pos = camera().position();
+			Quaternion quat = camera().frame().orientation();
+			
+			renderer().translate(getWidth()/2, getHeight()/2);
+			if(camera().frame().orientation().axis().z() > 0)
+				renderer().rotate(-quat.angle());
+			//TODO: hack! to compensate when axis gets reverted
+			else
+				renderer().rotate(quat.angle());
+			renderer().translate(-pos.x(), -pos.y());
+			renderer().scale(wh[0]/(getWidth()/2), wh[1]/(getHeight()/2));			
+		}			
+	}
 
 	/**
 	 * Sets the processing camera projection matrix from {@link #camera()}. Calls
@@ -1873,11 +1892,10 @@ public class Scene extends AbstractScene implements PConstants {
 		float[] target = new float[16];
 		pg3d.projection.set(mat.get(target));		
 		// */	  
-		
-		//TODO fix 2d, hack in the meantime
+				
 		// /**		
 		// Option 2		
-		((PGraphics3D)pGraphics()).projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		pggl().projection.set(camera().getProjectionMatrix(true).getTransposed(new float[16]));
 		// */		
 		
 		/**
@@ -1917,7 +1935,7 @@ public class Scene extends AbstractScene implements PConstants {
 	  //TODO fix 2d, hack in the meantime
 		// /**		
 		// Option 2
-		((PGraphics3D)pGraphics()).modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
+		pggl().modelview.set(camera().getViewMatrix(true).getTransposed(new float[16]));
 		// */	  
 		
 		/**

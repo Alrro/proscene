@@ -25,7 +25,7 @@ public class Renderer3D extends Renderer {
 	}
 	
 	public PGraphics3D pg3d() {
-	  return (PGraphics3D) pGraphics();	
+	  return (PGraphics3D) pg();	
 	}	
 	
 	/**
@@ -306,13 +306,6 @@ public class Renderer3D extends Renderer {
 		
 	}
 	*/
-
-	// /**
-	@Override
-	public void drawViewPort(ViewPort camera, float scale) {
-		PApplet.println("this method is not available in this renderer");	
-	}
-	// */
 
 	@Override
 	public void drawCamera(Camera camera, boolean drawFarPlane, float scale) {

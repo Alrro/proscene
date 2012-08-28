@@ -3,6 +3,7 @@ package remixlab.proscene;
 import java.util.List;
 
 import processing.core.*;
+import processing.opengl.PGraphics2D;
 
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
@@ -22,8 +23,40 @@ public class RendererJava2D extends Renderer {
 	}
 	
 	public PGraphicsJava2D pgj2d() {
-	  return (PGraphicsJava2D) pGraphics();	
+	  return (PGraphicsJava2D) pg();	
 	}	
+	
+	@Override
+	public void beginScreenDrawing() {
+		float[] wh = scene.camera().getOrthoWidthHeight();
+		Vector3D pos = scene.camera().position();
+		Quaternion quat = scene.camera().frame().orientation();
+		scale((scene.getWidth()/2)/wh[0], (scene.getHeight()/2)/wh[1]);
+		translate(pos.x(), pos.y());
+		if(scene.camera().frame().orientation().axis().z() > 0)
+			rotate(quat.angle());
+		//TODO: hack! to compensate when axis gets reverted
+		else
+			rotate(-quat.angle());
+		translate(-scene.getWidth()/2, -scene.getHeight()/2);		
+	}
+	
+	@Override
+	public void endScreenDrawing() {
+		float[] wh = scene.camera().getOrthoWidthHeight();
+		Vector3D pos = scene.camera().position();
+		Quaternion quat = scene.camera().frame().orientation();
+		
+		translate(scene.getWidth()/2, scene.getHeight()/2);
+		if(scene.camera().frame().orientation().axis().z() > 0)
+			rotate(-quat.angle());
+		//TODO: hack! to compensate when axis gets reverted
+		else
+			rotate(quat.angle());
+		translate(-pos.x(), -pos.y());
+		scale(wh[0]/(scene.getWidth()/2), wh[1]/(scene.getHeight()/2));
+		
+	}
 
 	@Override
 	public void pushProjection() {
@@ -90,24 +123,6 @@ public class RendererJava2D extends Renderer {
 
 	@Override
 	public void cone(int detail, float x, float y, float r1, float r2, float h) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawAxis(float length) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawGrid(float size, int nbSubdivisions) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawViewPort(ViewPort camera, float scale) {
 		// TODO Auto-generated method stub
 		
 	}
