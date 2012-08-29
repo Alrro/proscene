@@ -8,199 +8,172 @@ package cameracrane;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
-//import saito.objloader.*;
 
 //TODO fix obj reading
 @SuppressWarnings("serial")
 public class CameraCrane extends PApplet {
 	boolean enabledLights = true;
 	boolean drawRobotCamFrustum = false;
-	RobotArm robot;
-	HeliCam heli;
-	Scene scene, auxScene, auxScene1, auxScene2;
-	PGraphics canvas, auxCanvas, auxCanvas1, auxCanvas2;
-	int mainWinHeight = 400; // should be less than the papplet height
-	//TODO fix obj reading
-	//OBJModel ahstray = new OBJModel(this, "cameracrane/Models/ahstray.obj",	"absolute", TRIANGLES);
+	ArmCam armCam;
+	HeliCam heliCam;
+	PGraphics canvas, armCanvas, heliCanvas;
+	Scene mainScene, armScene, heliScene;
+	int mainWinHeight = 400; // should be less than the PApplet height
+	PShape teapot;
 
 	public void setup() {
-		size(1024, 720, P3D); // size(640, 720, P3D)
-		canvas = createGraphics(width, mainWinHeight, P3D);
-		scene = new Scene(this, (PGraphicsOpenGL) canvas);
-		scene.setGridIsDrawn(false);
-		// the drawing function is shared among the two scenes
-		scene.addDrawHandler(this, "drawing");
-		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+	  size(1024, 720, P3D);
+	  teapot = loadShape("cameracrane/Models/teapot.obj");
+	  
+	  canvas = createGraphics(width, mainWinHeight, P3D);
+	  mainScene = new Scene(this, (PGraphics3D) canvas);
+	  mainScene.setGridIsDrawn(false);
+	  mainScene.setAxisIsDrawn(false);
+	  mainScene.setRadius(110);
+	  mainScene.showAll();
+	  // press 'f' to display frame selection hints
+	  mainScene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 
-		auxCanvas = createGraphics(width / 2, (height - canvas.height), P3D);// (width,
-																				// (height
-																				// -
-																				// canvas.height),
-																				// P3D)
-		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas);
-		auxScene.setRadius(50);
-		auxScene.setGridIsDrawn(false);
-		// same drawing function which is defined below
-		auxScene.addDrawHandler(this, "drawing");
+	  armCanvas = createGraphics(width / 2, (height - canvas.height), P3D);
+	  // Note that we pass the upper left corner coordinates where the scene
+	  // is to be drawn (see drawing code below) to its constructor.  
+	  armScene = new Scene(this, (PGraphics3D) armCanvas, 0, canvas.height);  
+	  armScene.setRadius(50);
+	  armScene.setGridIsDrawn(false);
+	  armScene.setAxisIsDrawn(false);
+	  heliCanvas = createGraphics(width / 2, (height - canvas.height), P3D);
+	  // Note that we pass the upper left corner coordinates where the scene
+	  // is to be drawn (see drawing code below) to its constructor.
+	  heliScene = new Scene(this, (PGraphics3D) heliCanvas, canvas.width / 2, canvas.height);
+	  heliScene.setRadius(50);
+	  heliScene.setGridIsDrawn(false);
+	  heliScene.setAxisIsDrawn(false); 
 
-		auxCanvas1 = createGraphics(width / 2, (height - canvas.height), P3D);// (width,
-																				// (height
-																				// -
-																				// canvas.height),
-																				// P3D)
-		auxScene1 = new Scene(this, (PGraphicsOpenGL) auxCanvas1);
-		auxScene1.setRadius(50);
-		auxScene1.setGridIsDrawn(false);
-		// same drawing function which is defined below
-		auxScene1.addDrawHandler(this, "drawing");
-		
-		//TODO fix obj reading
-		//ahstray.scale(3);
+	  // Frame linking
+	  armCam = new ArmCam(60, -60, 2);
+	  armScene.camera().frame().linkTo(armCam.frame(5));
 
-		// robot stuff
-		robot = new RobotArm(scene, 60, -60, 2);
-		auxScene.setCamera(robot.cam);
-
-		heli = new HeliCam(scene);
-		auxScene1.setCamera(heli.cam);
+	  heliCam = new HeliCam();
+	  heliScene.camera().frame().linkTo(heliCam.frame(3));
 	}
 
 	// off-screen rendering
-	// don't edit this unless you know what you're doing!
-
 	public void draw() {
-		handleMouse();
-		canvas.beginDraw();
-		// the actual scene drawing (defined by the "drawing" function below)
-		// is magically called by the draw handler
-		scene.beginDraw();
-		scene.endDraw();
-		canvas.endDraw();
-		image(canvas, 0, 0);
+	  handleMouse();
+	  canvas.beginDraw();
+	  mainScene.beginDraw();
+	  drawing(mainScene);
+	  mainScene.endDraw();
+	  canvas.endDraw();
+	  image(canvas, 0, 0);
 
-		auxCanvas.beginDraw();
-		// same here with the auxScene
-		auxScene.beginDraw();
-		auxScene.endDraw();
-		auxCanvas.endDraw();
-		image(auxCanvas, 0, canvas.height);
+	  armCanvas.beginDraw();
+	  drawing(armScene);
+	  armScene.beginDraw();
+	  armScene.endDraw();
+	  armCanvas.endDraw();
+	  // We retrieve the scene upper left coordinates defined above.
+	  image(armCanvas, armScene.upperLeftCorner.x, armScene.upperLeftCorner.y);
 
-		auxCanvas1.beginDraw();
-		// same here with the auxScene1
-		auxScene1.beginDraw();
-		auxScene1.endDraw();
-		auxCanvas1.endDraw();
-		image(auxCanvas1, canvas.width / 2, canvas.height);
-		auxCanvas1.beginDraw();
+	  heliCanvas.beginDraw();
+	  drawing(heliScene);
+	  heliScene.beginDraw();
+	  heliScene.endDraw();
+	  heliCanvas.endDraw();
+	  // We retrieve the scene upper left coordinates defined above.
+	  image(heliCanvas, heliScene.upperLeftCorner.x, heliScene.upperLeftCorner.y);
 	}
 
 	public void handleMouse() {
-		if (mouseY < canvas.height) {
-			scene.enableMouseHandling();
-			scene.enableKeyboardHandling();
-			auxScene.disableMouseHandling();
-			auxScene.disableKeyboardHandling();
-			auxScene1.disableMouseHandling();
-			auxScene1.disableKeyboardHandling();
-		} else {
-			if (mouseX < canvas.width / 2) {
-				scene.disableMouseHandling();
-				scene.disableKeyboardHandling();
-				auxScene.enableMouseHandling();
-				auxScene.enableKeyboardHandling();
-				auxScene1.disableMouseHandling();
-				auxScene1.disableKeyboardHandling();
-			} else {
-				scene.disableMouseHandling();
-				scene.disableKeyboardHandling();
-				auxScene.disableMouseHandling();
-				auxScene.disableKeyboardHandling();
-				auxScene1.enableMouseHandling();
-				auxScene1.enableKeyboardHandling();
-			}
-		}
+	  if (mouseY < canvas.height) {
+	    mainScene.enableMouseHandling();
+	    mainScene.enableKeyboardHandling();
+	    armScene.disableMouseHandling();
+	    armScene.disableKeyboardHandling();
+	    heliScene.disableMouseHandling();
+	    heliScene.disableKeyboardHandling();
+	  } 
+	  else {
+	    if (mouseX < canvas.width / 2) {
+	      mainScene.disableMouseHandling();
+	      mainScene.disableKeyboardHandling();
+	      armScene.enableMouseHandling();
+	      armScene.enableKeyboardHandling();
+	      heliScene.disableMouseHandling();
+	      heliScene.disableKeyboardHandling();
+	    } 
+	    else {
+	      mainScene.disableMouseHandling();
+	      mainScene.disableKeyboardHandling();
+	      armScene.disableMouseHandling();
+	      armScene.disableKeyboardHandling();
+	      heliScene.enableMouseHandling();
+	      heliScene.enableKeyboardHandling();
+	    }
+	  }
 	}
 
 	// the actual drawing function, shared by the two scenes
-	public void drawing(Scene scn) {
-		PGraphicsOpenGL pg3d = scn.renderer();
-		pg3d.background(0);
-		if (enabledLights) {
-			pg3d.lights();
-		}
-		// 1. draw the robot cams
+	public void drawing(Scene scn) {  
+	  PGraphicsOpenGL pg3d = scn.renderer();
+	  pg3d.background(0);
+	  if (enabledLights) {
+	    pg3d.lights();
+	  }
+	  // 1. draw the robot cams
 
-		robot.draw(scn);
-		heli.draw(scn);
+	  armCam.draw(scn);
+	  heliCam.draw(scn);
 
-		// 2. draw the scene
+	  // 2. draw the scene
 
-		// The OBJ is drawn earning points that form part of each side of the
-		// model.
-		// Then, sides are drawn using beginShape and endShape.
+	  // Rendering of the OBJ model
+	  pg3d.noStroke();
+	  pg3d.fill(24, 184, 199);
+	  pg3d.pushMatrix();
+	  pg3d.translate(0,0,20);
+	  pg3d.scale(2.5);
+	  pg3d.rotateX(HALF_PI); 
+	  
+	  pg3d.shape(teapot);
+	  pg3d.popMatrix();
 
-		pg3d.noStroke();
-		pg3d.fill(24, 184, 199);
-		pg3d.pushMatrix();
-		pg3d.rotateX(-HALF_PI);
-		
-		//TODO fix obj reading		
-		/**
-		for (int k = 0; k < ahstray.getFaceCount(); k++) {
-			PVector[] faceVertices = ahstray.getFaceVertices(k);
-			pg3d.beginShape(TRIANGLE_FAN);
-			for (int i = 0; i < faceVertices.length; i++) {
-				pg3d.vertex(faceVertices[i].x, faceVertices[i].y,
-						faceVertices[i].z);
-			}
-			pg3d.endShape();
-		}
-		*/
-		
-		pg3d.popMatrix();
-
-		// 2a. draw a ground
-		pg3d.noStroke();
-		pg3d.fill(120, 120, 120);
-		float nbPatches = 100;
-		pg3d.normal(0.0f, 0.0f, 1.0f);
-		for (int j = 0; j < nbPatches; ++j) {
-			pg3d.beginShape(QUAD_STRIP);
-			for (int i = 0; i <= nbPatches; ++i) {
-				pg3d.vertex((200 * (float) i / nbPatches - 100), (200 * j
-						/ nbPatches - 100));
-				pg3d.vertex((200 * (float) i / nbPatches - 100), (200
-						* (float) (j + 1) / nbPatches - 100));
-			}
-			pg3d.endShape();
-		}
-
+	  // 2a. draw a ground
+	  pg3d.noStroke();
+	  pg3d.fill(120, 120, 120);
+	  float nbPatches = 100;
+	  pg3d.normal(0.0f, 0.0f, 1.0f);
+	  for (int j = 0; j < nbPatches; ++j) {
+	    pg3d.beginShape(QUAD_STRIP);
+	    for (int i = 0; i <= nbPatches; ++i) {
+	      pg3d.vertex((200 * (float) i / nbPatches - 100), (200 * j / nbPatches - 100));
+	      pg3d.vertex((200 * (float) i / nbPatches - 100), (200 * (float) (j + 1) / nbPatches - 100));
+	    }
+	    pg3d.endShape();
+	  }
 	}
 
 	public void keyPressed() {
-		if (key == 'l') {
-			enabledLights = !enabledLights;
-			if (enabledLights) {
-				println("camera spot light enabled");
-			} else {
-				println("camera spot light disabled");
-			}
-		}
-		if (key == 'x') {
-			drawRobotCamFrustum = !drawRobotCamFrustum;
-			if (drawRobotCamFrustum) {
-				println("draw robot camera frustum");
-			} else {
-				println("don't draw robot camera frustum");
-			}
-		}
+	  if (key == 'l') {
+	    enabledLights = !enabledLights;
+	    if (enabledLights) {
+	      println("camera spot lights enabled");
+	    } 
+	    else {
+	      println("camera spot lights disabled");
+	    }
+	  }
+	  if (key == 'x') {
+	    drawRobotCamFrustum = !drawRobotCamFrustum;
+	    if (drawRobotCamFrustum) {
+	      println("draw robot camera frustums");
+	    } 
+	    else {
+	      println("don't draw robot camera frustums");
+	    }
+	  }
 	}
-
-	public void drawModel(Scene scn) {
-	}
-
 	public static void main(String[] args) {
 		PApplet.main(new String[] { "crane.CameraCrane" });
-	}
+	}	
 }

@@ -23,7 +23,7 @@ public class Box {
 	}
 	
 	public void draw(boolean drawAxis) {
-		scene.pg3d.pushMatrix();
+		scene.pg3d().pushMatrix();
 		
 		/**
 		PMatrix3D pM3d =  new PMatrix3D();
@@ -39,15 +39,15 @@ public class Box {
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
 			scene.drawAxis(PApplet.max(w,h,d)*1.3f);
-		scene.pg3d.noStroke();
+		scene.pg3d().noStroke();
 		if (iFrame.grabsMouse())
-			scene.pg3d.fill(255,0,0);
+			scene.pg3d().fill(255,0,0);
 		else
-			scene.pg3d.fill(getColor());
+			scene.pg3d().fill(getColor());
 		//Draw a box		
-		scene.pg3d.box(w,h,d);
+		scene.pg3d().box(w,h,d);
 		
-		scene.pg3d.popMatrix();
+		scene.pg3d().popMatrix();
 	}
 	
 	public void setSize() {

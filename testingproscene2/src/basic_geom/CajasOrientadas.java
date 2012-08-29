@@ -25,7 +25,7 @@ public class CajasOrientadas extends PApplet {
 		//scene.camera().setPosition(new PVector(10,0,0));
 		//scene.camera().lookAt( scene.center() );
 		scene.showAll();		
-		//scene.disableBackgroundHanddling();
+		//scene.disableBackgroundHanddling();		
 		
 		esfera = new Sphere(scene);
 		esfera.setPosition(new Vector3D(0.0f, 1.4f, 0.0f));
@@ -38,8 +38,9 @@ public class CajasOrientadas extends PApplet {
 		frameRate(500);
 	}
 
-	public void draw() {		
-		background(0);		
+	public void draw() {
+		background(0);	
+		
 	    esfera.draw();
 		for (int i = 0; i < cajas.length; i++) {
 			cajas[i].setOrientation(esfera.getPosition());
@@ -129,6 +130,9 @@ public class CajasOrientadas extends PApplet {
 		if ((key == 'x') || (key == 'X')) {
 			scene.toggleMouseTracking();
 			println(scene.hasMouseTracking());
+		}
+		if ((key == 'y') || (key == 'Y')) {
+			scene.setGridDotted(!scene.gridIsDotted());
 		}
 		if ((key == 'u') || (key == 'U')) {
 			println("papplet's frame count: " + frameCount);

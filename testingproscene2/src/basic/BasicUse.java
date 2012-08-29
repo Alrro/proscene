@@ -271,6 +271,9 @@ public class BasicUse extends PApplet {
 		
 		scene = new Scene(this);		
 		
+		if( scene.pg() instanceof PGraphics3D )
+			println("pg is PGraphics3D");
+		
 		//scene.camera().setSpinningSensitivity(100);
 		
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
@@ -316,7 +319,7 @@ public class BasicUse extends PApplet {
 		//scene.background(b);		
 		background(0);	
 		
-		scene.drawArrow(new Vector3D(0,0,0), new Vector3D(50,50,50), 1);
+		//scene.drawArrow(new Vector3D(0,0,0), new Vector3D(50,50,50), 1);
 				
 		if(frame != null) {
 			frame.setResizable(true);
@@ -352,12 +355,10 @@ public class BasicUse extends PApplet {
 		}
 		
 		
-		if(key == 'y' || key == 'Y') {
-			scene.matrixMode(MODELVIEW);
+		if(key == 'y' || key == 'Y') {			
 			Matrix3D m_apply = new Matrix3D( scene.getMatrix() );
-			Matrix3D m_applytrans = new Matrix3D( scene.getMatrix() );
-			scene.matrixMode(PROJECTION);
-			Matrix3D p = new Matrix3D( scene.getMatrix() );
+			Matrix3D m_applytrans = new Matrix3D( scene.getMatrix() );			
+			Matrix3D p = new Matrix3D( scene.getProjection() );
 			/**
 			m_apply.preApply(p.m00(), p.m01(), p.m02(), p.m03(),
 					      p.m10(), p.m11(), p.m12(), p.m13(),

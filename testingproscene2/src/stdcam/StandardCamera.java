@@ -37,8 +37,8 @@ public class StandardCamera extends PApplet {
 	  handleMouse();
 	}
 
-	void mainDrawing(Scene s) {		
-	  PGraphicsOpenGL p = s.renderer();
+	public void mainDrawing(Scene s) {		
+	  PGraphicsOpenGL p = s.pggl();
 	  p.background(0);
 	  p.noStroke();
 	  // the main viewer camera is used to cull the sphere object against its
@@ -57,12 +57,13 @@ public class StandardCamera extends PApplet {
 	  }
 	}
 
-	void auxiliarDrawing(Scene s) {
+	public void auxiliarDrawing(Scene s) {
 	  mainDrawing(s);
 	  s.drawCamera(scene.camera());
 	}
 
 	public void draw() {
+		background(0);
 	  handleMouse();
 	  canvas.beginDraw();
 	  scene.beginDraw();
