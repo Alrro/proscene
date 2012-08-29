@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import processing.core.*;
-//import processing.opengl.*;
+import processing.opengl.*;
 
 public class Scene2D extends AbstractScene {
 	/**
@@ -112,12 +112,19 @@ public class Scene2D extends AbstractScene {
 	  	+ "endScreenDrawing() and they cannot be nested. Check your implementation!");
 		startCoordCalls++;
 		
-		/**
+		///**
 		if ( this.p5Renderer() == P5Renderer.P2D ) {
-			
+			renderer().hint(DISABLE_DEPTH_TEST);
+			((PGraphics2D)renderer()).pushProjection();
+			float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
+			float cameraNear = cameraZ / 2.0f;
+			float cameraFar = cameraZ * 2.0f;
+			renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
+			renderer().pushMatrix();
+			renderer().camera();			
 		}
 		else {
-		*/
+		//*/
 			float[] wh = camera().getOrthoWidthHeight();
 			PVector pos = camera().position();
 			Quaternion quat = camera().frame().orientation();
@@ -129,7 +136,7 @@ public class Scene2D extends AbstractScene {
 			else
 				renderer().rotate(-quat.angle());
 			renderer().translate(-renderer().width/2, -renderer().height/2);
-		//}
+		}
 	}
 	
 	@Override
@@ -139,12 +146,14 @@ public class Scene2D extends AbstractScene {
 			throw new RuntimeException("There should be exactly one beginScreenDrawing() call followed by a "
 		  + "endScreenDrawing() and they cannot be nested. Check your implementation!");
 		
-		/**
+		// /**
 		if ( this.p5Renderer() == P5Renderer.P2D ) {
-			
+			((PGraphics2D)renderer()).popProjection();
+			renderer().popMatrix();
+			renderer().hint(ENABLE_DEPTH_TEST);
 		}
 		else {
-		*/
+		// */
 			float[] wh = camera().getOrthoWidthHeight();
 			PVector pos = camera().position();
 			Quaternion quat = camera().frame().orientation();
@@ -157,7 +166,7 @@ public class Scene2D extends AbstractScene {
 				renderer().rotate(quat.angle());
 			renderer().translate(-pos.x, -pos.y);
 			renderer().scale(wh[0]/(renderer().width/2), wh[1]/(renderer().height/2));
-		//}
+		}
 	}
 
 	@Override
