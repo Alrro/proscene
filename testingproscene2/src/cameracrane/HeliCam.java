@@ -13,19 +13,21 @@ import processing.opengl.*;
 import remixlab.proscene.*;
 
 public class HeliCam {
+	CameraCrane parent;
 	  InteractiveFrame[] frameArray;
 	  Quaternion rotation = new Quaternion(new Vector3D(0.0f, 0.0f, 1.0f), 0.3f);
 
-	  HeliCam() {
+	  HeliCam(CameraCrane pnt) {
+		  parent = pnt;
 	    frameArray = new InteractiveFrame[5];
 	    for (int i = 0; i < 4; ++i) {
-	      frameArray[i] = new InteractiveFrame(mainScene);
+	      frameArray[i] = new InteractiveFrame(parent.mainScene);
 	      // Creates a hierarchy of frames from frame(0) to frame(3)
 	      if (i > 0)
 	        frame(i).setReferenceFrame(frame(i - 1));
 	    }
 
-	    frameArray[4] = new InteractiveFrame(mainScene);
+	    frameArray[4] = new InteractiveFrame(parent.mainScene);
 	    // set the propeller's refecence frame as the body of the heli
 	    frame(4).setReferenceFrame(frame(0));
 
@@ -73,7 +75,7 @@ public class HeliCam {
 
 	  public void draw(Scene scn) {
 	    // Robot arm's local frame
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 
 	    pg3d.pushMatrix();
 	    frame(0).applyTransformation();
@@ -98,7 +100,7 @@ public class HeliCam {
 	    drawHead(scn);
 
 	    // Add light if the flag enables it
-	    if (enabledLights)
+	    if (parent.enabledLights)
 	      pg3d.spotLight(155, 255, 255, 0, 0, 0, 0, 0, -1, PApplet.THIRD_PI, 1);
 
 	    pg3d.popMatrix();// frame(3)
@@ -122,17 +124,17 @@ public class HeliCam {
 	    // Scene.drawCamera takes into account the whole scene hierarchy above
 	    // the camera iFrame. Thus, we call it after restoring the gl state.
 	    // Calling it before the first push matrix above, should do it too.
-	    if( drawRobotCamFrustum && scn.equals(mainScene) )
-	      scn.drawCamera( heliScene.camera() );
+	    if( parent.drawRobotCamFrustum && scn.equals(parent.mainScene) )
+	      scn.drawCamera( parent.heliScene.camera() );
 	  }
 
 	  public void drawBody(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.sphere(7);
 	  }
 
 	  public void drawPropeller(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
 	    pg3d.sphere(2);
 	    drawCone(scn, 0, 5, 1, 1, 10);
@@ -149,7 +151,7 @@ public class HeliCam {
 	  }
 
 	  public void drawBlade(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
 	    pg3d.translate(0, 0, 5);
 	    pg3d.rotateX(PApplet.HALF_PI);
@@ -158,7 +160,7 @@ public class HeliCam {
 	  }
 
 	  public void drawArm(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.translate(2, 0, 0);
 	    drawCone(scn, 0, 50, 1, 1, 10);
 	    pg3d.translate(-4, 0, 0);
@@ -171,8 +173,8 @@ public class HeliCam {
 	  }
 
 	  public void drawHead(Scene scn) {
-	    if (drawRobotCamFrustum && scn.equals(mainScene))
-	      scn.drawAxis( heliScene.camera().sceneRadius() * 1.2f );
+	    if (parent.drawRobotCamFrustum && scn.equals(parent.mainScene))
+	      scn.drawAxis( parent.heliScene.camera().sceneRadius() * 1.2f );
 	    drawCone(scn, 9, 12, 7, 0, 6);
 	    drawCone(scn, 8, 9, 6, 7, 6);
 	    drawCone(scn, 5, 8, 8, 6, 30);
@@ -182,7 +184,7 @@ public class HeliCam {
 	  }
 
 	  public void drawCylinder(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
 	    pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
 	    drawCone(scn, -5, 5, 2, 2, 20);
@@ -190,7 +192,7 @@ public class HeliCam {
 	  }
 
 	  public void drawSmallCylinder(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
 	    pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
 	    drawCone(scn, -2, 2, 2, 2, 20);
@@ -198,14 +200,14 @@ public class HeliCam {
 	  }
 
 	  public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, int nbSub) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.translate(0.0f, 0.0f, zMin);
 	    scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
 	    pg3d.translate(0.0f, 0.0f, -zMin);
 	  }
 
 	  public void setColor(Scene scn, boolean selected) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    if (selected)
 	      pg3d.fill(200, 200, 0);
 	    else

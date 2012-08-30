@@ -9,11 +9,13 @@ import remixlab.proscene.*;
 
 public class ArmCam {
 	  InteractiveFrame[] frameArray;
+	  CameraCrane parent;
 
-	  ArmCam(int x, int y, float ang) {
+	  ArmCam(CameraCrane pnt, int x, int y, float ang) {
+		  parent = pnt;
 	    frameArray = new InteractiveFrame[6];
 	    for (int i = 0; i < 6; ++i) {
-	      frameArray[i] = new InteractiveFrame(mainScene);      
+	      frameArray[i] = new InteractiveFrame(parent.mainScene);      
 	      // Creates a hierarchy of frames
 	      if (i > 0) {
 	        frame(i).setReferenceFrame(frame(i - 1));
@@ -76,7 +78,7 @@ public class ArmCam {
 
 	  public void draw(Scene scn) {
 	    // Robot arm's local frame
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 
 	    pg3d.pushMatrix();
 	    frame(0).applyTransformation();
@@ -118,7 +120,7 @@ public class ArmCam {
 	    drawHead(scn);
 
 	    // Add light if the flag enables it
-	    if (enabledLights) {
+	    if (parent.enabledLights) {
 	      pg3d.spotLight(155, 255, 255, 0, 0, 0, 0, 0, -1, PApplet.THIRD_PI, 1);
 	    }
 
@@ -138,12 +140,12 @@ public class ArmCam {
 	    // Scene.drawCamera takes into account the whole scene hierarchy above
 	    // the camera iFrame. Thus, we call it after restoring the gl state.
 	    // Calling it before the first push matrix above, should do it too.
-	    if( drawRobotCamFrustum && scn.equals(mainScene) )
-	      scn.drawCamera( armScene.camera() );
+	    if( parent.drawRobotCamFrustum && scn.equals(parent.mainScene) )
+	      scn.drawCamera( parent.armScene.camera() );
 	  }
 
 	  public void drawBase(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    drawCone(scn, 0, 3, 7, 7, 4);
 	    drawCone(scn, 3, 5, 7, 5, 4);
 	    drawCone(scn, 5, 6, 5, 1, 4);
@@ -153,14 +155,14 @@ public class ArmCam {
 	    drawCone(scn, 0, 36, 1, 1, 10);
 	    pg3d.translate(2, 0, 0);
 	    pg3d.pushMatrix();
-	    pg3d.rotate(PApplet.PApplet.HALF_PI, 0, 1, 0);
+	    pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
 	    pg3d.translate(-35, 0, 0);
 	    drawCone(scn, -3, 3, 2, 2, 20);
 	    pg3d.popMatrix();
 	  }
 
 	  public void drawArm(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.translate(2, 0, 0);
 	    drawCone(scn, 0, 50, 1, 1, 10);
 	    pg3d.translate(-4, 0, 0);
@@ -169,8 +171,8 @@ public class ArmCam {
 	  }
 
 	  public void drawHead(Scene scn) {
-	    if( drawRobotCamFrustum && scn.equals( mainScene) )
-	      scn.drawAxis( armScene.camera().sceneRadius() * 1.2f );
+	    if( parent.drawRobotCamFrustum && scn.equals( parent.mainScene) )
+	      scn.drawAxis( parent.armScene.camera().sceneRadius() * 1.2f );
 	    drawCone(scn, 9, 12, 7, 0, 6);
 	    drawCone(scn, 8, 9, 6, 7, 6);
 	    drawCone(scn, 5, 8, 8, 6, 30);
@@ -180,22 +182,22 @@ public class ArmCam {
 	  }
 
 	  public void drawCylinder(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
-	    pg3d.rotate(PApplet.PApplet.HALF_PI, 0, 1, 0);
+	    pg3d.rotate(PApplet.HALF_PI, 0, 1, 0);
 	    drawCone(scn, -5, 5, 2, 2, 20);
 	    pg3d.popMatrix();
 	  }
 
 	  public void drawCone(Scene scn, float zMin, float zMax, float r1, float r2, int nbSub) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.translate(0.0f, 0.0f, zMin);
 	    scn.cone(nbSub, 0, 0, r1, r2, zMax - zMin);
 	    pg3d.translate(0.0f, 0.0f, -zMin);
 	  }
 
 	  public void setColor(Scene scn, boolean selected) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    if (selected) {
 	      pg3d.fill(200, 200, 0);
 	    } 
@@ -212,7 +214,7 @@ public class ArmCam {
 	  }
 
 	  public void drawLongArm(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.translate(2, 0, -57);
 	    drawCone(scn, 0, 70, 1, 1, 10);
 	    pg3d.translate(-4, 0, 0);
@@ -224,11 +226,11 @@ public class ArmCam {
 	  }
 
 	  public void drawHolder(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.translate(0, 0, -13);
 	    drawCylinder(scn);
 	    pg3d.pushMatrix();
-	    pg3d.rotateX(PApplet.PApplet.HALF_PI);
+	    pg3d.rotateX(PApplet.HALF_PI);
 	    pg3d.translate(2, 0, 0);
 	    drawCone(scn, 0, 10, 1, 1, 10);
 	    pg3d.translate(-4, 0, 0);
@@ -238,7 +240,7 @@ public class ArmCam {
 	  }
 
 	  public void drawTripod(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
 	    pg3d.translate(0, 0, 21);
 	    pg3d.rotateX(PApplet.PI);
@@ -251,7 +253,7 @@ public class ArmCam {
 	  }
 
 	  public void drawStick(Scene scn) {
-	    PGraphicsOpenGL pg3d = scn.renderer();
+	    PGraphicsOpenGL pg3d = scn.pggl();
 	    pg3d.pushMatrix();
 	    pg3d.rotateX((float) (PApplet.PI / 5.5));
 	    drawCone(scn, 0, 25, 1, 1, 10);

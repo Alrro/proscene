@@ -9,7 +9,6 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 
-//TODO fix obj reading
 @SuppressWarnings("serial")
 public class CameraCrane extends PApplet {
 	boolean enabledLights = true;
@@ -23,7 +22,7 @@ public class CameraCrane extends PApplet {
 
 	public void setup() {
 	  size(1024, 720, P3D);
-	  teapot = loadShape("cameracrane/Models/teapot.obj");
+	  teapot = loadShape("teapot.obj");
 	  
 	  canvas = createGraphics(width, mainWinHeight, P3D);
 	  mainScene = new Scene(this, (PGraphics3D) canvas);
@@ -50,10 +49,10 @@ public class CameraCrane extends PApplet {
 	  heliScene.setAxisIsDrawn(false); 
 
 	  // Frame linking
-	  armCam = new ArmCam(60, -60, 2);
+	  armCam = new ArmCam(this, 60, -60, 2);
 	  armScene.camera().frame().linkTo(armCam.frame(5));
 
-	  heliCam = new HeliCam();
+	  heliCam = new HeliCam(this);
 	  heliScene.camera().frame().linkTo(heliCam.frame(3));
 	}
 
@@ -115,7 +114,7 @@ public class CameraCrane extends PApplet {
 
 	// the actual drawing function, shared by the two scenes
 	public void drawing(Scene scn) {  
-	  PGraphicsOpenGL pg3d = scn.renderer();
+	  PGraphicsOpenGL pg3d = scn.pggl();
 	  pg3d.background(0);
 	  if (enabledLights) {
 	    pg3d.lights();
@@ -132,7 +131,7 @@ public class CameraCrane extends PApplet {
 	  pg3d.fill(24, 184, 199);
 	  pg3d.pushMatrix();
 	  pg3d.translate(0,0,20);
-	  pg3d.scale(2.5);
+	  pg3d.scale(2.5f);
 	  pg3d.rotateX(HALF_PI); 
 	  
 	  pg3d.shape(teapot);
