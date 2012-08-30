@@ -5,16 +5,18 @@ import java.util.List;
 import processing.core.*;
 import processing.opengl.*;
 
+/**
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
+*/
 
-/**
+// /*
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
-import remixlab.remixcam.core.ViewPort;
 import remixlab.remixcam.core.SimpleFrame;
-import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
+import remixlab.remixcam.geom.Matrix3D;
+//import remixlab.remixcam.geom.Quaternion;
 // */
 
 public class Renderer2D extends Renderer {	

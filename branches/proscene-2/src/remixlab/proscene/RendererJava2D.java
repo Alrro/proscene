@@ -4,17 +4,19 @@ import java.util.List;
 
 import processing.core.*;
 
+/**
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
+*/
 
-/**
+// /**
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
-import remixlab.remixcam.core.ViewPort;
 import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.geom.Vector3D;
 import remixlab.remixcam.geom.Matrix3D;
-*/
+import remixlab.remixcam.geom.Quaternion;
+// */
 
 public class RendererJava2D extends Renderer {
 	public RendererJava2D(AbstractScene scn, PGraphicsJava2D renderer) {
