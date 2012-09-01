@@ -28,15 +28,15 @@ public class RendererJava2D extends Renderer {
 	}
 	
 	public void bindMatrices() {
-		scene.camera().computeProjectionMatrix();
-		scene.camera().computeViewMatrix();
+		scene.viewWindow().computeProjectionMatrix();
+		scene.viewWindow().computeViewMatrix();
 		
-		float[] wh = scene.camera().getOrthoWidthHeight();
-		Vector3D pos = scene.camera().position();
-		Quaternion quat = scene.camera().frame().orientation();
+		float[] wh = scene.viewWindow().getOrthoWidthHeight();
+		Vector3D pos = scene.viewWindow().position();
+		Quaternion quat = scene.viewWindow().frame().orientation();
 		
 		translate(scene.width()/2, scene.height()/2);
-		if(scene.camera().frame().orientation().axis().z() > 0)
+		if(scene.viewWindow().frame().orientation().axis().z() > 0)
 			rotate(-quat.angle());
 		//TODO: hack! to compensate when axis gets reverted
 		else
@@ -47,12 +47,12 @@ public class RendererJava2D extends Renderer {
 	
 	@Override
 	public void beginScreenDrawing() {
-		float[] wh = scene.camera().getOrthoWidthHeight();
-		Vector3D pos = scene.camera().position();
-		Quaternion quat = scene.camera().frame().orientation();
+		float[] wh = scene.viewWindow().getOrthoWidthHeight();
+		Vector3D pos = scene.viewWindow().position();
+		Quaternion quat = scene.viewWindow().frame().orientation();
 		scale((scene.width()/2)/wh[0], (scene.height()/2)/wh[1]);
 		translate(pos.x(), pos.y());
-		if(scene.camera().frame().orientation().axis().z() > 0)
+		if(scene.viewWindow().frame().orientation().axis().z() > 0)
 			rotate(quat.angle());
 		//TODO: hack! to compensate when axis gets reverted
 		else
@@ -62,12 +62,12 @@ public class RendererJava2D extends Renderer {
 	
 	@Override
 	public void endScreenDrawing() {
-		float[] wh = scene.camera().getOrthoWidthHeight();
-		Vector3D pos = scene.camera().position();
-		Quaternion quat = scene.camera().frame().orientation();
+		float[] wh = scene.viewWindow().getOrthoWidthHeight();
+		Vector3D pos = scene.viewWindow().position();
+		Quaternion quat = scene.viewWindow().frame().orientation();
 		
 		translate(scene.width()/2, scene.height()/2);
-		if(scene.camera().frame().orientation().axis().z() > 0)
+		if(scene.viewWindow().frame().orientation().axis().z() > 0)
 			rotate(-quat.angle());
 		//TODO: hack! to compensate when axis gets reverted
 		else

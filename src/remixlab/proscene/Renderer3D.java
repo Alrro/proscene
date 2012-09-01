@@ -17,6 +17,7 @@ import remixlab.remixcam.core.SimpleFrame;
 import remixlab.remixcam.geom.Matrix3D;
 //import remixlab.remixcam.geom.Quaternion;
 // */
+import remixlab.remixcam.geom.Vector3D;
 
 public class Renderer3D extends Renderer {	
 	protected SimpleFrame tmpFrame;
@@ -110,7 +111,7 @@ public class Renderer3D extends Renderer {
 	public void beginScreenDrawing() {
 		pg3d().hint(DISABLE_DEPTH_TEST);
 		pg3d().pushProjection();
-		float cameraZ = (pg3d().height/2.0f) / PApplet.tan(scene().camera().fieldOfView() /2.0f);
+		float cameraZ = (pg3d().height/2.0f) / PApplet.tan( scene().camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
     pg3d().ortho(-pg3d().width/2, pg3d().width/2, -pg3d().height/2, pg3d().height/2, cameraNear, cameraFar);		
@@ -583,5 +584,30 @@ public class Renderer3D extends Renderer {
 			}
 			pg3d().popStyle();
 		}
+	}
+	
+	@Override
+	public void drawScreenRotateLineHint() {
+		float p1x = (float) ((Scene)scene).dE.fCorner.getX();
+		float p1y = (float) ((Scene)scene).dE.fCorner.getY();
+		Vector3D p2 = scene.camera().projectedCoordinatesOf(scene.arcballReferencePoint());
+		scene.beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(255, 255, 255);
+		pg.strokeWeight(2);
+		pg.noFill();
+		pg.line(p2.x(), p2.y(), p1x, p1y);
+		pg.popStyle();
+		scene.endScreenDrawing();
+	}
+
+	@Override
+	public void drawArcballReferencePointHint() {
+		Vector3D p = scene.camera().projectedCoordinatesOf(scene.arcballReferencePoint());
+		pg.pushStyle();
+		pg.stroke(255);
+		pg.strokeWeight(3);
+		scene.drawCross(p.vec[0], p.vec[1]);
+		pg.popStyle();
 	}
 }
