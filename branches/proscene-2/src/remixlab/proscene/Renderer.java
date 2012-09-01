@@ -38,6 +38,7 @@ import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Renderable;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.SimpleFrame;
+import remixlab.remixcam.core.ViewWindow;
 import remixlab.remixcam.geom.Matrix3D;
 import remixlab.remixcam.geom.Vector3D;
 // */
@@ -349,27 +350,12 @@ public class Renderer implements Renderable, PConstants {
 
 	@Override
 	public void drawScreenRotateLineHint() {
-		float p1x = (float) ((Scene)scene).dE.fCorner.getX();
-		float p1y = (float) ((Scene)scene).dE.fCorner.getY();
-		Vector3D p2 = scene.camera().projectedCoordinatesOf(scene.arcballReferencePoint());
-		scene.beginScreenDrawing();
-		pg.pushStyle();
-		pg.stroke(255, 255, 255);
-		pg.strokeWeight(2);
-		pg.noFill();
-		pg.line(p2.x(), p2.y(), p1x, p1y);
-		pg.popStyle();
-		scene.endScreenDrawing();
+	//TODO implement 2D case
 	}
 
 	@Override
 	public void drawArcballReferencePointHint() {
-		Vector3D p = scene.camera().projectedCoordinatesOf(scene.arcballReferencePoint());
-		pg.pushStyle();
-		pg.stroke(255);
-		pg.strokeWeight(3);
-		scene.drawCross(p.vec[0], p.vec[1]);
-		pg.popStyle();
+	//TODO implement 2D case
 	}
 
 	@Override
@@ -527,5 +513,11 @@ public class Renderer implements Renderable, PConstants {
 	public Matrix3D getProjection(Matrix3D target) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void drawViewWindow(ViewWindow window, float scale) {
+		// TODO Auto-generated method stub
+		
 	}		
 }

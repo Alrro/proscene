@@ -28,18 +28,19 @@ package remixlab.proscene;
 import processing.core.*;
 import processing.opengl.*;
 
-// /**
+/**
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.devices.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.*;
 // */
 
-/*
+// /*
 import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
 import remixlab.remixcam.core.InteractiveFrame;
+import remixlab.remixcam.core.ViewWindow;
 //import remixlab.remixcam.core.SimpleFrame;
 //import remixlab.remixcam.core.KeyFrameInterpolator;
 import remixlab.remixcam.devices.DeviceGrabbable;
@@ -297,11 +298,14 @@ public class Scene extends AbstractScene implements PConstants {
 		// need it here to properly init the camera
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
-		cam = new Camera(this);		
-		setCamera(camera());//calls showAll();
+		if( is3D() )
+			viewport = new Camera(this);
+		else
+			viewport = new ViewWindow(this);
+		setViewPort(viewPort());//calls showAll();
 		//TODO hack
 		if(is2D())
-			camera().setUpVector(new Vector3D(0,-1,0));
+			viewWindow().setUpVector(new Vector3D(0,-1,0));
 		
 		setInteractiveFrame(null);
 		setAvatar(null);
@@ -443,24 +447,6 @@ public class Scene extends AbstractScene implements PConstants {
 		}
 	}
 	*/	
-	
-	/**
-	 * Replaces the current {@link #camera()} with {@code camera}
-	 */
-	@Override
-	public void setCamera(Camera camera) {
-		if (camera == null)
-			return;
-
-		camera.setSceneRadius(radius());		
-		camera.setSceneCenter(center());
-
-		camera.setScreenWidthAndHeight(pg().width, pg().height);
-
-		cam = camera;		
-
-		showAll();
-	}	
 
 	// 4. State of the viewer
 

@@ -156,20 +156,22 @@ public class Renderer2D extends Renderer {
     // /**
     pg2d().hint(DISABLE_DEPTH_TEST);
     pg2d().pushProjection();
- 		float cameraZ = (pg2d().height/2.0f) / PApplet.tan(scene.camera().fieldOfView() /2.0f);
+ 		//float cameraZ = (pg2d().height/2.0f) / PApplet.tan(scene.viewWindow().fieldOfView() /2.0f);
+    //TODO check this dummy value
+    float cameraZ = (pg2d().height/2.0f) / PApplet.tan(PApplet.QUARTER_PI/2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
     //renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
     //TODO check this line:  
-    //pg2d().projection.set((scene.camera()).getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar));
-    //pg2d().projection.set((scene.camera()).getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar).getTransposed(new float[16]));
+    //pg2d().projection.set((scene.viewWindow()).getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar));
+    //pg2d().projection.set((scene.viewWindow()).getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar).getTransposed(new float[16]));
     pg2d().projection.set(getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar));
     pg2d().pushMatrix();
  	  // Camera needs to be reset!
     //hack: it's trickier, but works ;)
     //renderer().camera();
     //TODO check this line:
-    //pg2d().modelview.set(((P5Camera)scene.camera()).getCamera());
+    //pg2d().modelview.set(((P5Camera)scene.viewWindow()).getCamera());
     pg2d().modelview.set(getCamera());
     // */
 	}
@@ -185,7 +187,6 @@ public class Renderer2D extends Renderer {
 	public void bindMatrices() {
 		setProjectionMatrix();
 		setModelViewMatrix();
-		scene.camera().cacheMatrices();
 	}
 	
 	/**
@@ -198,7 +199,7 @@ public class Renderer2D extends Renderer {
 		/**		
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
-		scene.camera().getProjectionMatrix(mat, true);
+		scene.viewWindow().getProjectionMatrix(mat, true);
 		mat.transpose();		
 		float[] target = new float[16];
 		pg2d().projection.set(mat.get(target));		
@@ -206,7 +207,7 @@ public class Renderer2D extends Renderer {
 				
 		// /**		
 		// Option 2		
-		pg2d().projection.set(scene.camera().getProjectionMatrix(true).getTransposed(new float[16]));
+		pg2d().projection.set(scene.viewWindow().getProjectionMatrix(true).getTransposed(new float[16]));
 		// */		
 	}
 
@@ -219,7 +220,7 @@ public class Renderer2D extends Renderer {
 		/**		
 		// Option 1
 		Matrix3D mat = new Matrix3D();		
-		scene.camera().getViewMatrix(mat, true);
+		scene.viewWindow().getViewMatrix(mat, true);
 		mat.transpose();// experimental
 		float[] target = new float[16];
 		pg2d().modelview.set(mat.get(target));
@@ -227,7 +228,7 @@ public class Renderer2D extends Renderer {
 			  
 		// /**		
 		// Option 2
-		pg2d().modelview.set(scene.camera().getViewMatrix(true).getTransposed(new float[16]));
+		pg2d().modelview.set(scene.viewWindow().getViewMatrix(true).getTransposed(new float[16]));
 		// */
 	}
 
