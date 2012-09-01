@@ -231,24 +231,27 @@ public class Renderer implements Renderable, PConstants {
 	// /**
 	@Override
 	public void cylinder(float w, float h) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
+	}
+	
+	@Override
+	public void hollowCylinder(int detail, float w, float h, Vector3D m, Vector3D n) {
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public void cone(int detail, float x, float y, float r, float h) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public void cone(int detail, float x, float y, float r1, float r2, float h) {
-		// TODO Auto-generated method stub
-		
+		// TODO Auto-generated method stub		
 	}
 
 	@Override
 	public void drawAxis(float length) {
+		//pg().hint(DISABLE_STROKE_PERSPECTIVE);
 		pg.pushStyle();				
 		pg.strokeWeight(2);			  
 		
@@ -259,11 +262,13 @@ public class Renderer implements Renderable, PConstants {
 		pg.stroke(0, 200, 0);		
 		pg.line(0, 0, 0, length);		
 
-		pg.popStyle();		
+		pg.popStyle();
+		//pg().hint(ENABLE_STROKE_PERSPECTIVE);
 	}
 
 	@Override
 	public void drawGrid(float size, int nbSubdivisions) {
+		//pg().hint(DISABLE_STROKE_PERSPECTIVE);
 		pg.pushStyle();
 		pg.stroke(170, 170, 170);
 		pg.strokeWeight(1);
@@ -277,11 +282,13 @@ public class Renderer implements Renderable, PConstants {
 		}
 		pg.endShape();
 		pg.popStyle();		
+		//pg().hint(ENABLE_STROKE_PERSPECTIVE);
 	}
 	
 	@Override
 	public void drawDottedGrid(float size, int nbSubdivisions) {
 		float posi, posj;
+		//pg().hint(DISABLE_STROKE_PERSPECTIVE);
 		pg.pushStyle();
 		pg.stroke(170);
 		pg.strokeWeight(2);
@@ -312,6 +319,7 @@ public class Renderer implements Renderable, PConstants {
 		}
 		pg.endShape();
 		pg.popStyle();
+		//pg().hint(ENABLE_STROKE_PERSPECTIVE);
 	}	
 
 	@Override
@@ -519,5 +527,5 @@ public class Renderer implements Renderable, PConstants {
 	public void drawViewWindow(ViewWindow window, float scale) {
 		// TODO Auto-generated method stub
 		
-	}		
+	}			
 }

@@ -29,7 +29,7 @@ public class Renderer2D extends Renderer {
 	}
 	
   //--	
-	public PMatrix3D getOrtho(float left, float right, float bottom, float top, float near, float far) {
+	protected PMatrix3D get2DOrtho(float left, float right, float bottom, float top, float near, float far) {
 		float x = +2.0f / (right - left);
 		float y = +2.0f / (top - bottom);
 		float z = -2.0f / (far - near);
@@ -45,11 +45,11 @@ public class Renderer2D extends Renderer {
                          0,  0, 0,  1);
 	}
 	
-	public PMatrix3D getCamera() {
-		 return getCamera(scene().width()/2f, scene.height()/2f, (scene().height()/2f) / (float)Math.tan(PI*60 / 360), scene().width()/2f, scene.height()/2f, 0, 0, 1, 0);
+	protected PMatrix3D get2DModelView() {
+		 return get2DModelView(scene().width()/2f, scene.height()/2f, (scene().height()/2f) / (float)Math.tan(PI*60 / 360), scene().width()/2f, scene.height()/2f, 0, 0, 1, 0);
 	}
 	
-	public PMatrix3D getCamera(float eyeX, float eyeY, float eyeZ,
+	protected PMatrix3D get2DModelView(float eyeX, float eyeY, float eyeZ,
      float centerX, float centerY, float centerZ,
      float upX, float upY, float upZ) {
 				
@@ -154,6 +154,7 @@ public class Renderer2D extends Renderer {
     // */
     
     // /**
+		pg2d().hint(DISABLE_STROKE_PERSPECTIVE);
     pg2d().hint(DISABLE_DEPTH_TEST);
     pg2d().pushProjection();
  		//float cameraZ = (pg2d().height/2.0f) / PApplet.tan(scene.viewWindow().fieldOfView() /2.0f);
@@ -165,14 +166,14 @@ public class Renderer2D extends Renderer {
     //TODO check this line:  
     //pg2d().projection.set((scene.viewWindow()).getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar));
     //pg2d().projection.set((scene.viewWindow()).getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar).getTransposed(new float[16]));
-    pg2d().projection.set(getOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar));
+    pg2d().projection.set(get2DOrtho(-pg2d().width/2, pg2d().width/2, -pg2d().height/2, pg2d().height/2, cameraNear, cameraFar));
     pg2d().pushMatrix();
  	  // Camera needs to be reset!
     //hack: it's trickier, but works ;)
     //renderer().camera();
     //TODO check this line:
     //pg2d().modelview.set(((P5Camera)scene.viewWindow()).getCamera());
-    pg2d().modelview.set(getCamera());
+    pg2d().modelview.set(get2DModelView());
     // */
 	}
 	
@@ -181,6 +182,7 @@ public class Renderer2D extends Renderer {
 		pg2d().popProjection();  
 		pg2d().popMatrix();		  
 		pg2d().hint(ENABLE_DEPTH_TEST);
+		pg2d().hint(ENABLE_STROKE_PERSPECTIVE);
 	}
 	
 	@Override

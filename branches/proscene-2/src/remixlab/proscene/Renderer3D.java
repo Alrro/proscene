@@ -109,6 +109,7 @@ public class Renderer3D extends Renderer {
 	
 	@Override
 	public void beginScreenDrawing() {
+		pg3d().hint(DISABLE_STROKE_PERSPECTIVE);
 		pg3d().hint(DISABLE_DEPTH_TEST);
 		pg3d().pushProjection();
 		float cameraZ = (pg3d().height/2.0f) / PApplet.tan( scene().camera().fieldOfView() /2.0f);
@@ -125,6 +126,7 @@ public class Renderer3D extends Renderer {
 		pg3d().popProjection();  
 		pg3d().popMatrix();		  
 		pg3d().hint(ENABLE_DEPTH_TEST);
+		pg3d().hint(ENABLE_STROKE_PERSPECTIVE);
 	}
 	
 	@Override
@@ -217,7 +219,71 @@ public class Renderer3D extends Renderer {
 			pg3d().vertex(px, py, h);
 		}
 		pg3d().endShape();
-	}		
+	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code hollowCylinder(20, w, h, new Vector3D(0,0,-1), new Vector3D(0,0,1))}.
+	 * 
+	 * @see #hollowCylinder(int, float, float, Vector3D, Vector3D)
+	 * @see #cylinder(float, float)
+	 */
+	public void hollowCylinder(float w, float h) {
+		this.hollowCylinder(20, w, h, new Vector3D(0,0,-1), new Vector3D(0,0,1));
+	}
+	
+	/**
+	 * Convenience function that simply calls
+	 * {@code hollowCylinder(detail, w, h, new Vector3D(0,0,-1), new Vector3D(0,0,1))}.
+	 * 
+	 * @see #hollowCylinder(int, float, float, Vector3D, Vector3D)
+	 * @see #cylinder(float, float)
+	 */
+	public void hollowCylinder(int detail, float w, float h) {
+		this.hollowCylinder(detail, w, h, new Vector3D(0,0,-1), new Vector3D(0,0,1));
+	}
+ 
+	/**
+	 * Draws a cylinder whose bases are formed by two cutting planes ({@code m}
+	 * and {@code n}), along the {@link #renderer()} positive {@code z} axis.
+	 * 
+	 * @param detail
+	 * @param w radius of the cylinder and h is its height
+	 * @param h height of the cylinder
+	 * @param m normal of the plane that intersects the cylinder at z=0
+	 * @param n normal of the plane that intersects the cylinder at z=h
+	 * 
+	 * @see #cylinder(float, float)
+	 */
+	@Override
+	public void hollowCylinder(int detail, float w, float h, Vector3D m, Vector3D n) {
+		//eqs taken from: http://en.wikipedia.org/wiki/Line-plane_intersection
+		Vector3D pm0 = new Vector3D(0,0,0);
+		Vector3D pn0 = new Vector3D(0,0,h);
+		Vector3D l0 = new Vector3D();		
+		Vector3D l = new Vector3D(0,0,1);
+		Vector3D p = new Vector3D();
+		float x,y,d;		
+		
+		pg3d().noStroke();
+		pg3d().beginShape(QUAD_STRIP);
+		
+		for (float t = 0; t <= detail; t++) {
+			x = w * PApplet.cos(t * TWO_PI/detail);
+			y = w * PApplet.sin(t * TWO_PI/detail);
+			l0.set(x,y,0);
+			
+			d = ( m.dot(Vector3D.sub(pm0, l0)) )/( l.dot(m) );
+			p =  Vector3D.add( Vector3D.mult(l, d), l0 );
+			pg3d().vertex(p.x(), p.y(), p.z());
+			
+			l0.z(h);
+			d = ( n.dot(Vector3D.sub(pn0, l0)) )/( l.dot(n) );
+			p =  Vector3D.add( Vector3D.mult(l, d), l0 );
+			pg3d().vertex(p.x(), p.y(), p.z());
+		}
+		pg3d().endShape();
+	}
 
 	/**
 	 * Overriding of {@link remixlab.remixcam.core.Renderable#cone(int, float, float, float, float)}.
