@@ -15,9 +15,7 @@ public class FrameInteractionMod extends PApplet {
 		scene = new Scene(this);
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		//scene.camera().setKind(Camera.Kind.STANDARD);
-		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-		scene.setGridIsDrawn(true);
-		scene.setAxisIsDrawn(true);		
+		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);		
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//iFrame = new InteractiveAvatarFrame(scene);
 		//scene.setInteractiveFrame(iFrame);
