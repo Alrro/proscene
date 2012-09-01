@@ -4,17 +4,20 @@ import processing.core.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
-public class FrameInteraction extends PApplet {
+public class FrameInteractionMod extends PApplet {
 	Scene scene;
 	InteractiveAvatarFrame iFrame;
 	
-	public void setup()	{		
-		size(640, 360, P3D);		
+	public void setup()	{
+		//size(640, 360, P3D);
+		size(640, 360, P3D);
+		//size(640, 360, OPENGL);
 		scene = new Scene(this);
-		// Ortho projection is buggy. Uncomment the following line to see it.
-		// (you can also press 'e' to switch the projection at run time). 
-		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);		
-		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);			
+		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
+		//scene.camera().setKind(Camera.Kind.STANDARD);
+		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
+		scene.setGridIsDrawn(true);
+		scene.setAxisIsDrawn(true);		
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//iFrame = new InteractiveAvatarFrame(scene);
 		//scene.setInteractiveFrame(iFrame);
@@ -26,17 +29,23 @@ public class FrameInteraction extends PApplet {
 		scene.setFrameSelectionHintIsDrawn(true);
 	}
 
-	public void draw() {	
+	public void draw() {		
 		background(0);
 		fill(204, 102, 0);
-		box(20, 30, 40);		
+		box(20, 30, 40);  		
+		// /**
+		
 		// Save the current model view matrix
 		pushMatrix();
 		// Multiply matrix to get in the frame coordinate system.
 		// applyMatrix(scene.interactiveFrame().matrix()) is possible but inefficient 
 		scene.interactiveFrame().applyTransformation();//very efficient
 		// Draw an axis using the Scene static function
-		scene.drawAxis(20);				
+		scene.drawAxis(20);
+		
+		// */
+		
+		// /**
 		// Draw a second box
 		if (scene.interactiveFrame().grabsMouse()) {
 			fill(255, 0, 0);
@@ -49,11 +58,42 @@ public class FrameInteraction extends PApplet {
 		else {
 			fill(0,0,255);
 			box(10, 15, 20);
-		}			
-		popMatrix();		
-	}	
+		}	
+		// */	
+		
+		popMatrix();	
+		
+		int c = color(120,50,87);
+		PVector center = new PVector(30,30);
+		//scene.drawFilledCircle(20, c, center, 15);		
+		scene.drawFilledSquare(c, center, 15);
+		
+		/**
+		stroke(255);
+		scene.beginScreenDrawing();
+		PVector vec1 = scene.screenCoordinates(8,8);
+		PVector vec2 = scene.screenCoordinates(width,height);
+		line(vec1.x, vec1.y, vec1.z, vec2.x, vec2.y, vec2.z);
+		scene.endScreenDrawing();
+		// */
+	}
+	
+	/**
+	public void keyPressed() {
+		if((key == 'u')) {
+			scene.setAvatar(iFrame);		
+			//for (String s: scene.keys())
+				//print(s);
+		}		
+		if (key == 'U') {
+			scene.unsetAvatar();
+			//for (String s: scene.keys())
+				//print(s);
+		}
+	}
+	*/
 		
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "basic.FrameInteraction" });
+		PApplet.main(new String[] { "--present", "basic.FrameInteractionMod" });
 	}
 }
