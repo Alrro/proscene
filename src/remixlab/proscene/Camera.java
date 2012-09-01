@@ -28,8 +28,6 @@ package remixlab.proscene;
 import processing.core.*;
 import processing.opengl.*;
 
-import javax.media.opengl.GL;
-import javax.media.opengl.GL2;
 import java.nio.FloatBuffer;
 
 import java.util.ArrayList;
