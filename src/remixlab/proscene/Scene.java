@@ -40,6 +40,7 @@ import remixlab.remixcam.core.AbstractScene;
 import remixlab.remixcam.core.Camera;
 import remixlab.remixcam.core.InteractiveDrivableFrame;
 import remixlab.remixcam.core.InteractiveFrame;
+import remixlab.remixcam.core.Pinhole;
 import remixlab.remixcam.core.ViewWindow;
 //import remixlab.remixcam.core.SimpleFrame;
 //import remixlab.remixcam.core.KeyFrameInterpolator;
@@ -299,10 +300,10 @@ public class Scene extends AbstractScene implements PConstants {
 		avatarIsInteractiveAvatarFrame = false;// also init in setAvatar, but we
 		// need it here to properly init the camera
 		if( is3D() )
-			viewport = new Camera(this);
+			ph = new Camera(this);
 		else
-			viewport = new ViewWindow(this);
-		setViewPort(viewPort());//calls showAll();
+			ph = new ViewWindow(this);
+		setViewPort(pinhole());//calls showAll();
 		//TODO hack
 		if(is2D())
 			viewWindow().setUpVector(new Vector3D(0,-1,0));
@@ -486,10 +487,10 @@ public class Scene extends AbstractScene implements PConstants {
 		if (frameSelectionHintIsDrawn())
 			drawSelectionHints();
 		if (cameraPathsAreDrawn()) {
-			camera().drawAllPaths();
+			pinhole().drawAllPaths();
 			drawCameraPathSelectionHints();
 		} else {
-			camera().hideAllPaths();
+			pinhole().hideAllPaths();
 		}
 		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)
 			drawZoomWindowHint();
@@ -498,7 +499,7 @@ public class Scene extends AbstractScene implements PConstants {
 		if (arpFlag) 
 			drawArcballReferencePointHint();
 		if (pupFlag) {
-			Vector3D v = camera().projectedCoordinatesOf(pupVec);
+			Vector3D v = pinhole().projectedCoordinatesOf(pupVec);
 			pg().pushStyle();		
 			pg().stroke(255);
 			pg().strokeWeight(3);
@@ -512,7 +513,7 @@ public class Scene extends AbstractScene implements PConstants {
 	 * method. This method is registered at the PApplet and hence you don't need
 	 * to call it.
 	 * <p>
-	 * Sets the processing camera parameters from {@link #camera()} and updates
+	 * Sets the processing camera parameters from {@link #pinhole()} and updates
 	 * the frustum planes equations if {@link #enableFrustumEquationsUpdate(boolean)}
 	 * has been set to {@code true}.
 	 */
@@ -527,21 +528,21 @@ public class Scene extends AbstractScene implements PConstants {
 			if ((width != pg().width) || (height != pg().height)) {
 				width = pg().width;
 				height = pg().height;				
-				camera().setScreenWidthAndHeight(width, height);				
+				pinhole().setScreenWidthAndHeight(width, height);				
 			} else {
 				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-						&& (!camera().anyInterpolationIsStarted())) {
-					camera().setPosition(avatar().cameraPosition());
-					camera().setUpVector(avatar().upVector());
-					camera().lookAt(avatar().target());
+						&& (!pinhole().anyInterpolationIsStarted())) {
+					pinhole().setPosition(avatar().cameraPosition());
+					pinhole().setUpVector(avatar().upVector());
+					pinhole().lookAt(avatar().target());
 				}
 			}
 		} else {
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-					&& (!camera().anyInterpolationIsStarted())) {
-				camera().setPosition(avatar().cameraPosition());
-				camera().setUpVector(avatar().upVector());
-				camera().lookAt(avatar().target());
+					&& (!pinhole().anyInterpolationIsStarted())) {
+				pinhole().setPosition(avatar().cameraPosition());
+				pinhole().setUpVector(avatar().upVector());
+				pinhole().lookAt(avatar().target());
 			}
 		}
 
@@ -586,10 +587,10 @@ public class Scene extends AbstractScene implements PConstants {
 			beginOffScreenDrawingCalls++;
 						
 			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-					&& (!camera().anyInterpolationIsStarted())) {
-				camera().setPosition(avatar().cameraPosition());
-				camera().setUpVector(avatar().upVector());
-				camera().lookAt(avatar().target());
+					&& (!pinhole().anyInterpolationIsStarted())) {
+				pinhole().setPosition(avatar().cameraPosition());
+				pinhole().setUpVector(avatar().upVector());
+				pinhole().lookAt(avatar().target());
 			}
 			
 			preDraw();	
@@ -741,7 +742,7 @@ public class Scene extends AbstractScene implements PConstants {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (!iF.isInCameraPath()) {
-					Vector3D center = camera().projectedCoordinatesOf(iF.position());
+					Vector3D center = pinhole().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse()) {						
 						pg().pushStyle();
 					  //pg3d.stroke(mouseGrabberOnSelectionHintColor());
@@ -769,7 +770,7 @@ public class Scene extends AbstractScene implements PConstants {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
 				if (iF.isInCameraPath()) {
-					Vector3D center = camera().projectedCoordinatesOf(iF.position());
+					Vector3D center = pinhole().projectedCoordinatesOf(iF.position());
 					if (mg.grabsMouse()) {
 						pg().pushStyle();						
 					  //pg3d.stroke(mouseGrabberCameraPathOnSelectionHintColor());
@@ -980,28 +981,35 @@ public class Scene extends AbstractScene implements PConstants {
 				setCameraType(Camera.Type.PERSPECTIVE);
 				if (avatarIsInteractiveDrivableFrame)
 					((InteractiveDrivableFrame) avatar()).removeFromMouseGrabberPool();
-				camera().frame().updateFlyUpVector();// ?
-				camera().frame().stopSpinning();
+				pinhole().frame().updateFlyUpVector();// ?
+				pinhole().frame().stopSpinning();
 				if (avatarIsInteractiveDrivableFrame) {
 					((InteractiveDrivableFrame) (avatar())).updateFlyUpVector();
 					((InteractiveDrivableFrame) (avatar())).stopSpinning();
 				}
 				// perform small animation ;)
-				if (camera().anyInterpolationIsStarted())
-					camera().stopAllInterpolations();
-				Camera cm = camera().get();
+				if (pinhole().anyInterpolationIsStarted())
+					pinhole().stopAllInterpolations();
+				// /**
+				// TODO should Pinhole be non-abstract?
+				Pinhole cm;
+				if(is3D())
+				  cm = camera().get();
+				else
+					cm = viewWindow().get();
+				// */
 				cm.setPosition(avatar().cameraPosition());
 				cm.setUpVector(avatar().upVector());
 				cm.lookAt(avatar().target());
-				camera().interpolateTo(cm.frame());
+				pinhole().interpolateTo(cm.frame());
 				currentCameraProfile = camProfile;
 			} else {
-				camera().frame().updateFlyUpVector();
-				camera().frame().stopSpinning();
+				pinhole().frame().updateFlyUpVector();
+				pinhole().frame().stopSpinning();
 				
 				if(currentCameraProfile != null)
 					if (currentCameraProfile.mode() == CameraProfile.Mode.THIRD_PERSON)
-						camera().interpolateToFitScene();
+						pinhole().interpolateToFitScene();
         
 				currentCameraProfile = camProfile;        
 				
@@ -1828,7 +1836,7 @@ public class Scene extends AbstractScene implements PConstants {
 		float[] depth = new float[1];		
 				
 		PGL pgl = pggl().beginPGL();
-		pgl.readPixels((int) pixel.x, (camera().screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
+		pgl.readPixels((int) pixel.x, (pinhole().screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
 		pggl().endPGL();
 		
 		Vector3D point = new Vector3D((int) pixel.x, (int) pixel.y, depth[0]);
