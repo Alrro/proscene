@@ -11,9 +11,9 @@ public class Basic extends PApplet {
 	PFont font;
 
 	public void setup() {
-		//size(640, 360, JAVA2D);
-		size(640, 360, P2D);
-		// /**
+		size(640, 360, JAVA2D);
+		//size(640, 360, P2D);
+		/**
 		font = createFont("Arial", 16);
 		textFont(font, 16);
 		// */
@@ -26,13 +26,13 @@ public class Basic extends PApplet {
 		background(150);
 		rect(0, 0, 55, 55);
 		
-		// /**
+		/**
 		scene.beginScreenDrawing();
 		text("Hello Pierre", 5, 17);
 		scene.endScreenDrawing();
 		// */
 		
-		// /**
+		/**
 		scene.beginScreenDrawing();
 		pushStyle();
 		stroke(255, 255, 255);

@@ -18,6 +18,8 @@ public class ThirdPerson extends PApplet {
 		scene.setRadius(400);
 		scene.setGridIsDrawn(false);
 		scene.setAxisIsDrawn(false);
+		// press 'f' to display frame selection hints
+		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		
 		avatar = new InteractiveAvatarFrame(scene);
 		avatar.setTrackingDistance(300);
