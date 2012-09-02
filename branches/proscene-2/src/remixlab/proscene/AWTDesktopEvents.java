@@ -159,7 +159,7 @@ public class AWTDesktopEvents {
 		if (!e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown()	&& !e.isShiftDown()) {
 			Integer path = scene.path(e.getKeyChar());
 			if (path != null) {
-				scene.viewPort().playPath(path);
+				scene.pinhole().playPath(path);
 				return true;
 			}
 		}
@@ -211,7 +211,7 @@ public class AWTDesktopEvents {
 		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
 			if (path != null) {
-				scene.viewPort().addKeyFrameToPath(path);
+				scene.pinhole().addKeyFrameToPath(path);
 				return true;
 			}
 		}
@@ -222,7 +222,7 @@ public class AWTDesktopEvents {
 		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
 			if (path != null) {
-				scene.viewPort().deletePath(path);
+				scene.pinhole().deletePath(path);
 				return true;
 			}
 		}		
@@ -303,7 +303,7 @@ public class AWTDesktopEvents {
 		Button button = getButton(event);
 		int numberOfClicks = event.getClickCount();
 		if (scene.mouseGrabber() != null)
-			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ button, numberOfClicks, scene.viewPort());
+			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ button, numberOfClicks, scene.pinhole());
 		else {
 			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiersEx(), button, numberOfClicks);
 			if (ca != null)
@@ -320,7 +320,7 @@ public class AWTDesktopEvents {
 		scene.setMouseGrabber(null);
 		if( scene.hasMouseTracking() )
 			for (DeviceGrabbable mg : scene.mouseGrabberPool()) {
-				mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.viewPort());
+				mg.checkIfGrabsMouse(event.getX(), event.getY(), scene.pinhole());
 				if (mg.grabsMouse())
 					scene.setMouseGrabber(mg);
 			}
@@ -331,7 +331,7 @@ public class AWTDesktopEvents {
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} (if any), or the
 	 * {@link remixlab.proscene.Scene#interactiveFrame()}
 	 * (if @link remixlab.proscene.Scene#interactiveFrameIsDrawn()), or the
-	 * {@link remixlab.proscene.Scene#viewPort()} (checks are performed in that order).
+	 * {@link remixlab.proscene.Scene#pinhole()} (checks are performed in that order).
 	 * <p>
 	 * Mouse displacements are interpreted according to the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse bindings.
@@ -346,14 +346,14 @@ public class AWTDesktopEvents {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
 				iFrame.startAction(scene.currentCameraProfile().frameMouseAction(e), scene.drawIsConstrained());
-				iFrame.mousePressed(new Point(event.getX(), event.getY()), scene.viewPort());
+				iFrame.mousePressed(new Point(event.getX(), event.getY()), scene.pinhole());
 			} else
-				scene.mouseGrabber().mousePressed(new Point(event.getX(), event.getY()), scene.viewPort());
+				scene.mouseGrabber().mousePressed(new Point(event.getX(), event.getY()), scene.pinhole());
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameMouseAction(e), scene.drawIsConstrained());
-			scene.interactiveFrame().mousePressed(new Point(event.getX(), event.getY()), scene.viewPort());
+			scene.interactiveFrame().mousePressed(new Point(event.getX(), event.getY()), scene.pinhole());
 			return;
 		}
 		camMouseAction = scene.currentCameraProfile().cameraMouseAction(e);
@@ -363,14 +363,14 @@ public class AWTDesktopEvents {
 		}
 		if (camMouseAction == MouseAction.SCREEN_ROTATE)
 			fCorner.set(event.getX(), event.getY());
-		scene.viewPort().frame().startAction(camMouseAction, scene.drawIsConstrained());
-		scene.viewPort().frame().mousePressed(new Point(event.getX(), event.getY()), scene.viewPort());
+		scene.pinhole().frame().startAction(camMouseAction, scene.drawIsConstrained());
+		scene.pinhole().frame().mousePressed(new Point(event.getX(), event.getY()), scene.pinhole());
 	}
 	
 	/**
 	 * The mouse dragged event is sent to the {@link remixlab.proscene.Scene#mouseGrabber()}
 	 * or the {@link remixlab.proscene.Scene#interactiveFrame()}, or to the
-	 * {@link remixlab.proscene.Scene#viewPort()}, according to the action started at
+	 * {@link remixlab.proscene.Scene#pinhole()}, according to the action started at
 	 * {@link #awtMousePressed(MouseEvent)}.
 	 * <p>
 	 * Mouse displacements are interpreted according to the
@@ -382,18 +382,18 @@ public class AWTDesktopEvents {
 	public void awtMouseDragged(MouseEvent e) {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		if (scene.mouseGrabber() != null) {
-			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.viewPort());
+			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.pinhole());
 			if (scene.mouseGrabber().grabsMouse())
 				if (scene.mouseGrabberIsAnIFrame) //covers also the case when mouseGrabberIsADrivableFrame
-					((InteractiveFrame) scene.mouseGrabber()).mouseDragged(new Point(event.getX(), event.getY()), scene.viewPort());	
+					((InteractiveFrame) scene.mouseGrabber()).mouseDragged(new Point(event.getX(), event.getY()), scene.pinhole());	
 				else
-					scene.mouseGrabber().mouseDragged(new Point(event.getX(), event.getY()), scene.viewPort());
+					scene.mouseGrabber().mouseDragged(new Point(event.getX(), event.getY()), scene.pinhole());
 			else
 				scene.setMouseGrabber(null);
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-		  scene.interactiveFrame().mouseDragged(new Point(event.getX(), event.getY()), scene.viewPort());
+		  scene.interactiveFrame().mouseDragged(new Point(event.getX(), event.getY()), scene.pinhole());
 			return;
 		}
 		if (camMouseAction == MouseAction.ZOOM_ON_REGION)
@@ -401,7 +401,7 @@ public class AWTDesktopEvents {
 		else {
 			if (camMouseAction == MouseAction.SCREEN_ROTATE)
 				fCorner.set(event.getX(), event.getY());
-			scene.viewPort().frame().mouseDragged(new Point(event.getX(), event.getY()), scene.viewPort());
+			scene.pinhole().frame().mouseDragged(new Point(event.getX(), event.getY()), scene.pinhole());
 		}
 	}
 	
@@ -409,7 +409,7 @@ public class AWTDesktopEvents {
 	 * The mouse released event (which ends a mouse action) is sent to the
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} or the
 	 * {@link remixlab.proscene.Scene#interactiveFrame()}, or to the
-	 * {@link remixlab.proscene.Scene#viewPort()}, according to the action started at
+	 * {@link remixlab.proscene.Scene#pinhole()}, according to the action started at
 	 * {@link #awtMousePressed(MouseEvent)}.
 	 * <p>
 	 * Mouse displacements are interpreted according to the
@@ -422,17 +422,17 @@ public class AWTDesktopEvents {
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) //covers also the case when mouseGrabberIsADrivableFrame
-				((InteractiveFrame) scene.mouseGrabber()).mouseReleased(new Point(event.getX(), event.getY()), scene.viewPort());
+				((InteractiveFrame) scene.mouseGrabber()).mouseReleased(new Point(event.getX(), event.getY()), scene.pinhole());
 			else
-				scene.mouseGrabber().mouseReleased(new Point(event.getX(), event.getY()), scene.viewPort());
-			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.viewPort());
+				scene.mouseGrabber().mouseReleased(new Point(event.getX(), event.getY()), scene.pinhole());
+			scene.mouseGrabber().checkIfGrabsMouse(event.getX(), event.getY(), scene.pinhole());
 			if (!(scene.mouseGrabber().grabsMouse()))
 				scene.setMouseGrabber(null);
 			// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
-			scene.interactiveFrame().mouseReleased(new Point(event.getX(), event.getY()), scene.viewPort());
+			scene.interactiveFrame().mouseReleased(new Point(event.getX(), event.getY()), scene.pinhole());
 			// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 			return;
 		}
@@ -441,7 +441,7 @@ public class AWTDesktopEvents {
 				|| (camMouseAction == MouseAction.SCREEN_ROTATE)
 				|| (camMouseAction == MouseAction.SCREEN_TRANSLATE))
 			lCorner.set(event.getX(), event.getY());
-		scene.viewPort().frame().mouseReleased(new Point(event.getX(), event.getY()), scene.viewPort());
+		scene.pinhole().frame().mouseReleased(new Point(event.getX(), event.getY()), scene.pinhole());
 		camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		// iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 	}
@@ -453,7 +453,7 @@ public class AWTDesktopEvents {
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} (if any), or the
 	 * {@link remixlab.proscene.Scene#interactiveFrame()}
 	 * (if @link remixlab.proscene.Scene#interactiveFrameIsDrawn()), or the
-	 * {@link remixlab.proscene.Scene#viewPort()} (checks are performed in that order).
+	 * {@link remixlab.proscene.Scene#pinhole()} (checks are performed in that order).
 	 * <p>
 	 * Mouse wheel rotation is interpreted according to the
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse wheel bindings.
@@ -467,18 +467,18 @@ public class AWTDesktopEvents {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
 				iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
-				iFrame.mouseWheelMoved(event.getWheelRotation(), scene.viewPort());				
+				iFrame.mouseWheelMoved(event.getWheelRotation(), scene.pinhole());				
 			} else
-				scene.mouseGrabber().mouseWheelMoved(event.getWheelRotation(), scene.viewPort());
+				scene.mouseGrabber().mouseWheelMoved(event.getWheelRotation(), scene.pinhole());
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
-			scene.interactiveFrame().mouseWheelMoved(event.getWheelRotation(), scene.viewPort());
+			scene.interactiveFrame().mouseWheelMoved(event.getWheelRotation(), scene.pinhole());
 			return;
 		}
-		scene.viewPort().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
-		scene.viewPort().frame().mouseWheelMoved(event.getWheelRotation(), scene.viewPort());
+		scene.pinhole().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
+		scene.pinhole().frame().mouseWheelMoved(event.getWheelRotation(), scene.pinhole());
 	}
 }
 
