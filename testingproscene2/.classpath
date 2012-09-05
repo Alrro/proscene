@@ -6,6 +6,6 @@
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/core.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/jogl-all.jar"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/processing-2a8/proscene.jar" sourcepath="/proscene-2"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/proscene.jar" sourcepath="/proscene-2"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

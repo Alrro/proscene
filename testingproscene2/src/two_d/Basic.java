@@ -1,9 +1,8 @@
 package two_d;
 
-import processing.core.PApplet;
-import processing.core.PFont;
-import processing.opengl.*;
+import processing.core.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.geom.*;
 
 @SuppressWarnings("serial")
 public class Basic extends PApplet {	
@@ -11,15 +10,20 @@ public class Basic extends PApplet {
 	PFont font;
 
 	public void setup() {
-		size(640, 360, JAVA2D);
-		//size(640, 360, P2D);
+		//size(640, 360, JAVA2D);
+		size(640, 360, P2D);
 		/**
 		font = createFont("Arial", 16);
 		textFont(font, 16);
 		// */
 		scene = new Scene(this);
 		//scene.camera().centerScene();
-		scene.showAll();		
+		//scene.showAll();	
+		hint(DISABLE_STROKE_PERSPECTIVE);
+		
+		Quaternion q = new Quaternion();
+		println("axis: " + q.axis()					
+		          + " angle: " + q.angle() );
 	}	
 
 	public void draw() {
@@ -74,8 +78,9 @@ public class Basic extends PApplet {
 	
 	public void keyPressed() {
 		if(key == 'u' || key == 'U') {			
-			println("axis: " + scene.camera().frame().orientation().axis()					
-		          + " angle: " + scene.camera().frame().orientation().angle() );
+			println("axis: " + scene.pinhole().frame().orientation().axis()					
+		          + " angle: " + scene.pinhole().frame().orientation().angle() 
+		          + " position: " + scene.pinhole().position());
 		}			
 	}
 	
