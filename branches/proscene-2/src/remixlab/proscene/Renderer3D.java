@@ -35,7 +35,6 @@ public class Renderer3D extends Renderer {
 	public void bindMatrices() {
 		setProjectionMatrix();
 		setModelViewMatrix();
-		scene.camera().cacheMatrices();
 	}
 	
 	/**

@@ -358,12 +358,27 @@ public class Renderer implements Renderable, PConstants {
 
 	@Override
 	public void drawScreenRotateLineHint() {
-	//TODO implement 2D case
+		float p1x = (float) ((Scene)scene).dE.fCorner.getX();
+		float p1y = (float) ((Scene)scene).dE.fCorner.getY();
+		Vector3D p2 = scene.pinhole().projectedCoordinatesOf(scene.arcballReferencePoint());
+		scene.beginScreenDrawing();
+		pg.pushStyle();
+		pg.stroke(255, 255, 255);
+		pg.strokeWeight(2);
+		pg.noFill();
+		pg.line(p2.x(), p2.y(), p1x, p1y);
+		pg.popStyle();
+		scene.endScreenDrawing();
 	}
 
 	@Override
 	public void drawArcballReferencePointHint() {
-	//TODO implement 2D case
+		Vector3D p = scene.pinhole().projectedCoordinatesOf(scene.arcballReferencePoint());
+		pg.pushStyle();
+		pg.stroke(255);
+		pg.strokeWeight(3);
+		scene.drawCross(p.vec[0], p.vec[1]);
+		pg.popStyle();
 	}
 
 	@Override

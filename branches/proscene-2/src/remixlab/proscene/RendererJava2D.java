@@ -158,48 +158,6 @@ public class RendererJava2D extends Renderer {
 	}
 
 	@Override
-	public void drawZoomWindowHint() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawScreenRotateLineHint() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawArcballReferencePointHint() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawCross(float px, float py, float size) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawFilledCircle(int subdivisions, Vector3D center, float radius) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawFilledSquare(Vector3D center, float edge) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void drawShooterTarget(Vector3D center, float length) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void drawPath(List<SimpleFrame> path, int mask, int nbFrames,
 			int nbSteps, float scale) {
 		// TODO Auto-generated method stub

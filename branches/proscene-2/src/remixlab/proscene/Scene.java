@@ -495,8 +495,8 @@ public class Scene extends AbstractScene implements PConstants {
 		} else {
 			pinhole().hideAllPaths();
 		}
-		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)
-			drawZoomWindowHint();
+		if (dE.camMouseAction == MouseAction.ZOOM_ON_REGION)			
+			drawZoomWindowHint();		
 		if (dE.camMouseAction == MouseAction.SCREEN_ROTATE)
 			drawScreenRotateLineHint();
 		if (arpFlag) 
