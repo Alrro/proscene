@@ -609,8 +609,8 @@ public class Scene implements PConstants {
 		// E X C E P T I O N H A N D L I N G
 		startCoordCalls = 0;
 
-		parent.registerPre(this);
-		parent.registerDraw(this);
+		parent.registerMethod("pre", this);
+		parent.registerMethod("draw", this);
 		// parent.registerPost(this);
 		enableKeyboardHandling();
 		enableMouseHandling();
@@ -3394,12 +3394,6 @@ public class Scene implements PConstants {
 			toggleAnimation();
 			break;
 		case ARP_FROM_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else
-			*/
 			if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				Timer timer=new Timer();
@@ -3451,12 +3445,6 @@ public class Scene implements PConstants {
 			return;
 		switch (id) {
 		case INTERPOLATE_TO_ZOOM_ON_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else {
-			*/
 				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
 				if (wP.found) {
 					pupVec = wP.point;
@@ -3836,13 +3824,6 @@ public class Scene implements PConstants {
 		case NO_CLICK_ACTION:
 			break;
 		case ZOOM_ON_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet
-						.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else {
-			*/
 				Camera.WorldPoint wP = interpolateToZoomOnPixel(new Point(parent.mouseX, parent.mouseY));
 				if (wP.found) {
 					pupVec = wP.point;
@@ -3861,11 +3842,6 @@ public class Scene implements PConstants {
 			camera().interpolateToFitScene();
 			break;
 		case ARP_FROM_PIXEL:
-			/**
-			if (Camera.class == camera().getClass())
-				PApplet.println("Override Camera.pointUnderPixel calling gl.glReadPixels() in your own OpenGL Camera derived class. "
-								+ "See the Point Under Pixel example!");
-			else */
 			if (setArcballReferencePointFromPixel(new Point(parent.mouseX, parent.mouseY))) {
 				arpFlag = true;
 				Timer timer=new Timer();
