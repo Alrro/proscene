@@ -12,14 +12,9 @@ public class Basic extends PApplet {
 	public void setup() {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
-	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
-	  ///**
-	  scene.camera().setPosition(new Vector3D(0,0,-100));
-	  scene.camera().lookAt(scene.camera().sceneCenter());
-	  scene.camera().setUpVector(new Vector3D(0,-1,0));
-	  // */
+	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);	  
 	  scene.showAll();
-	  hint(DISABLE_STROKE_PERSPECTIVE);
+	  //hint(DISABLE_STROKE_PERSPECTIVE);
 	}	
 
 	public void draw() {
@@ -29,13 +24,18 @@ public class Basic extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if(key == 'x' || key == 'X')
-			this.noCursor();
-		if(key == 'y' || key == 'Y')
-			this.cursor();
+		if(key == 'x' || key == 'X') {
+			scene.camera().setPosition(new Vector3D(0,0,-100));
+			scene.camera().lookAt(scene.camera().sceneCenter());
+			scene.camera().setUpVector(new Vector3D(0,-1,0));
+		}
 		if(key == 'u' || key == 'U') {			
 			println("axis: " + scene.pinhole().frame().orientation().axis()					
 		          + " angle: " + scene.pinhole().frame().orientation().angle() );
+		}
+		if(key == 'z' || key == 'Z') {
+			Vector3D v = scene.pinhole().projectedCoordinatesOf(new Vector3D(0,0,0));
+			println(v);
 		}
 	}	
 	

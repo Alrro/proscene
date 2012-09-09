@@ -3,6 +3,7 @@ package two_d;
 import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.geom.*;
+import remixlab.remixcam.core.*;
 
 @SuppressWarnings("serial")
 public class Basic extends PApplet {	
@@ -12,6 +13,7 @@ public class Basic extends PApplet {
 	public void setup() {
 		//size(640, 360, JAVA2D);
 		size(640, 360, P2D);
+		//size(360, 640, P2D);
 		/**
 		font = createFont("Arial", 16);
 		textFont(font, 16);
@@ -28,7 +30,8 @@ public class Basic extends PApplet {
 
 	public void draw() {
 		background(150);
-		rect(0, 0, 55, 55);
+		ellipse(0, 0, 40, 40);
+		rect(50, 50, 30, 30);
 		
 		/**
 		scene.beginScreenDrawing();
@@ -77,11 +80,23 @@ public class Basic extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if(key == 'u' || key == 'U') {			
-			println("axis: " + scene.pinhole().frame().orientation().axis()					
-		          + " angle: " + scene.pinhole().frame().orientation().angle() 
-		          + " position: " + scene.pinhole().position());
-		}			
+		if(key == 'u' || key == 'U') {
+			scene.viewWindow().interpolateToZoomOnPixel(new Point(mouseX, mouseY));
+		}
+		if(key == 'x' || key == 'X') {
+			Vector3D v = scene.pinhole().projectedCoordinatesOf(new Vector3D(0,0,0));
+			println(v);
+		}
+		if(key == 'v' || key == 'V') {
+			Vector3D v = scene.pinhole().unprojectedCoordinatesOf(new Vector3D(width/2,height/2,0.5f));
+			println(v);
+		}
+		if(key == 'z' || key == 'Z') {
+			//scene.viewWindow().fitCircle(new Vector3D(0,0), 20);
+			scene.viewWindow().fitCircle(new Vector3D(65,65), 15);
+		}
+		if(key == 'y' || key == 'Y')
+			scene.viewWindow().flip();
 	}
 	
 	public static void main(String args[]) {
