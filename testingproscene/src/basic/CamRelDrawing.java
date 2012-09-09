@@ -7,6 +7,7 @@ import remixlab.proscene.*;
 public class CamRelDrawing extends PApplet {
 	Scene scene;
 	InteractiveFrame iFrame;
+	LocalConstraint constraint;
 
 	public void setup() {
 	  size(640, 360, P3D);		
@@ -14,7 +15,7 @@ public class CamRelDrawing extends PApplet {
 	  iFrame = new InteractiveFrame(scene);
 	  iFrame.setReferenceFrame(scene.camera().frame());
 	  iFrame.translate(40, 40, -180);
-	  LocalConstraint constraint = new LocalConstraint();
+	  constraint = new LocalConstraint();
 	  constraint.setTranslationConstraintType(AxisPlaneConstraint.Type.FORBIDDEN);
 	  iFrame.setConstraint(constraint);
 	  scene.setInteractiveFrame(iFrame);
