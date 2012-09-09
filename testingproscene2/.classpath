@@ -2,7 +2,7 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar" sourcepath="/remixcam"/>
+	<classpathentry kind="lib" path="/home/pierre/Documents/sketchbook-2.0.b2/libraries/remixcam/library/remixcam.jar" sourcepath="/remixcam"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/core.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/gluegen-rt.jar"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/processing-2head/jar/jogl-all.jar"/>
