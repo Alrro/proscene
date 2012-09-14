@@ -2,17 +2,17 @@ package vfcgl;
 import processing.core.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
 import remixlab.proscene.*;
 
 public class AABox {
 	Scene scene;
-	SimpleFrame frame;
+	Frame3D frame;
 	float w, h, d, halfW, halfH, halfD, radius;
 	int r, g, b;
 
-	AABox() {
-		frame = new SimpleFrame();
+	AABox(Scene scn) {
+		scene = scn;
+		frame = new Frame3D();
 		setSize();
 		setPosition();
 		setColor();

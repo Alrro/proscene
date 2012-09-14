@@ -26,7 +26,7 @@ public class TestVFCGL extends PApplet {
 
 		cajas = new AABox[boxCount];
 		for (int i = 0; i < cajas.length; i++)
-			cajas[i] = new AABox();
+			cajas[i] = new AABox(scene);
 	}
 
 	public void draw() {
