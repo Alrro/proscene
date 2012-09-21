@@ -72,7 +72,7 @@ void draw() {
   // C. Render text instructions.
   scene.beginScreenDrawing();
   if(onScreen)
-    text("Press 'x' handle 3d scene", 5, 17);
+    text("Press 'x' to handle 3d scene", 5, 17);
   else
     text("Press 'x' to begin screen drawing", 5, 17);
   if(additionalInstructions)

@@ -25,7 +25,6 @@ void setup() {
   size(640, 360, P3D);
   myFont = createFont("Arial", 12);
   textFont(myFont);
-  textMode(SCREEN);
 
   scene = new Scene(this);
 
@@ -82,7 +81,9 @@ void draw() {
   fill(204, 102, 0);
   box(20, 30, 50);
   fill(0, 0, 255);
+  scene.beginScreenDrawing();
   displayText();
+  scene.endScreenDrawing();
 }
 
 void displayType(AxisPlaneConstraint.Type type, int x, int y, char c) {
