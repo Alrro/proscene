@@ -26,7 +26,6 @@ void setup() {
   size(640, 360, P3D);
   myFont = createFont("Arial", 12);
   textFont(myFont);
-  textMode(SCREEN);
 
   scene = new Scene(this);
   // press 'i' to switch the interaction between the camera frame and the interactive frame
@@ -100,7 +99,9 @@ void draw() {
   popMatrix();
 
   fill(0, 0, 255);
+  scene.beginScreenDrawing();
   displayText();
+  scene.endScreenDrawing();
 }
 
 void displayType(AxisPlaneConstraint.Type type, int x, int y, char c) {

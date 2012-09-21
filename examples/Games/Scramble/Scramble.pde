@@ -39,7 +39,9 @@ void draw() {
   spotLight(150, 150, 150, scene.camera().position().x, scene.camera().position().y, scene.camera().position().z, 0, 0, -1, 1, 20);
   spotLight(100, 100, 100, scene.camera().position().x, scene.camera().position().y, scene.camera().position().z, 0, 0, 1, 1, 20);
   board.draw();
+  scene.beginScreenDrawing();
   drawText();
+  scene.endScreenDrawing();
 }
 
 public void drawText() {

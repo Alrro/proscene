@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.92)      
+ *                     ProScene (version 1.1.93)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -98,7 +98,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.92";
+	public static final String version = "1.1.93";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -2543,7 +2543,7 @@ public class Scene implements PConstants {
                        + "endScreenDrawing() and they cannot be nested. Check your implementation!");
     startCoordCalls++;
     renderer().hint(DISABLE_DEPTH_TEST);
-    renderer().hint(DISABLE_STROKE_PERSPECTIVE);
+    //renderer().hint(DISABLE_STROKE_PERSPECTIVE);
     renderer().pushProjection();    
     float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
@@ -2568,7 +2568,7 @@ public class Scene implements PConstants {
     renderer().popProjection();
     renderer().popMatrix();
     renderer().hint(ENABLE_DEPTH_TEST);
-    renderer().hint(ENABLE_STROKE_PERSPECTIVE);
+    //renderer().hint(ENABLE_STROKE_PERSPECTIVE);
 	}
 	
 	/**
