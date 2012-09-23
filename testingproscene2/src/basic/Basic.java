@@ -2,6 +2,8 @@ package basic;
 
 import processing.core.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.geom.Quaternion;
+import remixlab.remixcam.geom.VFrame;
 import remixlab.remixcam.geom.Vector3D;
 
 public class Basic extends PApplet {
@@ -30,12 +32,26 @@ public class Basic extends PApplet {
 			scene.camera().setUpVector(new Vector3D(0,-1,0));
 		}
 		if(key == 'u' || key == 'U') {			
-			println("axis: " + scene.pinhole().frame().orientation().axis()					
+			println("axis: " + ( (Quaternion) scene.pinhole().frame().orientation()).axis()					
 		          + " angle: " + scene.pinhole().frame().orientation().angle() );
 		}
 		if(key == 'z' || key == 'Z') {
 			Vector3D v = scene.pinhole().projectedCoordinatesOf(new Vector3D(0,0,0));
 			println(v);
+		}		
+		if(key == 'y' || key == 'Y') {if(scene.is3D())
+				println("scene is 3d");
+			else
+				println("scene is 2d");
+			VFrame tmpFrame = new VFrame(scene.is3D());			
+			println("scene.pinhole().frame().worldMatrix().print():");
+			scene.pinhole().frame().worldMatrix().print();
+			tmpFrame.fromMatrix(scene.pinhole().frame().worldMatrix());
+			println("calling tmpFrame.fromMatrix(scene.pinhole().frame().worldMatrix())...");
+			println("tmpFrame.worldMatrix().print():");
+			tmpFrame.worldMatrix().print();			
+			println("camera angle: " + scene.pinhole().frame().orientation().angle() );
+			println("tmp angle: " + tmpFrame.orientation().angle() );
 		}
 	}	
 	

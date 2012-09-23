@@ -6,13 +6,13 @@ import remixlab.proscene.*;
 
 public class AABox {
 	Scene scene;
-	Frame3D frame;
+	VFrame frame;
 	float w, h, d, halfW, halfH, halfD, radius;
 	int r, g, b;
 
 	AABox(Scene scn) {
 		scene = scn;
-		frame = new Frame3D();
+		frame = new VFrame();
 		setSize();
 		setPosition();
 		setColor();
@@ -115,7 +115,7 @@ public class AABox {
 	}
 
 	public Quaternion getOrientation() {
-		return frame.orientation();
+		return (Quaternion)frame.orientation();
 	}
 
 	public void setColor() {

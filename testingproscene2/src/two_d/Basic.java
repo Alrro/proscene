@@ -9,6 +9,7 @@ import remixlab.remixcam.core.*;
 public class Basic extends PApplet {	
 	Scene scene;
 	PFont font;
+	float angle;	
 
 	public void setup() {
 		//size(640, 360, JAVA2D);
@@ -19,14 +20,33 @@ public class Basic extends PApplet {
 		textFont(font, 16);
 		// */
 		scene = new Scene(this);
+		
+		//scene.viewWindow().flip();
 		//scene.camera().centerScene();
 		//scene.showAll();	
-		hint(DISABLE_STROKE_PERSPECTIVE);
 		
 		Quaternion q = new Quaternion();
 		println("axis: " + q.axis()					
-		          + " angle: " + q.angle() );
+		          + " angle: " + q.angle() );		
+		
+		Vector3D from = new Vector3D(-1,1);
+		Vector3D to = new Vector3D(-1,-1);
+		fromTo(from, to);
+		println("angle between (-1,1) and (-1,-1): " + angle);
+		fromTo(to, from);
+		println("angle between (-1,-1) and (-1,1): " + angle);
 	}	
+	
+	public void fromTo(Vector3D from, Vector3D to) {
+		float fromNorm = from.mag();
+		float toNorm = to.mag();				
+		if ((fromNorm < 1E-10f) || (toNorm < 1E-10f)) {
+			angle = 0;
+		} else {
+			//angle =(float) Math.acos( (double)Vector3D.dot(from, to) / ( fromNorm * toNorm ));
+			angle = (float )Math.atan2( from.x()*to.y() - from.y()*to.x(), from.x()*to.x() + from.y()*to.y() );
+		}
+	}
 
 	public void draw() {
 		background(150);
@@ -95,8 +115,30 @@ public class Basic extends PApplet {
 			//scene.viewWindow().fitCircle(new Vector3D(0,0), 20);
 			scene.viewWindow().fitCircle(new Vector3D(65,65), 15);
 		}
-		if(key == 'y' || key == 'Y')
-			scene.viewWindow().flip();
+		if(key == 'y' || key == 'Y') {
+			//scene.viewWindow().flip();
+			
+			if(scene.is3D())
+				println("scene is 3d");
+			else
+				println("scene is 2d");
+			VFrame tmpFrame = new VFrame(scene.is3D());			
+			println("scene.pinhole().frame().worldMatrix().print():");
+			scene.pinhole().frame().worldMatrix().print();
+			tmpFrame.fromMatrix(scene.pinhole().frame().worldMatrix());
+			println("calling tmpFrame.fromMatrix(scene.pinhole().frame().worldMatrix())...");
+			println("tmpFrame.worldMatrix().print():");
+			tmpFrame.worldMatrix().print();
+			println("camera angle: " + scene.pinhole().frame().orientation().angle() );
+			println("tmp angle: " + tmpFrame.orientation().angle() );
+		}
+		if(key == 'q' || key == 'Q') {
+			println("View Matrix:");
+			scene.pinhole().getViewMatrix().print();
+			println("Projection Matrix:");
+			scene.pinhole().getProjectionMatrix().print();
+			println("camera angle: " + scene.viewWindow().frame().orientation().angle());
+		}
 	}
 	
 	public static void main(String args[]) {

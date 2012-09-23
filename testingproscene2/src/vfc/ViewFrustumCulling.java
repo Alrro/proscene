@@ -37,7 +37,7 @@ public class ViewFrustumCulling extends PApplet {
 		handleMouse();
 	}
 
-	public void draw() {
+	public void draw() {		
 		handleMouse();
 		canvas.beginDraw();
 		scene.beginDraw();
@@ -73,12 +73,6 @@ public class ViewFrustumCulling extends PApplet {
 			scene.disableKeyboardHandling();
 			auxScene.enableMouseHandling();
 			auxScene.enableKeyboardHandling();			
-		}
-	}
-
-	public void keyPressed() {
-		if(key == 'u' || key== 'U' ) {
-			scene.camera().frame().worldMatrix().print();
 		}
 	}
 }

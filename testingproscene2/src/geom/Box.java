@@ -87,7 +87,7 @@ public class Box {
 	}
 	
 	public Quaternion getOrientation() {
-		return iFrame.orientation();
+		return (Quaternion)iFrame.orientation();
 	}
 	
 	public void setOrientation(Vector3D v) {

@@ -7,7 +7,6 @@ import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 
 public class FrameInteraction extends PApplet {	
-
 	Scene scene;
 
 	public void setup() {

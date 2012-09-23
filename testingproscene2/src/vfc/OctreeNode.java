@@ -2,7 +2,6 @@ package vfc;
 
 import processing.core.*;
 import processing.opengl.*;
-import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 
@@ -18,7 +17,6 @@ public class OctreeNode {
 	}
 
 	public void draw(PGraphicsOpenGL pg3d) {
-		// pg3d.stroke(color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
 		pg3d.stroke(pg3d.color(0.3f*level*255, 0.2f*255, (1.0f-0.3f*level)*255));
 		pg3d.strokeWeight(level + 1);
 
@@ -63,9 +61,7 @@ public class OctreeNode {
 		Vector3D middle = Vector3D.mult(Vector3D.add(p1, p2), 1 / 2.0f);
 		for (int i = 0; i < 8; ++i) {
 			// point in one of the 8 box corners
-			Vector3D point = new Vector3D(((i & 4) != 0) ? p1.x() : p2.x(),
-					((i & 2) != 0) ? p1.y() : p2.y(), ((i & 1) != 0) ? p1.z()
-							: p2.z());
+			Vector3D point = new Vector3D(((i & 4) != 0) ? p1.x() : p2.x(), ((i & 2) != 0) ? p1.y() : p2.y(), ((i & 1) != 0) ? p1.z() : p2.z());			
 			if (level > 0) {
 				child[i] = new OctreeNode(point, middle);
 				child[i].buildBoxHierarchy(level - 1);
