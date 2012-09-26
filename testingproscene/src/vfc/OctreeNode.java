@@ -16,8 +16,7 @@ public class OctreeNode {
 	}
 
 	public void draw(PGraphicsOpenGL pg3d) {
-		pg3d.stroke(pg3d.color(0.3f * level * 255, 0.2f * 255,
-				(1.0f - 0.3f * level) * 255));
+		pg3d.stroke(pg3d.color(0.3f * level * 255, 0.2f * 255, (1.0f - 0.3f * level) * 255));
 		pg3d.strokeWeight(level + 1);
 
 		pg3d.beginShape();
@@ -61,8 +60,7 @@ public class OctreeNode {
 		PVector middle = PVector.mult(PVector.add(p1, p2), 1 / 2.0f);
 		for (int i = 0; i < 8; ++i) {
 			// point in one of the 8 box corners
-			PVector point = new PVector(((i & 4) != 0) ? p1.x : p2.x,
-					((i & 2) != 0) ? p1.y : p2.y, ((i & 1) != 0) ? p1.z : p2.z);
+			PVector point = new PVector(((i & 4) != 0) ? p1.x : p2.x, ((i & 2) != 0) ? p1.y : p2.y, ((i & 1) != 0) ? p1.z : p2.z);
 			if (level > 0) {
 				child[i] = new OctreeNode(point, middle);
 				child[i].buildBoxHierarchy(level - 1);

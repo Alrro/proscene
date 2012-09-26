@@ -4,6 +4,7 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 
+@SuppressWarnings("serial")
 public class ViewFrustumCulling extends PApplet {
 	OctreeNode Root;
 	Scene scene, auxScene;
@@ -56,7 +57,7 @@ public class ViewFrustumCulling extends PApplet {
 		image(auxCanvas, auxScene.upperLeftCorner.x, auxScene.upperLeftCorner.y);
 	}
 
-	void handleMouse() {
+	public void handleMouse() {
 		if (mouseY < 360) {
 			scene.enableMouseHandling();
 			scene.enableKeyboardHandling();
@@ -69,5 +70,4 @@ public class ViewFrustumCulling extends PApplet {
 			auxScene.enableKeyboardHandling();
 		}
 	}
-
 }
