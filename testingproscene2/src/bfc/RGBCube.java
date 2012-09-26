@@ -44,7 +44,7 @@ public class RGBCube extends PApplet {
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		// enable computation of the frustum planes equations (disabled by
 		// default)
-		// scene.enableFrustumEquationsUpdate();
+		//scene.enableFrustumEquationsUpdate();
 		scene.setGridIsDrawn(false);
 		scene.addDrawHandler(this, "mainDrawing");
 
@@ -117,7 +117,11 @@ public class RGBCube extends PApplet {
 
 	public void auxiliarDrawing(Scene s) {
 		mainDrawing(s);
+		s.pggl().pushStyle();
+		s.pggl().fill(0,255,255);
+		s.pggl().stroke(0,255,255);
 		s.drawCamera(scene.camera());
+		s.pggl().popStyle();
 	}
 
 	void drawScene(PGraphics p) {

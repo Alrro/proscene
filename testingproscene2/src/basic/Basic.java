@@ -21,10 +21,11 @@ public class Basic extends PApplet {
 
 	public void draw() {
 	  background(0);
-	  fill(204, 102, 0);
-	  box(20, 30, 50);
+	  //fill(204, 102, 0);
+	  //box(20, 30, 50);
 	}
 	
+	/**
 	public void keyPressed() {
 		if(key == 'x' || key == 'X') {
 			scene.camera().setPosition(new Vector3D(0,0,-100));
@@ -53,7 +54,8 @@ public class Basic extends PApplet {
 			println("camera angle: " + scene.pinhole().frame().orientation().angle() );
 			println("tmp angle: " + tmpFrame.orientation().angle() );
 		}
-	}	
+	}
+	*/
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "basic.Basic" });

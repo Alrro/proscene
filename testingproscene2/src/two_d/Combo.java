@@ -11,7 +11,7 @@ public class Combo extends PApplet {
 	PGraphics canvas, auxCanvas;
 	InteractiveFrame auxFrame;
 	String renderer = P2D;
-	// String renderer = JAVA2D;	
+	//String renderer = JAVA2D;	
 
 	public void setup() {
 		size(640, 720, renderer);
