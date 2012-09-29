@@ -420,7 +420,7 @@ public class Scene implements PConstants {
 	protected int width, height;// size
 	protected boolean offscreen;
 	public Point upperLeftCorner;
-	protected Frame tmpFrame;
+	//protected Frame tmpFrame;
 
 	// O B J E C T S
 	protected DesktopEvents dE;
@@ -547,7 +547,7 @@ public class Scene implements PConstants {
 		width = pg3d.width;
 		height = pg3d.height;
 		
-		tmpFrame = new Frame();
+		//tmpFrame = new Frame();
 		
 		//event handler
 		dE = new DesktopEvents(this);
@@ -2031,8 +2031,10 @@ public class Scene implements PConstants {
 
 		// pg3d.applyMatrix(camera.frame().worldMatrix());
 		// same as the previous line, but maybe more efficient
-		tmpFrame.fromMatrix(camera.frame().worldMatrix());
-		applyTransformation(tmpFrame);
+		//tmpFrame.fromMatrix(camera.frame().worldMatrix());
+		//applyTransformation(tmpFrame);
+	  //same as above but easier
+		applyTransformation(camera.frame());
 
 		// 0 is the upper left coordinates of the near corner, 1 for the far one
 		PVector[] points = new PVector[2];
@@ -4335,10 +4337,28 @@ public class Scene implements PConstants {
 	 * should be used whenever possible (one can also use 
 	 * {@link remixlab.proscene.Frame#matrix()} instead).
 	 * 
+	 * @see #applyWorldTransformation(Frame)
 	 * @see remixlab.proscene.Frame#matrix()
 	 */
 	public void applyTransformation(Frame frame) {
 		renderer().translate(frame.translation().x, frame.translation().y, frame.translation().z);
 		renderer().rotate(frame.rotation().angle(), frame.rotation().axis().x, frame.rotation().axis().y, frame.rotation().axis().z);		
-	}	
+	}
+	
+	/**
+	 * Same as {@link #applyTransformation(Frame)}, but takes into account
+	 * the whole frame hierarchy. 
+	 * 
+	 * @see #applyTransformation(Frame)
+	 */
+	public void applyWorldTransformation(Frame frame) {
+		Frame refFrame = frame.referenceFrame();
+		if(refFrame != null) {
+			applyWorldTransformation(refFrame);
+			applyTransformation(frame);
+		}
+		else {
+			applyTransformation(frame);
+		}
+	}
 }
