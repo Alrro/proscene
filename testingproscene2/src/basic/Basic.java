@@ -2,9 +2,8 @@ package basic;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.geom.Quaternion;
-import remixlab.remixcam.geom.VFrame;
-import remixlab.remixcam.geom.Vector3D;
+import remixlab.remixcam.geom.*;
+
 
 public class Basic extends PApplet {
 	private static final long serialVersionUID = 1L;
@@ -21,8 +20,8 @@ public class Basic extends PApplet {
 
 	public void draw() {
 	  background(0);
-	  //fill(204, 102, 0);
-	  //box(20, 30, 50);
+	  fill(204, 102, 0);
+	  box(20, 30, 50);
 	}
 	
 	/**
