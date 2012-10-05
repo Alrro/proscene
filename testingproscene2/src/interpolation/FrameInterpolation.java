@@ -45,8 +45,8 @@ public class FrameInterpolation extends PApplet {
 	  }
 	  
 	  kfi.startInterpolation();
-	  //frameRate(200);
-	  frameRate(2);
+	  frameRate(200);
+	  //frameRate(2);
 	}
 
 	public void draw() {
@@ -62,10 +62,12 @@ public class FrameInterpolation extends PApplet {
 	    pushMatrix();
 	    kfi.keyFrame(i).applyTransformation(scene);
 	    
+	    // /**
 	    if ( keyFrame[i].grabsMouse() )
 	      scene.drawAxis(40);
 	    else
 	      scene.drawAxis(20);
+	    // */
 	      
 	    popMatrix();
 	  }

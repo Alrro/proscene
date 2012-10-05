@@ -101,7 +101,13 @@ public class Basic extends PApplet {
 	
 	public void keyPressed() {
 		if(key == 'u' || key == 'U') {
-			scene.viewWindow().interpolateToZoomOnPixel(new Point(mouseX, mouseY));
+			//scene.viewWindow().interpolateToZoomOnPixel(new Point(mouseX, mouseY));			
+			println("scale factor: " + scene.viewWindow().scaleFactor());
+			float[] wh = scene.viewWindow().getOrthoWidthHeight();
+			println("halfWidth: " + wh[0]);
+			println("halfHeight: " + wh[1]);
+			println("screenWidth: " + scene.viewWindow().screenWidth() );
+			println("screenHeight: " + scene.viewWindow().screenHeight() );			
 		}
 		if(key == 'x' || key == 'X') {
 			Vector3D v = scene.pinhole().projectedCoordinatesOf(new Vector3D(0,0,0));
