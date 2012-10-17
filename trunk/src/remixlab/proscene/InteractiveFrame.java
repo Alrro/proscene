@@ -167,6 +167,15 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void applyTransformation() {
 		applyTransformation(scene);
 	}
+	
+	/**
+	 * Convenience function that simply calls {@code applyWorldTransformation(scene)}
+	 * 
+	 * @see remixlab.proscene.Frame#applyWorldTransformation(Scene)
+	 */
+	public void applyWorldTransformation() {
+		applyWorldTransformation(scene);
+	}
 
 	/**
 	 * Returns {@code true} if the InteractiveFrame forms part of a Camera path
