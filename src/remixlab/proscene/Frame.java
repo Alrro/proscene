@@ -1439,7 +1439,17 @@ public class Frame implements Cloneable {
 	 */
 	public void applyTransformation(Scene scn) {
 		scn.applyTransformation(this);
-	}	
+	}
+	
+	/**
+	 * Convenience function that simply calls {@code scn.applyWorldTransformation(this)}.
+	 * 
+	 * @see #worldMatrix()
+	 * @see remixlab.proscene.Scene#applyWorldTransformation(Frame)
+	 */
+	public void applyWorldTransformation(Scene scn) {
+		scn.applyWorldTransformation(this);
+	}
 
 	/**
 	 * Returns the processing transformation matrix represented by the Frame.
