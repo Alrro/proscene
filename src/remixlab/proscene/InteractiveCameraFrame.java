@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.1)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -139,12 +139,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				|| (action == Scene.MouseAction.ZOOM_ON_REGION)
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
-		else {			
-			int deltaY;
-			if( scene.isRightHanded() )
-				deltaY = (int) (prevPos.y - eventPoint.y);
-			else
-				deltaY = (int) (eventPoint.y - prevPos.y);
+		else {
+			int deltaY = (int) (eventPoint.y - prevPos.y);
+			// right_handed coordinate system should go like this:
+			// int deltaY = (int) (prevPos.y - eventPoint.y);
 			switch (action) {
 			case TRANSLATE: {
 				Point delta = new Point(prevPos.x - eventPoint.x, deltaY);
@@ -203,10 +201,9 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 						(int) eventPoint.x - trans.x)
 						- PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x
 								- trans.x);
-				
-			  // left-handed coordinate system correction
-				if( scene.isLeftHanded() )
-					angle = -angle;
+
+				// lef-handed coordinate system correction
+				angle = -angle;
 
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 				// #CONNECTION# These two methods should go together (spinning detection

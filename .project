@@ -3,8 +3,6 @@
 	<name>proscene</name>
 	<comment></comment>
 	<projects>
-		<project>processing-core</project>
-		<project>processing-opengl</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

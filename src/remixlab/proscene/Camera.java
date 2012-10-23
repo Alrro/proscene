@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.1)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -26,9 +26,6 @@
 package remixlab.proscene;
 
 import processing.core.*;
-import processing.opengl.*;
-
-import java.nio.FloatBuffer;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -236,7 +233,7 @@ public class Camera implements Cloneable {
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
-	public PGraphicsOpenGL pg3d;
+	public PGraphics3D pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}.
@@ -267,7 +264,7 @@ public class Camera implements Cloneable {
 	 */
 	public Camera(Scene scn, boolean attachedToScene) {
 		scene = scn;
-		pg3d = scene.renderer();
+		pg3d = scene.pg3d;
 		attachedToPCam = attachedToScene;
 		
 		enableFrustumEquationsUpdate(false);
@@ -875,7 +872,7 @@ public class Camera implements Cloneable {
 		}
 
 		return target;
-	}	
+	}
 
 	/**
 	 * Returns the horizontal field of view of the Camera (in radians).
@@ -1629,17 +1626,16 @@ public class Camera implements Cloneable {
 	 * @see #coneIsBackFacing(Cone)
 	 * @see #faceIsBackFacing(PVector, PVector, PVector)
 	 */
-	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {
-		//TODO fix me!
+	public boolean coneIsBackFacing(PVector viewDirection, PVector axis, float angle) {		
 		if( angle < PApplet.HALF_PI ) {			
-			float phi = PApplet.acos ( PVector.dot(axis, viewDirection) );
+			float phi = PApplet.acos ( PVector.dot(axis, viewDirection ) );
 			if(phi >= PApplet.HALF_PI)
 				return false;
 			if( (phi+angle) >= PApplet.HALF_PI)
 				return false;
 			return true;
 		}
-		return false;		
+		return false;
 	}
 	
 	/**
@@ -1656,7 +1652,6 @@ public class Camera implements Cloneable {
 	 * @param c third face vertex
 	 */
   public boolean faceIsBackFacing(PVector a, PVector b, PVector c) {
-  	//TODO test me
   	PVector v1 = PVector.sub(projectedCoordinatesOf(a), projectedCoordinatesOf(b));
     PVector v2 = PVector.sub(projectedCoordinatesOf(b), projectedCoordinatesOf(c));
     return v1.cross(v2).z <= 0;
@@ -1833,18 +1828,14 @@ public class Camera implements Cloneable {
 	/**
 	 * Returns the coordinates of the 3D point located at {@code pixel} (x,y) on
 	 * screen.
+	 * <p>
+	 * Override this method in your jogl-based camera class.
+	 * <p>
+	 * Current implementation always returns {@code WorlPoint.found = false}
+	 * (dummy value), meaning that no point was found under pixel.
 	 */
 	public WorldPoint pointUnderPixel(Point pixel) {
-		float[] depth = new float[1];		
-		
-		PGraphicsOpenGL pg = (PGraphicsOpenGL) scene.parent.g;
-		PGL pgl = pg.beginPGL();
-		pgl.readPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
-		pg.endPGL();
-		
-		PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
-		point = unprojectedCoordinatesOf(point);
-		return new WorldPoint(point, (depth[0] < 1.0f));
+		return new WorldPoint(new PVector(0, 0, 0), false);
 	}
 
 	// 6. ASSOCIATED FRAME AND FRAME WRAPPER FUNCTIONS
@@ -2173,38 +2164,34 @@ public class Camera implements Cloneable {
 	public void computeProjectionMatrix() {
 		float ZNear = zNear();
 		float ZFar = zFar();
-		
+
 		switch (type()) {
 		case PERSPECTIVE: {
-			// #CONNECTION# all non null coefficients were set to 0.0 in constructor.
+			// #CONNECTION# all non null coefficients were set to 0.0 in
+			// constructor.
 			float f = 1.0f / PApplet.tan(fieldOfView() / 2.0f);
 			projectionMat.m00 = f / aspectRatio();
-			if( scene.isRightHanded() )
-				projectionMat.m11 = f;
-			else
-				projectionMat.m11 = -f;//TODO hack to make the projection fit in P5-v2
+			projectionMat.m11 = f;
 			projectionMat.m22 = (ZNear + ZFar) / (ZNear - ZFar);
 			projectionMat.m32 = -1.0f;
 			projectionMat.m23 = 2.0f * ZNear * ZFar / (ZNear - ZFar);
 			projectionMat.m33 = 0.0f;
-			// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(), zNear(), zFar() );
+			// same as gluPerspective( 180.0*fieldOfView()/M_PI, aspectRatio(),
+			// zNear(), zFar() );
 			break;
-			}
+		}
 		case ORTHOGRAPHIC: {
 			float[] wh = getOrthoWidthHeight();
 			projectionMat.m00 = 1.0f / wh[0];
-			if( scene.isRightHanded() )
-				projectionMat.m11 = 1.0f / wh[1];
-			else
-				projectionMat.m11 = -1.0f / wh[1];//TODO hack to make the projection fit in P5-v2
+			projectionMat.m11 = 1.0f / wh[1];
 			projectionMat.m22 = -2.0f / (ZFar - ZNear);
 			projectionMat.m32 = 0.0f;
 			projectionMat.m23 = -(ZFar + ZNear) / (ZFar - ZNear);
 			projectionMat.m33 = 1.0f;
 			// same as glOrtho( -w, w, -h, h, zNear(), zFar() );
 			break;
-			}
-		}		
+		}
+		}
 	}
 
 	/**
@@ -2356,9 +2343,8 @@ public class Camera implements Cloneable {
 	public void convertClickToLine(final Point pixelInput, PVector orig, PVector dir) {
 		Point pixel = new Point(pixelInput.getX(), pixelInput.getY());
 		
-	  //left-handed coordinate system correction
-		if( scene.isLeftHanded() )
-			pixel.y = screenHeight() - pixelInput.y;
+		//lef-handed coordinate system correction
+		pixel.y = screenHeight() - pixelInput.y;
 		
 		switch (type()) {
 		case PERSPECTIVE:
@@ -2422,12 +2408,8 @@ public class Camera implements Cloneable {
 		} else
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 
-		/**
-		// TODO needs further testing
-  	//left-handed coordinate system correction
-		if( scene.isLeftHanded() )
-			xyz[1] = screenHeight() - xyz[1];
-		*/
+  	//lef-handed coordinate system correction
+		xyz[1] = screenHeight() - xyz[1];
 
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
@@ -2482,15 +2464,9 @@ public class Camera implements Cloneable {
 		float xyz[] = new float[3];
 		viewport = getViewport();
 		
-		/**
-		// TODO needs further testing
-		if( scene.isRightHanded() )
-			unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
-		else
-			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);
-		*/
-		
-		unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
+		unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);		
+		//right_handed coordinate system should go like this:
+		//unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
 		if (frame != null)
 			return frame.coordinatesOf(new PVector((float) xyz[0], (float) xyz[1],

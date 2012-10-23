@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.1)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -213,12 +213,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			super.mouseDragged(eventPoint, camera);
 		else {		
 			if( prevPos == null ) prevPos = eventPoint;
-			
-			int deltaY;
-			if ( scene.isRightHanded() )
-				deltaY = (int) (prevPos.y - eventPoint.y);
-			else
-				deltaY = (int) (eventPoint.y - prevPos.y);			
+			int	deltaY = (int) (eventPoint.y - prevPos.y);
+		  //right_handed coordinate system should go like this:
+			//int deltaY = (int) (prevPos.y - eventPoint.y);
 			
 			switch (action) {
 			case MOVE_FORWARD: {
@@ -260,8 +257,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x)
 						/ camera.screenWidth();
 				
-			  //left-handed coordinate system correction
-				if ( scene.isLeftHanded() )
+			  //lef-handed coordinate system correction
 				angle = -angle;
 				
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
@@ -315,11 +311,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
 			
-			PVector trans;
-			if( scene.isRightHanded() )
-				trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
-			else
-				trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+			PVector trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+		  //right_handed coordinate system should go like this:
+			//PVector trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
 			
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
 			trans = camera.frame().orientation().rotate(trans);
@@ -383,11 +377,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * from the mouse pitch (X axis) and yaw ({@link #flyUpVector()} axis).
 	 */
 	protected final Quaternion pitchYawQuaternion(int x, int y, Camera camera) {
-		int deltaY;
-		if( scene.isRightHanded() )
-			deltaY = (int) (prevPos.y - y);
-		else
-			deltaY = (int) (y - prevPos.y);
+		int deltaY = (int) (y - prevPos.y);
+  	//right_handed coordinate system should go like this:
+		//deltaY = (int) (prevPos.y - y);
 		
 		Quaternion rotX = new Quaternion(new PVector(1.0f, 0.0f, 0.0f),
 				rotationSensitivity() * deltaY / camera.screenHeight());

@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.1)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -1403,7 +1403,7 @@ public class Frame implements Cloneable {
 	 * <p>
 	 * <b>Attention:</b> This technique is inefficient because {@code
 	 * p.applyMatrix} will try to calculate the inverse of the transform. Avoid it
-	 * whenever possible and instead use {@link #applyTransformation(Scene)}
+	 * whenever possible and instead use {@link #applyTransformation(PApplet)}
 	 * which is very efficient.
 	 * <p>
 	 * This matrix only represents the local Frame transformation (i.e., with
@@ -1417,7 +1417,7 @@ public class Frame implements Cloneable {
 	 * <p>
 	 * <b>Note:</b> The scaling factor of the 4x4 matrix is 1.0.
 	 * 
-	 * @see #applyTransformation(Scene)
+	 * @see #applyTransformation(PApplet)
 	 */
 	public final PMatrix3D matrix() {
 		PMatrix3D pM = new PMatrix3D();
@@ -1432,23 +1432,62 @@ public class Frame implements Cloneable {
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code scn.applyTransformation(this)}.
+	 * Convenience wrapper function that simply calls {@code applyTransformation( (PGraphics3D) p.g )}.
 	 * 
-	 * @see #matrix()
-	 * @see remixlab.proscene.Scene#applyTransformation(Frame)
+	 * @see #applyTransformation(PGraphics3D)
 	 */
-	public void applyTransformation(Scene scn) {
-		scn.applyTransformation(this);
+	public void applyTransformation(PApplet p) {
+		applyTransformation( (PGraphics3D) p.g );
 	}
 	
 	/**
-	 * Convenience function that simply calls {@code scn.applyWorldTransformation(this)}.
+	 * Apply the transformation defined by this Frame to {@code p3d}. The Frame is
+	 * first translated and then rotated around the new translated origin.
+	 * <p>
+	 * Same as:
+	 * <p>
+	 * {@code p3d.translate(translation().x, translation().y, translation().z);} <br>
+	 * {@code p3d.rotate(rotation().angle(), rotation().axis().x,
+	 * rotation().axis().y, rotation().axis().z);} <br>
+	 * <p>
+	 * This method should be used in conjunction with PApplet to modify the
+	 * processing modelview matrix from a Frame hierarchy. For example, with this
+	 * Frame hierarchy:
+	 * <p>
+	 * {@code Frame body = new Frame();} <br>
+	 * {@code Frame leftArm = new Frame();} <br>
+	 * {@code Frame rightArm = new Frame();} <br>
+	 * {@code leftArm.setReferenceFrame(body);} <br>
+	 * {@code rightArm.setReferenceFrame(body);} <br>
+	 * <p>
+	 * The associated processing drawing code should look like:
+	 * <p>
+	 * {@code p3d.pushMatrix();//p is the PApplet instance} <br>
+	 * {@code body.applyTransformation(p);} <br>
+	 * {@code drawBody();} <br>
+	 * {@code p3d.pushMatrix();} <br>
+	 * {@code leftArm.applyTransformation(p);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * {@code p3d.pushMatrix();} <br>
+	 * {@code rightArm.applyTransformation(p);} <br>
+	 * {@code drawArm();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * {@code p3d.popMatrix();} <br>
+	 * <p>
+	 * Note the use of nested {@code pushMatrix()} and {@code popMatrix()} blocks
+	 * to represent the frame hierarchy: {@code leftArm} and {@code rightArm} are
+	 * both correctly drawn with respect to the {@code body} coordinate system.
+	 * <p>
+	 * <b>Attention:</b> When drawing a frame hierarchy as above, this method
+	 * should be used whenever possible (one can also use {@link #matrix()}
+	 * instead).
 	 * 
-	 * @see #worldMatrix()
-	 * @see remixlab.proscene.Scene#applyWorldTransformation(Frame)
+	 * @see #matrix()
 	 */
-	public void applyWorldTransformation(Scene scn) {
-		scn.applyWorldTransformation(this);
+	public void applyTransformation(PGraphics3D p3d) {
+		p3d.translate(translation().x, translation().y, translation().z);
+		p3d.rotate(rotation().angle(), rotation().axis().x, rotation().axis().y, rotation().axis().z);
 	}
 
 	/**

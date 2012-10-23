@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.1)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -635,26 +635,6 @@ public class KeyFrameInterpolator implements Cloneable {
 		currentFrmValid = false;
 		resetInterpolation();
 	}
-	
-	/**
-	 * Remove KeyFrame according to {@code index} in the list and {@link #stopInterpolation()}
-	 * if {@link #interpolationIsStarted()}. If {@code index < 0 || index >= keyFr.size()}
-	 * the call is silently ignored. 
-	 */
-	public void removeKeyFrame(int index) {
-		if (index < 0 || index >= keyFr.size())
-			return;
-		valuesAreValid = false;
-		pathIsValid = false;
-		currentFrmValid = false;
-		if( interpolationIsStarted() )
-			stopInterpolation();
-		KeyFrame kf = keyFr.remove(index);
-		if (kf.frm  instanceof InteractiveFrame)
-			if (((InteractiveFrame) kf.frm).isInMouseGrabberPool())
-				((InteractiveFrame) kf.frm).removeFromMouseGrabberPool();
-		setInterpolationTime(firstTime());		
-	}
 
 	/**
 	 * Removes all keyFrames from the path. Calls
@@ -682,7 +662,8 @@ public class KeyFrameInterpolator implements Cloneable {
 		for (int i = 0; i < keyFr.size(); ++i) {
 			if (keyFr.get(i).frame() != null)
 				if (((InteractiveFrame) keyFr.get(i).frame()).isInMouseGrabberPool())
-					((InteractiveFrame) keyFr.get(i).frame()).removeFromMouseGrabberPool();
+					((InteractiveFrame) keyFr.get(i).frame())
+							.removeFromMouseGrabberPool();
 		}
 	}
 
@@ -826,8 +807,43 @@ public class KeyFrameInterpolator implements Cloneable {
 			}
 			pathIsValid = true;
 		}
-		
-		scene.drawPath(path, mask, nbFrames, nbSteps, scale);
+
+		if (mask != 0) {
+			scene.renderer().pushStyle();
+			scene.renderer().strokeWeight(2);
+
+			if ((mask & 1) != 0) {
+				scene.renderer().noFill();
+				scene.renderer().stroke(170);
+				scene.renderer().beginShape();
+				for (Frame myFr : path)
+					scene.renderer().vertex(myFr.position().x, myFr.position().y, myFr.position().z);
+				scene.renderer().endShape();
+			}
+			if ((mask & 6) != 0) {
+				int count = 0;
+				if (nbFrames > nbSteps)
+					nbFrames = nbSteps;
+				float goal = 0.0f;
+
+				for (Frame myFr : path)
+					if ((count++) >= goal) {
+						goal += nbSteps / (float) nbFrames;
+						scene.renderer().pushMatrix();
+
+						// pg3d.applyMatrix(myFr.matrix());
+						myFr.applyTransformation(scene.renderer());
+
+						if ((mask & 2) != 0)
+							scene.drawKFICamera(scale);
+						if ((mask & 4) != 0)
+							scene.drawAxis(scale / 10.0f);
+
+						scene.renderer().popMatrix();
+					}
+			}
+			scene.renderer().popStyle();
+		}
 	}
 
 	/**
