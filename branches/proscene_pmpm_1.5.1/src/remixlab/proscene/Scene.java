@@ -287,6 +287,8 @@ public class Scene implements PConstants {
 		NO_MOUSE_ACTION("No mouse action"),
 		/** Rotate frame (camera or interactive frame. */
 		ROTATE("Rotate frame (camera or interactive frame)"),
+		/** Rotate (only) camera frame as in CAD applications). */
+		ROTATE_CAD("Rotate (only) camera frame as in CAD applications)"),
 		/** Zoom. */
 		ZOOM("Zoom"),
 		/** Translate frame (camera or interactive frame). */
@@ -2528,10 +2530,12 @@ public class Scene implements PConstants {
 		currentCameraProfile = null;
 		// register here the default profiles
 		//registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
+		registerCameraProfile( new CameraProfile(this, "CAD_ARCBALL", CameraProfile.Mode.CAD_ARCBALL) );
 		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
 		registerCameraProfile( new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON) );
 		//setCurrentCameraProfile("ARCBALL");
-		setCurrentCameraProfile("WHEELED_ARCBALL");
+		//setCurrentCameraProfile("WHEELED_ARCBALL");
+		setCurrentCameraProfile("CAD_ARCBALL");
 	}
 
 	/**

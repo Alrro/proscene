@@ -194,6 +194,19 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				prevPos = eventPoint;
 				break;
 			}
+			
+			case ROTATE_CAD: {
+				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
+				Quaternion rot = deformedBallCADQuaternion((int) eventPoint.x,
+						(int) eventPoint.y, trans.x, trans.y, camera);
+				// #CONNECTION# These two methods should go together (spinning detection
+				// and activation)
+				computeMouseSpeed(eventPoint);
+				setSpinningQuaternion(rot);
+				spin();
+				prevPos = eventPoint;
+				break;
+			}
 
 			case SCREEN_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
@@ -250,6 +263,30 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				break;
 			}
 		}
+	}
+	
+	protected Quaternion deformedBallCADQuaternion(int x, int y, float cx,	float cy, Camera camera) {
+		// Points on the deformed ball
+		float px = rotationSensitivity() * ((int) prevPos.x - cx)
+				/ camera.screenWidth();
+		float py = rotationSensitivity() * (cy - (int) prevPos.y)
+				/ camera.screenHeight();
+		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
+		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
+
+		PVector axisX = camera.frame().transformOf(inverseTransformOf((new PVector(1, 0, 0))));
+		PVector axisZ = camera.frame().transformOf(new PVector(0, 0, 1));
+
+		float angleZ = rotationSensitivity() * (dx - px);
+		float angleX = rotationSensitivity() * (dy - py);
+
+		// left-handed coordinate system correction
+		angleX = -angleX;
+
+		Quaternion quatZ = new Quaternion(axisZ, angleZ);
+		Quaternion quatX = new Quaternion(axisX, angleX);
+
+		return Quaternion.multiply(quatZ, quatX);
 	}
 
 	/**

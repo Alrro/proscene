@@ -204,7 +204,7 @@ import remixlab.proscene.Scene.MouseAction;
  * least one THIRD_PERSON camera profile to your Scene.
  */
 public class CameraProfile {
-	public enum Mode {ARCBALL, WHEELED_ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}
+	public enum Mode {ARCBALL, WHEELED_ARCBALL, CAD_ARCBALL, FIRST_PERSON, THIRD_PERSON, CUSTOM}
 	protected String name;
 	protected Scene scene;
 	protected Mode mode;
@@ -257,14 +257,22 @@ public class CameraProfile {
 		
 		switch (mode) {
 		case ARCBALL:
+			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
 			arcballDefaultShortcuts();
 			break;
 		case WHEELED_ARCBALL:			
-			arcballDefaultShortcuts();
-			
+			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+			arcballDefaultShortcuts();			
 			setCameraWheelBinding( MouseAction.ZOOM );
 			//should work only iFrame is an instance of drivable
 			setFrameWheelBinding( MouseAction.ZOOM );			
+			break;
+		case CAD_ARCBALL:
+			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE_CAD);
+			arcballDefaultShortcuts();
+			setCameraWheelBinding( MouseAction.ZOOM );
+			//should work only iFrame is an instance of drivable
+			setFrameWheelBinding( MouseAction.ZOOM );
 			break;
 		case FIRST_PERSON:
 			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.MOVE_FORWARD);
@@ -312,8 +320,7 @@ public class CameraProfile {
 	  setShortcut(KeyEvent.VK_LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
 		setShortcut(KeyEvent.VK_UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
 		setShortcut(KeyEvent.VK_DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
-
-		setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+		
 		setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
 		setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
 		setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
