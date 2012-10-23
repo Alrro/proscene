@@ -10,8 +10,8 @@ public class Combo extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;	
 	InteractiveFrame frame1, auxFrame1, frame2, auxFrame2, frame3, auxFrame3;
-	String renderer = P2D;
-	//String renderer = JAVA2D;	
+	//String renderer = P2D;
+	String renderer = JAVA2D;	
 	boolean drawHints = false;
 
 	public void setup() {
@@ -43,7 +43,7 @@ public class Combo extends PApplet {
 		// is to be drawn (see drawing code below) to its constructor.
 		auxScene = new Scene(this, auxCanvas, 0, 360);
 		auxScene.addDrawHandler(this, "auxDrawing");
-		auxScene.setRadius(200);
+		//auxScene.setRadius(200);
 		auxScene.showAll();
 		
 		auxFrame1 = new InteractiveFrame(auxScene);
@@ -159,10 +159,30 @@ public class Combo extends PApplet {
 			auxScene.enableKeyboardHandling();
 		}
 	}
+	
+	public void printFrame(VFrame frame) {
+		/**
+		translate(frame.translation().x(), frame.translation().y());
+			rotate(frame.rotation().angle());
+			scale(frame.scaling().x(), frame.scaling().y());
+		 */
+		println("Translation: " + frame.translation());
+		println("Angle: " + frame.rotation().angle());
+		println("Scaling: " + frame.scaling());
+	}
 
 	public void keyPressed() {
 		if (key == 'u' || key == 'U') {
 			drawHints = !drawHints;
+		}
+		if (key == 'v' || key == 'V') {
+			VFrame tmpFrame = new VFrame(scene.is3D());
+			tmpFrame.fromMatrix(scene.viewWindow().frame().worldMatrix(), scene.viewWindow().frame().magnitude());
+			println("tmpFrame");
+			printFrame(tmpFrame);
+			println();
+			println("scene.viewWindow().frame()");
+			printFrame(scene.viewWindow().frame());			
 		}
 	}
 }

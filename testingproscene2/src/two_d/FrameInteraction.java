@@ -11,6 +11,7 @@ public class FrameInteraction extends PApplet {
 
 	public void setup() {
 	  size(640, 360, P2D);
+	  //size(640, 360, JAVA2D);
 	  scene = new Scene(this);
 	  // A Scene has a single InteractiveFrame (null by default). We set it here.
 	  scene.setInteractiveFrame(new InteractiveFrame(scene));
@@ -46,5 +47,18 @@ public class FrameInteraction extends PApplet {
 	    rect(0, 0, 30, 30);
 	  }    
 	  popMatrix();
+	}
+	
+	public void keyPressed() {
+		if(key == 'x' || key == 'X') {
+			scene.interactiveFrame().scale(1, -1, 1);
+		}		
+		if(key == 'y' || key == 'Y') {
+			scene.viewWindow().flip();			
+		}
+		if(key == 'z' || key == 'Z') {
+			print("magnitude: ");
+			scene.pinhole().frame().magnitude().print();
+		}
 	}
 }

@@ -11,6 +11,7 @@ import remixlab.remixcam.util.*;
 
 import remixlab.proscene.*;
 
+@SuppressWarnings("serial")
 public class FrameInterpolation extends PApplet {
 	Scene scene;
 	InteractiveFrame keyFrame[];
@@ -41,6 +42,13 @@ public class FrameInterpolation extends PApplet {
 	  for (int i=0; i<nbKeyFrames; i++) {
 	    keyFrame[i] = new InteractiveFrame(scene);
 	    keyFrame[i].setPosition(-100 + 200*i/(nbKeyFrames-1), 0, 0);
+	    
+	    if(i == nbKeyFrames-2)
+	    	keyFrame[i].setScaling(1, -1, 1);
+	    	//keyFrame[i].setScaling(-1, 1, 1);
+	    	//keyFrame[i].setScaling(-1, -1, 1);
+	    	//keyFrame[i].setScaling(-1, -1, -1);
+	    
 	    kfi.addKeyFrame(keyFrame[i]);
 	  }
 	  
@@ -82,6 +90,14 @@ public class FrameInterpolation extends PApplet {
 	    kfi.setInterpolationSpeed(kfi.interpolationSpeed()+0.25f);
 	  if( key == 'x' )
 		  scene.switchTimers();
+	  if (key == 'y' ) {
+		  for (int i=0; i<nbKeyFrames; i++) {
+			  if( keyFrame[i].isLeftHanded() )
+				  println( "KeyFrame " + i + " is LeftHanded" );
+			  else
+				  println( "KeyFrame " + i + " is RightHanded" );
+		  }
+	  }		  
 	}
 	
 	public static void main(String args[]) {

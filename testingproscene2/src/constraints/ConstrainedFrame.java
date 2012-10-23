@@ -11,6 +11,7 @@ public class ConstrainedFrame extends PApplet {
 	PFont myFont;
 	private int transDir;
 	private int rotDir;
+	private int sclDir;
 	InteractiveFrame frame;
 	AxisPlaneConstraint constraints[] = new AxisPlaneConstraint[3];
 	int activeConstraint;
@@ -19,8 +20,7 @@ public class ConstrainedFrame extends PApplet {
 		size(640, 360, P3D);
 		//size(640, 360, OPENGL);
 		myFont = createFont("Arial", 12);
-		textFont(myFont);
-		textMode(SCREEN);
+		textFont(myFont);		
 		
 		scene = new Scene(this);
 		// press 'i' to switch the interaction between the camera frame and the interactive frame
@@ -37,13 +37,18 @@ public class ConstrainedFrame extends PApplet {
 		constraints[2] = new CameraConstraint(scene.camera());
 		transDir = 0;
 		rotDir   = 0;
+		sclDir   = 0;
 		activeConstraint = 0;
 		
 		frame = new InteractiveFrame(scene);
-		frame.translate(new Vector3D(0.2f, 0.2f, 0));
+		frame.translate(new Vector3D(20f, 20f, 0));
 		scene.setInteractiveFrame(frame);			
 		frame.setConstraint(constraints[activeConstraint]);
-		scene.setDrawInteractiveFrame(true);	
+		scene.setDrawInteractiveFrame(true);
+		
+		Vector3D t = new Vector3D(4,8,16);
+		Vector3D s = new Vector3D(-2,-3,-7);
+		Vector3D.projectVectorOnAxis(s, t).print();
 	}
 	
 	public static AxisPlaneConstraint.Type nextTranslationConstraintType(AxisPlaneConstraint.Type type) {
@@ -70,6 +75,18 @@ public class ConstrainedFrame extends PApplet {
 		return rType;
 	}
 	
+	public static AxisPlaneConstraint.Type nextScalingConstraintType(AxisPlaneConstraint.Type type) {
+		AxisPlaneConstraint.Type rType;
+		switch (type) {
+		case FREE  : rType = AxisPlaneConstraint.Type.PLANE; break;
+	    case PLANE : rType = AxisPlaneConstraint.Type.AXIS;  break;
+	    case AXIS  : rType = AxisPlaneConstraint.Type.FORBIDDEN;  break;
+	    case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
+	    default : rType = AxisPlaneConstraint.Type.FREE;
+	    }
+		return rType;
+	}
+	
 	private void changeConstraint() {
 	  int previous = activeConstraint;
 	  activeConstraint = (activeConstraint+1)%3;
@@ -78,6 +95,8 @@ public class ConstrainedFrame extends PApplet {
 	  constraints[activeConstraint].setTranslationConstraintDirection(constraints[previous].translationConstraintDirection());
 	  constraints[activeConstraint].setRotationConstraintType(constraints[previous].rotationConstraintType());
 	  constraints[activeConstraint].setRotationConstraintDirection(constraints[previous].rotationConstraintDirection());
+	  constraints[activeConstraint].setScalingConstraintType(constraints[previous].scalingConstraintType());
+	  constraints[activeConstraint].setScalingConstraintDirection(constraints[previous].scalingConstraintDirection());
 
 	  frame.setConstraint(constraints[activeConstraint]);
 	}
@@ -85,21 +104,23 @@ public class ConstrainedFrame extends PApplet {
 	public void draw() {		
 		background(0);
 		pushMatrix();
-		// /**
+		/**
 		float [] m = new float[16];
 		PMatrix3D pM = new PMatrix3D();
 		pM.set(frame.matrix().getTransposed(m) );
 		applyMatrix( pM );
 		// */
 		//Same as the previous commented lines, but a lot more efficient:
-		//frame.applyTransformation();		
+		frame.applyTransformation();		
 		scene.drawAxis(40);		
 		fill(204, 102, 0);
 		box(30, 30, 30);				
 		popMatrix();
 		
 		fill(0, 0, 255);
+		scene.beginScreenDrawing();
 		displayText();
+		scene.endScreenDrawing();
 	}	
 
 	protected void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{
@@ -145,11 +166,15 @@ public class ConstrainedFrame extends PApplet {
 	}
 	
 	public void displayText() {		
+		text("SCALING :", 150, height-30);
+		displayDir(sclDir, (150+90), height-30, 'O');
+		displayType(constraints[activeConstraint].scalingConstraintType(), 150, height-60, 'V');
+		
 		text("TRANSLATION :", 350, height-30);
 		displayDir(transDir, (350+90), height-30, 'D');
 		displayType(constraints[activeConstraint].translationConstraintType(), 350, height-60, 'T');
 		
-		text("ROTATION :", width-120,height-30);		
+		text("ROTATION :", width-120,height-30);	
 		displayDir(rotDir, width-50, height-30, 'B');		
 		displayType(constraints[activeConstraint].rotationConstraintType(), width-120, height-60, 'R');
 		
@@ -163,6 +188,9 @@ public class ConstrainedFrame extends PApplet {
 	public void keyPressed() {
 		//scene.defaultKeyBindings();
 	
+		if (key == 'o' || key == 'O') {
+			sclDir   = (sclDir+1)%3;
+		}
 		if (key == 'b' || key == 'B') {
 			rotDir   = (rotDir+1)%3;
 		}
@@ -171,6 +199,9 @@ public class ConstrainedFrame extends PApplet {
 		}
 		if (key == 'u' || key == 'U') {
 			changeConstraint();
+		}
+		if (key == 'v' || key == 'V') {
+			constraints[activeConstraint].setScalingConstraintType(nextScalingConstraintType(constraints[activeConstraint].scalingConstraintType()));
 		}
 		if (key == 't' || key == 'T') {
 			constraints[activeConstraint].setTranslationConstraintType(nextTranslationConstraintType(constraints[activeConstraint].translationConstraintType()));
@@ -184,8 +215,7 @@ public class ConstrainedFrame extends PApplet {
 		case 0 : dir.x(1.0f); break;
 		case 1 : dir.y(1.0f); break;
 		case 2 : dir.z(1.0f); break;
-		}
-		
+		}		
 		constraints[activeConstraint].setTranslationConstraintDirection(dir);
 
 		dir.set(0.0f, 0.0f, 0.0f);
@@ -193,9 +223,18 @@ public class ConstrainedFrame extends PApplet {
 		case 0 : dir.x(1.0f); break;
 		case 1 : dir.y(1.0f); break;
 		case 2 : dir.z(1.0f); break;
-		}
-		
+		}		
 		constraints[activeConstraint].setRotationConstraintDirection(dir);
+		
+		dir.set(0.0f, 0.0f, 0.0f);
+		switch (sclDir) {
+		case 0 : dir.x(1.0f); break;
+		case 1 : dir.y(1.0f); break;
+		case 2 : dir.z(1.0f); break;
+		}
+		//TODO test
+		dir.set(2.0f, 1.0f, -2.0f);
+		constraints[activeConstraint].setScalingConstraintDirection(dir);
 	}
 	
 	public static void main(String args[]) {

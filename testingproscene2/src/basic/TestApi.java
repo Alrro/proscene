@@ -47,11 +47,13 @@ public class TestApi extends PApplet {
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		
+		/**
 		println("float.min: " + Float.MIN_VALUE);
 		println("(float)Math.pow(2, -149): " + (float)Math.pow(2, -149));		
 		println("Abstract scene float.min: " + AbstractScene.FLOAT_EPS);
 		println("2f/Float.MIN_VALUE: " + 2f/Float.MIN_VALUE);
 		println("2f/Float.MIN_VALUE: " + 2f/AbstractScene.FLOAT_EPS);
+		*/
 	}
 	
 	public void draw() {

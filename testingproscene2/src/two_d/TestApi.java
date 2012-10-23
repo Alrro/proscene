@@ -13,7 +13,8 @@ public class TestApi extends PApplet {
 	Vector3D res;
 	
 	public void setup() {
-		size(640, 360, P2D);
+		size(640, 360, JAVA2D);
+		//size(640, 360, P2D);
 		scene = new Scene(this);
 		v = new Vector3D(20,30);
 		p = new Vector3D(40,30);
@@ -21,24 +22,28 @@ public class TestApi extends PApplet {
 		f1 = new InteractiveFrame(scene);
 		f1.translate(20, 30);
 		f1.rotate(new Rotation(HALF_PI));
-		f1.scale(2, 2.5f);
+		//f1.scale(2f, 2.5f);
+		f1.scale(1.2f, 2.5f);
 		
 		f2 = new InteractiveFrame(scene);
 		f2.setReferenceFrame(f1);
 		f2.translate(30, 20);
 		f2.rotate(new Rotation(-QUARTER_PI));
-		f2.scale(1.2f, 1.1f);
+		//f2.scale(1.2f, 1.1f);
+		f2.scale(-0.8f, 1.4f);
 		
 		f3 = new InteractiveFrame(scene);
 		f3.setReferenceFrame(f1);
 		f3.translate(15, 20);
 		f3.rotate(new Rotation(-HALF_PI));
-		f3.scale(1, 1.5f);
+		//f3.scale(1, 1.5f);
+		f3.scale(1.5f, 1f);
 		
 		f4 = new InteractiveFrame(scene);
 		f4.setReferenceFrame(f2);
 		f4.translate(20, 15);
 		f4.rotate(new Rotation(QUARTER_PI));
+		//f4.scale(1.4f, 0.5f);
 		f4.scale(1.4f, 0.5f);
 		
 		scene.setRadius(200);
@@ -116,7 +121,7 @@ public class TestApi extends PApplet {
 	public void drawPrimitives(int color) {
 		pushStyle();
 		stroke(255,255,0);
-		line(0, 0, v.x(), v.y());
+		//line(0, 0, v.x(), v.y());
 		popStyle();
 		pushStyle();
 		stroke(color);

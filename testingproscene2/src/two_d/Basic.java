@@ -12,10 +12,10 @@ public class Basic extends PApplet {
 	float angle;	
 
 	public void setup() {
-		//size(640, 360, JAVA2D);
-		size(640, 360, P2D);
+		size(640, 360, JAVA2D);
+		//size(640, 360, P2D);
 		//size(360, 640, P2D);
-		/**
+		// /**
 		font = createFont("Arial", 16);
 		textFont(font, 16);
 		// */
@@ -50,14 +50,15 @@ public class Basic extends PApplet {
 
 	public void draw() {
 		background(150);
-		ellipse(0, 0, 40, 40);
-		rect(50, 50, 30, 30);
+		ellipse(0, 0, 40, 40);		
 		
-		/**
+		// /**
 		scene.beginScreenDrawing();
 		text("Hello Pierre", 5, 17);
 		scene.endScreenDrawing();
 		// */
+		
+		rect(50, 50, 30, 30);
 		
 		/**
 		scene.beginScreenDrawing();
@@ -102,7 +103,8 @@ public class Basic extends PApplet {
 	public void keyPressed() {
 		if(key == 'u' || key == 'U') {
 			//scene.viewWindow().interpolateToZoomOnPixel(new Point(mouseX, mouseY));			
-			println("scale factor: " + scene.viewWindow().scaleFactor());
+			println("scale factor: " );
+			scene.viewWindow().frame().scaling().print();
 			float[] wh = scene.viewWindow().getOrthoWidthHeight();
 			println("halfWidth: " + wh[0]);
 			println("halfHeight: " + wh[1]);
@@ -122,8 +124,9 @@ public class Basic extends PApplet {
 			scene.viewWindow().fitCircle(new Vector3D(65,65), 15);
 		}
 		if(key == 'y' || key == 'Y') {
-			//scene.viewWindow().flip();
+			scene.viewWindow().flip();
 			
+			/**
 			if(scene.is3D())
 				println("scene is 3d");
 			else
@@ -137,6 +140,7 @@ public class Basic extends PApplet {
 			tmpFrame.worldMatrix().print();
 			println("camera angle: " + scene.pinhole().frame().orientation().angle() );
 			println("tmp angle: " + tmpFrame.orientation().angle() );
+			*/
 		}
 		if(key == 'q' || key == 'Q') {
 			println("View Matrix:");
