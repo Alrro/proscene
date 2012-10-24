@@ -4,9 +4,10 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 import controlP5.*;
+import codeanticode.glgraphics.*;
 
 @SuppressWarnings("serial")
-public class CRD extends PApplet {
+public class CRDGLGraphics extends PApplet {
 	/**
 	 * Driver
 	 * 
@@ -27,11 +28,8 @@ public class CRD extends PApplet {
 	 * Observation: the navigator should always be visible (please see the
 	 * parameteriseNavigator documentation below)
 	 */
-	
-	String renderer = P3D;
-	//Cannot test OPENGL renderer since it always gives me:
-	//Image width and height cannot be larger than 0 with this graphics card.
-	//String renderer = OPENGL;
+		
+	String renderer = GLConstants.GLGRAPHICS;
 	
 	boolean once = false;
 	
@@ -39,7 +37,7 @@ public class CRD extends PApplet {
 	int w = 640;
 	int h = 480;
 	
-	//define your navigator position using screen coordinates 
+	//define your navigator position using screen coordinates
 	int screenX = w*3/4;
 	int screenY = h/4;
 	
@@ -48,8 +46,9 @@ public class CRD extends PApplet {
 	float boxLenghtRatio;
 	
 	boolean rotateRespectToWorld = false;
+		
+	GLGraphicsOffScreen canvas;
 	
-	PGraphics canvas;	
 	Scene scene;
 	InteractiveFrame iFrame, planeIFrame;	
 	ControlP5 controlP5;
@@ -57,11 +56,13 @@ public class CRD extends PApplet {
 	int sliderValue = 0;
 
 	public void setup() {
-		size(w, h, renderer);
-		canvas = createGraphics(width, height, renderer);
+		size(w, h, renderer);	
+		canvas = new GLGraphicsOffScreen(this, width, height);
 		scene = new Scene(this, (PGraphics3D) canvas);
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-		scene.showAll();		
+		//scene.setCameraKind(Camera.Kind.STANDARD);
+		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
+		scene.showAll();
 		
 		iFrame = new InteractiveFrame(scene);
 		iFrame.setReferenceFrame(scene.camera().frame());
@@ -79,7 +80,7 @@ public class CRD extends PApplet {
 		//this.frame.setResizable(true);
 	}
 
-	public void draw() {	
+	public void draw() {		
 		canvas.beginDraw();
 		scene.beginDraw();
 
@@ -91,7 +92,7 @@ public class CRD extends PApplet {
 		scene.camera().frame().applyTransformation();
 		// second level: draw respect to the iFrame
 		canvas.pushMatrix();
-		iFrame.applyTransformation();		
+		iFrame.applyTransformation();
 		scene.drawAxis(boxLenghtRatio * 1.3f);
 		// Draw a second box
 		if (scene.interactiveFrame().grabsMouse()) {
@@ -131,9 +132,11 @@ public class CRD extends PApplet {
 
 		scene.endDraw();
 		canvas.endDraw();
-
-		image(canvas, 0, 0, width, height);
-		controlP5.draw();		
+		
+		GLTexture tex = canvas.getTexture();
+		image(tex, 0, 0, width, height);
+		
+		controlP5.draw();
 		
 		parameteriseNavigator();
 	}
@@ -162,7 +165,7 @@ public class CRD extends PApplet {
 	}
 	
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "basic.CRD" });
+		PApplet.main(new String[] { "--present", "basic.CRDGLGraphics" });
 	}
 	
 	public void keyPressed() {
