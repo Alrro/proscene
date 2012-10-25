@@ -145,20 +145,22 @@ public class CRD extends PApplet {
 	 * Please refer to camera.unprojectedCoordinatesOf 
 	 */
 	public void parameteriseNavigator() {
-		if( scene.cameraType() == Camera.Type.ORTHOGRAPHIC )
+		if( scene.cameraType() == Camera.Type.ORTHOGRAPHIC ) {
 			//use just one out of the two
 			//iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f), scene.camera().frame()));
 			iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f)));
+		    this.boxLenghtRatio = boxLenght * scene.camera().pixelP5Ratio(iFrame.position());
+		}
 		else {
 			//PERSP may be optimised
 			if(!once) {								
 				//use just one out of the two
 				//iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f), scene.camera().frame()));
 				iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f)));
+				this.boxLenghtRatio = boxLenght * scene.camera().pixelP5Ratio(iFrame.position());
 				once = true;
 			}
-		}
-		this.boxLenghtRatio = boxLenght * scene.camera().pixelP5Ratio(iFrame.position());
+		}		
 	}
 	
 	public static void main(String args[]) {
