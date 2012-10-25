@@ -1,4 +1,4 @@
-package basic;
+package pmpm;
 
 import processing.core.*;
 import remixlab.proscene.*;
@@ -55,8 +55,8 @@ public class AnarCamera extends PApplet {
 			float angleX = rotationSensitivity() * (dy - py);
 
 			// left-handed coordinate system correction
-			if (scene.isLeftHanded())
-				angleX = -angleX;
+			//if (scene.isLeftHanded())
+				angleX = -angleX;			
 
 			Quaternion quatZ = new Quaternion(axisZ, angleZ);
 			Quaternion quatX = new Quaternion(axisX, angleX);

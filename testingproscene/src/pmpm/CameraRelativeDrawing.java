@@ -1,34 +1,37 @@
-package basic;
+package pmpm;
 
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 import controlP5.*;
-import remixlab.proscene.*;
 
 public class CameraRelativeDrawing extends PApplet {
+	String renderer = P3D;
+	//String renderer = OPENGL;
 	PGraphics canvas;
 	Scene scene;
 	InteractiveFrame iFrame, planeIFrame;	
-	ControlP5 controlP5;
+	ControlP5 controlP5;	
+	PVector screenPos;
 
 	int sliderValue = 0;
 
 	public void setup() {
-		size(1300, 760, P3D);
-		canvas = createGraphics(width, height, P3D);
+		size(1300, 760, renderer);
+		canvas = createGraphics(width, height, renderer);
 		scene = new Scene(this, (PGraphics3D) canvas);
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);		
+		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		iFrame = new InteractiveFrame(scene);
-		iFrame.setReferenceFrame(scene.camera().frame());
-		iFrame.translate(130, -70, -240);
+		iFrame.setReferenceFrame(scene.camera().frame());		
+		iFrame.translate(130, -70, -240);		
+		
 		LocalConstraint constraint = new LocalConstraint();
 		constraint.setTranslationConstraintType(AxisPlaneConstraint.Type.FORBIDDEN);
 		iFrame.setConstraint(constraint);
-		scene.setInteractiveFrame(iFrame);
+		scene.setInteractiveFrame(iFrame);		
 
 		planeIFrame = new InteractiveFrame(scene);
-
 		controlP5 = new ControlP5(this);
 		controlP5.addSlider("sliderValue", -100, 100, sliderValue, 10, 50, 100,	10);		
 	}

@@ -1,4 +1,4 @@
-package basic;
+package pmpm;
 
 import processing.core.*;
 import remixlab.proscene.*;
