@@ -1,4 +1,4 @@
-<project name="ProsceneLib" default="clean" basedir="../">
+<project name="ProsceneLibCAD_1.2" default="clean" basedir="../">
 
     
 <!--	

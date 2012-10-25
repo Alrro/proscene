@@ -689,8 +689,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE))
-				&& (mouseSpeed >= spinningSensitivity()))
+		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE) || (action == Scene.MouseAction.ROTATE_CAD) )	&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
@@ -752,6 +751,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 		switch (action) {
 		case ROTATE:
+		case ROTATE_CAD:
 		case SCREEN_ROTATE:
 			mouseSpeed = 0.0f;
 			stopSpinning();
@@ -772,8 +772,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * spinning in {@link #mouseReleased(Point, Camera)}.
 	 */
 	protected void computeMouseSpeed(Point eventPoint) {
-		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos
-				.getX(), prevPos.getY());
+		float dist = (float) Point.distance(eventPoint.x, eventPoint.y, prevPos.getX(), prevPos.getY());
 
 		if (startedTime == 0) {
 			delay = 0;
@@ -817,7 +816,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * positions are projected on a deformed ball, centered on ({@code cx},
 	 * {@code cy}).
 	 */
-	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,	Camera camera) {
+	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,	Camera camera) {		
 		// Points on the deformed ball
 		float px = rotationSensitivity() * ((int)prevPos.x - cx) / camera.screenWidth();
 		float py = rotationSensitivity() * (cy - (int)prevPos.y) / camera.screenHeight();
@@ -839,7 +838,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		}
 
 		return new Quaternion(axis, angle);
-	}
+	}	
 
 	/**
 	 * Returns "pseudo-distance" from (x,y) to ball of radius size. For a point

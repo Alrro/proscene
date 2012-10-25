@@ -50,6 +50,7 @@ import processing.core.*;
 public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	protected Camera camera;
 	protected PVector arcballRefPnt;
+	protected PVector worldAxis;
 
 	/**
 	 * Default constructor.
@@ -64,6 +65,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		camera = cam;
 		removeFromMouseGrabberPool();
 		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
+		worldAxis = new PVector(0, 0, 1);
 	}
 
 	/**
@@ -77,6 +79,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	public InteractiveCameraFrame clone() {
 		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
 		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
+		clonedICamFrame.worldAxis = new PVector(worldAxis.x, worldAxis.y, worldAxis.z);
 		return clonedICamFrame;
 	}
 
@@ -186,8 +189,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 			case ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,
-						(int) eventPoint.y, trans.x, trans.y, camera);
+				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,	(int) eventPoint.y, trans.x, trans.y, camera);
 				// #CONNECTION# These two methods should go together (spinning detection
 				// and activation)
 				computeMouseSpeed(eventPoint);
@@ -196,13 +198,24 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				prevPos = eventPoint;
 				break;
 			}
+			
+			case ROTATE_CAD: {
+				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());				
+				// the following line calls setSpinningQuaternion
+				deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
+				// #CONNECTION# These two methods should go together (spinning detection
+				// and activation)
+				computeMouseSpeed(eventPoint);				
+				spin();
+				prevPos = eventPoint;
+				break;
+			}
 
 			case SCREEN_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 				float angle = PApplet.atan2((int) eventPoint.y - trans.y,
-						(int) eventPoint.x - trans.x)
-						- PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x
-								- trans.x);
+						                        (int) eventPoint.x - trans.x)	- PApplet.atan2((int) prevPos.y - trans.y, 
+						                        		                                          (int) prevPos.x - trans.x);
 				
 			  // left-handed coordinate system correction
 				if( scene.isLeftHanded() )
@@ -338,5 +351,56 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		flyTimer.schedule(timerTask, finalDrawAfterWheelEventDelay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
+	}
+	
+	protected Quaternion deformedBallCADQuaternion(int x, int y, float cx,	float cy, Camera camera) {
+		// Points on the deformed ball
+		float px = rotationSensitivity() * ((int) prevPos.x - cx)	/ camera.screenWidth();
+		float py = rotationSensitivity() * (cy - (int) prevPos.y)	/ camera.screenHeight();
+		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
+		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
+		
+		//1,0,0 is given in the camera frame
+		PVector axisX = new PVector(1, 0, 0);
+		//0,0,1 is given in the world and then transform to the camera frame
+		PVector world2camAxis = camera.frame().transformOf(worldAxis);
+
+		float angleZ = rotationSensitivity() * (dx - px);
+		float angleX = rotationSensitivity() * (dy - py);
+
+		// left-handed coordinate system correction
+		if( scene.isLeftHanded() ) {
+			angleX = -angleX;
+		}
+
+		Quaternion quatZ = new Quaternion(world2camAxis, angleZ);
+		Quaternion quatX = new Quaternion(axisX, angleX);
+		
+		if( Math.abs(angleX) > Math.abs(angleZ))
+			setSpinningQuaternion(quatX);
+		else
+			setSpinningQuaternion(quatZ);
+
+		return Quaternion.multiply(quatZ, quatX);
+	}
+	
+	/**
+	 * Set axis (defined in the world coordinate system) as the main
+	 * rotation axis used in CAD rotation.
+	 */
+	public void setCADAxis(PVector axis) {
+		//non-zero
+		if( axis.mag() < 1E-8 )
+			return;
+		else
+			worldAxis = axis.get();
+		worldAxis.normalize();
+	}
+	
+	/**
+	 * Returns the main CAD rotation axis ((defined in the world coordinate system).
+	 */
+	public PVector getCADAxis() {
+		return worldAxis;
 	}
 }

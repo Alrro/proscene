@@ -288,6 +288,8 @@ public class Scene implements PConstants {
 		NO_MOUSE_ACTION("No mouse action"),
 		/** Rotate frame (camera or interactive frame. */
 		ROTATE("Rotate frame (camera or interactive frame)"),
+		/** Rotate (only) camera frame as in CAD applications). */
+		ROTATE_CAD("Rotate (only) camera frame as in CAD applications)"),
 		/** Zoom. */
 		ZOOM("Zoom"),
 		/** Translate frame (camera or interactive frame). */
