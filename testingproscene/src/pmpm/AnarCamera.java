@@ -45,10 +45,7 @@ public class AnarCamera extends PApplet {
 			float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
 			float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
 
-			PVector axisX = camera.frame()
-					.transformOf(
-							camera().frame().inverseTransformOf(
-									(new PVector(1, 0, 0))));
+			PVector axisX = camera.frame().transformOf(camera().frame().inverseTransformOf((new PVector(1, 0, 0))));
 			PVector axisZ = camera.frame().transformOf(new PVector(0, 0, 1));
 
 			float angleZ = rotationSensitivity() * (dx - px);
@@ -61,7 +58,8 @@ public class AnarCamera extends PApplet {
 			Quaternion quatZ = new Quaternion(axisZ, angleZ);
 			Quaternion quatX = new Quaternion(axisX, angleX);
 
-			return Quaternion.multiply(quatZ, quatX);
+			//return Quaternion.multiply(quatZ, quatX);
+			return Quaternion.multiply(quatX, quatZ);
 		}
 	}
 
