@@ -1225,7 +1225,7 @@ public class Scene implements PConstants {
 	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
 	 * or {@link #draw()}.
 	 */
-	private void displayVisualHints() {		
+	private void displayVisualHints() {
 		if (frameSelectionHintIsDrawn())
 			drawSelectionHints();
 		if (cameraPathsAreDrawn()) {
@@ -2326,7 +2326,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #drawCameraPathSelectionHints()
 	 */
-	protected void drawSelectionHints() {
+	public void drawSelectionHints() {
 		for (MouseGrabbable mg : MouseGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
@@ -2348,7 +2348,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #drawSelectionHints()
 	 */
-	protected void drawCameraPathSelectionHints() {
+	public void drawCameraPathSelectionHints() {
 		for (MouseGrabbable mg : MouseGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
