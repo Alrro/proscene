@@ -10,8 +10,8 @@ public class ScreenDrawingCRD extends PApplet {
 	/**
 	 * Driver
 	 * 
-	 * This release of proscene 1.1.1.b (the one that comes with this sketch)
-	 * works only in P5-1.5.1. It implements the new CAD_ARCBALL CameraProfile
+	 * This release of proscene 1.1.93c (the one that comes with this sketch)
+	 * works only in P5-2b5. It implements the new CAD_ARCBALL CameraProfile
 	 * (default) based on the new ROTATE_CAD Scene.MouseAction. The others are:
 	 * WHEELED_ARCBALL, and FIRST_PERSON. Please refer to the CameraProfile
 	 * example to further customise your profiles (unlikely).
@@ -33,7 +33,7 @@ public class ScreenDrawingCRD extends PApplet {
 	// Image width and height cannot be larger than 0 with this graphics card.
 	// String renderer = OPENGL;
 
-	boolean once = false;
+	//boolean once = false;
 
 	// Define scene dimension here
 	int w = 640;
@@ -41,7 +41,10 @@ public class ScreenDrawingCRD extends PApplet {
 
 	// define your navigator position using screen coordinates
 	int screenX = w * 3 / 4;
-	int screenY = h / 4;
+	int screenY = h / 4;	
+	//this is a depth value ranging in [0..1] (near and far plane respectively).
+	//play with it according to your needs
+	float screenZ = 0.15f;
 
 	// Define navigator size in pixels here:
 	float boxLenght = 50;
@@ -85,6 +88,11 @@ public class ScreenDrawingCRD extends PApplet {
 
 		scene.registerCameraProfile(new CameraProfile(scene, "CAD_ARCBALL",	CameraProfile.Mode.CAD_ARCBALL));
 		scene.setCurrentCameraProfile("CAD_ARCBALL");
+		
+		// Needs testing: disabling it gives better results in my setup. See:
+		// 1. http://code.google.com/p/proscene/issues/detail?id=7
+		// 2. http://processing.org/reference/hint_.html
+		hint(DISABLE_STROKE_PERSPECTIVE);
 
 		// throws a null when running as an applet from within eclipse
 		// this.frame.setResizable(true);
@@ -101,7 +109,7 @@ public class ScreenDrawingCRD extends PApplet {
 		pushMatrix();
 		iFrame.applyTransformation();
 		scene.drawAxis(boxLenghtRatio * 1.3f);
-		// Draw a second box		
+		// Draw a second box
 		if (scene.interactiveFrame().grabsMouse()) {
 			fill(255, 0, 0);
 			box(boxLenghtRatio);
@@ -167,25 +175,19 @@ public class ScreenDrawingCRD extends PApplet {
 	 * This procedure defines the parameterization. Note that the navigator
 	 * should *always* be visible since the third parameter passed to
 	 * unprojectedCoordinatesOf is 0.5, i.e., just half way between zNear and
-	 * zFar Please refer to camera.unprojectedCoordinatesOf
+	 * zFar Please refer to camera.unprojectedCoordinatesOf.
 	 */
 	public void parameteriseNavigator() {
 		if (scene.cameraType() == Camera.Type.ORTHOGRAPHIC) {
 			// use just one out of the two
-			// iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new
-			// PVector(screenX, screenY, 0.5f), scene.camera().frame()));
-			iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f)));
+			// iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ), scene.camera().frame()));
+			iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ)));
 			this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());
 		} else {
-			// PERSP may be optimised
-			if (!once) {
-				// use just one out of the two
-				// iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new
-				// PVector(screenX, screenY, 0.5f), scene.camera().frame()));
-				iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f)));
-				this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());
-				once = true;
-			}
+			// use just one out of the two
+			// iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ), scene.camera().frame()));
+			iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ)));
+			this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());			
 		}
 	}
 
@@ -245,6 +247,13 @@ public class ScreenDrawingCRD extends PApplet {
 				println("Rotate plane respect to the world coordinate system");
 			else
 				println("Rotate plane relative to its position in the world coordinate system");
+		}
+		if(key == 'v' || key == 'V') {
+			PVector nav = scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f));
+			PVector camNav = scene.camera().cameraCoordinatesOf(nav);
+			float near = scene.renderer().cameraNear;
+			float far = scene.renderer().cameraFar;
+			println("nav.z: " + nav.z + ", camNav.z: " + camNav.z + ", near: " + near + ", far: " + far);
 		}
 	}
 
