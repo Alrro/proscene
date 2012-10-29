@@ -1,12 +1,11 @@
 package pmpm;
 
 import processing.core.*;
-import processing.opengl.*;
 import remixlab.proscene.*;
 import controlP5.*;
 
 @SuppressWarnings("serial")
-public class ScreenDrawingCRD extends PApplet {
+public class OnScreenCRD extends PApplet {
 	/**
 	 * Driver
 	 * 
@@ -27,14 +26,7 @@ public class ScreenDrawingCRD extends PApplet {
 	 * Observation: the navigator should always be visible (please see the
 	 * parameteriseNavigator documentation below)
 	 */
-
-	String renderer = P3D;
-	// Cannot test OPENGL renderer since it always gives me:
-	// Image width and height cannot be larger than 0 with this graphics card.
-	// String renderer = OPENGL;
-
-	//boolean once = false;
-
+	
 	// Define scene dimension here
 	int w = 640;
 	int h = 480;
@@ -65,7 +57,7 @@ public class ScreenDrawingCRD extends PApplet {
 	int oldSliderValue = 0;
 
 	public void setup() {
-		size(w, h, renderer);
+		size(w, h, P3D);
 		scene = new Scene(this);
 		//scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		// press 'i' to switch the interaction between the camera frame and the interactive frame
@@ -154,19 +146,13 @@ public class ScreenDrawingCRD extends PApplet {
 		//the important bit here (!) is the order of the operations:
 		//1. Draw the frame selection hints		
 		if(drawFrameSelectionHints)
-			scene.drawSelectionHints();
-		
+			scene.drawSelectionHints();		
 		//2. Disable the z-buffer (it's done in beginScreenDrawing)
 		scene.beginScreenDrawing();
-		//3. Draw the gui
+		//3. Then draw the gui: it should be drawn on top of the 3D scene
+		//Think if the painter's algorithm
 		controlP5.draw();
-		scene.endScreenDrawing();	
-		
-		/**
-		saveState();
-		controlP5.draw();
-		restoreState();
-		// */	
+		scene.endScreenDrawing();			
 
 		parameteriseNavigator();
 	}
@@ -178,63 +164,12 @@ public class ScreenDrawingCRD extends PApplet {
 	 * zFar Please refer to camera.unprojectedCoordinatesOf.
 	 */
 	public void parameteriseNavigator() {
-		if (scene.cameraType() == Camera.Type.ORTHOGRAPHIC) {
-			// use just one out of the two
-			// iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ), scene.camera().frame()));
-			iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ)));
-			this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());
-		} else {
-			// use just one out of the two
-			// iFrame.setTranslation(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ), scene.camera().frame()));
-			iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ)));
-			this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());			
-		}
-	}
-
-	// Hack to make it work
-	void saveState() {
-		// 1. Disable depth test to draw 2d on top of 3d. Don't know why
-		// it's not working properly, uncomment to see:
-		scene.pg3d.hint(DISABLE_DEPTH_TEST);
-		// 2. Set processing projection and modelview matrices to draw in 2D:
-		// more or less inspire from here:
-		// http://www.opengl.org/wiki/Viewing_and_Transformations#How_do_I_draw_2D_controls_over_my_3D_rendering.3F
-		// 2.a projection matrix:
-		float cameraZ = ((height / 2.0f) / tan(PI * 60.0f / 360.0f));
-		scene.pg3d.perspective(PI / 3.0f, scene.camera().aspectRatio(),	cameraZ / 10.0f, cameraZ * 10.0f);
-		// 2.b model view matrix
-		scene.pg3d.camera();
-	}
-
-	void restoreState() {
-		// 1. Restore processing projection matrix
-		switch (scene.camera().type()) {
-		case PERSPECTIVE:
-			scene.pg3d.perspective(scene.camera().fieldOfView(), scene.camera()
-					.aspectRatio(), scene.camera().zNear(), scene.camera()
-					.zFar());
-			break;
-		case ORTHOGRAPHIC:
-			float[] wh = scene.camera().getOrthoWidthHeight();
-			scene.pg3d.ortho(-wh[0], wh[0], -wh[1], wh[1], scene.camera()
-					.zNear(), scene.camera().zFar());
-			break;
-		}
-
-		// 2. Restore processing modelview matrix
-		scene.pg3d.camera(scene.camera().position().x, scene.camera()
-				.position().y, scene.camera().position().z,
-				scene.camera().at().x, scene.camera().at().y, scene.camera()
-						.at().z, scene.camera().upVector().x, scene.camera()
-						.upVector().y, scene.camera().upVector().z);
-
-		// 3. Re-enable the depth test, but it's not working, (see note above in
-		// saveState)
-		scene.pg3d.hint(ENABLE_DEPTH_TEST);
-	}
+		iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, screenZ)));
+		this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());
+	}	
 
 	public static void main(String args[]) {
-		PApplet.main(new String[] { "--present", "basic.CRD" });
+		PApplet.main(new String[] { "--present", "pmpm.OnScreenCRD" });
 	}
 
 	public void keyPressed() {
@@ -247,13 +182,6 @@ public class ScreenDrawingCRD extends PApplet {
 				println("Rotate plane respect to the world coordinate system");
 			else
 				println("Rotate plane relative to its position in the world coordinate system");
-		}
-		if(key == 'v' || key == 'V') {
-			PVector nav = scene.camera().unprojectedCoordinatesOf(new PVector(screenX, screenY, 0.5f));
-			PVector camNav = scene.camera().cameraCoordinatesOf(nav);
-			float near = scene.renderer().cameraNear;
-			float far = scene.renderer().cameraFar;
-			println("nav.z: " + nav.z + ", camNav.z: " + camNav.z + ", near: " + near + ", far: " + far);
 		}
 	}
 
