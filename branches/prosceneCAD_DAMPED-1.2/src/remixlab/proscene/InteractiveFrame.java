@@ -52,12 +52,18 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private float wheelSensitivity;
 
 	// Mouse speed:
-	private float mouseSpeed;
+	protected float mouseSpeed;
 	// spinning stuff:
 	private boolean isSpng;
 	private Timer spngTimer;
 	private int startedTime;
 	private int delay;
+	
+	// damp stuff:
+	protected float damping; // TODO not really necessary
+	protected float friction;
+	protected float transFriction;
+	private PVector transDir;
 
 	private Quaternion spngQuat;
 
@@ -109,6 +115,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		setTranslationSensitivity(1.0f);
 		setSpinningSensitivity(0.3f);
 		setWheelSensitivity(20.0f);
+		
+   	//damp
+		setFriction(0.16f);
 
 		keepsGrabbingMouse = false;
 		isSpng = false;
@@ -146,6 +155,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		setTranslationSensitivity(1.0f);
 		setSpinningSensitivity(0.3f);
 		setWheelSensitivity(20.0f);
+		
+		//damp
+		setFriction(0.16f);
 
 		keepsGrabbingMouse = false;
 		isSpng = false;
@@ -463,7 +475,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * until you call {@link #stopSpinning()}.
 	 */
 	public void startSpinning(int updateInterval) {
-		isSpng = true;
+		isSpng = true;		
 		if(updateInterval>0) {
 			if(spngTimer!=null) {
 				spngTimer.cancel();
@@ -478,14 +490,98 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
 		}
 	}
-
+	
 	/**
 	 * Rotates the InteractiveFrame by its {@link #spinningQuaternion()}. Called
 	 * by a timer when the InteractiveFrame {@link #isSpinning()}.
 	 */
-	public void spin() {
+	public void spin() {		
+		if(friction > 0) {
+			if (mouseSpeed == 0) {
+				stopSpinning();
+				return;
+			}
+			recomputeSpinningQuaternion();						
+		}		
 		rotate(spinningQuaternion());
 	}
+	
+	public void setFriction(float f) {
+		if(f < 0 || f > 1)
+			return;
+		friction = f;
+		damping = 1.0f - friction;
+	}
+	
+	public float friction() {
+		return friction;
+	}
+	
+	public void recomputeSpinningQuaternion() {
+		float prevSpeed = mouseSpeed;
+		mouseSpeed *= damping;
+		if (Math.abs(mouseSpeed) < .001f)
+			mouseSpeed = 0;
+		float currSpeed = mouseSpeed;
+		spinningQuaternion().fromAxisAngle(spinningQuaternion().axis(), currSpeed * spinningQuaternion().angle() / prevSpeed);
+	}	
+	
+	/**
+	public final void stopAdvance() {
+		if(spngTimer!=null) {
+			spngTimer.cancel();
+			spngTimer.purge();
+		}
+		isSpng = false;
+	}
+	
+	public void startAdvancing(int updateInterval) {
+		isSpng = true;		
+		if(updateInterval>0) {
+			if(spngTimer!=null) {
+				spngTimer.cancel();
+				spngTimer.purge();
+			}
+			spngTimer=new Timer();
+			TimerTask timerTask = new TimerTask() {
+				public void run() {
+					advance();
+				}
+			};
+			spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
+		}
+	}
+	
+	public void advance() {		
+		if(friction > 0) {
+			if (mouseSpeed == 0) {
+				stopSpinning();
+				return;
+			}
+			recomputeAdvanceDirection();						
+		}		
+		rotate(spinningQuaternion());
+	}
+	
+	public void setTranslationFriction(float f) {
+		if(f < 0 || f > 1)
+			return;
+		transFriction = f;
+	}
+	
+	public float translationFriction() {
+		return friction;
+	}
+	
+	public void recomputeAdvanceDirection() {
+		float prevSpeed = mouseSpeed;
+		mouseSpeed *= damping;
+		if (Math.abs(mouseSpeed) < .001f)
+			mouseSpeed = 0;
+		float currSpeed = mouseSpeed;
+		spinningQuaternion().fromAxisAngle(spinningQuaternion().axis(), currSpeed * spinningQuaternion().angle() / prevSpeed);
+	}
+	*/
 	
 	/**
 	 * Overloading of
@@ -585,12 +681,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		case SCREEN_ROTATE: {
 			// TODO: needs testing to see if it works correctly when left-handed is set
 			PVector trans = camera.projectedCoordinatesOf(position());
-			float prev_angle = PApplet
-					.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
-			float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x
-					- trans.x);
-			PVector axis = transformOf(camera.frame().inverseTransformOf(
-					new PVector(0.0f, 0.0f, -1.0f)));
+			float prev_angle = PApplet.atan2((int)prevPos.y - trans.y, (int)prevPos.x - trans.x);
+			float angle = PApplet.atan2((int)eventPoint.y - trans.y, (int)eventPoint.x - trans.x);
+			PVector axis = transformOf(camera.frame().inverseTransformOf(new PVector(0.0f, 0.0f, -1.0f)));
 			 
 			Quaternion rot;
 			if( scene.isRightHanded() )
@@ -598,8 +691,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			else
 				rot = new Quaternion(axis, prev_angle - angle);
 			
-			// #CONNECTION# These two methods should go together (spinning detection
-			// and activation)
+			// #CONNECTION# These two methods should go together (spinning detection and activation)
 			computeMouseSpeed(eventPoint);
 			setSpinningQuaternion(rot);
 			spin();

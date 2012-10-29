@@ -101,6 +101,13 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 */
 	@Override
 	public void spin() {
+		if(friction > 0) {
+			if (mouseSpeed == 0) {
+				stopSpinning();
+				return;
+			}
+			recomputeSpinningQuaternion();						
+		}	
 		rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
 	}
 
@@ -168,8 +175,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
+				translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				prevPos = eventPoint;
 				break;
 			}
@@ -255,8 +261,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				}
 				}
 
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
+				translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				prevPos = eventPoint;
 				break;
 			}
