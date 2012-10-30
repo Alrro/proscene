@@ -47,28 +47,29 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private boolean horiz;// Two simultaneous InteractiveFrame require two mice!
 	private int grabsMouseThreshold;
 	private float rotSensitivity;
-	private float transSensitivity;
-	private float spngSensitivity;
+	private float transSensitivity;	
 	private float wheelSensitivity;
 
 	// Mouse speed:
 	protected float mouseSpeed;
-	// spinning stuff:
-	private boolean isSpng;
-	private Timer spngTimer;
-	private int startedTime;
 	private int delay;
+	private int startedTime;
 	
-	// damp stuff:
-	protected float damping; // TODO not really necessary
-	protected float friction;
-	protected float transFriction;
-	private PVector transDir;
-
+	// spinning stuff:
+	private float spngSensitivity;
+	private boolean isSpng;
+	private Timer spngTimer;	
 	private Quaternion spngQuat;
+	protected float spinningFriction;	
+	
+	// dropping stuff:
+	private float droppingSensitivity;
+	private boolean isDropped;
+	private Timer droppedTimer;
+	private PVector droppingDirection;
+	protected float droppingFriction;
 
-	// Whether the SCREEN_TRANS direction (horizontal or vertical) is fixed or
-	// not.
+	// Whether the SCREEN_TRANS direction (horizontal or vertical) is fixed or not.
 	private boolean dirIsFixed;
 
 	// MouseGrabber
@@ -113,16 +114,21 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		setGrabsMouseThreshold(10);
 		setRotationSensitivity(1.0f);
 		setTranslationSensitivity(1.0f);
-		setSpinningSensitivity(0.3f);
 		setWheelSensitivity(20.0f);
 		
-   	//damp
-		setFriction(0.16f);
-
 		keepsGrabbingMouse = false;
-		isSpng = false;
-		prevConstraint = null;
+		
 		startedTime = 0;
+		
+		isSpng = false;
+		setSpinningSensitivity(0.3f);
+		setSpinningFriction(0.16f);
+		
+		isDropped = false;
+		setDroppingSensitivity(0.3f);
+		setDroppingFriction(0.16f);
+		
+		prevConstraint = null;		
 	}
 
 	/**
@@ -153,16 +159,21 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		setGrabsMouseThreshold(10);
 		setRotationSensitivity(1.0f);
 		setTranslationSensitivity(1.0f);
-		setSpinningSensitivity(0.3f);
 		setWheelSensitivity(20.0f);
 		
-		//damp
-		setFriction(0.16f);
-
 		keepsGrabbingMouse = false;
-		isSpng = false;
-		prevConstraint = null;
+		
 		startedTime = 0;
+		
+		isSpng = false;
+		setSpinningSensitivity(0.3f);
+		setSpinningFriction(0.16f);
+		
+		isDropped = false;
+		setDroppingSensitivity(0.3f);
+		setDroppingFriction(0.16f);
+		
+		prevConstraint = null;		
 
 		list = new ArrayList<KeyFrameInterpolator>();
 		Iterator<KeyFrameInterpolator> it = iFrame.listeners().iterator();
@@ -316,6 +327,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public final void setSpinningSensitivity(float sensitivity) {
 		spngSensitivity = sensitivity;
 	}
+	
+	//TODO doc me
+	public final void setDroppingSensitivity(float sensitivity) {
+		droppingSensitivity = sensitivity;
+	}
 
 	/**
 	 * Defines the {@link #wheelSensitivity()}.
@@ -391,6 +407,10 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public final float spinningSensitivity() {
 		return spngSensitivity;
 	}
+	
+	public final float droppingSensitivity() {
+		return droppingSensitivity;
+	}
 
 	/**
 	 * Returns the mouse wheel sensitivity.
@@ -445,6 +465,21 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public final void setSpinningQuaternion(Quaternion spinningQuaternion) {
 		spngQuat = spinningQuaternion;
 	}
+	
+	//TODO add doc
+	public final boolean isDropping() {
+		return isDropped;
+	}
+	
+  //TODO add doc
+	public final PVector droppingDirection() {
+		return droppingDirection;
+	}
+	
+  //TODO add doc
+	public final void setDroppingDirection(PVector dir) {
+		droppingDirection = dir;
+	}
 
 	/**
 	 * Returns {@code true} when the InteractiveFrame is being manipulated with
@@ -496,7 +531,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * by a timer when the InteractiveFrame {@link #isSpinning()}.
 	 */
 	public void spin() {		
-		if(friction > 0) {
+		if(spinningFriction() > 0) {
 			if (mouseSpeed == 0) {
 				stopSpinning();
 				return;
@@ -506,82 +541,83 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		rotate(spinningQuaternion());
 	}
 	
-	public void setFriction(float f) {
+	public void setSpinningFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
-		friction = f;
-		damping = 1.0f - friction;
+		spinningFriction = f;
 	}
 	
-	public float friction() {
-		return friction;
+	public float spinningFriction() {
+		return spinningFriction;
 	}
 	
-	public void recomputeSpinningQuaternion() {
+	protected void recomputeSpinningQuaternion() {
 		float prevSpeed = mouseSpeed;
+		float damping = 1.0f - spinningFriction;
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;
 		float currSpeed = mouseSpeed;
-		spinningQuaternion().fromAxisAngle(spinningQuaternion().axis(), currSpeed * spinningQuaternion().angle() / prevSpeed);
-	}	
-	
-	/**
-	public final void stopAdvance() {
-		if(spngTimer!=null) {
-			spngTimer.cancel();
-			spngTimer.purge();
-		}
-		isSpng = false;
+		spinningQuaternion().fromAxisAngle(spinningQuaternion().axis(), spinningQuaternion().angle() * (currSpeed / prevSpeed) );
 	}
 	
-	public void startAdvancing(int updateInterval) {
-		isSpng = true;		
+	// *--
+	
+	public final void stopDropping() {
+		if(droppedTimer!=null) {
+			droppedTimer.cancel();
+			droppedTimer.purge();
+		}
+		isDropped = false;
+	}
+	
+	public void startDropping(int updateInterval) {
+		isDropped = true;		
 		if(updateInterval>0) {
-			if(spngTimer!=null) {
-				spngTimer.cancel();
-				spngTimer.purge();
+			if(droppedTimer!=null) {
+				droppedTimer.cancel();
+				droppedTimer.purge();
 			}
-			spngTimer=new Timer();
+			droppedTimer=new Timer();
 			TimerTask timerTask = new TimerTask() {
 				public void run() {
-					advance();
+					drop();
 				}
 			};
-			spngTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
+			droppedTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
 		}
 	}
 	
-	public void advance() {		
-		if(friction > 0) {
+	public void drop() {		
+		if(droppingFriction > 0) {
 			if (mouseSpeed == 0) {
-				stopSpinning();
+				stopDropping();
 				return;
 			}
-			recomputeAdvanceDirection();						
+			recomputeDroppingDirection();						
 		}		
-		rotate(spinningQuaternion());
+		translate(droppingDirection());
 	}
 	
-	public void setTranslationFriction(float f) {
+	public void setDroppingFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
-		transFriction = f;
+		droppingFriction = f;
 	}
 	
-	public float translationFriction() {
-		return friction;
+	public float droppingFriction() {
+		return droppingFriction;
 	}
 	
-	public void recomputeAdvanceDirection() {
+	public void recomputeDroppingDirection() {
 		float prevSpeed = mouseSpeed;
+		float damping = 1.0f - droppingFriction;
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;
 		float currSpeed = mouseSpeed;
-		spinningQuaternion().fromAxisAngle(spinningQuaternion().axis(), currSpeed * spinningQuaternion().angle() / prevSpeed);
+		setDroppingDirection(PVector.mult(this.droppingDirection(), currSpeed / prevSpeed));
 	}
-	*/
 	
 	/**
 	 * Overloading of
@@ -661,7 +697,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			// And then down to frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
-			translate(trans);
+						
+			//TODO: experimental
+		  //translate(trans);
+			computeMouseSpeed(eventPoint);
+			setDroppingDirection(trans);			
+			drop();
+			
 			prevPos = eventPoint;
 			break;
 		}
@@ -673,7 +715,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
-			translate(trans);
+			
+		  //TODO: experimental
+		  //translate(trans);
+			computeMouseSpeed(eventPoint);
+			setDroppingDirection(trans);			
+			drop();
+			
 			prevPos = eventPoint;
 			break;
 		}
@@ -725,8 +773,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			// And then down to frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
-
-			translate(trans);
+			
+		  //TODO: experimental
+		  //translate(trans);
+			computeMouseSpeed(eventPoint);
+			setDroppingDirection(trans);			
+			drop();
+			
 			prevPos = eventPoint;
 			break;
 		}
@@ -783,6 +836,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE) || (action == Scene.MouseAction.ROTATE_CAD) )	&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
+		
+		if (((action == Scene.MouseAction.TRANSLATE) || (action == Scene.MouseAction.ZOOM) || (action == Scene.MouseAction.SCREEN_TRANSLATE) ) && (mouseSpeed >= droppingSensitivity()) )
+			startDropping(delay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
@@ -809,7 +865,14 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
-			translate(trans);
+								  
+		  translate(trans);
+		  //TODO: pending wheel speed!
+		  /**
+			computeWheelSpeed(rotation);
+			setDroppingDirection(trans);			
+			drop();
+			// */
 		}
 
 		// #CONNECTION# startAction should always be called before
@@ -841,7 +904,16 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			setConstraint(null);
 		}
 
-		switch (action) {
+		switch (action) {		
+		// /**
+		case SCREEN_TRANSLATE:
+			dirIsFixed = false;
+		case ZOOM:		
+		case TRANSLATE:
+			mouseSpeed = 0.0f;
+			stopDropping();
+			break;
+		// */
 		case ROTATE:
 		case ROTATE_CAD:
 		case SCREEN_ROTATE:
@@ -849,9 +921,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			stopSpinning();
 			break;
 
+			/**
 		case SCREEN_TRANSLATE:
 			dirIsFixed = false;
 			break;
+			*/
 
 		default:
 			break;

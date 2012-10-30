@@ -71,8 +71,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */
 	public InteractiveDrivableFrame clone() {
-		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super
-				.clone();
+		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
 		return clonedIAvtrFrame;
@@ -257,12 +256,11 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			}
 
 			case ROLL: {
-				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x)
-						/ camera.screenWidth();
+				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x) / camera.screenWidth();
 				
 			  //left-handed coordinate system correction
 				if ( scene.isLeftHanded() )
-				angle = -angle;
+					angle = -angle;
 				
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 				rotate(rot);

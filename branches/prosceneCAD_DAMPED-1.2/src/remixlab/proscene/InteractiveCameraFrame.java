@@ -101,7 +101,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 */
 	@Override
 	public void spin() {
-		if(friction > 0) {
+		if(spinningFriction > 0) {
 			if (mouseSpeed == 0) {
 				stopSpinning();
 				return;
@@ -175,20 +175,29 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-				translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+								
+			  //TODO: experimental
+			  //translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				computeMouseSpeed(eventPoint);
+				setDroppingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				drop();
+				
 				prevPos = eventPoint;
 				break;
 			}
 
 			case ZOOM: {
 				// #CONNECTION# wheelEvent() ZOOM case
-				float coef = PApplet.max(PApplet.abs((camera.frame()
-						.coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera
-						.sceneRadius());
+				float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
 				// Warning: same for left and right CoordinateSystemConvention:
-				PVector trans = new PVector(0.0f, 0.0f, -coef
-						* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
-				translate(inverseTransformOf(trans));
+				PVector trans = new PVector(0.0f, 0.0f, -coef	* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
+				
+			  //TODO: experimental
+				//translate(inverseTransformOf(trans));
+				computeMouseSpeed(eventPoint);
+				setDroppingDirection(inverseTransformOf(trans));
+				drop();
+				
 				prevPos = eventPoint;
 				break;
 			}
@@ -260,8 +269,13 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-
-				translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				
+			  //TODO: experimental
+				//translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				computeMouseSpeed(eventPoint);
+				setDroppingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				drop();
+				
 				prevPos = eventPoint;
 				break;
 			}
@@ -329,8 +343,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 			// #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed()
-					* (-rotation))));
+			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed() * (-rotation))));
 			break;
 		default:
 			break;
