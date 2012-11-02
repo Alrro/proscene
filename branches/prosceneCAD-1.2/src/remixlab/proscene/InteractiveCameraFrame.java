@@ -201,11 +201,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			
 			case ROTATE_CAD: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());				
-				// the following line calls setSpinningQuaternion
-				deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
+				Quaternion rot = deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
+				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);				
+				setSpinningQuaternion(rot);
 				spin();
 				prevPos = eventPoint;
 				break;
@@ -365,7 +364,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		//0,0,1 is given in the world and then transform to the camera frame
 		PVector world2camAxis = camera.frame().transformOf(worldAxis);
 
-		float angleZ = rotationSensitivity() * (dx - px);
+		float angleWorldAxis = rotationSensitivity() * (dx - px);
 		float angleX = rotationSensitivity() * (dy - py);
 
 		// left-handed coordinate system correction
@@ -373,15 +372,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			angleX = -angleX;
 		}
 
-		Quaternion quatZ = new Quaternion(world2camAxis, angleZ);
+		Quaternion quatWorld = new Quaternion(world2camAxis, angleWorldAxis);
 		Quaternion quatX = new Quaternion(axisX, angleX);
 		
-		if( Math.abs(angleX) > Math.abs(angleZ))
-			setSpinningQuaternion(quatX);
-		else
-			setSpinningQuaternion(quatZ);
-
-		return Quaternion.multiply(quatZ, quatX);
+		return Quaternion.multiply(quatWorld, quatX);
 	}
 	
 	/**
