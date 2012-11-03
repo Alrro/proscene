@@ -150,18 +150,28 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 */
 	public void flyUpdate() {
 		flyDisp.set(0.0f, 0.0f, 0.0f);
+		PVector trans;
 		switch (action) {
 		case MOVE_FORWARD:
+			mouseSpeed = flySpeed();
 			flyDisp.z = -flySpeed();
-			translate(localInverseTransformOf(flyDisp));
+			trans = localInverseTransformOf(flyDisp);
+			translate(trans);
+			setDroppingDirection(trans);
 			break;
 		case MOVE_BACKWARD:
+			mouseSpeed = flySpeed();
 			flyDisp.z = flySpeed();
-			translate(localInverseTransformOf(flyDisp));
+			trans = localInverseTransformOf(flyDisp);
+			translate(trans);
+			setDroppingDirection(trans);
 			break;
 		case DRIVE:
+			mouseSpeed = flySpeed() * drvSpd;
 			flyDisp.z = flySpeed() * drvSpd;
-			translate(localInverseTransformOf(flyDisp));
+			trans = localInverseTransformOf(flyDisp);
+			translate(trans);
+			setDroppingDirection(trans);
 			break;
 		default:
 			break;
@@ -177,6 +187,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
+			mouseSpeed = 0.0f;
+			stopDropping();
 			if(flyTimer != null) {
 				flyTimer.cancel();
 				flyTimer.purge();
@@ -222,6 +234,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			switch (action) {
 			case MOVE_FORWARD: {
 				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
+				computeDrivenDelay();
 				rotate(rot);
 				// #CONNECTION# wheelEvent MOVE_FORWARD case
 				// actual translation is made in flyUpdate().
@@ -232,6 +245,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case MOVE_BACKWARD: {
 				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
+				computeDrivenDelay();
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				// translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
@@ -241,6 +255,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case DRIVE: {
 				Quaternion rot = turnQuaternion((int)eventPoint.x, camera);
+				computeDrivenDelay();
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				drvSpd = 0.01f * -deltaY;
@@ -293,8 +308,29 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				flyTimer.purge();
 			}
 		}
+		
+		//TODO test
+		PApplet.println("mouse speed: " + mouseSpeed + ", droppingSensitivity(): " + droppingSensitivity());
+		
+		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= droppingSensitivity()) )
+			startDropping(delay);
 
 		super.mouseReleased(eventPoint, camera);
+	}
+	
+	protected void computeDrivenDelay() {
+	  // mouse speed is set in flyUpdate().
+		if (startedTime == 0) {
+			delay = 0;
+			startedTime = (int) System.currentTimeMillis();
+		} else {
+			delay = (int) System.currentTimeMillis() - startedTime;
+			startedTime = (int) System.currentTimeMillis();
+		}
+
+	  // Less than a millisecond: assume delay = 1ms
+		if (delay == 0)
+			delay = 1;
 	}
 	
 	/**

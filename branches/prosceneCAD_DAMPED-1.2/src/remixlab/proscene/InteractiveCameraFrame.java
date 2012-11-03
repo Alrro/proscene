@@ -207,8 +207,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			case ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,	(int) eventPoint.y, trans.x, trans.y, camera);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
+				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);
 				setSpinningQuaternion(rot);
 				spin();
@@ -220,8 +219,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());				
 				// the following line calls setSpinningQuaternion
 				deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
+				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);				
 				spin();
 				prevPos = eventPoint;

@@ -52,8 +52,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 	// Mouse speed:
 	protected float mouseSpeed;
-	private int delay;
-	private int startedTime;
+	protected int delay;
+	protected int startedTime;
 	
 	// spinning stuff:
 	private float spngSensitivity;
@@ -951,11 +951,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			startedTime = (int) System.currentTimeMillis();
 		}
 
+	  // Less than a millisecond: assume delay = 1ms
 		if (delay == 0)
-			// Less than a millisecond: assume delay = 1ms
-			mouseSpeed = dist;
-		else
-			mouseSpeed = dist / delay;
+			delay = 1;
+		
+		mouseSpeed = dist / delay;
 	}
 
 	/**
