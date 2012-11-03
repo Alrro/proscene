@@ -63,6 +63,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	protected float spinningFriction;	
 	
 	// dropping stuff:
+	protected static final float MIN_DROPPING_FRICTION = 0.01f;
 	private float droppingSensitivity;
 	private boolean isDropped;
 	private Timer droppedTimer;
@@ -536,9 +537,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 				stopSpinning();
 				return;
 			}
+			rotate(spinningQuaternion());
 			recomputeSpinningQuaternion();						
-		}		
-		rotate(spinningQuaternion());
+		}
+		else
+			rotate(spinningQuaternion());
 	}
 	
 	public void setSpinningFriction(float f) {
@@ -594,14 +597,20 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 				stopDropping();
 				return;
 			}
+			translate(droppingDirection());
 			recomputeDroppingDirection();						
 		}		
-		translate(droppingDirection());
+		else
+			translate(droppingDirection());
 	}
-	
+		
 	public void setDroppingFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
+		if(f < MIN_DROPPING_FRICTION) {
+			droppingFriction = MIN_DROPPING_FRICTION;
+			PApplet.println("Setting dropping friction to " + MIN_DROPPING_FRICTION + " which is its minimum value");
+		}
 		droppingFriction = f;
 	}
 	
@@ -867,12 +876,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 				trans = referenceFrame().transformOf(trans);
 								  
 		  translate(trans);
-		  //TODO: pending wheel speed!
-		  /**
-			computeWheelSpeed(rotation);
-			setDroppingDirection(trans);			
-			drop();
-			// */
 		}
 
 		// #CONNECTION# startAction should always be called before
