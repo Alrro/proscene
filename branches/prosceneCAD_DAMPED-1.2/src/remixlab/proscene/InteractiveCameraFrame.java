@@ -181,8 +181,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			  //TODO: experimental
 			  //translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				computeMouseSpeed(eventPoint);
-				setDroppingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
-				drop();
+				setTossingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				toss();
 				
 				prevPos = eventPoint;
 				break;
@@ -197,8 +197,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			  //TODO: experimental
 				//translate(inverseTransformOf(trans));
 				computeMouseSpeed(eventPoint);
-				setDroppingDirection(inverseTransformOf(trans));
-				drop();
+				setTossingDirection(inverseTransformOf(trans));
+				toss();
 				
 				prevPos = eventPoint;
 				break;
@@ -218,9 +218,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			case ROTATE_CAD: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());				
 				// the following line calls setSpinningQuaternion
-				deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
+				Quaternion rot = deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
 				// #CONNECTION# These two methods should go together (spinning detection and activation)
-				computeMouseSpeed(eventPoint);				
+				computeMouseSpeed(eventPoint);
+				setSpinningQuaternion(rot);
 				spin();
 				prevPos = eventPoint;
 				break;
@@ -273,8 +274,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			  //TODO: experimental
 				//translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				computeMouseSpeed(eventPoint);
-				setDroppingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
-				drop();
+				setTossingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				toss();
 				
 				prevPos = eventPoint;
 				break;

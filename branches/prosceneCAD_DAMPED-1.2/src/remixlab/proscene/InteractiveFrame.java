@@ -62,13 +62,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private Quaternion spngQuat;
 	protected float spinningFriction;	
 	
-	// dropping stuff:
-	protected static final float MIN_DROPPING_FRICTION = 0.01f;
-	private float droppingSensitivity;
-	private boolean isDropped;
-	private Timer droppedTimer;
-	private PVector droppingDirection;
-	protected float droppingFriction;
+	// tossing stuff:
+	protected static final float MIN_TOSSING_FRICTION = 0.01f;
+	private float tossingSensitivity;
+	private boolean isTossed;
+	private Timer tossingTimer;
+	private PVector tossingDirection;
+	protected float tossingFriction;
 
 	// Whether the SCREEN_TRANS direction (horizontal or vertical) is fixed or not.
 	private boolean dirIsFixed;
@@ -125,9 +125,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		setSpinningSensitivity(0.3f);
 		setSpinningFriction(0.16f);
 		
-		isDropped = false;
-		setDroppingSensitivity(0.3f);
-		setDroppingFriction(0.16f);
+		isTossed = false;
+		setTossingSensitivity(0.3f);
+		setTossingFriction(0.16f);
 		
 		prevConstraint = null;		
 	}
@@ -170,9 +170,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		setSpinningSensitivity(0.3f);
 		setSpinningFriction(0.16f);
 		
-		isDropped = false;
-		setDroppingSensitivity(0.3f);
-		setDroppingFriction(0.16f);
+		isTossed = false;
+		setTossingSensitivity(0.3f);
+		setTossingFriction(0.16f);
 		
 		prevConstraint = null;		
 
@@ -330,8 +330,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 	
 	//TODO doc me
-	public final void setDroppingSensitivity(float sensitivity) {
-		droppingSensitivity = sensitivity;
+	public final void setTossingSensitivity(float sensitivity) {
+		tossingSensitivity = sensitivity;
 	}
 
 	/**
@@ -409,8 +409,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		return spngSensitivity;
 	}
 	
-	public final float droppingSensitivity() {
-		return droppingSensitivity;
+	public final float tossingSensitivity() {
+		return tossingSensitivity;
 	}
 
 	/**
@@ -468,18 +468,18 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 	
 	//TODO add doc
-	public final boolean isDropping() {
-		return isDropped;
+	public final boolean isTossing() {
+		return isTossed;
 	}
 	
   //TODO add doc
-	public final PVector droppingDirection() {
-		return droppingDirection;
+	public final PVector tossingDirection() {
+		return tossingDirection;
 	}
 	
   //TODO add doc
-	public final void setDroppingDirection(PVector dir) {
-		droppingDirection = dir;
+	public final void setTossingDirection(PVector dir) {
+		tossingDirection = dir;
 	}
 
 	/**
@@ -566,66 +566,66 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	
 	// *--
 	
-	public final void stopDropping() {
-		if(droppedTimer!=null) {
-			droppedTimer.cancel();
-			droppedTimer.purge();
+	public final void stopTossing() {
+		if(tossingTimer!=null) {
+			tossingTimer.cancel();
+			tossingTimer.purge();
 		}
-		isDropped = false;
+		isTossed = false;
 	}
 	
-	public void startDropping(int updateInterval) {
-		isDropped = true;		
+	public void startTossing(int updateInterval) {
+		isTossed = true;		
 		if(updateInterval>0) {
-			if(droppedTimer!=null) {
-				droppedTimer.cancel();
-				droppedTimer.purge();
+			if(tossingTimer!=null) {
+				tossingTimer.cancel();
+				tossingTimer.purge();
 			}
-			droppedTimer=new Timer();
+			tossingTimer=new Timer();
 			TimerTask timerTask = new TimerTask() {
 				public void run() {
-					drop();
+					toss();
 				}
 			};
-			droppedTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
+			tossingTimer.scheduleAtFixedRate(timerTask, 0, updateInterval);
 		}
 	}
 	
-	public void drop() {		
-		if(droppingFriction > 0) {
+	public void toss() {		
+		if(tossingFriction > 0) {
 			if (mouseSpeed == 0) {
-				stopDropping();
+				stopTossing();
 				return;
 			}
-			translate(droppingDirection());
-			recomputeDroppingDirection();						
+			translate(tossingDirection());
+			recomputeTossingDirection();						
 		}		
 		else
-			translate(droppingDirection());
+			translate(tossingDirection());
 	}
 		
-	public void setDroppingFriction(float f) {
+	public void setTossingFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
-		if(f < MIN_DROPPING_FRICTION) {
-			droppingFriction = MIN_DROPPING_FRICTION;
-			PApplet.println("Setting dropping friction to " + MIN_DROPPING_FRICTION + " which is its minimum value");
+		if(f < MIN_TOSSING_FRICTION) {
+			tossingFriction = MIN_TOSSING_FRICTION;
+			PApplet.println("Setting tossing friction to " + MIN_TOSSING_FRICTION + " which is its minimum value");
 		}
-		droppingFriction = f;
+		tossingFriction = f;
 	}
 	
-	public float droppingFriction() {
-		return droppingFriction;
+	public float tossingFriction() {
+		return tossingFriction;
 	}
 	
-	public void recomputeDroppingDirection() {
+	public void recomputeTossingDirection() {
 		float prevSpeed = mouseSpeed;
-		float damping = 1.0f - droppingFriction;
+		float damping = 1.0f - tossingFriction;
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;
 		float currSpeed = mouseSpeed;
-		setDroppingDirection(PVector.mult(this.droppingDirection(), currSpeed / prevSpeed));
+		setTossingDirection(PVector.mult(this.tossingDirection(), currSpeed / prevSpeed));
 	}
 	
 	/**
@@ -710,8 +710,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			//TODO: experimental
 		  //translate(trans);
 			computeMouseSpeed(eventPoint);
-			setDroppingDirection(trans);			
-			drop();
+			setTossingDirection(trans);			
+			toss();
 			
 			prevPos = eventPoint;
 			break;
@@ -728,8 +728,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		  //TODO: experimental
 		  //translate(trans);
 			computeMouseSpeed(eventPoint);
-			setDroppingDirection(trans);			
-			drop();
+			setTossingDirection(trans);			
+			toss();
 			
 			prevPos = eventPoint;
 			break;
@@ -786,8 +786,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		  //TODO: experimental
 		  //translate(trans);
 			computeMouseSpeed(eventPoint);
-			setDroppingDirection(trans);			
-			drop();
+			setTossingDirection(trans);			
+			toss();
 			
 			prevPos = eventPoint;
 			break;
@@ -839,6 +839,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	public void mouseReleased(Point event, Camera camera) {
 		keepsGrabbingMouse = false;
+		
+	  //TODO test
+	  PApplet.println("mouse speed: " + mouseSpeed + ", spinningSensitivity(): " + spinningSensitivity());
 
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
@@ -846,8 +849,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE) || (action == Scene.MouseAction.ROTATE_CAD) )	&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
 		
-		if (((action == Scene.MouseAction.TRANSLATE) || (action == Scene.MouseAction.ZOOM) || (action == Scene.MouseAction.SCREEN_TRANSLATE) ) && (mouseSpeed >= droppingSensitivity()) )
-			startDropping(delay);
+		if (((action == Scene.MouseAction.TRANSLATE) || (action == Scene.MouseAction.ZOOM) || (action == Scene.MouseAction.SCREEN_TRANSLATE) ) && (mouseSpeed >= tossingSensitivity()) )
+			startTossing(delay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
@@ -914,7 +917,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		case ZOOM:		
 		case TRANSLATE:
 			mouseSpeed = 0.0f;
-			stopDropping();
+			stopTossing();
 			break;
 		// */
 		case ROTATE:

@@ -157,21 +157,21 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			flyDisp.z = -flySpeed();
 			trans = localInverseTransformOf(flyDisp);
 			translate(trans);
-			setDroppingDirection(trans);
+			setTossingDirection(trans);
 			break;
 		case MOVE_BACKWARD:
 			mouseSpeed = flySpeed();
 			flyDisp.z = flySpeed();
 			trans = localInverseTransformOf(flyDisp);
 			translate(trans);
-			setDroppingDirection(trans);
+			setTossingDirection(trans);
 			break;
 		case DRIVE:
 			mouseSpeed = flySpeed() * drvSpd;
 			flyDisp.z = flySpeed() * drvSpd;
 			trans = localInverseTransformOf(flyDisp);
 			translate(trans);
-			setDroppingDirection(trans);
+			setTossingDirection(trans);
 			break;
 		default:
 			break;
@@ -188,7 +188,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_BACKWARD:
 		case DRIVE:
 			mouseSpeed = 0.0f;
-			stopDropping();
+			stopTossing();
 			if(flyTimer != null) {
 				flyTimer.cancel();
 				flyTimer.purge();
@@ -310,10 +310,10 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		}
 		
 		//TODO test
-		PApplet.println("mouse speed: " + mouseSpeed + ", droppingSensitivity(): " + droppingSensitivity());
+		PApplet.println("mouse speed: " + mouseSpeed + ", tossingSensitivity(): " + tossingSensitivity());
 		
-		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= droppingSensitivity()) )
-			startDropping(delay);
+		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= tossingSensitivity()) )
+			startTossing(delay);
 
 		super.mouseReleased(eventPoint, camera);
 	}
