@@ -307,10 +307,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				flyTimer.cancel();
 				flyTimer.purge();
 			}
-		}
-		
-		//TODO test
-		PApplet.println("mouse speed: " + mouseSpeed + ", tossingSensitivity(): " + tossingSensitivity());
+		}		
 		
 		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= tossingSensitivity()) )
 			startTossing(delay);

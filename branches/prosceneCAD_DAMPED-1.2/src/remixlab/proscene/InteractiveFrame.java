@@ -123,11 +123,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		
 		isSpng = false;
 		setSpinningSensitivity(0.3f);
-		setSpinningFriction(0.16f);
+		setSpinningFriction(0.0f);
 		
 		isTossed = false;
 		setTossingSensitivity(0.3f);
-		setTossingFriction(0.16f);
+		setTossingFriction(1.0f);
 		
 		prevConstraint = null;		
 	}
@@ -329,7 +329,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		spngSensitivity = sensitivity;
 	}
 	
-	//TODO doc me
+	/**
+	 * Defines the {@link #tossingSensitivity()}.
+	 */
 	public final void setTossingSensitivity(float sensitivity) {
 		tossingSensitivity = sensitivity;
 	}
@@ -354,6 +356,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #translationSensitivity()
 	 * @see #spinningSensitivity()
 	 * @see #wheelSensitivity()
+	 * @see #tossingSensitivity()
 	 */
 	public final float rotationSensitivity() {
 		return rotSensitivity;
@@ -383,6 +386,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #rotationSensitivity()
 	 * @see #spinningSensitivity()
 	 * @see #wheelSensitivity()
+	 * @see #tossingSensitivity()
 	 */
 	public final float translationSensitivity() {
 		return transSensitivity;
@@ -396,19 +400,40 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * {@link #startSpinning(int)} for details.
 	 * <p>
 	 * Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
-	 * (300 pixels per second). Use setSpinningSensitivity() to tune this value. A
-	 * higher value will make spinning more difficult (a value of 100.0 forbids
-	 * spinning in practice).
+	 * (300 pixels per second). Use {@link #setSpinningSensitivity(float)} to tune
+	 * this value. A higher value will make spinning more difficult (a value of
+	 * 100.0 forbids spinning in practice).
 	 * 
 	 * @see #setSpinningSensitivity(float)
+	 * @see #setTossingSensitivity(float)
 	 * @see #translationSensitivity()
 	 * @see #rotationSensitivity()
 	 * @see #wheelSensitivity()
+	 * @see #tossingSensitivity()
 	 */
 	public final float spinningSensitivity() {
 		return spngSensitivity;
 	}
 	
+	/**
+	 * Returns the minimum mouse speed required (at button release) to make the
+	 * InteractiveFrame {@link #toss()}.
+	 * <p>
+	 * See {@link #toss()}, {@link #tossingDirection()} and
+	 * {@link #startTossing(int)} for details.
+	 * <p>
+	 * Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
+	 * (300 pixels per second). Use {@link #setTossingSensitivity(float)} to tune
+	 * this value. A higher value will make tossing more difficult (a value of
+	 * 100.0 forbids spinning in practice).
+	 * 
+	 * @see #setTossingSensitivity(float)
+	 * @see #setSpinningSensitivity(float) 
+	 * @see #translationSensitivity()
+	 * @see #rotationSensitivity()
+	 * @see #wheelSensitivity()
+	 * @see #spinningSensitivity()
+	 */
 	public final float tossingSensitivity() {
 		return tossingSensitivity;
 	}
@@ -424,6 +449,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #translationSensitivity()
 	 * @see #rotationSensitivity()
 	 * @see #spinningSensitivity()
+	 * @see #tossingSensitivity()
 	 */
 	public float wheelSensitivity() {
 		return wheelSensitivity;
@@ -438,6 +464,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * <p>
 	 * Use {@link #startSpinning(int)} and {@link #stopSpinning()} to change this
 	 * state. Default value is {@code false}.
+	 * 
+	 * @see #isTossing()
 	 */
 	public final boolean isSpinning() {
 		return isSpng;
@@ -454,6 +482,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * coordinate system. You can use
 	 * {@link remixlab.proscene.Frame#transformOfFrom(PVector, Frame)} to convert
 	 * this axis from an other Frame coordinate system.
+	 * <p>
+	 * <b>Attention: </b> Spinning may be decelerated according to {@link #spinningFriction()}
+	 * till it stops completely.
 	 */
 	public final Quaternion spinningQuaternion() {
 		return spngQuat;
@@ -467,7 +498,18 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		spngQuat = spinningQuaternion;
 	}
 	
-	//TODO add doc
+	/**
+	 * Returns {@code true} when the InteractiveFrame is tossing.
+	 * <p>
+	 * During tossing, {@link #toss()} translates the InteractiveFrame by its
+	 * {@link #tossingDirection()} at a frequency defined when the
+	 * InteractiveFrame {@link #startTossing(int)}.
+	 * <p>
+	 * Use {@link #startTossing(int)} and {@link #stopTossing()} to change this
+	 * state. Default value is {@code false}.
+	 * 
+	 * @see #isSpinning()
+	 */
 	public final boolean isTossing() {
 		return isTossed;
 	}
@@ -494,6 +536,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	/**
 	 * Stops the spinning motion started using {@link #startSpinning(int)}.
 	 * {@link #isSpinning()} will return {@code false} after this call.
+	 * <p>
+	 * <b>Attention: </b> This method may be called by {@link #spin()}, since spinning may
+	 * be decelerated according to {@link #spinningFriction()} till it stops completely.
+	 * 
+	 * @see #spinningFriction()
+	 * @see #toss()
 	 */
 	public final void stopSpinning() {
 		if(spngTimer!=null) {
@@ -509,6 +557,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * This method starts a timer that will call {@link #spin()} every {@code
 	 * updateInterval} milliseconds. The InteractiveFrame {@link #isSpinning()}
 	 * until you call {@link #stopSpinning()}.
+	 * <p>
+	 * <b>Attention: </b> Spinning may be decelerated according to {@link #spinningFriction()}
+	 * till it stops completely.
+	 * 
+	 * @see #spinningFriction()
+	 * @see #toss()
 	 */
 	public void startSpinning(int updateInterval) {
 		isSpng = true;		
@@ -529,7 +583,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	
 	/**
 	 * Rotates the InteractiveFrame by its {@link #spinningQuaternion()}. Called
-	 * by a timer when the InteractiveFrame {@link #isSpinning()}.
+	 * by a timer when the InteractiveFrame {@link #isSpinning()}. 
+	 * <p>
+	 * <b>Attention: </b> Spinning may be decelerated according to
+	 * {@link #spinningFriction()} till it stops completely.
+	 * 
+	 * @see #spinningFriction()
+	 * @see #toss()
 	 */
 	public void spin() {		
 		if(spinningFriction() > 0) {
@@ -544,19 +604,39 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			rotate(spinningQuaternion());
 	}
 	
+	/**
+	 * Defines the {@link #spinningFriction()}. Values must be
+	 * in the range [0..1].
+	 */
 	public void setSpinningFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
 		spinningFriction = f;
 	}
 	
+	/**
+	 * Defines the spinning deceleration.
+	 * <p>
+	 * Default value is 0.0, i.e., no spinning deceleration. Use
+	 * {@link #setSpinningFriction(float)} to tune this value.
+	 * A higher value will make spinning more difficult (a value of
+	 * 1.0 forbids spinning).
+	 * 
+	 * @see #tossingFriction()
+	 */
 	public float spinningFriction() {
 		return spinningFriction;
 	}
 	
+	/**
+	 * Internal method. Recomputes the {@link #spinningQuaternion()}
+	 * according to {@link #spinningFriction()}.
+	 * 
+	 * @see #recomputeTossingDirection()
+	 */
 	protected void recomputeSpinningQuaternion() {
 		float prevSpeed = mouseSpeed;
-		float damping = 1.0f - spinningFriction;
+		float damping = 1.0f - spinningFriction();
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;
@@ -564,8 +644,16 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		spinningQuaternion().fromAxisAngle(spinningQuaternion().axis(), spinningQuaternion().angle() * (currSpeed / prevSpeed) );
 	}
 	
-	// *--
-	
+	/**
+	 * Stops the tossing motion started using {@link #startTossing(int)}.
+	 * {@link #isTossing()} will return {@code false} after this call.
+	 * <p>
+	 * <b>Attention: </b> This method may be called by {@link #toss()}, since tossing is
+	 * decelerated according to {@link #tossingFriction()} till it stops completely.
+	 * 
+	 * @see #tossingFriction()
+	 * @see #spin()
+	 */
 	public final void stopTossing() {
 		if(tossingTimer!=null) {
 			tossingTimer.cancel();
@@ -574,6 +662,19 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		isTossed = false;
 	}
 	
+	/**
+	 * Starts the tossing of the InteractiveFrame.
+	 * <p>
+	 * This method starts a timer that will call {@link #toss()} every {@code
+	 * updateInterval} milliseconds. The InteractiveFrame {@link #isTossing()}
+	 * until you call {@link #stopTossing()}.
+	 * <p>
+	 * <b>Attention: </b> Tossing may be decelerated according to {@link #tossingFriction()}
+	 * till it stops completely.
+	 * 
+	 * @see #tossingFriction()
+	 * @see #spin()
+	 */
 	public void startTossing(int updateInterval) {
 		isTossed = true;		
 		if(updateInterval>0) {
@@ -591,6 +692,16 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		}
 	}
 	
+	/**
+	 * Translates the InteractiveFrame along its {@link #tossingDirection()}. Called
+	 * by a timer when the InteractiveFrame {@link #isTossing()}. 
+	 * <p>
+	 * <b>Attention: </b> Tossing may be decelerated according to
+	 * {@link #tossingFriction()} till it stops completely.
+	 * 
+	 * @see #tossingFriction()
+	 * @see #spin()
+	 */
 	public void toss() {		
 		if(tossingFriction > 0) {
 			if (mouseSpeed == 0) {
@@ -604,6 +715,11 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			translate(tossingDirection());
 	}
 		
+	/**
+	 * Defines the {@link #tossingFriction()}. Values must be
+	 * in the range [{@link #MIN_TOSSING_FRICTION}..1].
+	 * {@link #MIN_TOSSING_FRICTION} is currently set to 0.01f.
+	 */
 	public void setTossingFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
@@ -614,13 +730,28 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		tossingFriction = f;
 	}
 	
+	/**
+	 * Defines the tossing deceleration.
+	 * <p>
+	 * Default value is 1.0, i.e., forbids tossing. Use
+	 * {@link #setTossingFriction(float)} to tune this value.
+	 * A lower value will make tossing easier.
+	 * 
+	 * @see #spinningFriction()
+	 */
 	public float tossingFriction() {
 		return tossingFriction;
 	}
 	
-	public void recomputeTossingDirection() {
+	/**
+	 * Internal method. Recomputes the {@link #tossingDirection()}
+	 * according to {@link #tossingFriction()}.
+	 * 
+	 * @see #recomputeSpinningQuaternion()
+	 */
+	protected void recomputeTossingDirection() {
 		float prevSpeed = mouseSpeed;
-		float damping = 1.0f - tossingFriction;
+		float damping = 1.0f - tossingFriction();
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;
@@ -707,8 +838,6 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
 						
-			//TODO: experimental
-		  //translate(trans);
 			computeMouseSpeed(eventPoint);
 			setTossingDirection(trans);			
 			toss();
@@ -782,9 +911,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			// And then down to frame
 			if (referenceFrame() != null)
 				trans = referenceFrame().transformOf(trans);
-			
-		  //TODO: experimental
-		  //translate(trans);
+					  
 			computeMouseSpeed(eventPoint);
 			setTossingDirection(trans);			
 			toss();
@@ -838,15 +965,12 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #isSpinning()
 	 */
 	public void mouseReleased(Point event, Camera camera) {
-		keepsGrabbingMouse = false;
-		
-	  //TODO test
-	  PApplet.println("mouse speed: " + mouseSpeed + ", spinningSensitivity(): " + spinningSensitivity());
+		keepsGrabbingMouse = false;		
 
 		if (prevConstraint != null)
 			setConstraint(prevConstraint);
 
-		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE) || (action == Scene.MouseAction.ROTATE_CAD) )	&& (mouseSpeed >= spinningSensitivity()))
+		if (((action == Scene.MouseAction.ROTATE) || (action == Scene.MouseAction.SCREEN_ROTATE) || (action == Scene.MouseAction.CAD_ROTATE) )	&& (mouseSpeed >= spinningSensitivity()))
 			startSpinning(delay);
 		
 		if (((action == Scene.MouseAction.TRANSLATE) || (action == Scene.MouseAction.ZOOM) || (action == Scene.MouseAction.SCREEN_TRANSLATE) ) && (mouseSpeed >= tossingSensitivity()) )
@@ -921,7 +1045,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			break;
 		// */
 		case ROTATE:
-		case ROTATE_CAD:
+		case CAD_ROTATE:
 		case SCREEN_ROTATE:
 			mouseSpeed = 0.0f;
 			stopSpinning();

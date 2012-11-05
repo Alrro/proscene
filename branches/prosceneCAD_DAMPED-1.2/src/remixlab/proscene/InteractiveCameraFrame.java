@@ -177,9 +177,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-								
-			  //TODO: experimental
-			  //translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+							  
 				computeMouseSpeed(eventPoint);
 				setTossingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				toss();
@@ -193,9 +191,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
 				// Warning: same for left and right CoordinateSystemConvention:
 				PVector trans = new PVector(0.0f, 0.0f, -coef	* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
-				
-			  //TODO: experimental
-				//translate(inverseTransformOf(trans));
+							  
 				computeMouseSpeed(eventPoint);
 				setTossingDirection(inverseTransformOf(trans));
 				toss();
@@ -215,10 +211,10 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 				break;
 			}
 			
-			case ROTATE_CAD: {
+			case CAD_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());				
 				// the following line calls setSpinningQuaternion
-				Quaternion rot = deformedBallCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
+				Quaternion rot = computeCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
 				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);
 				setSpinningQuaternion(rot);
@@ -270,9 +266,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-				
-			  //TODO: experimental
-				//translate(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+							  
 				computeMouseSpeed(eventPoint);
 				setTossingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
 				toss();
@@ -372,7 +366,15 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
 	}
 	
-	protected Quaternion deformedBallCADQuaternion(int x, int y, float cx,	float cy, Camera camera) {
+	/**
+	 * Returns a Quaternion computed according to mouse motion. The Quaternion
+	 * is computed as composition of two rotations (quaternions): 1. Mouse motion along
+	 * the screen X Axis rotates the camera along the {@link #getCADAxis()}. 2.
+	 * Mouse motion along the screen Y axis rotates the camera along its X axis.
+	 * 
+	 * @see #getCADAxis()
+	 */
+	protected Quaternion computeCADQuaternion(int x, int y, float cx,	float cy, Camera camera) {
 		// Points on the deformed ball
 		float px = rotationSensitivity() * ((int) prevPos.x - cx)	/ camera.screenWidth();
 		float py = rotationSensitivity() * (cy - (int) prevPos.y)	/ camera.screenHeight();
