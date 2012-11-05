@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.94)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -1076,13 +1076,13 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		} else {
 			delay = (int) System.currentTimeMillis() - startedTime;
 			startedTime = (int) System.currentTimeMillis();
-		}
-
-	  // Less than a millisecond: assume delay = 1ms
+		}	
+				
 		if (delay == 0)
-			delay = 1;
-		
-		mouseSpeed = dist / delay;
+			// Less than a millisecond: assume delay = 1ms
+			mouseSpeed = dist;
+		else
+			mouseSpeed = dist / delay;
 	}
 
 	/**

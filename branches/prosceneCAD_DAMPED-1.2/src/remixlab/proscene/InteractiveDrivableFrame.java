@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.94)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -307,14 +307,18 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				flyTimer.cancel();
 				flyTimer.purge();
 			}
-		}		
-		
+		}
+				
 		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= tossingSensitivity()) )
 			startTossing(delay);
 
 		super.mouseReleased(eventPoint, camera);
 	}
 	
+	/**
+	 * Internal method that computes the delay which is used as param
+	 * in {@link #toss()}. 
+	 */
 	protected void computeDrivenDelay() {
 	  // mouse speed is set in flyUpdate().
 		if (startedTime == 0) {
@@ -324,10 +328,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			delay = (int) System.currentTimeMillis() - startedTime;
 			startedTime = (int) System.currentTimeMillis();
 		}
-
-	  // Less than a millisecond: assume delay = 1ms
-		if (delay == 0)
-			delay = 1;
 	}
 	
 	/**
@@ -362,8 +362,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 			// #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed()
-					* (-rotation))));
+			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed() * (-rotation))));
 			break;
 		default:
 			break;
