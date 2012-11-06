@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.94)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -50,6 +50,7 @@ import processing.core.*;
 public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	protected Camera camera;
 	protected PVector arcballRefPnt;
+	protected PVector worldAxis;
 
 	/**
 	 * Default constructor.
@@ -64,6 +65,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		camera = cam;
 		removeFromMouseGrabberPool();
 		arcballRefPnt = new PVector(0.0f, 0.0f, 0.0f);
+		worldAxis = new PVector(0, 0, 1);
 	}
 
 	/**
@@ -77,6 +79,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	public InteractiveCameraFrame clone() {
 		InteractiveCameraFrame clonedICamFrame = (InteractiveCameraFrame) super.clone();
 		clonedICamFrame.arcballRefPnt = new PVector(arcballRefPnt.x, arcballRefPnt.y, arcballRefPnt.z);
+		clonedICamFrame.worldAxis = new PVector(worldAxis.x, worldAxis.y, worldAxis.z);
 		return clonedICamFrame;
 	}
 
@@ -98,7 +101,16 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 */
 	@Override
 	public void spin() {
-		rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
+		if(spinningFriction > 0) {
+			if (mouseSpeed == 0) {
+				stopSpinning();
+				return;
+			}
+			rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
+			recomputeSpinningQuaternion();						
+		}
+		else
+			rotateAroundPoint(spinningQuaternion(), arcballReferencePoint());
 	}
 
 	/**
@@ -165,31 +177,45 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
+							  
+				computeMouseSpeed(eventPoint);
+				setTossingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				toss();
+				
 				prevPos = eventPoint;
 				break;
 			}
 
 			case ZOOM: {
 				// #CONNECTION# wheelEvent() ZOOM case
-				float coef = PApplet.max(PApplet.abs((camera.frame()
-						.coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera
-						.sceneRadius());
+				float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
 				// Warning: same for left and right CoordinateSystemConvention:
-				PVector trans = new PVector(0.0f, 0.0f, -coef
-						* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
-				translate(inverseTransformOf(trans));
+				PVector trans = new PVector(0.0f, 0.0f, -coef	* ((int) (eventPoint.y - prevPos.y)) / camera.screenHeight());
+							  
+				computeMouseSpeed(eventPoint);
+				setTossingDirection(inverseTransformOf(trans));
+				toss();
+				
 				prevPos = eventPoint;
 				break;
 			}
 
 			case ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
-				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,
-						(int) eventPoint.y, trans.x, trans.y, camera);
-				// #CONNECTION# These two methods should go together (spinning detection
-				// and activation)
+				Quaternion rot = deformedBallQuaternion((int) eventPoint.x,	(int) eventPoint.y, trans.x, trans.y, camera);
+				// #CONNECTION# These two methods should go together (spinning detection and activation)
+				computeMouseSpeed(eventPoint);
+				setSpinningQuaternion(rot);
+				spin();
+				prevPos = eventPoint;
+				break;
+			}
+			
+			case CAD_ROTATE: {
+				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());				
+				// the following line calls setSpinningQuaternion
+				Quaternion rot = computeCADQuaternion((int) eventPoint.x, (int) eventPoint.y, trans.x, trans.y, camera);
+				// #CONNECTION# These two methods should go together (spinning detection and activation)
 				computeMouseSpeed(eventPoint);
 				setSpinningQuaternion(rot);
 				spin();
@@ -200,9 +226,8 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			case SCREEN_ROTATE: {
 				PVector trans = camera.projectedCoordinatesOf(arcballReferencePoint());
 				float angle = PApplet.atan2((int) eventPoint.y - trans.y,
-						(int) eventPoint.x - trans.x)
-						- PApplet.atan2((int) prevPos.y - trans.y, (int) prevPos.x
-								- trans.x);
+						                        (int) eventPoint.x - trans.x)	- PApplet.atan2((int) prevPos.y - trans.y, 
+						                        		                                          (int) prevPos.x - trans.x);
 				
 			  // left-handed coordinate system correction
 				if( scene.isLeftHanded() )
@@ -241,9 +266,11 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 					break;
 				}
 				}
-
-				translate(inverseTransformOf(PVector.mult(trans,
-						translationSensitivity())));
+							  
+				computeMouseSpeed(eventPoint);
+				setTossingDirection(inverseTransformOf(PVector.mult(trans, translationSensitivity())));
+				toss();
+				
 				prevPos = eventPoint;
 				break;
 			}
@@ -311,8 +338,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 			// #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed()
-					* (-rotation))));
+			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed() * (-rotation))));
 			break;
 		default:
 			break;
@@ -338,5 +364,59 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		flyTimer.schedule(timerTask, finalDrawAfterWheelEventDelay);
 
 		action = Scene.MouseAction.NO_MOUSE_ACTION;
+	}
+	
+	/**
+	 * Returns a Quaternion computed according to mouse motion. The Quaternion
+	 * is computed as composition of two rotations (quaternions): 1. Mouse motion along
+	 * the screen X Axis rotates the camera along the {@link #getCADAxis()}. 2.
+	 * Mouse motion along the screen Y axis rotates the camera along its X axis.
+	 * 
+	 * @see #getCADAxis()
+	 */
+	protected Quaternion computeCADQuaternion(int x, int y, float cx,	float cy, Camera camera) {
+		// Points on the deformed ball
+		float px = rotationSensitivity() * ((int) prevPos.x - cx)	/ camera.screenWidth();
+		float py = rotationSensitivity() * (cy - (int) prevPos.y)	/ camera.screenHeight();
+		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
+		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
+		
+		//1,0,0 is given in the camera frame
+		PVector axisX = new PVector(1, 0, 0);
+		//0,0,1 is given in the world and then transform to the camera frame
+		PVector world2camAxis = camera.frame().transformOf(worldAxis);
+
+		float angleWorldAxis = rotationSensitivity() * (dx - px);
+		float angleX = rotationSensitivity() * (dy - py);
+
+		// left-handed coordinate system correction
+		if( scene.isLeftHanded() ) {
+			angleX = -angleX;
+		}
+
+		Quaternion quatWorld = new Quaternion(world2camAxis, angleWorldAxis);
+		Quaternion quatX = new Quaternion(axisX, angleX);
+		
+		return Quaternion.multiply(quatWorld, quatX);
+	}
+	
+	/**
+	 * Set axis (defined in the world coordinate system) as the main
+	 * rotation axis used in CAD rotation.
+	 */
+	public void setCADAxis(PVector axis) {
+		//non-zero
+		if( axis.mag() < 1E-8 )
+			return;
+		else
+			worldAxis = axis.get();
+		worldAxis.normalize();
+	}
+	
+	/**
+	 * Returns the main CAD rotation axis ((defined in the world coordinate system).
+	 */
+	public PVector getCADAxis() {
+		return worldAxis;
 	}
 }

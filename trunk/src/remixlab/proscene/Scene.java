@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.94)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -98,7 +98,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.93";
+	public static final String version = "1.1.94";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -288,6 +288,8 @@ public class Scene implements PConstants {
 		NO_MOUSE_ACTION("No mouse action"),
 		/** Rotate frame (camera or interactive frame. */
 		ROTATE("Rotate frame (camera or interactive frame)"),
+		/** Rotate (only) camera frame as in CAD applications). */
+		CAD_ROTATE("Rotate (only) camera frame as in CAD applications)"),
 		/** Zoom. */
 		ZOOM("Zoom"),
 		/** Translate frame (camera or interactive frame). */
@@ -1223,7 +1225,7 @@ public class Scene implements PConstants {
 	 * Internal use. Display various on-screen visual hints to be called from {@link #pre()}
 	 * or {@link #draw()}.
 	 */
-	private void displayVisualHints() {		
+	protected void displayVisualHints() {
 		if (frameSelectionHintIsDrawn())
 			drawSelectionHints();
 		if (cameraPathsAreDrawn()) {
@@ -2324,7 +2326,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #drawCameraPathSelectionHints()
 	 */
-	protected void drawSelectionHints() {
+	public void drawSelectionHints() {
 		for (MouseGrabbable mg : MouseGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
@@ -2346,7 +2348,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @see #drawSelectionHints()
 	 */
-	protected void drawCameraPathSelectionHints() {
+	public void drawCameraPathSelectionHints() {
 		for (MouseGrabbable mg : MouseGrabberPool) {
 			if(mg instanceof InteractiveFrame) {
 				InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
