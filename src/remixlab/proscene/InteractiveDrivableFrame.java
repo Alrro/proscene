@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.93)      
+ *                     ProScene (version 1.1.94)      
  *    Copyright (c) 2010-2012 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -71,8 +71,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * @see remixlab.proscene.InteractiveFrame#clone()
 	 */
 	public InteractiveDrivableFrame clone() {
-		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super
-				.clone();
+		InteractiveDrivableFrame clonedIAvtrFrame = (InteractiveDrivableFrame) super.clone();
 		clonedIAvtrFrame.flyUpVec = new PVector(flyUpVec.x, flyUpVec.y, flyUpVec.z);
 		clonedIAvtrFrame.flyDisp = new PVector(flyDisp.x, flyDisp.y, flyDisp.z);
 		return clonedIAvtrFrame;
@@ -151,18 +150,28 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 */
 	public void flyUpdate() {
 		flyDisp.set(0.0f, 0.0f, 0.0f);
+		PVector trans;
 		switch (action) {
 		case MOVE_FORWARD:
+			mouseSpeed = flySpeed();
 			flyDisp.z = -flySpeed();
-			translate(localInverseTransformOf(flyDisp));
+			trans = localInverseTransformOf(flyDisp);
+			translate(trans);
+			setTossingDirection(trans);
 			break;
 		case MOVE_BACKWARD:
+			mouseSpeed = flySpeed();
 			flyDisp.z = flySpeed();
-			translate(localInverseTransformOf(flyDisp));
+			trans = localInverseTransformOf(flyDisp);
+			translate(trans);
+			setTossingDirection(trans);
 			break;
 		case DRIVE:
+			mouseSpeed = flySpeed() * drvSpd;
 			flyDisp.z = flySpeed() * drvSpd;
-			translate(localInverseTransformOf(flyDisp));
+			trans = localInverseTransformOf(flyDisp);
+			translate(trans);
+			setTossingDirection(trans);
 			break;
 		default:
 			break;
@@ -178,6 +187,8 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 		case DRIVE:
+			mouseSpeed = 0.0f;
+			stopTossing();
 			if(flyTimer != null) {
 				flyTimer.cancel();
 				flyTimer.purge();
@@ -223,6 +234,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			switch (action) {
 			case MOVE_FORWARD: {
 				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
+				computeDrivenDelay();
 				rotate(rot);
 				// #CONNECTION# wheelEvent MOVE_FORWARD case
 				// actual translation is made in flyUpdate().
@@ -233,6 +245,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case MOVE_BACKWARD: {
 				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
+				computeDrivenDelay();
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				// translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
@@ -242,6 +255,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case DRIVE: {
 				Quaternion rot = turnQuaternion((int)eventPoint.x, camera);
+				computeDrivenDelay();
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				drvSpd = 0.01f * -deltaY;
@@ -257,12 +271,11 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			}
 
 			case ROLL: {
-				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x)
-						/ camera.screenWidth();
+				float angle = Quaternion.PI * ((int)eventPoint.x - (int)prevPos.x) / camera.screenWidth();
 				
 			  //left-handed coordinate system correction
 				if ( scene.isLeftHanded() )
-				angle = -angle;
+					angle = -angle;
 				
 				Quaternion rot = new Quaternion(new PVector(0.0f, 0.0f, 1.0f), angle);
 				rotate(rot);
@@ -295,8 +308,26 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				flyTimer.purge();
 			}
 		}
+				
+		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= tossingSensitivity()) )
+			startTossing(delay);
 
 		super.mouseReleased(eventPoint, camera);
+	}
+	
+	/**
+	 * Internal method that computes the delay which is used as param
+	 * in {@link #toss()}. 
+	 */
+	protected void computeDrivenDelay() {
+	  // mouse speed is set in flyUpdate().
+		if (startedTime == 0) {
+			delay = 0;
+			startedTime = (int) System.currentTimeMillis();
+		} else {
+			delay = (int) System.currentTimeMillis() - startedTime;
+			startedTime = (int) System.currentTimeMillis();
+		}
 	}
 	
 	/**
@@ -331,8 +362,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		case MOVE_FORWARD:
 		case MOVE_BACKWARD:
 			// #CONNECTION# mouseMoveEvent() MOVE_FORWARD case
-			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed()
-					* (-rotation))));
+			translate(inverseTransformOf(new PVector(0.0f, 0.0f, 0.2f * flySpeed() * (-rotation))));
 			break;
 		default:
 			break;
