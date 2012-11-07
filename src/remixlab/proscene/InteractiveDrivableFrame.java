@@ -46,6 +46,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	protected Timer flyTimer;
 	protected PVector flyUpVec;
 	protected PVector flyDisp;
+	protected static final long FLY_UPDATE_PERDIOD = 10;
 
 	/**
 	 * Default constructor.
@@ -199,7 +200,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 					flyUpdate();
 				}
 			};
-			flyTimer.scheduleAtFixedRate(timerTask, 0, 10);
+			flyTimer.scheduleAtFixedRate(timerTask, 0, FLY_UPDATE_PERDIOD);
 			break;
 		default:
 			break;
@@ -222,7 +223,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 				|| (action == Scene.MouseAction.ROTATE)
 				|| (action == Scene.MouseAction.NO_MOUSE_ACTION))
 			super.mouseDragged(eventPoint, camera);
-		else {		
+		else {
 			if( prevPos == null ) prevPos = eventPoint;
 			
 			int deltaY;
@@ -234,7 +235,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 			switch (action) {
 			case MOVE_FORWARD: {
 				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
-				computeDrivenDelay();
 				rotate(rot);
 				// #CONNECTION# wheelEvent MOVE_FORWARD case
 				// actual translation is made in flyUpdate().
@@ -245,7 +245,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case MOVE_BACKWARD: {
 				Quaternion rot = pitchYawQuaternion((int)eventPoint.x, (int)eventPoint.y, camera);
-				computeDrivenDelay();
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				// translate(inverseTransformOf(Vec(0.0, 0.0, flySpeed())));
@@ -255,7 +254,6 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 
 			case DRIVE: {
 				Quaternion rot = turnQuaternion((int)eventPoint.x, camera);
-				computeDrivenDelay();
 				rotate(rot);
 				// actual translation is made in flyUpdate().
 				drvSpd = 0.01f * -deltaY;
@@ -310,24 +308,9 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 		}
 				
 		if (((action == Scene.MouseAction.MOVE_FORWARD) || (action == Scene.MouseAction.MOVE_BACKWARD) || (action == Scene.MouseAction.DRIVE) ) && (mouseSpeed >= tossingSensitivity()) )
-			startTossing(delay);
+			startTossing(FLY_UPDATE_PERDIOD);
 
 		super.mouseReleased(eventPoint, camera);
-	}
-	
-	/**
-	 * Internal method that computes the delay which is used as param
-	 * in {@link #toss()}. 
-	 */
-	protected void computeDrivenDelay() {
-	  // mouse speed is set in flyUpdate().
-		if (startedTime == 0) {
-			delay = 0;
-			startedTime = (int) System.currentTimeMillis();
-		} else {
-			delay = (int) System.currentTimeMillis() - startedTime;
-			startedTime = (int) System.currentTimeMillis();
-		}
 	}
 	
 	/**
