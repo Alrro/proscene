@@ -397,7 +397,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * InteractiveFrame {@link #spin()}.
 	 * <p>
 	 * See {@link #spin()}, {@link #spinningQuaternion()} and
-	 * {@link #startSpinning(int)} for details.
+	 * {@link #startSpinning(long)} for details.
 	 * <p>
 	 * Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
 	 * (300 pixels per second). Use {@link #setSpinningSensitivity(float)} to tune
@@ -420,7 +420,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * InteractiveFrame {@link #toss()}.
 	 * <p>
 	 * See {@link #toss()}, {@link #tossingDirection()} and
-	 * {@link #startTossing(int)} for details.
+	 * {@link #startTossing(long)} for details.
 	 * <p>
 	 * Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
 	 * (300 pixels per second). Use {@link #setTossingSensitivity(float)} to tune
@@ -460,9 +460,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * <p>
 	 * During spinning, {@link #spin()} rotates the InteractiveFrame by its
 	 * {@link #spinningQuaternion()} at a frequency defined when the
-	 * InteractiveFrame {@link #startSpinning(int)}.
+	 * InteractiveFrame {@link #startSpinning(long)}.
 	 * <p>
-	 * Use {@link #startSpinning(int)} and {@link #stopSpinning()} to change this
+	 * Use {@link #startSpinning(long)} and {@link #stopSpinning()} to change this
 	 * state. Default value is {@code false}.
 	 * 
 	 * @see #isTossing()
@@ -507,9 +507,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * <p>
 	 * During tossing, {@link #toss()} translates the InteractiveFrame by its
 	 * {@link #tossingDirection()} at a frequency defined when the
-	 * InteractiveFrame {@link #startTossing(int)}.
+	 * InteractiveFrame {@link #startTossing(long)}.
 	 * <p>
-	 * Use {@link #startTossing(int)} and {@link #stopTossing()} to change this
+	 * Use {@link #startTossing(long)} and {@link #stopTossing()} to change this
 	 * state. Default value is {@code false}.
 	 * 
 	 * @see #isSpinning()
@@ -557,7 +557,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 
 	/**
-	 * Stops the spinning motion started using {@link #startSpinning(int)}.
+	 * Stops the spinning motion started using {@link #startSpinning(long)}.
 	 * {@link #isSpinning()} will return {@code false} after this call.
 	 * <p>
 	 * <b>Attention: </b>This method may be called by {@link #spin()}, since spinning may
@@ -587,7 +587,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #spinningFriction()
 	 * @see #toss()
 	 */
-	public void startSpinning(int updateInterval) {
+	public void startSpinning(long updateInterval) {
 		isSpng = true;		
 		if(updateInterval>0) {
 			if(spngTimer!=null) {
@@ -634,7 +634,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void setSpinningFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
-		spinningFriction = f;
+		spinningFriction = f*f*f;
 	}
 	
 	/**
@@ -668,7 +668,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 	
 	/**
-	 * Stops the tossing motion started using {@link #startTossing(int)}.
+	 * Stops the tossing motion started using {@link #startTossing(long)}.
 	 * {@link #isTossing()} will return {@code false} after this call.
 	 * <p>
 	 * <b>Attention: </b>This method may be called by {@link #toss()}, since tossing is
@@ -698,7 +698,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #tossingFriction()
 	 * @see #spin()
 	 */
-	public void startTossing(int updateInterval) {
+	public void startTossing(long updateInterval) {
 		isTossed = true;		
 		if(updateInterval>0) {
 			if(tossingTimer!=null) {
@@ -726,7 +726,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * @see #spin()
 	 */
 	public void toss() {		
-		if(tossingFriction > 0) {
+		if(tossingFriction() > 0) {
 			if (mouseSpeed == 0) {
 				stopTossing();
 				return;
@@ -750,7 +750,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			tossingFriction = MIN_TOSSING_FRICTION;
 			PApplet.println("Setting tossing friction to " + MIN_TOSSING_FRICTION + " which is its minimum value");
 		}
-		tossingFriction = f;
+		tossingFriction = f*f*f;
 	}
 	
 	/**
@@ -984,7 +984,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * when the button is released. Press the rotate button again to stop
 	 * spinning.
 	 * 
-	 * @see #startSpinning(int)
+	 * @see #startSpinning(long)
 	 * @see #isSpinning()
 	 */
 	public void mouseReleased(Point event, Camera camera) {
