@@ -61,6 +61,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private Timer spngTimer;	
 	private Quaternion spngQuat;
 	protected float spinningFriction;	
+	private float sFriction;
 	
 	// tossing stuff:
 	protected static final float MIN_TOSSING_FRICTION = 0.01f;
@@ -69,6 +70,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	private Timer tossingTimer;
 	private PVector tossingDirection;
 	protected float tossingFriction;
+	private float tFriction;
 
 	// Whether the SCREEN_TRANS direction (horizontal or vertical) is fixed or not.
 	private boolean dirIsFixed;
@@ -425,7 +427,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * Mouse speed is expressed in pixels per milliseconds. Default value is 0.3
 	 * (300 pixels per second). Use {@link #setTossingSensitivity(float)} to tune
 	 * this value. A higher value will make tossing more difficult (a value of
-	 * 100.0 forbids spinning in practice).
+	 * 100.0 forbids tossing in practice).
 	 * 
 	 * @see #setTossingSensitivity(float)
 	 * @see #setSpinningSensitivity(float) 
@@ -634,8 +636,9 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void setSpinningFriction(float f) {
 		if(f < 0 || f > 1)
 			return;
-		spinningFriction = f*f*f;
-	}
+		spinningFriction = f;
+		setSpinningFrictionFx(spinningFriction);
+	} 
 	
 	/**
 	 * Defines the spinning deceleration.
@@ -652,6 +655,26 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 	
 	/**
+	 * Internal use.
+	 * <p>
+	 * Computes and caches the value of the spinning friction used in
+	 * {@link #recomputeSpinningQuaternion()}.
+	 */
+	protected void setSpinningFrictionFx(float spinningFriction) {
+		sFriction = spinningFriction*spinningFriction*spinningFriction;
+	}
+	
+	/**
+	 * Internal use.
+	 * <p>
+	 * Returns the cached value of the spinning friction used in
+	 * {@link #recomputeSpinningQuaternion()}.
+	 */
+	protected float spinningFrictionFx() {
+		return sFriction;
+	}
+	
+	/**
 	 * Internal method. Recomputes the {@link #spinningQuaternion()}
 	 * according to {@link #spinningFriction()}.
 	 * 
@@ -659,7 +682,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	protected void recomputeSpinningQuaternion() {
 		float prevSpeed = mouseSpeed;
-		float damping = 1.0f - spinningFriction();
+		float damping = 1.0f - spinningFrictionFx();
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;
@@ -750,7 +773,8 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 			tossingFriction = MIN_TOSSING_FRICTION;
 			PApplet.println("Setting tossing friction to " + MIN_TOSSING_FRICTION + " which is its minimum value");
 		}
-		tossingFriction = f*f*f;
+		tossingFriction = f;
+		tFriction = f*f*f;
 	}
 	
 	/**
@@ -767,6 +791,26 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	}
 	
 	/**
+	 * Internal use.
+	 * <p>
+	 * Computes and caches the value of the tossing friction used in
+	 * {@link #recomputeTossingDirection()}.
+	 */
+	protected void setTossingFrictionFx(float tossingFriction) {
+		tFriction = tossingFriction*tossingFriction*tossingFriction;
+	}
+	
+	/**
+	 * Internal use.
+	 * <p>
+	 * Returns the cached value of the tossing friction used in
+	 * {@link #recomputeTossingDirection()}.
+	 */
+	protected float tossingFrictionFx() {
+		return tFriction;
+	} 
+	
+	/**
 	 * Internal method. Recomputes the {@link #tossingDirection()}
 	 * according to {@link #tossingFriction()}.
 	 * 
@@ -774,7 +818,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 */
 	protected void recomputeTossingDirection() {
 		float prevSpeed = mouseSpeed;
-		float damping = 1.0f - tossingFriction();
+		float damping = 1.0f - tossingFrictionFx();
 		mouseSpeed *= damping;
 		if (Math.abs(mouseSpeed) < .001f)
 			mouseSpeed = 0;

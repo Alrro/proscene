@@ -25,7 +25,6 @@
 
 package remixlab.proscene;
 
-
 /**
  * Interface for objects that grab mouse focus in a Scene.
  * <p>
