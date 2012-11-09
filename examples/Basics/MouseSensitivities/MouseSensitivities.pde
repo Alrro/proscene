@@ -27,7 +27,7 @@ boolean dispControls = true;
 
 PFont myFont;
 
-public void setup() {
+void setup() {
   size(640, 360, P3D);
 
   myFont = createFont("FFScala", 14);
@@ -70,7 +70,7 @@ public void setup() {
   scene.showAll();
 }	
 
-public void draw() {
+void draw() {
   background(0); 
 
   // Draw 3D scene first
@@ -102,7 +102,7 @@ public void draw() {
   displayControls();
 }
 
-public void displayControls() {
+void displayControls() {
   scene.beginScreenDrawing();
   fill(200);
   if ( !dispControls ) {
@@ -150,29 +150,29 @@ public void displayControls() {
   scene.endScreenDrawing();
 }
 
-public void increaseSensitivity(Sensitivity sens) {
+void increaseSensitivity(Sensitivity sens) {
   if (isIFrame)
     increaseSensitivity(scene.interactiveFrame(), sens);
   else
     increaseSensitivity(scene.camera().frame(), sens);
 }
 
-public void decreaseSensitivity(Sensitivity sens) {
+void decreaseSensitivity(Sensitivity sens) {
   if (isIFrame)
     decreaseSensitivity(scene.interactiveFrame(), sens);
   else
     decreaseSensitivity(scene.camera().frame(), sens);
 }	
 
-public void increaseSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens) {
+void increaseSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens) {
   changeSensitivity(iFrame, sens, true);
 }
 
-public void decreaseSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens) {
+void decreaseSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens) {
   changeSensitivity(iFrame, sens, false);
 }	
 
-protected void changeSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens, boolean increase) {
+void changeSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens, boolean increase) {
   float step = 1;
   float res;
   switch (sens) {
@@ -221,7 +221,7 @@ protected void changeSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sens
   }
 }
 
-public boolean areDefaultsSet(remixlab.proscene.InteractiveFrame iFrame) {
+boolean areDefaultsSet(remixlab.proscene.InteractiveFrame iFrame) {
   if (equals(iFrame.rotationSensitivity(), 1.0f) &&
     equals(iFrame.translationSensitivity(), 1.0f) &&
     equals(iFrame.spinningSensitivity(), 0.3f) &&
@@ -233,7 +233,7 @@ public boolean areDefaultsSet(remixlab.proscene.InteractiveFrame iFrame) {
   return false;
 }
 
-public void setDefaults(remixlab.proscene.InteractiveFrame iFrame) {
+void setDefaults(remixlab.proscene.InteractiveFrame iFrame) {
   iFrame.setRotationSensitivity(1.0f);
   iFrame.setTranslationSensitivity(1.0f);
   iFrame.setSpinningSensitivity(0.3f);
@@ -243,7 +243,7 @@ public void setDefaults(remixlab.proscene.InteractiveFrame iFrame) {
   iFrame.setTossingFriction(1.0f);
 }
 
-public void displayText(String text, int x, int y) {
+void displayText(String text, int x, int y) {
   int width = (int) textWidth(text);
   int height = (int) (textAscent() + textDescent());
   pushStyle();
@@ -251,13 +251,13 @@ public void displayText(String text, int x, int y) {
   popStyle();
 }
 
-public static boolean equals(float a, float b) {
+static boolean equals(float a, float b) {
   if (abs(a-b) < 0.01f)
     return true;
   return false;
 }	
 
-public void keyPressed() {
+void keyPressed() {
   if (key == 'u' || key == 'U') {
     isIFrame = !isIFrame;
   }
