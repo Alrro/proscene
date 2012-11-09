@@ -1,5 +1,18 @@
 #summary Wiki page containing all the project news.
 
+=29/09/2012 Release of *Proscene v1.2.0-alpha2 (a.k.a. v-1.1.93)*=
+
+We are pleased to announce the immediate availability of *proscene v1.2.0-alpha2*, supporting the recent *Processing-2.0-beta3* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.93.zip here] and install it manually by yourself (for instance if you get a "could not move library to sketchbook" error message using the above method).
+
+This release is mainly a port of Proscene-1.1.1 to *Processing-2.0* (>=beta3) that completely fixes the old [http://code.google.com/p/proscene/issues/detail?id=1&can=1 screen drawing issue] (please refer to the ScreenDrawing example), and also includes some of the great sketches found at the [http://www.openprocessing.org/classroom/1158 proscene class room] by Jacques Maire. Expect for a series of alpha/beta releases in syncing with those of *Processing-2.0*.
+
+Be aware of the following API changes that have been made:
+
+ * {{{Frame.applyTransformation(PGraphics3D p3d)}}} has become {{{Frame.applyTransformation(Scene scn)}}}. Equivalently, you may also call the new {{{Scene.applyTransformation(Frame frame)}}} method.
+ * {{{Scene.coords()}}} which was needed by ScreenDrawing has been marked as deprecated. All 2D primitive drawing using screen coordinates should now just be simply enclosed between {{{beginScreenDrawing()}}} and {{{endScreenDrawing()}}} (please refer to the ScreenDrawing example).
+
+Users of *Processing 1.5.x* may download [http://proscene.googlecode.com/files/proscene-1.1.1.zip Proscene (v1.1.1)] which is the last version supporting it.
+
 =10/08/2012 Release of *Proscene v1.2.0-alpha1 (a.k.a. v-1.1.92 or just Belo Horizonte Release)*=
 
 We are pleased to announce the immediate availability of *proscene v1.2.0-alpha1*, supporting the recent *Processing-2.0-alpha8* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.92.zip here] and install it manually by yourself (for instance if you get a "could not move library to sketchbook" error message using the above method).
