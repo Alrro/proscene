@@ -138,8 +138,8 @@ void displayText() {
   displayType(constraints[activeConstraint].rotationConstraintType(), width-120, height-60, 'R');
 
   switch (activeConstraint) {
-    case 0 : text("Constraint direction defined w/r to WORLD (U)", 370,20); break;
-    case 1 : text("Constraint direction defined w/r to CAMERA (U)", 370,20); break;
+    case 0 : text("Constraint direction defined w/r to WORLD (U)", 350,20); break;
+    case 1 : text("Constraint direction defined w/r to CAMERA (U)", 350,20); break;
   }
 }
 
