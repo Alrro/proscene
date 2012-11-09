@@ -75,7 +75,7 @@ public class CRD extends PApplet {
 		controlP5 = new ControlP5(this);
 		controlP5.addSlider("sliderValue", -100, 100, sliderValue, 10, 50, 100,	10);
 		
-		scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD_ARCBALL) );
+		scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );
 		scene.setCurrentCameraProfile("CAD_ARCBALL");
 		
 		// throws a null when running as an applet from within eclipse 

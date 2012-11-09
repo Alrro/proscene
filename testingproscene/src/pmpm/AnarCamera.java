@@ -58,8 +58,8 @@ public class AnarCamera extends PApplet {
 			Quaternion quatZ = new Quaternion(axisZ, angleZ);
 			Quaternion quatX = new Quaternion(axisX, angleX);
 
-			//return Quaternion.multiply(quatZ, quatX);
-			return Quaternion.multiply(quatX, quatZ);
+			return Quaternion.multiply(quatZ, quatX);
+			//return Quaternion.multiply(quatX, quatZ);
 		}
 	}
 

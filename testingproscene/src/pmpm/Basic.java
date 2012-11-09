@@ -17,8 +17,8 @@ public class Basic extends PApplet {
 	  iFrame = new InteractiveFrame(scene);
 	  iFrame.translate(10,15,10);
 	  	  
-	  scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD_ARCBALL) );
-	  //scene.setCurrentCameraProfile("CAD_ARCBALL");
+	  scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );
+	  scene.setCurrentCameraProfile("CAD_ARCBALL");
 	  
 	  //scene.setRightHanded();
 	}

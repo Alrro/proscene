@@ -19,6 +19,7 @@ public class BasicUse extends PApplet {
 	  warning = "press 'e' to switch the projection and see that ortho is buggy";
 	  myFont = createFont("FFScala", 14);
 	  textFont(myFont);
+	  scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );
 	}	
 
 	public void draw() {

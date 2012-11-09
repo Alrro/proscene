@@ -6,14 +6,12 @@ import remixlab.proscene.*;
 @SuppressWarnings("serial")
 public class FrameInteraction extends PApplet {
 	Scene scene;
-	InteractiveAvatarFrame iFrame;
+	//InteractiveAvatarFrame iFrame;
 	
 	public void setup()	{		
 		size(640, 360, P3D);		
 		scene = new Scene(this);
-		// Ortho projection is buggy. Uncomment the following line to see it.
-		// (you can also press 'e' to switch the projection at run time). 
-		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);		
+		scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);			
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//iFrame = new InteractiveAvatarFrame(scene);
@@ -24,6 +22,25 @@ public class FrameInteraction extends PApplet {
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setFrameSelectionHintIsDrawn(true);
+		
+		scene.camera().frame().setSpinningFriction(0.53f);
+		scene.camera().frame().setTossingFriction(0.5f);
+		
+		scene.interactiveFrame().setRotationSensitivity(10);
+		scene.camera().frame().setRotationSensitivity(10);
+		
+		/**
+		scene.interactiveFrame().setTranslationSensitivity(0);
+		scene.camera().frame().setTranslationSensitivity(0.5f);
+		*/
+		
+		scene.interactiveFrame().setWheelSensitivity(10);
+		scene.camera().frame().setWheelSensitivity(10);
+		
+		///**
+		scene.interactiveFrame().setSpinningFriction(0.5f);
+		scene.interactiveFrame().setTossingFriction(0.5f);
+		// */
 	}
 
 	public void draw() {	
@@ -51,7 +68,22 @@ public class FrameInteraction extends PApplet {
 			box(10, 15, 20);
 		}			
 		popMatrix();		
-	}	
+	}
+	
+	// /**
+	public void keyPressed() {
+		if(key == 'p' || key == 'P') {
+			println( scene.camera().frame().spinningSensitivity() );
+		}
+		if(key == 't' || key == 'T') {
+			scene.interactiveFrame().setSpinningFriction(scene.interactiveFrame().spinningFriction() + 0.01f);
+		}			
+		if(key == 'u' || key == 'U') {
+			scene.interactiveFrame().setSpinningFriction(scene.interactiveFrame().spinningFriction() - 0.01f);		
+		}
+		println("friction (?): " + scene.interactiveFrame().spinningFriction());
+	}
+	// */
 		
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "basic.FrameInteraction" });

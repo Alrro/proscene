@@ -10,7 +10,7 @@ public class Basic extends PApplet {
 	CameraConstraint constraint;
 
 	public void setup() {
-	  size(640, 360, P3D);
+	  size(640, 360, P3D);	  
 	  scene = new Scene(this);	  
 	  scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 	  scene.camera().setUpVector(new PVector(0,0,-1));

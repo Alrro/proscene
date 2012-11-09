@@ -33,7 +33,7 @@ public class OnScreenCRD extends PApplet {
 
 	// define your navigator position using screen coordinates
 	int screenX = w * 3 / 4;
-	int screenY = h / 4;	
+	int screenY = h / 2;	
 	//this is a depth value ranging in [0..1] (near and far plane respectively).
 	//play with it according to your needs
 	float screenZ = 0.15f;
@@ -78,7 +78,7 @@ public class OnScreenCRD extends PApplet {
 		controlP5.addSlider("sliderValue", -100, 100, sliderValue, 10, 50, 100, 10);
 		controlP5.setAutoDraw(false);
 
-		scene.registerCameraProfile(new CameraProfile(scene, "CAD_ARCBALL",	CameraProfile.Mode.CAD_ARCBALL));
+		scene.registerCameraProfile(new CameraProfile(scene, "CAD_ARCBALL",	CameraProfile.Mode.CAD));
 		scene.setCurrentCameraProfile("CAD_ARCBALL");
 		
 		// Needs testing: disabling it gives better results in my setup. See:
