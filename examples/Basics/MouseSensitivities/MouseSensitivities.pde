@@ -6,7 +6,7 @@
  * to control the mouse behavior, such as sensitivities and damping. 
  *
  * Follow the online indications and note that the displayed '+' '-'
- * symbols are interactive. Click on them to set the of those variables.
+ * symbols are interactive. Click on them to set the value of the variables.
  * 
  * Press 'd' to reset all variables to their default values.
  * Press 'u' to switch the control between camera and interactive frame.
@@ -20,7 +20,7 @@ import remixlab.proscene.*;
 
 Scene scene;
 ArrayList buttons;	
-int xM = 10, dY = 10;
+int xM = 10;
 
 boolean isIFrame = false;
 boolean dispControls = true;
@@ -97,7 +97,7 @@ void draw() {
     box(10, 15, 20);
   }			
   popMatrix();
-  
+
   // Finally draw 2D controls on top of the 3D scene
   displayControls();
 }
@@ -111,7 +111,7 @@ void displayControls() {
     return;
   }
   else {
-    displayText("Press 'v' to hide controls", xM, 10);
+    displayText("Press 'v' to hide info/controls", xM, 10);
   }
 
   InteractiveFrame iFrame;		
