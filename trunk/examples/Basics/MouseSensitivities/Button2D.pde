@@ -28,19 +28,19 @@ public class Button2D extends MouseGrabber {
 
   public void setText(String text) {
     myText = text;
-    myWidth = (int) scene.parent.textWidth(myText);
-    myHeight = (int) (scene.parent.textAscent() + scene.parent.textDescent());
+    myWidth = (int) textWidth(myText);
+    myHeight = (int) textAscent() + (int) textDescent();
   }
 
   public void display() {
-    scene.parent.pushStyle();		
-    scene.parent.colorMode(PApplet.HSB);
+    pushStyle();	
+    colorMode(PApplet.HSB);
     if (grabsMouse())
-      scene.parent.fill(50, 255, 255);
+      fill(50, 255, 255);
     else
-      scene.parent.fill(50, 255, 100);
-    scene.parent.text(myText, position.x, position.y, myWidth, myHeight);
-    scene.parent.popStyle();
+      fill(50, 255, 100);
+    text(myText, position.x, position.y, myWidth, myHeight);
+    popStyle();
   }
 
   public void checkIfGrabsMouse(int x, int y, Camera camera) {
