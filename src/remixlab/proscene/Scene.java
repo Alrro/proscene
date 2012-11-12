@@ -289,7 +289,7 @@ public class Scene implements PConstants {
 		/** Rotate frame (camera or interactive frame. */
 		ROTATE("Rotate frame (camera or interactive frame)"),
 		/** Rotate (only) camera frame as in CAD applications). */
-		CAD_ROTATE("Rotate (only) camera frame as in CAD applications)"),
+		CAD_ROTATE("Rotate (only) camera frame as in CAD applications"),
 		/** Zoom. */
 		ZOOM("Zoom"),
 		/** Translate frame (camera or interactive frame). */
