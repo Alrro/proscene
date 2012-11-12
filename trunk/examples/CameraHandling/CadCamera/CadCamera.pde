@@ -7,6 +7,7 @@
  * Press 'h' to display the global shortcuts in the console.
  * Press 'H' to display the current camera profile keyboard shortcuts
  * and mouse bindings in the console.
+ * Press 'u' to switch between right handed and left handed world frame.
  * Press the space bar to switch between camera profiles: CAD and CAD_CAM.
  * Press x, y or z to set the main rotation axis (defined in the world
  * coordinate system) used by the CAD Camera.
@@ -26,6 +27,9 @@ void setup() {
   scene.setCurrentCameraProfile("CAD_CAM");
   //Unregister the  first-person camera profile (i.e., leave WHEELED_ARCBALL and CAD_CAM)
   scene.unregisterCameraProfile("FIRST_PERSON");
+  //Set right handed world frame (useful for architects...)
+  scene.setRightHanded();
+  scene.camera().frame().setCADAxis(new PVector(0, 1, 0));
 }
 
 void draw() {
@@ -35,7 +39,12 @@ void draw() {
 }
 
 void keyPressed() {
-  if (key == 'x' || key == 'X')
+  if (key == 'u' || key == 'U')
+    if ( scene.isRightHanded() )
+      scene.setLeftHanded();    
+    else
+      scene.setRightHanded();
+  else if (key == 'x' || key == 'X')
     scene.camera().frame().setCADAxis(new PVector(1, 0, 0));
   else if (key == 'y' || key == 'Y')
     scene.camera().frame().setCADAxis(new PVector(0, 1, 0));
