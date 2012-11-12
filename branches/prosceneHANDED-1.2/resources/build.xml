@@ -1,4 +1,4 @@
-<project name="ProsceneLib" default="clean" basedir="../">
+<project name="ProsceneLibHanded" default="clean" basedir="../">
 
     
 <!--	
