@@ -18,8 +18,9 @@ public class StandardCamera extends PApplet {
 		//canvas = createGraphics(640, 360, OPENGL);
 		scene = new Scene(this, (PGraphicsOpenGL) canvas);
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
-		// enable computation of the frustum planes equations (disabled by
-		// default)
+		scene.camera().setStandardZNear(0.1f);
+		
+		// enable computation of the frustum planes equations (disabled by default)	
 		scene.enableFrustumEquationsUpdate();
 		scene.setGridIsDrawn(false);
 		scene.addDrawHandler(this, "mainDrawing");

@@ -48,42 +48,38 @@ public class PointUnderPixel extends PApplet {
 	  for (int i = 0; i < boxes.length; i++)    
 	    boxes[i].draw();
 	}
-
-	/**
-	class GLCamera extends Camera {
-		//protected PGraphicsOpenGL pgl;
-		protected PGL pgl;
-		protected GL gl;
-		//protected GL2ES2 gl2;
-		protected GLU glu;
-
-		public GLCamera(Scene scn) {
-			super(scn);
-			//pgl = scn.renderer().pgl;
-			//gl = pgl.gl;
-			// //gl2 = pgl.gl2;
-			// glu = pgl.glu;
+	
+	public void keyPressed() {
+		if(key == 't' || key == 'T') {
+			if( scene.camera().isAttachedToP5Camera() ) {
+				scene.camera().detachFromP5Camera();
+				println("cam matrices detached");
+			}
+			else {
+				scene.camera().attachToP5Camera();
+				println("cam matrices attached");
+			}
 		}
-		
-		@Override
-		public WorldPoint pointUnderPixel(Point pixel) {
-			float[] depth = new float[1];			
-						
-			pgl = ((Scene)scene).renderer().beginPGL();
-			gl = pgl.gl;
-			glu = pgl.glu;
-			
-			gl.glReadPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, GL2.GL_DEPTH_COMPONENT, GL2.GL_FLOAT, FloatBuffer.wrap(depth));
-			
-			((Scene)scene).renderer().endPGL();
-			
-			PVector point = new PVector((int) pixel.x, (int) pixel.y, depth[0]);
-			point = unprojectedCoordinatesOf(point);
-			return new WorldPoint(point, (depth[0] < 1.0f));
+		if(key == 'u' || key == 'U') {
+			if( scene.isRightHanded() ) {
+				scene.setLeftHanded();
+				println("left handed set");
+			}
+			else {
+				scene.setRightHanded();
+				println("right handed set");
+			}
 		}
+		// /**
+		if (key == 'x' || key == 'X')
+			scene.camera().frame().setCADAxis(new PVector(1, 0, 0));
+		if (key == 'y' || key == 'Y')
+		    scene.camera().frame().setCADAxis(new PVector(0, 1, 0));
+		if (key == 'z' || key == 'Z')
+		    scene.camera().frame().setCADAxis(new PVector(0, 0, 1));
+		// */
 	}
-	// */
-
+	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "PointUnderPixel" });
 	}
