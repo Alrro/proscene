@@ -1251,8 +1251,8 @@ public class Scene implements PConstants {
 	 */
 	protected void bindMatrices() {
 		// We set the processing camera matrices from our remixlab.proscene.Camera
-		setPProjectionMatrix();
-		setPModelViewMatrix();
+		setP5ProjectionMatrix();
+		setP5ModelViewMatrix();
 		// same as the two previous lines:
 		// WARNING: this can produce visual artifacts when using OPENGL and
 		// GLGRAPHICS renderers because
@@ -4257,7 +4257,7 @@ public class Scene implements PConstants {
 	 * {@code PApplet.perspective()} or {@code PApplet.orhto()} depending on the
 	 * {@link remixlab.proscene.Camera#type()}.
 	 */
-	protected void setPProjectionMatrix() {
+	protected void setP5ProjectionMatrix() {
 		// /**
 		// option 1
 		if( camera().isDetachedFromP5Camera() )
@@ -4290,7 +4290,7 @@ public class Scene implements PConstants {
 	 * Sets the processing camera matrix from {@link #camera()}. Simply calls
 	 * {@code PApplet.camera()}.
 	 */
-	protected void setPModelViewMatrix() {
+	protected void setP5ModelViewMatrix() {
 		// /**
 	  // option 1		
 		if( camera().isDetachedFromP5Camera() )
