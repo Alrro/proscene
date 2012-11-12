@@ -288,8 +288,8 @@ public class Scene implements PConstants {
 		NO_MOUSE_ACTION("No mouse action"),
 		/** Rotate frame (camera or interactive frame. */
 		ROTATE("Rotate frame (camera or interactive frame)"),
-		/** Rotate (only) camera frame as in CAD applications). */
-		CAD_ROTATE("Rotate (only) camera frame as in CAD applications"),
+		/** Rotate (only) camera frame as in CAD applications. */
+		CAD_ROTATE("Rotate (only) camera frame as in CAD applications)"),
 		/** Zoom. */
 		ZOOM("Zoom"),
 		/** Translate frame (camera or interactive frame). */
@@ -1809,19 +1809,22 @@ public class Scene implements PConstants {
 		pg3d.stroke(178, 178, 255);
 		
 		//left_handed
-		pg3d.vertex(-charWidth, -charHeight, charShift);
-		pg3d.vertex(charWidth, -charHeight, charShift);
-		pg3d.vertex(charWidth, -charHeight, charShift);
-		pg3d.vertex(-charWidth, charHeight, charShift);
-		pg3d.vertex(-charWidth, charHeight, charShift);
-		pg3d.vertex(charWidth, charHeight, charShift);
-	  //right_handed coordinate system should go like this:
-		//pg3d.vertex(-charWidth, charHeight, charShift);
-		//pg3d.vertex(charWidth, charHeight, charShift);
-		//pg3d.vertex(charWidth, charHeight, charShift);
-		//pg3d.vertex(-charWidth, -charHeight, charShift);
-		//pg3d.vertex(-charWidth, -charHeight, charShift);
-		//pg3d.vertex(charWidth, -charHeight, charShift);
+		if( isLeftHanded() ) {
+			pg3d.vertex(-charWidth, -charHeight, charShift);
+			pg3d.vertex(charWidth, -charHeight, charShift);
+			pg3d.vertex(charWidth, -charHeight, charShift);
+			pg3d.vertex(-charWidth, charHeight, charShift);
+			pg3d.vertex(-charWidth, charHeight, charShift);
+			pg3d.vertex(charWidth, charHeight, charShift);
+		}
+		else {
+			pg3d.vertex(-charWidth, charHeight, charShift);
+		  pg3d.vertex(charWidth, charHeight, charShift);
+		  pg3d.vertex(charWidth, charHeight, charShift);
+		  pg3d.vertex(-charWidth, -charHeight, charShift);
+		  pg3d.vertex(-charWidth, -charHeight, charShift);
+		  pg3d.vertex(charWidth, -charHeight, charShift);
+		}
 		
 		pg3d.endShape();
 
@@ -2121,15 +2124,18 @@ public class Scene implements PConstants {
 		// Base
 		pg3d.beginShape(PApplet.QUADS);
 		
-		pg3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
-		pg3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
-		pg3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
-		pg3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
-  	//right_handed coordinate system should go like this:
-		//pg3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
-		//pg3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
-		//pg3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
-		//pg3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
+		if( isLeftHanded() ) {
+		  pg3d.vertex(-baseHalfWidth, -points[0].y, -points[0].z);
+		  pg3d.vertex(baseHalfWidth, -points[0].y, -points[0].z);
+		  pg3d.vertex(baseHalfWidth, -baseHeight, -points[0].z);
+		  pg3d.vertex(-baseHalfWidth, -baseHeight, -points[0].z);
+		}
+		else {
+			pg3d.vertex(-baseHalfWidth, points[0].y, -points[0].z);
+		  pg3d.vertex(baseHalfWidth, points[0].y, -points[0].z);
+		  pg3d.vertex(baseHalfWidth, baseHeight, -points[0].z);
+		  pg3d.vertex(-baseHalfWidth, baseHeight, -points[0].z);
+		}
 		
 		pg3d.endShape();
 
@@ -2137,13 +2143,16 @@ public class Scene implements PConstants {
 		pg3d.fill(color);
 		pg3d.beginShape(PApplet.TRIANGLES);
 		
-		pg3d.vertex(0.0f, -arrowHeight, -points[0].z);
-		pg3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
-		pg3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
-  	//right_handed coordinate system should go like this:
-		//pg3d.vertex(0.0f, arrowHeight, -points[0].z);
-		//pg3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
-		//pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
+		if( isLeftHanded() ) {
+		  pg3d.vertex(0.0f, -arrowHeight, -points[0].z);
+		  pg3d.vertex(-arrowHalfWidth, -baseHeight, -points[0].z);
+		  pg3d.vertex(arrowHalfWidth, -baseHeight, -points[0].z);
+		}
+		else {
+		  pg3d.vertex(0.0f, arrowHeight, -points[0].z);
+		  pg3d.vertex(-arrowHalfWidth, baseHeight, -points[0].z);
+		  pg3d.vertex(arrowHalfWidth, baseHeight, -points[0].z);
+		}
 		
 		pg3d.endShape();		
 
@@ -2233,27 +2242,32 @@ public class Scene implements PConstants {
 		// Base
 		pg3d.beginShape(PApplet.QUADS);
 		
-		pg3d.vertex(baseHalfWidth, -halfHeight, -dist);
-		pg3d.vertex(-baseHalfWidth, -halfHeight, -dist);
-		pg3d.vertex(-baseHalfWidth, -baseHeight, -dist);
-		pg3d.vertex(baseHalfWidth, -baseHeight, -dist);
-  	//right_handed coordinate system should go like this:
-		//pg3d.vertex(-baseHalfWidth, halfHeight, -dist);
-		//pg3d.vertex(baseHalfWidth, halfHeight, -dist);
-		//pg3d.vertex(baseHalfWidth, baseHeight, -dist);
-		//pg3d.vertex(-baseHalfWidth, baseHeight, -dist);
+		if( isLeftHanded() ) {
+		  pg3d.vertex(baseHalfWidth, -halfHeight, -dist);
+		  pg3d.vertex(-baseHalfWidth, -halfHeight, -dist);
+		  pg3d.vertex(-baseHalfWidth, -baseHeight, -dist);
+		  pg3d.vertex(baseHalfWidth, -baseHeight, -dist);
+		}
+		else {
+			pg3d.vertex(-baseHalfWidth, halfHeight, -dist);
+		  pg3d.vertex(baseHalfWidth, halfHeight, -dist);
+		  pg3d.vertex(baseHalfWidth, baseHeight, -dist);
+		  pg3d.vertex(-baseHalfWidth, baseHeight, -dist);
+		}
 		
 		pg3d.endShape();
 		// Arrow
 		pg3d.beginShape(PApplet.TRIANGLES);
 		
-		pg3d.vertex(0.0f, -arrowHeight, -dist);
-		pg3d.vertex(arrowHalfWidth, -baseHeight, -dist);
-		pg3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
-	  //right_handed coordinate system should go like this:
-		//pg3d.vertex(0.0f, arrowHeight, -dist);
-		//pg3d.vertex(-arrowHalfWidth, baseHeight, -dist);
-		//pg3d.vertex(arrowHalfWidth, baseHeight, -dist);
+		if( isLeftHanded() ) {
+		  pg3d.vertex(0.0f, -arrowHeight, -dist);
+		  pg3d.vertex(arrowHalfWidth, -baseHeight, -dist);
+		  pg3d.vertex(-arrowHalfWidth, -baseHeight, -dist);
+		} else {
+			pg3d.vertex(0.0f, arrowHeight, -dist);
+			pg3d.vertex(-arrowHalfWidth, baseHeight, -dist);
+			pg3d.vertex(arrowHalfWidth, baseHeight, -dist);
+		}
 		
 		pg3d.endShape();
 
@@ -4244,34 +4258,31 @@ public class Scene implements PConstants {
 	 * {@link remixlab.proscene.Camera#type()}.
 	 */
 	protected void setPProjectionMatrix() {
-		// option 1 (only one of the following two lines)
-		// pg3d.projection.set(camera().getProjectionMatrix());
-		//camera().computeProjectionMatrix();		
-		///**
+		// /**
+		// option 1
+		if( camera().isDetachedFromP5Camera() )
+			renderer().projection.set(camera().getProjectionMatrix());
+		else
+			camera().computeProjectionMatrix();
+		// */
+		/**
 		// option 2
-		// compute the processing camera projection matrix from our camera()
-		// parameters
+		// compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			renderer().perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
 			break;
 		case ORTHOGRAPHIC:
 			float[] wh = camera().getOrthoWidthHeight();//return halfWidth halfHeight
-			// 1. P5 1.5 version:
-			renderer().ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());			
-			// 2. As it is done in P5-a5 perspective vs ortho example, but using proscene w and h
-		  // ortho: screen drawing broken; frame translation fixed
-		  // persp: screen drawing broken; frame translation fixed
-			//pg3d.ortho(0, 2*wh[0], 0, 2*wh[1], camera().zNear(), camera().zFar());			
-		  // 3. As it is done in P5-a5 perspective vs ortho example
-			// ortho: screen drawing fixed; frame translation broken
-		  // persp: screen drawing broken; frame translation fixed
-			// pg3d.ortho(0, width, 0, height, camera().zNear(), camera().zFar());
+			renderer().ortho(-wh[0], wh[0], -wh[1], wh[1], camera().zNear(), camera().zFar());
 			break;
 		}
+		if(this.isRightHanded())
+			renderer().projection.m11 = -renderer().projection.m11;		
 		// if our camera() matrices are detached from the processing Camera matrices,
 		// we cache the processing camera projection matrix into our camera()
-		// camera().setProjectionMatrix(pg3d.projection);//TODO no needed: camera matrices are references to P5 anyway	
+		if( camera().isDetachedFromP5Camera() )
+			camera().setProjectionMatrix(renderer().projection);	
 		// */
 	}
 
@@ -4280,10 +4291,14 @@ public class Scene implements PConstants {
 	 * {@code PApplet.camera()}.
 	 */
 	protected void setPModelViewMatrix() {
-	  // option 1 (only one of the following two lines)
-		//pg3d.modelview.set(camera().getModelViewMatrix());
-	  //camera().computeModelViewMatrix();
-		///**
+		// /**
+	  // option 1		
+		if( camera().isDetachedFromP5Camera() )
+			renderer().modelview.set(camera().getModelViewMatrix());
+		else
+			camera().computeModelViewMatrix();
+		// */
+		/**
 		// option 2
 		// compute the processing camera modelview matrix from our camera()
 		// parameters
@@ -4292,7 +4307,8 @@ public class Scene implements PConstants {
 				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		// if our camera() matrices are detached from the processing Camera matrices,
 		// we cache the processing camera modelview matrix into our camera()
-		// camera().setModelViewMatrix(pg3d.modelview);//TODO no needed: camera matrices are references to P5 anyway		
+		if( camera().isDetachedFromP5Camera() )
+			camera().setModelViewMatrix(renderer().modelview);		
 		// */
 	}
 	

@@ -389,10 +389,11 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 		float angleWorldAxis = rotationSensitivity() * (dx - px);
 		float angleX = rotationSensitivity() * (dy - py);
 
-		// left-handed coordinate system correction
-		if( scene.isLeftHanded() ) {
+		// Coordinate system correction
+		if( scene.isLeftHanded() ) 
 			angleX = -angleX;
-		}
+		else
+			angleWorldAxis = -angleWorldAxis;
 
 		Quaternion quatWorld = new Quaternion(world2camAxis, angleWorldAxis);
 		Quaternion quatX = new Quaternion(axisX, angleX);
