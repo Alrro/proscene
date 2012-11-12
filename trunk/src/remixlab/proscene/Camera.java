@@ -297,10 +297,8 @@ public class Camera implements Cloneable {
 
 		setKind(Kind.PROSCENE);
 		orthoSize = 1;// only for standard kind, but we initialize it here
-		setStandardZNear(0.001f);// only for standard kind, but we initialize it
-															// here
-		setStandardZFar(1000.0f);// only for standard kind, but we initialize it
-															// here
+		setStandardZNear(1f);// only for standard kind, but we initialize it here
+		setStandardZFar(1000.0f);// only for standard kind, but we initialize it here
 
 		// Requires fieldOfView() when called with ORTHOGRAPHIC. Attention to
 		// projectionMat below.
@@ -658,7 +656,7 @@ public class Camera implements Cloneable {
 
 	/**
 	 * Sets the value of the {@link #zNear()}. Meaningful only when the Camera
-	 * {@link #kind()} is STANDARD. This value is set to 0.001 by default.
+	 * {@link #kind()} is STANDARD. This value is set to 1 by default.
 	 * 
 	 * @see #zNear()
 	 * @see #zFar()
@@ -1050,8 +1048,7 @@ public class Camera implements Cloneable {
 		float z = distanceToSceneCenter() - zClippingCoefficient() * sceneRadius();
 
 		// Prevents negative or null zNear values.
-		final float zMin = zNearCoefficient() * zClippingCoefficient()
-				* sceneRadius();
+		final float zMin = zNearCoefficient() * zClippingCoefficient()	* sceneRadius();
 		if (z < zMin)
 			switch (type()) {
 			case PERSPECTIVE:
