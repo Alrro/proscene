@@ -1,6 +1,6 @@
 /**
  * Hanoi
- * By Jaques Marie
+ * By Jaques Maire
  */
 
 import remixlab.proscene.*;
