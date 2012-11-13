@@ -1253,14 +1253,7 @@ public class Scene implements PConstants {
 		// We set the processing camera matrices from our remixlab.proscene.Camera
 		setP5ProjectionMatrix();
 		setP5ModelViewMatrix();
-		// same as the two previous lines:
-		// WARNING: this can produce visual artifacts when using OPENGL and
-		// GLGRAPHICS renderers because
-		// processing will anyway set the matrices at the end of the rendering
-		// loop.
-		// camera().computeProjectionMatrix();
-		// camera().computeModelViewMatrix();
-		camera().cacheMatrices();
+		camera().cacheProjModelViewInvMat();
 	}
 
 	/**
@@ -4266,8 +4259,7 @@ public class Scene implements PConstants {
 			camera().computeProjectionMatrix();
 		// */
 		/**
-		// option 2
-		// compute the processing camera projection matrix from our camera() parameters
+		// option 2: compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			renderer().perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
@@ -4291,24 +4283,29 @@ public class Scene implements PConstants {
 	 * {@code PApplet.camera()}.
 	 */
 	protected void setP5ModelViewMatrix() {
-		// /**
-	  // option 1		
-		if( camera().isDetachedFromP5Camera() )
-			renderer().modelview.set(camera().getModelViewMatrix());
-		else
-			camera().computeModelViewMatrix();
-		// */
 		/**
-		// option 2
-		// compute the processing camera modelview matrix from our camera()
-		// parameters
+	  // option 1		
+		if( camera().isDetachedFromP5Camera() ) {
+			renderer().modelview.set(camera().getModelViewMatrix());
+			camera().calcProjmodelview();
+			renderer().projmodelview.set(camera().projectionTimesModelview);
+		}	
+		else {
+			camera().computeModelViewMatrix();
+			camera().calcProjmodelview();
+		}		
+		// */
+		// /**
+		// option 2: compute the processing camera modelview matrix from our camera() parameters
 		renderer().camera(camera().position().x, camera().position().y, camera().position().z,
-				        camera().at().x, camera().at().y, camera().at().z,
-				        camera().upVector().x, camera().upVector().y, camera().upVector().z);
+				              camera().at().x, camera().at().y, camera().at().z,
+				              camera().upVector().x, camera().upVector().y, camera().upVector().z);
 		// if our camera() matrices are detached from the processing Camera matrices,
-		// we cache the processing camera modelview matrix into our camera()
-		if( camera().isDetachedFromP5Camera() )
-			camera().setModelViewMatrix(renderer().modelview);		
+		// we cache the processing camera modelview and the projmodelview matrices into our camera()
+		if( camera().isDetachedFromP5Camera() ) {
+			camera().setModelViewMatrix(renderer().modelview);
+			camera().setProjModelViewMatrix(renderer().projmodelview);
+		}		
 		// */
 	}
 	

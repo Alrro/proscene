@@ -199,10 +199,10 @@ public class Camera implements Cloneable {
 
 	private PMatrix3D modelViewMat;
 	private PMatrix3D projectionMat;
+	protected PMatrix3D projectionTimesModelview;
 	
 	//cache optimization
-	public boolean projectCacheOptimized;
-	private PMatrix3D  projectionTimesModelview;
+	//public boolean projectCacheOptimized;
 	public boolean unprojectCacheOptimized;
 	private boolean projectionTimesModelviewHasInverse;
 	private PMatrix3D projectionTimesModelviewInverse;
@@ -314,20 +314,23 @@ public class Camera implements Cloneable {
 		setIODistance(0.062f);
 		setPhysicalDistanceToScreen(0.5f);
 		setPhysicalScreenWidth(0.4f);
-		// focusDistance is set from setFieldOfView()
-
-		projectionTimesModelview = new PMatrix3D();
+		// focusDistance is set from setFieldOfView()	
 		
 		if (isAttachedToP5Camera()) {
 			projectionMat = pg3d.projection;
 			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
+			projectionTimesModelview = pg3d.projmodelview;
+			projectionTimesModelview.set(projectionMat);
+			projectionTimesModelview.apply(modelViewMat);
 		} else {
 			modelViewMat = new PMatrix3D();
-			projectionMat = new PMatrix3D();
+			projectionMat = new PMatrix3D();			
 			projectionMat.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			computeProjectionMatrix();
+			projectionTimesModelview = new PMatrix3D();
+			this.calcProjModelView();
 		}
 	}
 
@@ -370,6 +373,9 @@ public class Camera implements Cloneable {
 			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
+			projectionTimesModelview = pg3d.projmodelview;
+			projectionTimesModelview.set(projectionMat);
+			projectionTimesModelview.apply(modelViewMat);
 		}
 	}
 
@@ -392,6 +398,8 @@ public class Camera implements Cloneable {
 			projectionMat.set(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			computeProjectionMatrix();
 			computeModelViewMatrix();
+			projectionTimesModelview = new PMatrix3D();
+			calcProjModelView();
 		}
 	}
 
@@ -1636,7 +1644,7 @@ public class Camera implements Cloneable {
 				return false;
 			return true;
 		}
-		return false;		
+		return false;
 	}
 	
 	/**
@@ -2179,7 +2187,7 @@ public class Camera implements Cloneable {
 			if( scene.isRightHanded() )
 				projectionMat.m11 = f;
 			else
-				projectionMat.m11 = -f;//TODO hack to make the projection fit in P5-v2
+				projectionMat.m11 = -f;
 			projectionMat.m22 = (ZNear + ZFar) / (ZNear - ZFar);
 			projectionMat.m32 = -1.0f;
 			projectionMat.m23 = 2.0f * ZNear * ZFar / (ZNear - ZFar);
@@ -2193,7 +2201,7 @@ public class Camera implements Cloneable {
 			if( scene.isRightHanded() )
 				projectionMat.m11 = 1.0f / wh[1];
 			else
-				projectionMat.m11 = -1.0f / wh[1];//TODO hack to make the projection fit in P5-v2
+				projectionMat.m11 = -1.0f / wh[1];
 			projectionMat.m22 = -2.0f / (ZFar - ZNear);
 			projectionMat.m32 = 0.0f;
 			projectionMat.m23 = -(ZFar + ZNear) / (ZFar - ZNear);
@@ -2307,6 +2315,16 @@ public class Camera implements Cloneable {
 		if (isDetachedFromP5Camera())
 			modelViewMat.set(modelview);
 	}
+	
+	/**
+	 * Internal sue.
+	 * <p>
+	 * Sets P * M typically from P5.
+	 */
+	public void setProjModelViewMatrix(PMatrix3D pmv) {
+		if (isDetachedFromP5Camera())
+			projectionTimesModelview.set(pmv);
+	}
 
 	// 9. WORLD -> CAMERA
 
@@ -2418,14 +2436,7 @@ public class Camera implements Cloneable {
 			project(tmp.x, tmp.y, tmp.z, modelViewMat, projectionMat, viewport, xyz);
 		} else
 			project(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
-
-		/**
-		// TODO needs further testing
-  	//left-handed coordinate system correction
-		if( scene.isLeftHanded() )
-			xyz[1] = screenHeight() - xyz[1];
-		*/
-
+		
 		return new PVector((float) xyz[0], (float) xyz[1], (float) xyz[2]);
 	}
 
@@ -2478,14 +2489,6 @@ public class Camera implements Cloneable {
 	public final PVector unprojectedCoordinatesOf(PVector src, Frame frame) {
 		float xyz[] = new float[3];
 		viewport = getViewport();
-		
-		/**
-		// TODO needs further testing
-		if( scene.isRightHanded() )
-			unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
-		else
-			unproject(src.x, (screenHeight() - src.y), src.z, modelViewMat,	projectionMat, viewport, xyz);
-		*/
 		
 		unproject(src.x, src.y, src.z, modelViewMat, projectionMat, viewport, xyz);
 		
@@ -2993,18 +2996,8 @@ public class Camera implements Cloneable {
 	 * @see #unprojectCacheIsOptimized()
 	 * @see #optimizeUnprojectCache(boolean)
 	 */
-	protected void cacheMatrices() {
-		// 1. project
-		//if( ( (scene.mouseGrabberPool().size() > 3) && scene.hasMouseTracking() ) || unprojectCacheIsOptimized()) {
-		if(scene.hasMouseTracking() || unprojectCacheIsOptimized()) {
-			projectCacheOptimized = true;
-			projectionTimesModelview.set(projectionMat);			
-			projectionTimesModelview.apply(modelViewMat);
-		}
-		else
-			projectCacheOptimized = false;
-		
-		// 2. unproject
+	protected void cacheProjModelViewInvMat() {
+		// unproject
 		if(unprojectCacheIsOptimized()) {
 			if(projectionTimesModelviewInverse == null)
 				projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
@@ -3016,10 +3009,20 @@ public class Camera implements Cloneable {
 	}
 	
 	/**
+	 * Internal use.
+	 * <p>
+	 * Computes and caches P * M
+	 */
+	protected void calcProjModelView() {
+		projectionTimesModelview.set(projectionMat);
+		projectionTimesModelview.apply(modelViewMat);	
+  }
+	
+	/**
 	 * Returns {@code true} if {@code P x M} and {@code inv (P x M)} are being cached,
 	 * and {@code false} otherwise.
 	 * 
-	 * @see #cacheMatrices()
+	 * @see #cacheProjModelViewInvMat()
 	 * @see #optimizeUnprojectCache(boolean)
 	 */
 	public boolean unprojectCacheIsOptimized() {
@@ -3033,7 +3036,7 @@ public class Camera implements Cloneable {
 	 * is optimised.
 	 * 
 	 * @see #unprojectCacheIsOptimized()
-	 * @see #cacheMatrices()
+	 * @see #cacheProjModelViewInvMat()
 	 */
 	public void optimizeUnprojectCache(boolean optimise) {
 		unprojectCacheOptimized = optimise;
@@ -3068,52 +3071,30 @@ public class Camera implements Cloneable {
 		in[2] = objz;
 		in[3] = 1.0f;
 		
-		if(projectCacheOptimized) {	
-			out[0]=projectionTimesModelview.m00*in[0] + projectionTimesModelview.m01*in[1] + projectionTimesModelview.m02*in[2] + projectionTimesModelview.m03*in[3];
-			out[1]=projectionTimesModelview.m10*in[0] + projectionTimesModelview.m11*in[1] + projectionTimesModelview.m12*in[2] + projectionTimesModelview.m13*in[3];
-			out[2]=projectionTimesModelview.m20*in[0] + projectionTimesModelview.m21*in[1] + projectionTimesModelview.m22*in[2] + projectionTimesModelview.m23*in[3];
-			out[3]=projectionTimesModelview.m30*in[0] + projectionTimesModelview.m31*in[1] + projectionTimesModelview.m32*in[2] + projectionTimesModelview.m33*in[3];
-			
-			if (out[3] == 0.0)
-				return false;
-			
-			out[0] /= out[3];
-			out[1] /= out[3];
-			out[2] /= out[3];
-			// Map x, y and z to range 0-1
-			out[0] = out[0] * 0.5f + 0.5f;
-			out[1] = out[1] * 0.5f + 0.5f;
-			out[2] = out[2] * 0.5f + 0.5f;
-			
-			// Map x,y to viewport
-			out[0] = out[0] * viewport[2] + viewport[0];
-			out[1] = out[1] * viewport[3] + viewport[1];
-			
-			windowCoordinate[0] = out[0];
-			windowCoordinate[1] = out[1];
-			windowCoordinate[2] = out[2];
-			return true;	
-		}		
-		else {
-			modelview.mult(in, out);
-			projection.mult(out, in);
-			if (in[3] == 0.0)
-				return false;
-			in[0] /= in[3];
-			in[1] /= in[3];
-			in[2] /= in[3];
-			// Map x, y and z to range 0-1
-			in[0] = in[0] * 0.5f + 0.5f;
-			in[1] = in[1] * 0.5f + 0.5f;
-			in[2] = in[2] * 0.5f + 0.5f;			
-			// Map x,y to viewport
-			in[0] = in[0] * viewport[2] + viewport[0];
-			in[1] = in[1] * viewport[3] + viewport[1];
-			windowCoordinate[0] = in[0];
-			windowCoordinate[1] = in[1];
-			windowCoordinate[2] = in[2];
-			return true;
-		}
+		out[0]=projectionTimesModelview.m00*in[0] + projectionTimesModelview.m01*in[1] + projectionTimesModelview.m02*in[2] + projectionTimesModelview.m03*in[3];
+		out[1]=projectionTimesModelview.m10*in[0] + projectionTimesModelview.m11*in[1] + projectionTimesModelview.m12*in[2] + projectionTimesModelview.m13*in[3];
+		out[2]=projectionTimesModelview.m20*in[0] + projectionTimesModelview.m21*in[1] + projectionTimesModelview.m22*in[2] + projectionTimesModelview.m23*in[3];
+		out[3]=projectionTimesModelview.m30*in[0] + projectionTimesModelview.m31*in[1] + projectionTimesModelview.m32*in[2] + projectionTimesModelview.m33*in[3];
+		
+		if (out[3] == 0.0)
+			return false;
+		
+		out[0] /= out[3];
+		out[1] /= out[3];
+		out[2] /= out[3];
+		// Map x, y and z to range 0-1
+		out[0] = out[0] * 0.5f + 0.5f;
+		out[1] = out[1] * 0.5f + 0.5f;
+		out[2] = out[2] * 0.5f + 0.5f;
+		
+		// Map x,y to viewport
+		out[0] = out[0] * viewport[2] + viewport[0];
+		out[1] = out[1] * viewport[3] + viewport[1];
+		
+		windowCoordinate[0] = out[0];
+		windowCoordinate[1] = out[1];
+		windowCoordinate[2] = out[2];
+		return true;
 	}
 
 	/**
@@ -3138,15 +3119,8 @@ public class Camera implements Cloneable {
 	public boolean unproject(float winx, float winy, float winz, PMatrix3D modelview,
 			                     PMatrix3D projection, int viewport[], float[] objCoordinate) {
 		
-		if(!unprojectCacheOptimized) {
-			if(!projectCacheOptimized) {
-				projectionTimesModelviewInverse = new PMatrix3D(projection);
-				projectionTimesModelviewInverse.apply(modelview);
-			}
-			else {
-				// invert should have a static version
-				projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
-			}
+		if(!unprojectCacheOptimized) {		
+			projectionTimesModelviewInverse = new PMatrix3D(projectionTimesModelview);
 			projectionTimesModelviewHasInverse = projectionTimesModelviewInverse.invert();			
 		}
 		
