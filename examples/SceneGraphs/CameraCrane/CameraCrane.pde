@@ -1,6 +1,6 @@
 /**
  * CameraCrane.
- * by Jean Pierre Charalambos, Ivan Dario Chinome, and David Montañez.
+ * by Jean Pierre Charalambos, Ivan Dario Chinome, and David Montanez.
  * 
  * This example illustrates "frame linking" by implementing two camera 
  * cranes which defines two auxiliary point of views of the same scene.
@@ -9,9 +9,6 @@
  * referenceFrame(), and constraint() properties. Here we link each
  * auxiliary off-screen scene camera frame to a specific frame found
  * at each crane.
- *
- * This example requires the saito objloader library which is available here:
- * http://code.google.com/p/saitoobjloader/
  *
  * Press 'f' to display frame selection hints.
  * Press 'l' to enable lighting.
