@@ -416,9 +416,7 @@ public class Scene implements PConstants {
 
 	// P R O C E S S I N G   A P P L E T   A N D   O B J E C T S
 	public PApplet parent;
-	//TODO change!!!?
-	//public PGraphicsOpenGL pg3d;
-	public PGraphics pg3d;
+	public PGraphics3D pg3d;
 	protected int width, height;// size
 	protected boolean offscreen;
 	public Point upperLeftCorner;
@@ -501,14 +499,14 @@ public class Scene implements PConstants {
 	 * would just fulfill all of your needs). All viewer parameters (display flags,
 	 * scene parameters, associated objects...) are set to their default values.
 	 * See the associated documentation. This is actually just a convenience
-	 * function that simply calls {@code this(p, (PGraphicsOpenGL) p.g)}. Call any
+	 * function that simply calls {@code this(p, (PGraphics3D) p.g)}. Call any
 	 * other constructor by yourself to possibly define an off-screen Scene.
 	 * 
-	 * @see #Scene(PApplet, PGraphicsOpenGL)
-	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
+	 * @see #Scene(PApplet, PGraphics3D)
+	 * @see #Scene(PApplet, PGraphics3D, int, int)
 	 */	
 	public Scene(PApplet p) {
-		this(p, (PGraphicsOpenGL) p.g);
+		this(p, (PGraphics3D) p.g);
 	}
 	
 	/**
@@ -521,9 +519,9 @@ public class Scene implements PConstants {
 	 * call {@link #Scene(PApplet)} instead.
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphicsOpenGL, int, int)
+	 * @see #Scene(PApplet, PGraphics3D, int, int)
 	 */
-	public Scene(PApplet p, PGraphicsOpenGL renderer) {
+	public Scene(PApplet p, PGraphics3D renderer) {
 		this(p, renderer, 0, 0);
 	}
 
@@ -541,9 +539,9 @@ public class Scene implements PConstants {
 	 * plan to define an on-screen Scene, call {@link #Scene(PApplet)} instead. 
 	 * 
 	 * @see #Scene(PApplet)
-	 * @see #Scene(PApplet, PGraphicsOpenGL)
+	 * @see #Scene(PApplet, PGraphics3D)
 	 */
-	public Scene(PApplet p, PGraphicsOpenGL renderer, int x, int y) {
+	public Scene(PApplet p, PGraphics3D renderer, int x, int y) {
 		parent = p;
 		pg3d = renderer;
 		width = pg3d.width;
@@ -904,7 +902,7 @@ public class Scene implements PConstants {
 	 * Returns {@code true} if this Scene is associated to an offscreen 
 	 * renderer and {@code false} otherwise.
 	 * 
-	 * @see #Scene(PApplet, PGraphicsOpenGL)
+	 * @see #Scene(PApplet, PGraphics3D)
 	 */
 	
 	public boolean isOffscreen() {
@@ -1369,10 +1367,10 @@ public class Scene implements PConstants {
 	/**
 	 * Returns the renderer context linked to this scene. 
 	 * 
-	 * @return PGraphicsOpenGL renderer.
+	 * @return PGraphics3D renderer.
 	 */
-	public PGraphicsOpenGL renderer() {
-		return (PGraphicsOpenGL)pg3d;
+	public PGraphics3D renderer() {
+		return pg3d;
 	}
 
 	/**
@@ -4331,7 +4329,7 @@ public class Scene implements PConstants {
 	 * <p>
 	 * The associated processing drawing code should look like:
 	 * <p>
-	 * {@code p3d.pushMatrix();//p is the PApplet instance} <br>
+	 * {@code p3d.pushMatrix();//p3d is the PGraphics3D instance} <br>
 	 * {@code body.applyTransformation(p);} <br>
 	 * {@code drawBody();} <br>
 	 * {@code p3d.pushMatrix();} <br>

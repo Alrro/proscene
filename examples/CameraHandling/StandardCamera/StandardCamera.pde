@@ -29,7 +29,7 @@ void setup() {
   size(640, 720, P3D);
 
   canvas = createGraphics(640, 360, P3D);
-  scene = new Scene(this, (PGraphicsOpenGL) canvas);
+  scene = new Scene(this, (PGraphics3D) canvas);
   scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
   // enable computation of the frustum planes equations (disabled by
   // default)
@@ -40,7 +40,7 @@ void setup() {
   auxCanvas = createGraphics(640, 360, P3D);
   // Note that we pass the upper left corner coordinates where the scene
   // is to be drawn (see drawing code below) to its constructor.
-  auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas, 0, 360);
+  auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, 360);
   auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
   auxScene.setAxisIsDrawn(false);
   auxScene.setGridIsDrawn(false);
@@ -105,4 +105,4 @@ public void handleMouse() {
     auxScene.enableMouseHandling();
     auxScene.enableKeyboardHandling();
   }
-}		
+}
