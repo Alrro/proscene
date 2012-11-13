@@ -236,7 +236,7 @@ public class Camera implements Cloneable {
 
 	// P R O S C E N E A N D P R O C E S S I N G A P P L E T A N D O B J E C T S
 	public Scene scene;
-	public PGraphicsOpenGL pg3d;
+	public PGraphics3D pg3d;
 
 	/**
 	 * Convenience constructor that simply calls {@code this(true, scn)}.
@@ -1842,7 +1842,7 @@ public class Camera implements Cloneable {
 	public WorldPoint pointUnderPixel(Point pixel) {
 		float[] depth = new float[1];		
 		
-		PGraphicsOpenGL pg = (PGraphicsOpenGL) scene.parent.g;
+		PGraphics3D pg = (PGraphics3D) scene.parent.g;
 		PGL pgl = pg.beginPGL();
 		pgl.readPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
 		pg.endPGL();
