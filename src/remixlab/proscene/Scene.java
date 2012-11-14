@@ -4256,7 +4256,7 @@ public class Scene implements PConstants {
 		else
 			camera().computeProjectionMatrix();
 		// */
-		/**
+	   /**
 		// option 2: compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
@@ -4285,12 +4285,12 @@ public class Scene implements PConstants {
 	  // option 1		
 		if( camera().isDetachedFromP5Camera() ) {
 			renderer().modelview.set(camera().getModelViewMatrix());
-			camera().calcProjmodelview();
+			camera().calcProjModelView();
 			renderer().projmodelview.set(camera().projectionTimesModelview);
 		}	
 		else {
 			camera().computeModelViewMatrix();
-			camera().calcProjmodelview();
+			camera().calcProjModelView();
 		}		
 		// */
 		// /**
