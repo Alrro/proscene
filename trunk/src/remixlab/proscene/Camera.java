@@ -373,6 +373,7 @@ public class Camera implements Cloneable {
 			modelViewMat = pg3d.modelview;
 			computeProjectionMatrix();
 			computeModelViewMatrix();
+			//TODO warning attaching P*M makes off-screen mouse grabbers selection to fail
 			projectionTimesModelview = pg3d.projmodelview;
 			projectionTimesModelview.set(projectionMat);
 			projectionTimesModelview.apply(modelViewMat);
@@ -1839,10 +1840,12 @@ public class Camera implements Cloneable {
 	 * Returns the coordinates of the 3D point located at {@code pixel} (x,y) on
 	 * screen.
 	 */
-	public WorldPoint pointUnderPixel(Point pixel) {
+	public WorldPoint pointUnderPixel(Point pixel) {		
 		float[] depth = new float[1];		
 		
-		PGraphics3D pg = (PGraphics3D) scene.parent.g;
+		//PGraphics3D pg = (PGraphics3D) scene.parent.g;
+	  //TODO test if this work off-screen:
+		PGraphics3D pg = (PGraphics3D) scene.renderer();
 		PGL pgl = pg.beginPGL();
 		pgl.readPixels((int) pixel.x, (screenHeight() - (int) pixel.y), 1, 1, PGL.DEPTH_COMPONENT, PGL.FLOAT, FloatBuffer.wrap(depth));		
 		pg.endPGL();
