@@ -10,7 +10,6 @@ public class Animation extends PApplet {
 
 	public void setup() {
 		size(640, 360, P3D);
-		//size(640, 360, OPENGL);
 		// We instantiate our MyScene class defined below
 		scene = new MyScene(this);
 		//scene.setAWTTimers();

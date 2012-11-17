@@ -90,6 +90,7 @@ public class FrameInterpolation extends PApplet {
 	    kfi.setInterpolationSpeed(kfi.interpolationSpeed()+0.25f);
 	  if( key == 'x' )
 		  scene.switchTimers();
+	  /**
 	  if (key == 'y' ) {
 		  for (int i=0; i<nbKeyFrames; i++) {
 			  if( keyFrame[i].isLeftHanded() )
@@ -97,7 +98,8 @@ public class FrameInterpolation extends PApplet {
 			  else
 				  println( "KeyFrame " + i + " is RightHanded" );
 		  }
-	  }		  
+	  }	
+	  */	  
 	}
 	
 	public static void main(String args[]) {

@@ -15,7 +15,7 @@ public class FrameInteraction extends PApplet {
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//scene.camera().setKind(Camera.Kind.STANDARD);
 		//scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
-		scene.interactiveFrame().translate(new Vector3D(30, 30, 0));
+		scene.interactiveFrame().translate(new Vector3D(30, 30, 0));		
 		// press 'i' to switch the interaction between the camera frame and the interactive frame
 		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		// press 'f' to display frame selection hints
@@ -50,6 +50,29 @@ public class FrameInteraction extends PApplet {
 		}	
 		
 		popMatrix();
+	}
+	
+	public void keyPressed() {
+		if(key == 'u' || key == 'U') {
+			if(scene.isRightHanded())
+				scene.setLeftHanded();			
+			else
+				scene.setRightHanded();			
+		}
+		if(key == 'v' || key == 'V') {
+			//scene.interactiveFrame().scale(1,-1,1);
+			scene.interactiveFrame().scale(-1,-1,-1);
+		}
+		if(scene.isRightHanded())
+			println("Scene is RIGHT handed");
+		else
+			println("Scene is LEFT handed");
+		/**
+		if(scene.interactiveFrame().isRightHanded())
+			println("scene.interactiveFrame() is RIGHT handed");
+		else
+			println("scene.interactiveFrame() is LEFT handed");
+		*/
 	}
 		
 	public static void main(String args[]) {

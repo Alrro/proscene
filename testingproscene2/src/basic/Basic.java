@@ -15,7 +15,6 @@ public class Basic extends PApplet {
 	  scene = new Scene(this);
 	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);	  
 	  scene.showAll();
-	  //hint(DISABLE_STROKE_PERSPECTIVE);
 	}	
 
 	public void draw() {
@@ -55,6 +54,19 @@ public class Basic extends PApplet {
 		}
 	}
 	*/
+	
+	public void keyPressed() {
+		if(key == 'u' || key == 'U') {
+			if(scene.isRightHanded()) {
+				scene.setLeftHanded();
+				println("Left handed set");
+			}
+			else {
+				scene.setRightHanded();
+				println("Right handed set");
+			}
+		}
+	}
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "basic.Basic" });

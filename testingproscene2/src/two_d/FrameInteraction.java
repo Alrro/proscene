@@ -11,8 +11,11 @@ public class FrameInteraction extends PApplet {
 
 	public void setup() {
 	  size(640, 360, P2D);
+      scene = new Scene(this);
+		
 	  //size(640, 360, JAVA2D);
-	  scene = new Scene(this);
+	  //scene = new Java2DScene(this);
+	  
 	  // A Scene has a single InteractiveFrame (null by default). We set it here.
 	  scene.setInteractiveFrame(new InteractiveFrame(scene));
 	  scene.interactiveFrame().translate(new Vector3D(30, 30));
@@ -51,14 +54,52 @@ public class FrameInteraction extends PApplet {
 	
 	public void keyPressed() {
 		if(key == 'x' || key == 'X') {
-			scene.interactiveFrame().scale(1, -1, 1);
+			println(scene.viewWindow().projectedCoordinatesOf(scene.interactiveFrame().position()));
+		}
+		if(key == 'u' || key == 'U') {
+			scene.interactiveFrame().scale(1, -1);
 		}		
-		if(key == 'y' || key == 'Y') {
+		if(key == 'v' || key == 'V') {
 			scene.viewWindow().flip();			
 		}
 		if(key == 'z' || key == 'Z') {
 			print("magnitude: ");
 			scene.pinhole().frame().magnitude().print();
+		}
+		if(scene.isRightHanded())
+			println("Scene is RIGHT handed");
+		else
+			println("Scene is LEFT handed");		
+		if(scene.interactiveFrame().isInverted())
+			println("scene.interactiveFrame() is inverted");
+		else
+			println("scene.interactiveFrame() is NOT inverted");
+	}
+	
+	public class Java2DScene extends Scene {
+		public Java2DScene(PApplet p) {
+			super(p);
+		}
+
+		@Override
+		public void applyTransformation(VFrame frame) {
+			if( is2D() ) {
+				if(renderer() instanceof RendererJava2D) {
+					//if( isRightHanded() ) translate(0,-2*frame.translation().y());
+					if( isRightHanded() ) scale(1,-1);		
+					translate(frame.translation().x(), frame.translation().y());					
+					rotate(frame.rotation().angle());					
+					scale(frame.scaling().x(), frame.scaling().y());					
+					//println(frame.translation().y());
+				}
+				else
+					super.applyTransformation(frame);
+			}
+			else {
+				translate( frame.translation().vec[0], frame.translation().vec[1], frame.translation().vec[2] );
+				rotate( frame.rotation().angle(), ((Quaternion)frame.rotation()).axis().vec[0], ((Quaternion)frame.rotation()).axis().vec[1], ((Quaternion)frame.rotation()).axis().vec[2]);
+				scale(frame.scaling().x(), frame.scaling().y(), frame.scaling().z());
+			}
 		}
 	}
 }
