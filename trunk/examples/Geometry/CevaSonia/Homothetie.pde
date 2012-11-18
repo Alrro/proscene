@@ -19,7 +19,7 @@ class Homothetie {
   PVector imageVecteur(PVector v) {
     return PVector.add(centre, PVector.mult(v, rapport));
   }
-
+  
   PVector imagePoint(PVector p) {
     return imageVecteur(PVector.sub(p, centre));
   }
@@ -28,7 +28,6 @@ class Homothetie {
     PVector[]     res= {
       imagePoint(p1), imagePoint(p2)
     };
-
     return res;
   }
 
@@ -36,7 +35,7 @@ class Homothetie {
     PVector[]     res= {
       imagePoint(p1), imagePoint(p2), imagePoint(p3)
     };
-
     return res;
   }
 }
+

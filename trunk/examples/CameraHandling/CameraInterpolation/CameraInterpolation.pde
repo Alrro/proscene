@@ -34,7 +34,7 @@ import remixlab.proscene.*;
 
 Scene scene;
 ArrayList buttons;
-int fSize = 16;
+int fSize = 18;
 int h;
 
 void setup() {

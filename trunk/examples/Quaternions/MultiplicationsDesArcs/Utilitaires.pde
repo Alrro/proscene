@@ -19,7 +19,7 @@ PVector barycentre(float lamb, PVector u, PVector v) {
   return comb(lamb, u, 1-lamb, v);
 }
 
-float barycentre(float lamb, float u, float v) {
+float  barycentre(float lamb, float u, float v) {
   return lamb*u+(1-lamb)*v;
 }
 
@@ -56,7 +56,7 @@ void triangle3D(PVector a, PVector b, PVector c) {
   fill(155, 50, 250, 200);
   vertex( c.x, c.y, c.z);
   endShape();
-} 
+}
 
 void triangle3D(PVector a, PVector b, PVector c, float k, float l, float m) {
   stroke(0, 100, 255);
@@ -71,7 +71,6 @@ void triangle3D(PVector a, PVector b, PVector c, float k, float l, float m) {
 }  
 
 void triangles3D(PVector a, PVector b, PVector c) {
-  PVector or=new PVector(0, 0, 0);
   triangle3D(a, b, or);
   triangle3D(b, c, or);
   triangle3D(a, c, or);
@@ -90,7 +89,7 @@ PVector projectionSurDroite(PVector v, PVector droite) {
   return PVector.mult(u, u.dot(v));
 }
 
-float angleQuaternion(Quaternion q) {	
+float angleQuaternion(Quaternion q) {  
   q.normalize();
   return (float) Math.acos(q.w)* 2.0f;
 }  
@@ -107,11 +106,35 @@ PVector calculSym(PVector m, PVector n) {
   return res;
 }
 
-void afficherL(String L, PVector po) {
-  pushMatrix();
-  translate(po.x, po.y, po.z);
-  text(L, 10, 10);
-  popMatrix();
+void afficherL(String L, PVector p1) {
+  PVector po= PVector.mult(p1, 1.1);
+  unText1(L, po);
+}
+
+void dessinerArc(float angleQn, color c, float r) {
+  float anglArc=2*angleQn;
+
+  fill(c);
+  noStroke();
+  float pta=anglArc/100.0;
+  beginShape(QUAD_STRIP); 
+
+  for (int a=0;a<=100;a++) {
+    float aa=pta*a;
+    vertex(r*cos(aa), r*sin(aa), 0);
+    vertex(r*cos(aa), r*sin(aa), 30);
+  }
+  endShape();
+  fill(250, 120, 0);
+  beginShape(TRIANGLE_FAN); 
+  vertex(0, 0, 0);
+  fill(100, 155, 250);
+  for (int a=0;a<100;a+=4) {
+    float aa=anglArc*a/100.0;
+    vertex(r*cos(aa), r*sin(aa), 0);
+  }
+  vertex(r*cos(anglArc), r*sin(anglArc), 0);
+  endShape();
 }
 
 void unText1(String tex, PVector v) {
@@ -123,5 +146,5 @@ void unText1(String tex, PVector v) {
   text(tex, leX+10, leY, 10);
   scene.endScreenDrawing(); 
   popMatrix();
-}   
+}    
 

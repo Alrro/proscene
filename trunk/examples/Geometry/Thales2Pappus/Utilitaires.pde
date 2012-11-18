@@ -1,24 +1,24 @@
 void balle(int i) {
-  color  c=color(255, 255, 255);  
+  color  c=color(255, 255, 255);   
   pushStyle();
   switch(i) {
   case 0 :
   case 1:
-  case 4:
-    c=color(255, 0, 0); 
+  case 4: 
+    c=color(255, 0, 0);  
     break;
   case 2 :
   case 3 :
-    c=color(255, 255, 0);
+    c=color(255, 255, 0); 
     break;
   case 5 :
   case 6:
-    c=color(255, 255, 255);
+    c=color(255, 255, 255); 
     break;
-  } 
+  }  
   fill(c);
   noStroke();
-  sphere(14); 
+  sphere(2);  
   popStyle();
 }
 
@@ -121,12 +121,12 @@ void triangle3d(PVector a, PVector b, PVector c) {
   beginShape();
   fill(255, 200, 0, 200);
   vertex( a.x, a.y, a.z);
-  fill(255, 255, 0, 200);       
+  fill(255, 255, 0, 200);        
   vertex( b.x, b.y, b.z);
   fill(155, 50, 250, 200);
   vertex( c.x, c.y, c.z);
   endShape();
-}
+}     
 
 void triangle3d(PVector a, PVector b, PVector c, color couleur) {
   stroke(0, 100, 255);
@@ -136,4 +136,9 @@ void triangle3d(PVector a, PVector b, PVector c, color couleur) {
   vertex( b.x, b.y, b.z);
   vertex( c.x, c.y, c.z);
   endShape();
-} 
+}     
+
+
+
+
+

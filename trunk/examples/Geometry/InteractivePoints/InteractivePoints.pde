@@ -1,10 +1,17 @@
 /**
- * InteractivePoints
- * By Jacques Maire
+ * Interactive Points
+ * by Jacques Maire (http://www.alcys.com/)
+ * 
+ * Part of proscene classroom: http://www.openprocessing.org/classroom/1158
+ * Check also the collection: http://www.openprocessing.org/collection/1438
+ *
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
-//Un point  règlable toujours aligné avec deux points baladeurs
 import remixlab.proscene.*;
+
 float r;
 int nb=4;
 int nbrail=6;
@@ -15,20 +22,12 @@ PVector[] posfr= {
   new PVector(-100, -100, 0), new PVector(-60, 80, 0), new PVector(30, 10, 80), new PVector(100, -40, -70)
   };
 color[] couleurs= {
-  color(255, 0, 255), color(0, 0, 255), color(255, 0, 255), color(100, 100, 255)
+  color(255, 0, 0), color(0, 0, 255), color(255, 0, 255), color(100, 0, 255)
 };
-color[] tcouleurs= {
-  color(255, 0, 255, 90), color(255, 255, 0, 90), color(255, 0, 0, 90), color(100, 100, 255, 90)
-};
-color[] tc;
 Rail[] guides;
 
-void setup() {       
-  size(800, 600, P3D);
-  tc=new color[20];
-  for (int i=0;i<20;i++) {
-    tc[i]=color(random(100, 255), random(100, 155), random(100, 255), 90);
-  }
+void setup() {
+  size(640, 640, P3D);
   r=3;
   scene = new Scene(this);
   scene.setRadius(130);
@@ -36,8 +35,6 @@ void setup() {
   scene.setCameraType(Camera.Type.PERSPECTIVE);
   scene.setGridIsDrawn(false);
   scene.drawAxis(30f);
-
-
   balles=new Balle[nb];
   for (int i=0;i<nb;i++) {
     balles[i]=new Balle(posfr[i], couleurs[i]);
@@ -53,14 +50,16 @@ void setup() {
 }
 
 void draw() {
-  background(255, 200, 200);
-  directionalLight(100, 100, 0, 1, -1, 1);
-  lights();
+  background(255, 200, 50);
+  directionalLight(255, 255, 255, -1, -1, 1);
+  directionalLight(255, 255, 255, 1, -1, -1);
+  directionalLight(255, 255, 0, 1, 0, 0);
+  
   //les points bleus
   for (int i=0;i<nb;i++) {
     pushMatrix();
     balles[i].iFrame.applyTransformation();
-    //scene.drawAxis(r*5f);
+    scene.drawAxis(r*15f);
     noStroke();
     fill(0, 0, 255);
     sphere(r);
@@ -68,14 +67,17 @@ void draw() {
   }
 
   //les points guidés
-
   for (int i=0;i<nbrail;i++)
   {
     guides[i].actualiser();
     ligne(balles[guides[i].ndepart].iFrame.position(), balles[guides[i].narrivee].iFrame.position());
   }
+  
   //les faces des tretraedres
-  dessinerFaces();
+  forTriangles(0, 1, 2, 0, 2, 1, color(255, 0, 0, 100), color(255, 0, 255));
+  forTriangles(0, 2, 3, 2, 3, 5, color(255, 255, 0, 100), color(255, 0, 255));
+  forTriangles(0, 1, 3, 0, 3, 4, color(0, 255, 255, 100), color(255, 0, 0));
+  forTriangles(1, 2, 3, 1, 4, 5, color(0, 255, 0, 100), color(0, 0, 255));
 }
 
 void ligne(PVector u, PVector v) {
@@ -84,32 +86,28 @@ void ligne(PVector u, PVector v) {
   line(2.0*u.x-v.x, 2.0*u.y-v.y, 2.0*u.z-v.z, 2.0*v.x-u.x, 2.0*v.y-u.y, 2.0*v.z-u.z);
 }
 
-void dessinerFaces() {
-  noStroke();
-
-  for (int i=0;i<nb;i++) {
-    fill(tcouleurs[i]);
-    beginShape();
-    for (int j=0;j<nb;j++) {
-      if (j!=i) vertex(balles[j].iFrame.position().x, balles[j].iFrame.position().y, balles[j].iFrame.position().z);
-    }
-    endShape(CLOSE);
-  }
-
-  fill(255, 255, 0, 60);
-  int t=0;
-  for (int i=0;i<nbrail;i++) {
-
-    for (int k=i+1;k<nbrail;k++) {
-      for (int j=k+1;j<nbrail;j++) { 
-        fill(tc[t]) ; 
-        t++;   
-        beginShape(); 
-        vertex(guides[i].repere.position().x, guides[i].repere.position().y, guides[i].repere.position().z); 
-        vertex(guides[k].repere.position().x, guides[k].repere.position().y, guides[k].repere.position().z);
-        vertex(guides[j].repere.position().x, guides[j].repere.position().y, guides[j].repere.position().z);
-        endShape(CLOSE);
-      }
-    }
-  }
+void dessinT(int e, int i, int k, color c) {
+  fill(c);
+  beginShape();
+  vertex(balles[e].iFrame.position().x, balles[e].iFrame.position().y, balles[e].iFrame.position().z);
+  vertex(guides[i].repere.position().x, guides[i].repere.position().y, guides[i].repere.position().z); 
+  vertex(guides[k].repere.position().x, guides[k].repere.position().y, guides[k].repere.position().z);
+  endShape();
 }
+
+void dessinT0(int e, int i, int k, color c) {
+  fill(c);
+  beginShape();
+  vertex(guides[e].repere.position().x, guides[e].repere.position().y, guides[e].repere.position().z); 
+  vertex(guides[i].repere.position().x, guides[i].repere.position().y, guides[i].repere.position().z); 
+  vertex(guides[k].repere.position().x, guides[k].repere.position().y, guides[k].repere.position().z);
+  endShape();
+}
+
+void forTriangles(int n, int m, int p, int a, int b, int c, color c1, color c2) {
+  dessinT(n, a, b, c1);
+  dessinT(m, a, c, c1);
+  dessinT(p, b, c, c1);
+  dessinT0(a, b, c, c2);
+}
+

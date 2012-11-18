@@ -24,7 +24,7 @@ int activeConstraint;
 
 void setup() {        
   size(640, 360, P3D);
-  myFont = createFont("Arial", 12);
+  myFont = createFont("FreeSans", 13);
   textFont(myFont);
 
   scene = new Scene(this);
@@ -148,11 +148,11 @@ void displayDir(int dir, int x, int y, char c) {
 
 void displayText() {
   text("TRANSLATION :", 350, height-30);
-  displayDir(transDir, (350+90), height-30, 'D');
+  displayDir(transDir, (350+100), height-30, 'D');
   displayType(constraints[activeConstraint].translationConstraintType(), 350, height-60, 'T');
 
   text("ROTATION :", width-120,height-30);
-  displayDir(rotDir, width-50, height-30, 'B');
+  displayDir(rotDir, width-45, height-30, 'B');
   displayType(constraints[activeConstraint].rotationConstraintType(), width-120, height-60, 'R');
 
   switch (activeConstraint) {

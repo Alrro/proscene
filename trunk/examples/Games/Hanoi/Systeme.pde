@@ -1,5 +1,4 @@
 class Systeme {
-
   int[][] etat;
   int situation;
   Disque[] disques;
@@ -21,7 +20,7 @@ class Systeme {
       disques[i]=new Disque(0, i, frames[i]);
     }
   }
-  
+
   void draw() {
     pilote();
     for (int i=0;i<4;i++) {
@@ -35,7 +34,7 @@ class Systeme {
   int getEtat(int i, int j) {
     return etat[i][j];
   }
-  
+
   void setEtat(int i, int j, int d) {
     etat[i][j]=d;
   }
@@ -58,7 +57,7 @@ class Systeme {
     }
     return rep;
   }
-  
+
   void decollage(int disqueEnPrise) {
     int  piquet=disques[disqueEnPrise].surLePiquet;
     int h=surLaPile(disqueEnPrise);
@@ -69,7 +68,7 @@ class Systeme {
     setEtat(piquet, h, 5);
     situation=1;
   }
-  
+
   void attenteDeClic() {
     int i=0;
     while ( (i<nbdisques)&& (!disques[i].repere.grabsMouse()))
@@ -184,7 +183,7 @@ class Systeme {
       atterrissage();
     }
   }
-  
+
   void imprimeEtat() {
     String s="piquet 0 ---> "+getEtat(0, 0)+"   "+getEtat(0, 1)+"   "+getEtat(0, 2)+"   "+getEtat(0, 3)+"   "+getEtat(0, 4) ;
     println(s);
@@ -198,3 +197,4 @@ class Systeme {
     println();
   }
 }
+

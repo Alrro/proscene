@@ -1,7 +1,7 @@
 class Plan {
   InteractiveFrame repere;
   InteractiveFrame[] pointSensible;
-  PVector[] pabs;
+  PVector[] pabs; 
   float posix, angle, largeur, longueur;
   PVector normale, direc;
   color col;
@@ -11,11 +11,11 @@ class Plan {
     posix=posx;
     angle=an;
     longueur=-2.0f*posix;
-    largeur=400;
+    largeur=40;
     normale=new PVector(0, 0, 1);
     col=color(55, 55, 100, 254);
     repere=new InteractiveFrame(scene);
-    repere.setTranslation(posx, 0, 120);
+    repere.setTranslation(posx, 0, 12);
     repere.setRotation(new Quaternion(new PVector(1, 0, 0), angle));
     repere.setConstraint(contrainteX);
     init();
@@ -23,7 +23,7 @@ class Plan {
 
   void draw() {
     actualiser();
-
+    
     pushMatrix();
     repere.applyTransformation();
     normale=  repere.inverseTransformOf(new PVector(0, 0, 1));
@@ -31,7 +31,7 @@ class Plan {
     fill(255);
     stroke(255);
 
-    scene.drawAxis(100);
+    scene.drawAxis(20);
     rectangle(col, 0, 0, longueur, largeur );
     rectanglesoleil();
     for (int i=0;i<7;i++) {
@@ -46,9 +46,9 @@ class Plan {
     rotateY(PI);
     rotateX(PI);
     rotateY(PI);
-    fill(255, 0, 0);
-    stroke(255, 0, 0);
-    text("from THALES ", 500, -50);
+    fill(255);
+    stroke(255);
+    text("THALES ", 50, -5, 2);
     popMatrix();
     popMatrix();
 
@@ -58,7 +58,7 @@ class Plan {
 
   void figure0() {
     stroke(180, 180, 255);
-    strokeWeight(3);
+    strokeWeight(3); 
     ligne(pst(1), pst(4));
     ligne(pst(2), pst(6));
     stroke(255, 255, 0);
@@ -67,20 +67,20 @@ class Plan {
     stroke(255, 255, 255);
     ligne(pst(1), pst(5));
     ligne(pst(3), pst(6));
-    strokeWeight(1);
+    strokeWeight(1); 
     stroke(255, 0, 0);
     ligne(pst(1), pst(0));
     ligne(pst(5), pst(0));
-  }
+  } 
 
   void projetantes() {
-    PVector pv;   
+    PVector pv;    
     for (int i=0;i<7;i++) {
       pv=repere.inverseCoordinatesOf(pointSensible[i].translation());
       pabs[i]=projection(pv);
     }
     strokeWeight(3);
-    stroke(0, 0, 255);  
+    stroke(0, 0, 255);   
     ligne(pabs[1], pabs[4]);
     ligne(pabs[2], pabs[6]);
     stroke(255, 255, 0);
@@ -90,16 +90,16 @@ class Plan {
     ligne(pabs[1], pabs[5]);
     ligne(pabs[3], pabs[6]);
     strokeWeight(1);
-  }
+  }  
 
   void figure1() {
     PVector a2=intersectionDroite(pabs[2], pabs[5], pabs[3], pabs[4]);
     PVector   b2=intersectionDroite(pabs[1], pabs[5], pabs[3], pabs[6]);
     PVector c2= intersectionDroite(pabs[2], pabs[6], pabs[1], pabs[4]);
-    stroke(255, 255, 0);
+    stroke(255, 255, 0); 
     ligne(a2, pabs[2]);
     ligne(a2, pabs[3]);
-    stroke(255, 255, 255);
+    stroke(255, 255, 255); 
     ligne(b2, pabs[1]);
     ligne(b2, pabs[3]);
     stroke(0, 0, 255);
@@ -113,26 +113,26 @@ class Plan {
     stroke(255, 0, 0);
     ligne(pabs[1], pabs[0]);
     ligne(pabs[5], pabs[0]);
-  } 
-
+  }  
+  
   void setLargeur(float lar) {
     largeur=lar;
   }
-
+  
   void setLongueur(float lar) {
     longueur=lar;
   }
-
-  void setCouleur(color c) {
+  
+  void setCouleur(color c) { 
     col=c;
   }
-
+  
   void getNormaleDansWorld() {
     normale=  repere.inverseTransformOf(new PVector(0, 0, 1));
   }
 
-  void init() {
-    pabs=new PVector[7];  
+  void init() { 
+    pabs=new PVector[7];   
     pointSensible= new InteractiveFrame[7];
     for (int i=0;i<7;i++) {
       pointSensible[i]=new InteractiveFrame(scene);
@@ -146,13 +146,13 @@ class Plan {
     pointSensible[5].setConstraint(fixe);
     pointSensible[6].setConstraint(fixe);
 
-    pointSensible[0].setTranslation(new PVector(700, 200, 0));//S
-    pointSensible[1].setTranslation(new PVector(200, 300, 0));//A
+    pointSensible[0].setTranslation(new PVector(70, 20, 0));//S
+    pointSensible[1].setTranslation(new PVector(20, 30, 0));//A
     lambda2=0.85;
     lambda3=0.72;
     pointSensible[2].setTranslation(barycentre(lambda2, pst(1), pst(0)));//B
     pointSensible[3].setTranslation(barycentre(lambda3, pst(1), pst(0)));//C
-    pointSensible[4].setTranslation(new PVector(250, 80, 0));//B1
+    pointSensible[4].setTranslation(new PVector(25, 8, 0));//B1
 
     replaceC1A1();
 
@@ -167,8 +167,8 @@ class Plan {
     direc.normalize();
     PVector diff=PVector.sub(direc, adirec);
     if (diff.mag()>1.0E-6) {
-      pointSensible[2].setTranslation(comb(lambda2, pst(1), 1.0-lambda2, pst(0)));
-      pointSensible[3].setTranslation(comb(lambda3, pst(1), 1.0-lambda3, pst(0))); 
+      pointSensible[2].setTranslation(comb(lambda2, pst(1), 1.0-lambda2, pst(0))); 
+      pointSensible[3].setTranslation(comb(lambda3, pst(1), 1.0-lambda3, pst(0)));  
 
       axial.setTranslationConstraint(AxisPlaneConstraint.Type.AXIS, direc);
       pointSensible[2].setConstraint(axial);
@@ -185,12 +185,11 @@ class Plan {
   PVector pst(int i) {
     return pointSensible[i].translation();
   }
-
+  
   void replaceC1A1() {
     PVector dir1=comb(1, pst(4), -1, pst(3));
     PVector ww=intersectionDroiteDir2(pst(4), pst(0), pst(2), dir1);//C1
     pointSensible[5].setTranslation(ww);//C1
-
 
     dir1=comb(1, pst(4), -1, pst(1));
     ww=intersectionDroiteDir2(pst(4), pst(0), pst(2), dir1);//A1
@@ -199,7 +198,7 @@ class Plan {
 
   void rectanglesoleil() {
     PVector soleilrep = repere.coordinatesOf(soleil.position());//coordonnées de soleil dans repere
-    PVector ptr=  comb(1, soleilrep, 1, new PVector(0, -100, 0));//dans repere un point à projeter
+    PVector ptr=  comb(1, soleilrep, 1, new PVector(0, -10, 0));//dans repere un point à projeter 
     PVector sr =repere.inverseCoordinatesOf(ptr);//dans absolu le poinr à projeter
     sr = repere.coordinatesOf(projection(sr, false));
     fill(0, 255, 255, 150);
@@ -211,3 +210,4 @@ class Plan {
     endShape(CLOSE);
   }
 }
+
