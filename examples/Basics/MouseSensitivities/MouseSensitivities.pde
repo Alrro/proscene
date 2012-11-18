@@ -30,7 +30,7 @@ PFont myFont;
 void setup() {
   size(640, 360, P3D);
 
-  myFont = createFont("FFScala", 14);
+  myFont = createFont("FreeSans", 16);
   textFont(myFont);
   textAlign(LEFT);
 
@@ -126,19 +126,19 @@ void displayControls() {
 
   fill(200, 255, 0);
   displayText(equals(iFrame.rotationSensitivity(), 1.0f) ? "Rotation sensitivity" : "Rotation sensitivity *", xM, 50);		
-  displayText(String.format("%.2f", iFrame.rotationSensitivity()), xM + 160, 50);
+  displayText(String.format("%.2f", iFrame.rotationSensitivity()), xM + 165, 50);
   displayText(equals(iFrame.translationSensitivity(), 1.0f) ? "Translation sensitivity" : "Translation sensitivity *", xM, 70);		
-  displayText(String.format("%.2f", iFrame.translationSensitivity()), xM + 160, 70);
+  displayText(String.format("%.2f", iFrame.translationSensitivity()), xM + 165, 70);
   displayText(equals(iFrame.spinningSensitivity(), 0.3f) ? "Spinning sensitivity" : "Spinning sensitivity *", xM, 90);		
-  displayText(String.format("%.2f", iFrame.spinningSensitivity()), xM + 160, 90);		
+  displayText(String.format("%.2f", iFrame.spinningSensitivity()), xM + 165, 90);		
   displayText(equals(iFrame.tossingSensitivity(), 0.3f) ? "Tossing sensitivity" : "Tossing sensitivity *", xM, 110);
-  displayText(String.format("%.2f", iFrame.tossingSensitivity()), xM + 160, 110);
+  displayText(String.format("%.2f", iFrame.tossingSensitivity()), xM + 165, 110);
   displayText(equals(iFrame.wheelSensitivity(), 20.0f) ? "Wheel sensitivity" : "Wheel sensitivity *", xM, 130);
-  displayText(String.format("%.2f", iFrame.wheelSensitivity()), xM + 160, 130);		
+  displayText(String.format("%.2f", iFrame.wheelSensitivity()), xM + 165, 130);		
   displayText(equals(iFrame.spinningFriction(), 0.0f) ? "Spinning friction" : "Spinning friction *", xM, 150);
-  displayText(String.format("%.2f", iFrame.spinningFriction()), xM + 160, 150);
+  displayText(String.format("%.2f", iFrame.spinningFriction()), xM + 165, 150);
   displayText(equals(iFrame.tossingFriction(), 1.0f) ? "Tossing friction" : "Tossing friction *", xM, 170);
-  displayText(String.format("%.2f", iFrame.tossingFriction()), xM + 160, 170);
+  displayText(String.format("%.2f", iFrame.tossingFriction()), xM + 165, 170);
 
   for (int i = 0; i < buttons.size(); i++)
     ( (ClickButton) buttons.get(i)).display();

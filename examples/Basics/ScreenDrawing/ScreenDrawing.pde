@@ -32,8 +32,8 @@ boolean additionalInstructions = false;
 	
 void setup() {
   size(640, 360, P3D);
-  font = createFont("Arial", 16);
-  textFont(font, 16);
+  font = createFont("FreeSans", 16);
+  textFont(font);
   scene = new Scene(this);
   // press 'f' to display frame selection hints
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);

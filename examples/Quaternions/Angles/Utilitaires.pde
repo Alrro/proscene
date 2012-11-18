@@ -13,8 +13,7 @@ PVector centreGravite(PVector u, PVector v, PVector r) {
   PVector gr= comb(0.5f, u, 0.5f, v);
   gr= comb(1.0f/3.0f, r, 2.0f/3.0f, gr);
   return gr;
-}
-
+} 
 PVector barycentre(float lamb, PVector u, PVector v) {
   return comb(lamb, u, 1-lamb, v);
 }
@@ -56,7 +55,7 @@ void triangle3D(PVector a, PVector b, PVector c) {
   fill(155, 50, 250, 200);
   vertex( c.x, c.y, c.z);
   endShape();
-} 
+}  
 
 void triangle3D(PVector a, PVector b, PVector c, float k, float l, float m) {
   stroke(0, 100, 255);
@@ -117,6 +116,17 @@ void afficherL(String L, PVector po) {
 void unText1(String tex, PVector v) {
   float leX = screenX(v.x, v.y, v.z);
   float leY = screenY(v.x, v.y, v.z);
+  pushMatrix();
+  scene.beginScreenDrawing();
+  fill(255);
+  text(tex, leX+10, leY, 10);
+  scene.endScreenDrawing(); 
+  popMatrix();
+} 
+
+void unText1(String tex, float xx, float yy, float zz) {
+  float leX = screenX(xx, yy, zz);
+  float leY = screenY(xx, yy, zz);
   pushMatrix();
   scene.beginScreenDrawing();
   fill(255);

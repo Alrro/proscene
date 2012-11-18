@@ -1,5 +1,4 @@
 class PlanArrivee {
-
   InteractiveFrame repere;
 
   float posix, angle, largeur, longueur;
@@ -10,8 +9,8 @@ class PlanArrivee {
   PlanArrivee(float posx, float an) {
     posix=posx;
     angle=an;
-    longueur=1000;
-    largeur=1600;
+    longueur=200;
+    largeur=320;
     normale=new PVector(0, 0, 1);
     col=color(130, 100, 120, 254);
     repere=new InteractiveFrame(scene);
@@ -22,10 +21,10 @@ class PlanArrivee {
 
   void draw() {
     pushMatrix();
-    repere.applyTransformation(); 
-    rectangle(col, 0, 0, longueur, largeur );
-    balle(1);
-    text("into PAPPUS", 700, 700);  
+    repere.applyTransformation();  
+    rectangle(col, -longueur, 0, longueur, largeur );
+    balle(2);
+    text("PAPPUS", 70, 70, 4);   
     popMatrix();
   }
 
@@ -33,3 +32,4 @@ class PlanArrivee {
     normale=  repere.inverseTransformOf(new PVector(0, 0, 1));
   }
 }
+

@@ -1,7 +1,6 @@
 class Plan {
   int nb=5;
   InteractiveFrame[] reperes;
-  AxisPlaneConstraint contrainteDuPlan, contrainteDroite, contrainte4;
   PVector[][] intersections;
 
   Plan() {
@@ -12,54 +11,41 @@ class Plan {
       reperes[i]=new InteractiveFrame(scene);
       if (i>0) reperes[i].setReferenceFrame( reperes[0]);
     }
-
+    reperes[0].setConstraint(waxial);
+    reperes[1].setConstraint(lplanaire);
+    reperes[2].setConstraint(lplanaire);
+    reperes[3].setConstraint(lplanaire);
+    reperes[4].setConstraint(fixe);
     // Initialize frames
-    reperes[1].setTranslation(80, -80, 0);
-    reperes[2].setTranslation(150, -20, 0);
+    reperes[0].setPosition(-100, -100, 0); 
+    reperes[1].setTranslation(80, -80, 0); 
+    reperes[2].setTranslation(150, -20, 0); 
     reperes[3].setTranslation(100, -180, 0);
     reperes[4].setTranslation(100, 0, 0);
+    reperes[0].setRotation(new Quaternion(new PVector(1, 0, 0), 5.6)); 
     reperes[1].setRotation(new Quaternion(new PVector(0, 0, 1), 0.6));
     reperes[2].setRotation(new Quaternion(new PVector(0, 0, 1), 1.1));
     reperes[3].setRotation(new Quaternion(new PVector(0, 0, 1), -1.3));
     reperes[4].setRotation(new Quaternion(new PVector(0, 0, 1), 0.0));
-    contrainteDuPlan=new LocalConstraint();
-    contrainteDuPlan.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-    contrainteDuPlan.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.1f, 0.0f, 0.0f));
-
-    contrainteDroite=new LocalConstraint();
-    contrainteDroite.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new PVector(0.0f, 0.0f, 1.0f));
-    contrainteDroite.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.0f, 0.0f, 1.0f));
-
-    contrainte4=new LocalConstraint();
-    contrainte4.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-    contrainte4.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-
-
-    reperes[0].setConstraint(contrainteDuPlan);
-    reperes[1].setConstraint(contrainteDroite);
-    reperes[2].setConstraint(contrainteDroite);
-    reperes[3].setConstraint(contrainteDroite);
-    reperes[4].setConstraint(contrainte4);
   }
-
+  
   void draw() {
-    rotateY(-PI/4);
-    rectangle(color(0, 0, 255, 98));
-    rotateX(-PI/4);
-    pushMatrix();// on quite le monde pour reperes[0]
+    pushMatrix();
 
-    reperes[0].applyTransformation();// reperes[0] devient le repere de ref
-    scene.drawAxis(80); 
-
+    reperes[0].applyTransformation();
+    scene.drawAxis(80);  
     noStroke();
     fill(0, 255, 0);
     sphere(6);
-    fill(255, 0, 0, 98);
+    fill(255, 0, 0, 60);
     beginShape();
-    vertex(0, 0, 0);
+    vertex(0, 100, 0);
+    fill(155, 100, 200, 60); 
     vertex(0, -200, 0);
+    fill(155, 0, 200, 60);
     vertex(200, -200, 0);
-    vertex(200, 0, 0);
+    fill(155, 155, 0, 60);
+    vertex(200, 100, 0);
     endShape(CLOSE);
 
     pushMatrix();
@@ -78,28 +64,28 @@ class Plan {
     reperes[4].applyTransformation();
     drawLine(4, color(255));
     popMatrix();
-    //  **********************
+    //  ********************** 
     calculerIntersections();
 
 
     popMatrix();// retour au monde
   }
-
-  void   drawLine(int n, color c) {
+  
+  void drawLine(int n, color c) {
     if (n!=4) {
       noStroke();
       fill(c);
-      sphere(3);
+      sphere(4);
     };
     fill(255, 0, 0, 98);
     stroke(0);
     line(-200, 0, 0, 200, 0, 0);
   }
-
+  
   float det(float a, float b, float ap, float bp) {
     return a*bp-ap*b;
   }
-
+  
   PVector cramer(float a, float b, float c, float ap, float bp, float cp) {
     float d=det(a, ap, b, bp);
     float dx=det(c, cp, b, bp);
@@ -118,7 +104,7 @@ class Plan {
     -s2, c2, -s2*f2.translation().x+c2*f2.translation().y);
     return res;
   }
-
+  
   void creerTable() {
     for (int i=0;i<nb;i++) {
       for (int j=0;j<nb;j++) {
@@ -126,21 +112,21 @@ class Plan {
       }
     }
   }
-
+  
   void  calculerIntersections() {
     for (int i=1;i<nb;i++) {
       for (int j=i+1;j<nb;j++) {
         intersections[i][j]=intersection(reperes[i], reperes[j]);
-        pushMatrix();    
+        pushMatrix();     
         translate(intersections[i][j].x, intersections[i][j].y, intersections[i][j].z);
         fill(255, 255, 0);
         noStroke();
-        sphere(2);
+        sphere(2); 
         popMatrix();
       }
     }
   }
-
+  
   void rectangle(color c) {
     fill(c);
     beginShape();
@@ -151,3 +137,4 @@ class Plan {
     endShape(CLOSE);
   }
 }
+

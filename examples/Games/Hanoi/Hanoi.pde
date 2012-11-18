@@ -1,6 +1,13 @@
 /**
  * Hanoi
- * By Jaques Maire
+ * by Jacques Maire (http://www.alcys.com/)
+ * 
+ * Part of proscene classroom: http://www.openprocessing.org/classroom/1158
+ * Check also the collection: http://www.openprocessing.org/collection/1438
+ *
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
@@ -12,7 +19,7 @@ InteractiveFrame[] frames;
 WorldConstraint contrainteGuide, contraintePlan, immobile ;
 
 void setup() {
-  size(850, 850, P3D);
+  size(640, 640, P3D);
   scene=new Scene(this);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);  
@@ -43,14 +50,13 @@ void setup() {
   systeme=new Systeme();
 }
 
-void draw()
-{
-  background(50, 50, 130);
+void draw() {
+  background(250, 200, 0);
   directionalLight(251, 155, 250, -1, -1, -0.72);
   directionalLight(155, 155, 255, 0, 1, -0.1);
   directionalLight(255, 255, 255, -0.7, -0.7, -0.5);    
   pushMatrix();
-  fill(205, 205, 240);
+  fill(205, 50, 50);
   translate(0, 0, -17);
   box(500, 200, 6);
   fill(155, 155, 255);

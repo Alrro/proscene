@@ -1,8 +1,15 @@
 /**
- * Thales2Papus
- * By Jacques Maire
+ * Thales to Pappus
+ * by Jacques Maire (http://www.alcys.com/)
+ * 
+ * Part of proscene classroom: http://www.openprocessing.org/classroom/1158
+ * Check also the collection: http://www.openprocessing.org/collection/1438
+ *
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
-
+ 
 import remixlab.proscene.*;
 
 Scene scene;
@@ -15,15 +22,15 @@ InteractiveFrame soleil;
 PFont font;
 
 void setup() {
-  size(850, 850, P3D);
-  font = createFont("Arial", 48);
-  textFont(font, 48);
+  size(640, 640, P3D);
+  font = createFont("FreeSans", 48); 
+  textFont(font, 8); 
   scene=new Scene(this);
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
-  scene.setRadius(850);
+  scene.setRadius(180);
   soleil=new InteractiveFrame(scene);
-  soleil.setPosition(new PVector(300, -700, 700));
+  soleil.setPosition(new PVector(30, -70, 70));
   contrainteX=new WorldConstraint();
   contrainteX.setTranslationConstraint(AxisPlaneConstraint.Type.FREE, new PVector(0.0f, 0.0f, 0.0f));
   contrainteX.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new PVector(0.1f, 0.0f, 0.0f));
@@ -35,36 +42,38 @@ void setup() {
   axial.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
   fixe=new LocalConstraint();
   fixe.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));
-  fixe.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));  
+  fixe.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0.0f, 0.0f, 0.0f));   
   libreTR=new WorldConstraint();
   libreTR.setTranslationConstraint(AxisPlaneConstraint.Type.FREE, new PVector(0.0f, 0.0f, 0.0f));
   libreTR.setRotationConstraint(AxisPlaneConstraint.Type.FREE, new PVector(0.0f, 0.0f, 0.0f));
 
-  plan1=new Plan(50.0, 2.16);
+  plan1=new Plan(5.0, 2.16);
 
-  planProjection=new PlanArrivee(-400, 0.0);
-  planProjection.repere.setPosition(-300, -300, -300);
+  planProjection=new PlanArrivee(-40, 0.0);
+  planProjection.repere.setPosition(-30, -30, -30);
 
-  plan1.setLongueur(800);
+  plan1.setLongueur(80);
   scene.camera().setOrientation(new Quaternion( sin(-PI/10), 0, 0, cos(-PI/10)));
-  scene.camera().setPosition(new PVector(600, 3000, 3600));
+  scene.camera().setPosition(new PVector(30, 200, 250));
 }
 
 void draw() {
-  background( 0);
-  lights();
-  directionalLight(55, 55, 255, -0.2, -0.3, 0.7);
+  background( 255, 200, 0);
+  // lights();
+  // directionalLight(55, 55, 255, -0.2, -0.3, 0.7);
   placeSoleil();
   planProjection.draw();
   plan1.draw();
 }
+
 void placeSoleil() {
   pushMatrix();
   soleil.applyTransformation();
   noStroke();
   fill(255, 0, 0);
-  sphere(5);
+  sphere(1);
   fill(255, 255, 0, 200);
-  sphere(20);
+  sphere(2);
   popMatrix();
 }
+

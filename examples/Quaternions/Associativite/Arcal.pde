@@ -1,5 +1,4 @@
 class Arcal {
-
   float angle, raycercle, zcercle;
   PVector axe, ocentre, depart, arrivee;
   Quaternion quat;
@@ -55,10 +54,10 @@ class Arcal {
     }
     endShape();
 
-    fill(255, 100, 100, 100);
+    fill(255, 250, 100);
     beginShape(TRIANGLE_FAN); 
     vertex(0, 0, 0);
-    fill(255, 255, 150, 100);
+    fill(255, 155, 150);
     for (int a=0;a<50;a++) {
       float aa=angle*a/50.0;
       vertex(r*cos(aa), r*sin(aa), 0);

@@ -1,9 +1,17 @@
 /**
  * Associativite
- * By Jacques Maire
+ * by Jacques Maire (http://www.alcys.com/)
+ * 
+ * Part of proscene classroom: http://www.openprocessing.org/classroom/1158
+ * Check also the collection: http://www.openprocessing.org/collection/1438
+ *
+ * Press 'h' to display the global shortcuts in the console.
+ * Press 'H' to display the current camera profile keyboard shortcuts
+ * and mouse bindings in the console.
  */
 
 import remixlab.proscene.*;
+
 Scene scene;
 
 float raySphere, zplan;
@@ -16,15 +24,15 @@ PVector or, nord;
 PFont font;
 
 void setup() {
-  size(850, 850, P3D);
-  font = createFont("Arial", 48);
+  size(640, 640, P3D);
+  font = createFont("FreeSans", 48);
   raySphere=400;
   zplan=-500;
   nord=new PVector(0, 0, raySphere); 
   or=new PVector(0, 0, 0);
   scene=new Scene(this);
-  scene.setRadius(700);
-  scene.setAxisIsDrawn(true);
+  scene.setRadius(1000);
+  scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);
 
   planaire=new LocalConstraint();
@@ -41,8 +49,8 @@ void setup() {
   ar23=new Arcal(Quaternion.multiply(arc3.quat, arc2.quat), arc2.depart, arc3.arrivee, "arc3*arc2");
   ar1_23=new Arcal(Quaternion.multiply(ar23.quat, arc1.quat), arc1.depart, ar23.arrivee, "(arc3 * arc2) * arc1");
   ar12_3=new Arcal(Quaternion.multiply(arc3.quat, ar12.quat), ar12.depart, arc3.arrivee, "arc3 * (arc2 * arc1)");
-  textFont(font, 16);
-  scene.camera().setPosition(new PVector(0, 0, 1100));
+  textFont(font, 22);
+  scene.camera().setPosition(new PVector(0, 0, 1800));
   montretout=false;
 }
 
@@ -50,9 +58,7 @@ void draw() {
   background(0, 0, 105);
   directionalLight(255, 255, 255, -1, 0, 0);
   directionalLight(255, 255, 255, 1, 0, 0);
-  fill(170, 255, 255, 154);
-  noStroke();
-  sphere(raySphere);
+
   arc1.draw();
   arc2.depart=arc1.arrivee;
   arc2.draw();
@@ -71,3 +77,4 @@ void draw() {
 void keyPressed() {
   montretout=!montretout;
 }
+
