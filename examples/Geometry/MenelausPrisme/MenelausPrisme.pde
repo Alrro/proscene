@@ -24,7 +24,7 @@ void setup() {
   scene.showAll();
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
-  font=createFont("FreeSans", 48);
+  font=createFont("FFScala", 46);
 
   prisme=new Prisme();
 }

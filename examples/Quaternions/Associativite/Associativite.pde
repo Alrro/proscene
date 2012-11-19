@@ -25,7 +25,7 @@ PFont font;
 
 void setup() {
   size(640, 640, P3D);
-  font = createFont("FreeSans", 48);
+  font = createFont("FFScala", 32);
   raySphere=400;
   zplan=-500;
   nord=new PVector(0, 0, raySphere); 
@@ -42,14 +42,14 @@ void setup() {
   drag.setTranslationConstraint(AxisPlaneConstraint.Type.FREE, new PVector(0, 0, 0));
   drag.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new PVector(0, 0, 0));
 
-  arc1=new Arcad(new PVector(0, 150, 150), new PVector(raySphere*cos(PI/3.0)*cos(PI/8.0), raySphere*sin(PI/3.0)*cos(PI/8.0), -raySphere*sin(PI/8.0)), 2.8, "arc 1");
-  arc2=new Arcad(new PVector(-50, 300, 10), new PVector(raySphere*cos(PI/4.0)*cos(PI/10.0), raySphere*sin(PI/4.0)*cos(PI/10.0), raySphere*sin(PI/10.0)), 1.2, "arc 2");
-  arc3=new Arcad(new PVector(300, -100, 50), new PVector(raySphere*cos(-PI*1.2)*cos(PI*1.2), raySphere*sin(-PI*1.2)*cos(PI*1.2), raySphere*sin(PI*1.2)), 2.7, "arc 3");
-  ar12=new Arcal(Quaternion.multiply(arc2.quat, arc1.quat), arc1.depart, arc2.arrivee, "arc2*arc1");
-  ar23=new Arcal(Quaternion.multiply(arc3.quat, arc2.quat), arc2.depart, arc3.arrivee, "arc3*arc2");
-  ar1_23=new Arcal(Quaternion.multiply(ar23.quat, arc1.quat), arc1.depart, ar23.arrivee, "(arc3 * arc2) * arc1");
-  ar12_3=new Arcal(Quaternion.multiply(arc3.quat, ar12.quat), ar12.depart, arc3.arrivee, "arc3 * (arc2 * arc1)");
-  textFont(font, 22);
+  arc1=new Arcad(new PVector(0, 150, 150), new PVector(raySphere*cos(PI/3.0)*cos(PI/8.0), raySphere*sin(PI/3.0)*cos(PI/8.0), -raySphere*sin(PI/8.0)), 2.8, "arc1");
+  arc2=new Arcad(new PVector(-50, 300, 10), new PVector(raySphere*cos(PI/4.0)*cos(PI/10.0), raySphere*sin(PI/4.0)*cos(PI/10.0), raySphere*sin(PI/10.0)), 1.2, "arc2");
+  arc3=new Arcad(new PVector(300, -100, 50), new PVector(raySphere*cos(-PI*1.2)*cos(PI*1.2), raySphere*sin(-PI*1.2)*cos(PI*1.2), raySphere*sin(PI*1.2)), 2.7, "arc3");
+  ar12=new Arcal(Quaternion.multiply(arc2.quat, arc1.quat), arc1.depart, arc2.arrivee, "arc2 x arc1", 0);
+  ar23=new Arcal(Quaternion.multiply(arc3.quat, arc2.quat), arc2.depart, arc3.arrivee, "arc3 x arc2", 0);
+  ar1_23=new Arcal(Quaternion.multiply(ar23.quat, arc1.quat), arc1.depart, ar23.arrivee, "( arc3 x arc2 ) x arc1", 0);
+  ar12_3=new Arcal(Quaternion.multiply(arc3.quat, ar12.quat), ar12.depart, arc3.arrivee, " arc3 x (arc2 x arc1)", 80);
+  textFont(font, 24);
   scene.camera().setPosition(new PVector(0, 0, 1800));
   montretout=false;
 }
@@ -77,4 +77,3 @@ void draw() {
 void keyPressed() {
   montretout=!montretout;
 }
-

@@ -1,17 +1,18 @@
 class Arcal {
-  float angle, raycercle, zcercle;
+  float angle, raycercle, zcercle, decaler;
   PVector axe, ocentre, depart, arrivee;
   Quaternion quat;
   InteractiveFrame repere;
   String texte;
 
-  Arcal (Quaternion q, PVector dep, PVector arr, String tex) {
+  Arcal (Quaternion q, PVector dep, PVector arr, String tex, float decal) {
     depart=dep;
     arrivee=arr;
     quat=q;
     axe=quat.axis();
     angle=quat.angle();
     texte=tex;
+    decaler=decal;
     ocentre=projectionSurDroite(depart, axe);
     zcercle=sqrt(sq(raySphere)-ocentre.dot(ocentre));
     raycercle=sqrt(sq(raySphere)-sq(zcercle));
@@ -45,8 +46,7 @@ class Arcal {
     noStroke();
     fill(255, 0, 0);
 
-    beginShape(QUAD_STRIP); 
-
+    beginShape(QUAD_STRIP);
     for (int a=0;a<=100;a++) {
       float aa=angle/100*a;
       vertex(r*cos(aa), r*sin(aa), 3);
@@ -64,15 +64,15 @@ class Arcal {
     }
     vertex(r*cos(angle), r*sin(angle), 0);
     endShape();
-    translate(r*cos(angle/2.0), r*sin(angle/2.0), 0);
-    text(texte, 30, 30);
     popMatrix();
+    PVector postexte= repere.inverseCoordinatesOf(new PVector(r*cos(angle/2.0), r*sin(angle/2.0), 0));
+    postexte=PVector.add(postexte, new PVector(decaler, decaler, 0));
+    unText1(texte, postexte);
   }
 
   void init(Quaternion q, PVector dep, PVector arr) { 
     quat=q;
     axe=quat.axis();
-    //angle=angleQuaternion(quat);
     angle=quat.angle();
     depart=dep;
     arrivee=arr;

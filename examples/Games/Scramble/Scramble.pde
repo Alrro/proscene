@@ -26,9 +26,9 @@ void setup() {
   board = new Board(3, null); // create a new 3x3 board
   scene.camera().setPosition(new PVector(-20, 100, 230)); // move the camera
   scene.camera().lookAt(new PVector(0, 0, 0)); // make the camera look at the center of the board
-  font1 = createFont("FreeSans", 16);
-  font2 = createFont("FreeSans", 34);
-  font3 = createFont("FreeSans", 100 / board.getSize());
+  font1 = createFont("FFScala", 16);
+  font2 = createFont("FFScala", 34);
+  font3 = createFont("FFScala", 100 / board.getSize());
 }
 
 void draw() {

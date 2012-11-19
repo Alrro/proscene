@@ -24,7 +24,7 @@ int activeConstraint;
 
 void setup() {        
   size(640, 360, P3D);
-  myFont = createFont("FreeSans", 13);
+  myFont = createFont("FFScala", 12);
   textFont(myFont);
 
   scene = new Scene(this);

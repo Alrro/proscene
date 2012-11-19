@@ -41,6 +41,8 @@ void setup() {
   mainScene.showAll();
   // press 'f' to display frame selection hints
   mainScene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+  // hack to make frame selection hints work when on off-screen mode   
+  mainScene.camera().detachFromP5Camera();
 
   armCanvas = createGraphics(width / 2, (height - canvas.height), P3D);
   // Note that we pass the upper left corner coordinates where the scene

@@ -20,8 +20,8 @@ public class Button2D extends MouseGrabber {
   Button2D(Scene scn, PVector p, String t, int fontSize) {
     super(scn);
     position = p;
-    myText = t;
-    myFont = createFont("FreeSerif", fontSize);
+    myText = t;    
+    myFont = createFont("FFScala", fontSize);
     textFont(myFont);
     textAlign(CENTER);
     setText(t);    

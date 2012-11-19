@@ -27,7 +27,7 @@ void setup() {
   scene.setRadius(1600);
 
   scene.setCameraType(Camera.Type.PERSPECTIVE);
-  font = createFont("FreeSerif", 48);
+  font = createFont("FFScala", 48);
 
   float a=7.0;
   or=new PVector(0, 0, 0);
@@ -139,6 +139,5 @@ void ligneDeFuite() {
   fill(255, 0, 0);
 
   d1=comb(0.5, d1, 0.5, d2);
-  unText1("droite à l'infini", d1);
+  unText1("droite a l'infini", d1);
 }
-

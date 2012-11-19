@@ -19,7 +19,7 @@ PVector barycentre(float lamb, PVector u, PVector v) {
   return comb(lamb, u, 1-lamb, v);
 }
 
-float barycentre(float lamb, float u, float v) {
+float  barycentre(float lamb, float u, float v) {
   return lamb*u+(1-lamb)*v;
 }
 
@@ -117,11 +117,11 @@ void afficherL(String L, PVector po) {
 void unText1(String tex, PVector v) {
   float leX = screenX(v.x, v.y, v.z);
   float leY = screenY(v.x, v.y, v.z);
+  float leZ = screenZ(v.x, v.y, v.z);
   pushMatrix();
   scene.beginScreenDrawing();
   fill(255);
-  text(tex, leX+10, leY, 10);
+  text(tex, leX, leY, leZ);
   scene.endScreenDrawing(); 
   popMatrix();
 }   
-
