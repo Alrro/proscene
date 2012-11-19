@@ -29,8 +29,8 @@ PFont myFont;
 
 void setup() {
   size(640, 360, P3D);
-
-  myFont = createFont("FreeSans", 16);
+  
+  myFont = createFont("FFScala", 14);
   textFont(myFont);
   textAlign(LEFT);
 

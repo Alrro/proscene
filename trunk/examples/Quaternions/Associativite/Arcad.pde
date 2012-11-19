@@ -141,4 +141,3 @@ class Arcad {
     repere.setXAxis(comb(1, depart, -1, ocentre));
   }
 }
-

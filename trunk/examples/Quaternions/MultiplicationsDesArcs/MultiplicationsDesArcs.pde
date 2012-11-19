@@ -77,7 +77,7 @@ void setup() {
   plan2.setTranslation(new PVector(0, 0, 0));
   plan1.setConstraint(pivot);
   plan2.setConstraint(pivot);
-  font = createFont("FreeSerif", 48); 
+  font = createFont("FFScala", 46); 
   scene.camera().setPosition(new PVector(0, 0, 1000));
   scene.showAll();
   colorMode(RGB);

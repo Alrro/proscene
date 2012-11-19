@@ -17,16 +17,17 @@ int nbdisques=5;
 Systeme systeme;
 InteractiveFrame[] frames;
 WorldConstraint contrainteGuide, contraintePlan, immobile ;
-
+PFont font;
+boolean onScreen;
 void setup() {
-  size(640, 640, P3D);
+  size(700, 640, P3D);  
+  font = createFont("FFScala", 22);
+  textFont(font, 14);
   scene=new Scene(this);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);  
   scene.setRadius(300);
-  scene.camera().setPosition(new PVector(0, 0, 600));
-  scene.showAll();
-
+  onScreen=true;
   frames=new InteractiveFrame[nbdisques];
   //les contraintes
   contraintePlan= new WorldConstraint();
@@ -48,13 +49,17 @@ void setup() {
     scene.setInteractiveFrame(frames[i]);
   }
   systeme=new Systeme();
+  scene.camera().setOrientation(new Quaternion(new PVector(1, 0, 0), -1.3));
+  scene.camera().setPosition(new PVector(0, 480, 150));  
+  scene.showAll();
 }
 
 void draw() {
   background(250, 200, 0);
   directionalLight(251, 155, 250, -1, -1, -0.72);
   directionalLight(155, 155, 255, 0, 1, -0.1);
-  directionalLight(255, 255, 255, -0.7, -0.7, -0.5);    
+  directionalLight(255, 255, 255, -0.7, -0.7, -0.5);
+
   pushMatrix();
   fill(205, 50, 50);
   translate(0, 0, -17);
@@ -67,4 +72,27 @@ void draw() {
   scene.cone(3.0, 3.0, 130);
   popMatrix();
   systeme.draw();
+
+
+  scene.beginScreenDrawing();
+  if (onScreen)
+  {
+    text("Press 'r' to hide the rules", 5, 20);
+    text("Tip: Drag each disc on a rod to bottom and leave Hanoi to replace that", 5, 40);
+    text("The objective of the puzzle is to move the entire stack to another rod,", 5, height-120);
+    text( "obeying the following rules:", 5, height-100);
+    text( "1/ Only one disk may be moved at a time.", 5, height-80);
+    text( "2/Each move consists of taking the upper disk from one of the rods and sliding it onto another rod,", 5, height-60);
+    text( "on top of the other disks that may already be present on that rod.", 5, height-40);
+    text( "3/No disk may be placed on top of a smaller disk.", 5, height-20);
+  }
+  else
+    text("Press 'r' to see the rules according to Wikipedia", 5, 20);
+
+  scene.endScreenDrawing();
+}
+
+void keyPressed() {
+  if ((key == 'r') || (key == 'R'))   
+    onScreen = !onScreen;
 }

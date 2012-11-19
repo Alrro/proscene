@@ -30,6 +30,9 @@ void setup() {
   //Set right handed world frame (useful for architects...)
   scene.setRightHanded();
   scene.camera().frame().setCADAxis(new PVector(0, 1, 0));
+  scene.camera().frame().setRotationSensitivity(1.5);
+  scene.camera().frame().setSpinningFriction(0.5);
+  scene.camera().frame().setTossingFriction(0.5);
 }
 
 void draw() {
