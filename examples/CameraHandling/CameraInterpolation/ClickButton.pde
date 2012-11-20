@@ -1,12 +1,12 @@
 public class ClickButton extends Button2D {
   int path;
 
-  public ClickButton(Scene scn, PVector p, int fontSize, int index) {
-    this(scn, p, "", fontSize, index);
+  public ClickButton(Scene scn, PVector p, int index) {
+    this(scn, p, "", index);
   }
 
-  public ClickButton(Scene scn, PVector p, String t, int fontSize, int index) {
-    super(scn, p, t, fontSize);
+  public ClickButton(Scene scn, PVector p, String t, int index) {
+    super(scn, p, t);
     path = index;
   }
 

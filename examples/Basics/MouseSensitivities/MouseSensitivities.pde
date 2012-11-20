@@ -30,7 +30,7 @@ PFont myFont;
 void setup() {
   size(640, 360, P3D);
   
-  myFont = createFont("FFScala", 14);
+  myFont = loadFont("FreeSans-16.vlw");
   textFont(myFont);
   textAlign(LEFT);
 

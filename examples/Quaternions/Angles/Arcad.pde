@@ -131,12 +131,12 @@ class Arcad {
     popMatrix();
     popMatrix();
     float angleQnion1=(-TWO_PI+ anglArc)/2.0;
-    unText1("  angle du quaternion 2: "+ angleQnion1, sym);
-    unText1("  angle du quaternion 1: "+ angleQnion, rotateur.position());
+    unText1("  angle du quaternion 2: "+ String.format("%.0f", degrees(angleQnion1)), sym); 
+    unText1("  angle du quaternion 2: "+ String.format("%.0f", degrees(angleQnion)), rotateur.position());
     PVector extr= repere.inverseCoordinatesOf(new PVector(r*cos(angleRot), r*sin(angleRot), 0));
     unText1("point  B = rot( A ) ", extr);
-    unText1("  angle de la rotation : "+ angleRot, extr.x+20, extr.y+20, extr.z+50);
-    unText1("mesure de l'arc = "+anglArc, extr.x+40, extr.y+40, extr.z+100);
+    unText1("  angle de la rotation : "+ String.format("%.0f", degrees(angleRot)), extr.x+20, extr.y+20, extr.z+50);
+    unText1("mesure de l'arc = "+String.format("%.0f", degrees(anglArc)), extr.x+40, extr.y+40, extr.z+100);
     extr= repere.inverseCoordinatesOf(new PVector(r, 0, 0));
     unText1(" point A ", extr);
   }

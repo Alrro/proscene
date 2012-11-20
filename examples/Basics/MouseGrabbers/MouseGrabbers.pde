@@ -26,8 +26,8 @@ void setup() {
   size(640, 360, P3D);
   scene = new Scene(this);
   scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-  button1 = new ClickButton(scene, new PVector(10,10), "+", 32, true);
-  button2 = new ClickButton(scene, new PVector((10 + button1.myWidth + 5), 10), "-", 32, false);
+  button1 = new ClickButton(scene, new PVector(10,10), "+", true);
+  button2 = new ClickButton(scene, new PVector(16,(2 + button1.myHeight)), "-", false);
   scene.setGridIsDrawn(true);		
   scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
   scene.setRadius(150);		
@@ -39,14 +39,13 @@ void setup() {
 }
 
 void draw() {
-  background(0);
-  button1.display();
-  button2.display();	
-
+  background(0);  
   for (int i = 0; i < boxes.size(); i++) {
     Box box = (Box) boxes.get(i);
     box.draw(true);
-  }
+  }  
+  button1.display();
+  button2.display();
 }
 
 void addBox() {

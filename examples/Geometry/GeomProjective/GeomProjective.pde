@@ -27,7 +27,8 @@ void setup() {
   scene.setRadius(1600);
 
   scene.setCameraType(Camera.Type.PERSPECTIVE);
-  font = createFont("FFScala", 48);
+  font = loadFont("FreeSans-24.vlw");
+  textFont(font);
 
   float a=7.0;
   or=new PVector(0, 0, 0);
@@ -61,8 +62,7 @@ void setup() {
 }
 
 void draw() {
-  background(255);
-  textFont(font, 24);
+  background(255);  
   scene.drawGrid(100, 4);
   rotateur.setTranslation(normaliser(rotateur.translation(), 30));
   pushMatrix();

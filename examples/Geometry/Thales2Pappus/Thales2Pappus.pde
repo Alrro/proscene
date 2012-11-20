@@ -23,7 +23,7 @@ PFont font;
 
 void setup() {
   size(640, 640, P3D);
-  font = createFont("FFScala", 46); 
+  font = loadFont("FreeSans-24.vlw"); 
   textFont(font, 8); 
   scene=new Scene(this);
   scene.setGridIsDrawn(false);

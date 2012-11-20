@@ -20,9 +20,9 @@ WorldConstraint contrainteGuide, contraintePlan, immobile ;
 PFont font;
 boolean onScreen;
 void setup() {
-  size(700, 640, P3D);  
-  font = createFont("FFScala", 22);
-  textFont(font, 14);
+  size(700, 640, P3D);
+  font = loadFont("FreeSans-16.vlw");
+  textFont(font);
   scene=new Scene(this);
   scene.setAxisIsDrawn(false);
   scene.setGridIsDrawn(false);  
@@ -73,8 +73,8 @@ void draw() {
   popMatrix();
   systeme.draw();
 
-
-  scene.beginScreenDrawing();
+  noLights();
+  scene.beginScreenDrawing();  
   if (onScreen)
   {
     text("Press 'r' to hide the rules", 5, 20);
@@ -87,9 +87,9 @@ void draw() {
     text( "3/No disk may be placed on top of a smaller disk.", 5, height-20);
   }
   else
-    text("Press 'r' to see the rules according to Wikipedia", 5, 20);
-
+    text("Press 'r' to see the rules according to Wikipedia", 5, 20);  
   scene.endScreenDrawing();
+  lights();
 }
 
 void keyPressed() {
