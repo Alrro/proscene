@@ -1,8 +1,8 @@
 public class ClickButton extends Button2D {
   boolean addBox;
 
-  public ClickButton(Scene scn, PVector p, String t, int fontSize, boolean addB) {
-    super(scn, p, t, fontSize);
+  public ClickButton(Scene scn, PVector p, String t, boolean addB) {
+    super(scn, p, t);
     addBox = addB;
   }
 

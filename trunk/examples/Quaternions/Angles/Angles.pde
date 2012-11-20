@@ -22,7 +22,8 @@ PFont font;
 
 void setup() {
   size(800, 640, P3D);
-  font=createFont("FFScala", 46);
+  font=loadFont("FreeSans-24.vlw");
+  textFont(font);
   scene =new Scene(this);
   scene.setRadius(700);
   scene.setAxisIsDrawn(false);
@@ -40,12 +41,10 @@ void setup() {
   scene.camera().setPosition(new PVector(0, 0, 900));
 
   arc1=new Arcad(new PVector(-50, -200, 200));
-  or=new PVector(0, 0, 0);
-  textFont(font, 16);
+  or=new PVector(0, 0, 0);  
 }
 
 void draw() {
   background(255, 155, 0);
-  textFont(font, 18);
   arc1.draw();
 }

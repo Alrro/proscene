@@ -32,7 +32,7 @@ boolean additionalInstructions = false;
 	
 void setup() {
   size(640, 360, P3D);  
-  font = createFont("FFScala", 14);
+  font = loadFont("FreeSans-16.vlw");
   textFont(font);
   scene = new Scene(this);
   // press 'f' to display frame selection hints

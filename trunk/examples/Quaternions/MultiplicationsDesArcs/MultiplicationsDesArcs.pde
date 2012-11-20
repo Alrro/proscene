@@ -27,6 +27,8 @@ void setup() {
   scene=new Scene(this);
   scene.setGridIsDrawn(false);
   scene.setRadius(550);  
+  scene.camera().setPosition(new PVector(0, 0, 1000));
+  scene.showAll();
   
   lon=400;
   or=new PVector(0, 0, 0);
@@ -76,16 +78,14 @@ void setup() {
   plan2.setRotation(new Quaternion(new PVector(0, 0, 1), PI/5));
   plan2.setTranslation(new PVector(0, 0, 0));
   plan1.setConstraint(pivot);
-  plan2.setConstraint(pivot);
-  font = createFont("FFScala", 46); 
-  scene.camera().setPosition(new PVector(0, 0, 1000));
-  scene.showAll();
+  plan2.setConstraint(pivot);  
+  font = loadFont("FreeSans-24.vlw");
+  textFont(font);  
   colorMode(RGB);
 }
 
 void draw() {
-  background(#f5a500);
-  textFont(font, 24);  
+  background(#f5a500); 
 
   pushMatrix();
   frameM.applyTransformation();

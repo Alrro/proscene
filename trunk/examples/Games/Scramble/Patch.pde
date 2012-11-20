@@ -100,8 +100,8 @@ public class Patch extends InteractiveFrame {
     }
     endShape(CLOSE);
 
-    if(img == null) { // no image, render the patch number
-      textFont(font3);
+    if(img == null) { // no image, render the patch number    
+      textFont(font2, 100 / board.getSize());
       strokeWeight(1);
       fill(0, 0, 20);
       text("" + number, -10, 10, 0.1);

@@ -13,15 +13,15 @@ public class Button2D extends MouseGrabber {
   int myHeight;  
   PVector position;
   
-  Button2D(Scene scn, PVector p, int fontSize) {
-    this(scn, p, "", fontSize);
+  Button2D(Scene scn, PVector p) {
+    this(scn, p, "");
   }
 
-  Button2D(Scene scn, PVector p, String t, int fontSize) {
+  Button2D(Scene scn, PVector p, String t) {
     super(scn);
     position = p;
     myText = t;    
-    myFont = createFont("FFScala", fontSize);
+    myFont = loadFont("FreeSans-48.vlw"); 
     textFont(myFont);
     textAlign(CENTER);
     setText(t);    

@@ -24,14 +24,14 @@ void setup() {
   scene.showAll();
   scene.setGridIsDrawn(false);
   scene.setAxisIsDrawn(false);
-  font=createFont("FFScala", 46);
+  font=loadFont("FreeSans-24.vlw");  
+  textFont(font);
 
   prisme=new Prisme();
 }
 
 void draw() { 
   background(255, 150, 0);
-  textFont(font, 24);
   tempo=1.0/5000.0*(millis()%5000);
   prisme.draw();
 }
