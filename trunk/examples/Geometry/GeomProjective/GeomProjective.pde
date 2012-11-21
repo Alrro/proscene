@@ -139,5 +139,5 @@ void ligneDeFuite() {
   fill(255, 0, 0);
 
   d1=comb(0.5, d1, 0.5, d2);
-  unText1("droite a l'infini", d1);
+  unText1("droite à l'infini", d1);
 }
