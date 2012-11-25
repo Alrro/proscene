@@ -244,7 +244,7 @@ public class Camera implements Cloneable {
 	 * @see #Camera(Scene, boolean)
 	 */
 	public Camera(Scene scn) {
-		this(scn, true);
+		this(scn, false);
 	}
 
 	/**

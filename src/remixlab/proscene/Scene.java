@@ -4249,15 +4249,19 @@ public class Scene implements PConstants {
 	 * {@link remixlab.proscene.Camera#type()}.
 	 */
 	protected void setP5ProjectionMatrix() {
-		// /**
-		// option 1
+		/**
+		// option 1		
 		if( camera().isDetachedFromP5Camera() )
 			renderer().projection.set(camera().getProjectionMatrix());
 		else
 			camera().computeProjectionMatrix();
-		// */
-	   /**
-		// option 2: compute the processing camera projection matrix from our camera() parameters
+	  // */
+		
+		// option 2 (new)
+		renderer().setProjection(camera().getProjectionMatrix());		
+		
+	  /**
+		// option 3: compute the processing camera projection matrix from our camera() parameters
 		switch (camera().type()) {
 		case PERSPECTIVE:
 			renderer().perspective(camera().fieldOfView(), camera().aspectRatio(), camera().zNear(), camera().zFar());
