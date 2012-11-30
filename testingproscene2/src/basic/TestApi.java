@@ -158,4 +158,11 @@ public class TestApi extends PApplet {
 			popStyle();
 		}
 	}
+	
+	public void keyPressed() {
+		if(key == 'u' || key == 'U') {
+			Vector3D v = f4.zAxis();
+			println("f4.zAxis(): " + v + " mag: " + v.mag());			
+		}
+	}
 }

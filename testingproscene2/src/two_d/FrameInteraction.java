@@ -11,10 +11,8 @@ public class FrameInteraction extends PApplet {
 
 	public void setup() {
 	  size(640, 360, P2D);
-      scene = new Scene(this);
-		
 	  //size(640, 360, JAVA2D);
-	  //scene = new Java2DScene(this);
+      scene = new Scene(this);
 	  
 	  // A Scene has a single InteractiveFrame (null by default). We set it here.
 	  scene.setInteractiveFrame(new InteractiveFrame(scene));
@@ -50,6 +48,10 @@ public class FrameInteraction extends PApplet {
 	    rect(0, 0, 30, 30);
 	  }    
 	  popMatrix();
+	  
+	  scene.beginScreenDrawing();
+	  text("Hello world", 5, 17);
+	  scene.endScreenDrawing();
 	}
 	
 	public void keyPressed() {
@@ -74,32 +76,8 @@ public class FrameInteraction extends PApplet {
 			println("scene.interactiveFrame() is inverted");
 		else
 			println("scene.interactiveFrame() is NOT inverted");
-	}
-	
-	public class Java2DScene extends Scene {
-		public Java2DScene(PApplet p) {
-			super(p);
-		}
-
-		@Override
-		public void applyTransformation(VFrame frame) {
-			if( is2D() ) {
-				if(renderer() instanceof RendererJava2D) {
-					//if( isRightHanded() ) translate(0,-2*frame.translation().y());
-					if( isRightHanded() ) scale(1,-1);		
-					translate(frame.translation().x(), frame.translation().y());					
-					rotate(frame.rotation().angle());					
-					scale(frame.scaling().x(), frame.scaling().y());					
-					//println(frame.translation().y());
-				}
-				else
-					super.applyTransformation(frame);
-			}
-			else {
-				translate( frame.translation().vec[0], frame.translation().vec[1], frame.translation().vec[2] );
-				rotate( frame.rotation().angle(), ((Quaternion)frame.rotation()).axis().vec[0], ((Quaternion)frame.rotation()).axis().vec[1], ((Quaternion)frame.rotation()).axis().vec[2]);
-				scale(frame.scaling().x(), frame.scaling().y(), frame.scaling().z());
-			}
-		}
-	}
+		float[] wh = scene.pinhole().getOrthoWidthHeight();
+		println("half width: " + wh[0] + " half height: " + wh[1]);
+		println("zNear: " + -10 + " zNear: " + 10);
+	}	
 }
