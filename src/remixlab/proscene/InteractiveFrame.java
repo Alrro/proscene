@@ -1179,27 +1179,19 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * positions are projected on a deformed ball, centered on ({@code cx},
 	 * {@code cy}).
 	 */
-	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,	Camera camera) {		
+	protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy,	Camera camera) {
 		// Points on the deformed ball
-		float px = rotationSensitivity() * ((int)prevPos.x - cx) / camera.screenWidth();
-		float py = rotationSensitivity() * (cy - (int)prevPos.y) / camera.screenHeight();
-		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
-		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
-
+		float px = rotationSensitivity() *                         ((int)prevPos.x - cx)                           / camera.screenWidth();
+		float py = rotationSensitivity() * (scene.isLeftHanded() ? ((int)prevPos.y - cy) : ( cy - (int)prevPos.y)) / camera.screenHeight();
+		float dx = rotationSensitivity() *                         (x - cx)             / camera.screenWidth();
+		float dy = rotationSensitivity() * (scene.isLeftHanded() ? (y - cy) : (cy - y)) / camera.screenHeight();
+		
 		PVector p1 = new PVector(px, py, projectOnBall(px, py));
 		PVector p2 = new PVector(dx, dy, projectOnBall(dx, dy));
 		// Approximation of rotation angle
 		// Should be divided by the projectOnBall size, but it is 1.0
 		PVector axis = p2.cross(p1);
-
 		float angle = 2.0f * PApplet.asin(PApplet.sqrt(MathUtils.squaredNorm(axis) / MathUtils.squaredNorm(p1) / MathUtils.squaredNorm(p2)));
-  	  
-   	//left-handed coordinate system correction
-		if( scene.isLeftHanded() ) {
-			axis.y = -axis.y;
-			angle = -angle;
-		}
-
 		return new Quaternion(axis, angle);
 	}	
 
