@@ -377,23 +377,17 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	protected Quaternion computeCADQuaternion(int x, int y, float cx,	float cy, Camera camera) {
 		// Points on the deformed ball
 		float px = rotationSensitivity() * ((int) prevPos.x - cx)	/ camera.screenWidth();
-		float py = rotationSensitivity() * (cy - (int) prevPos.y)	/ camera.screenHeight();
+		float py = rotationSensitivity() * (scene.isLeftHanded() ? ((int) prevPos.y - cy) : ((cy - (int) prevPos.y))) / camera.screenHeight();
 		float dx = rotationSensitivity() * (x - cx) / camera.screenWidth();
-		float dy = rotationSensitivity() * (cy - y) / camera.screenHeight();
+		float dy = rotationSensitivity() * (scene.isLeftHanded() ? (y - cy) : (cy - y)) / camera.screenHeight();
 		
 		//1,0,0 is given in the camera frame
 		PVector axisX = new PVector(1, 0, 0);
 		//0,0,1 is given in the world and then transform to the camera frame
 		PVector world2camAxis = camera.frame().transformOf(worldAxis);
-
-		float angleWorldAxis = rotationSensitivity() * (dx - px);
-		float angleX = rotationSensitivity() * (dy - py);
-
-		// Coordinate system correction
-		if( scene.isLeftHanded() ) 
-			angleX = -angleX;
-		else
-			angleWorldAxis = -angleWorldAxis;
+		
+		float angleWorldAxis = rotationSensitivity() * (scene.isLeftHanded() ? (dx - px) : (px - dx));
+		float angleX = rotationSensitivity() * (dy - py);		
 
 		Quaternion quatWorld = new Quaternion(world2camAxis, angleWorldAxis);
 		Quaternion quatX = new Quaternion(axisX, angleX);
