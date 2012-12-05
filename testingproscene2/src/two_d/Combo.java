@@ -161,11 +161,6 @@ public class Combo extends PApplet {
 	}
 	
 	public void printFrame(VFrame frame) {
-		/**
-		translate(frame.translation().x(), frame.translation().y());
-			rotate(frame.rotation().angle());
-			scale(frame.scaling().x(), frame.scaling().y());
-		 */
 		println("Translation: " + frame.translation());
 		println("Angle: " + frame.rotation().angle());
 		println("Scaling: " + frame.scaling());
@@ -175,6 +170,10 @@ public class Combo extends PApplet {
 		if (key == 'u' || key == 'U') {
 			drawHints = !drawHints;
 		}
+		if(key == 'v' || key == 'V') {
+			scene.viewWindow().flip();			
+		}
+		/**
 		if (key == 'v' || key == 'V') {
 			VFrame tmpFrame = new VFrame(scene.is3D());
 			tmpFrame.fromMatrix(scene.viewWindow().frame().worldMatrix(), scene.viewWindow().frame().magnitude());
@@ -184,5 +183,6 @@ public class Combo extends PApplet {
 			println("scene.viewWindow().frame()");
 			printFrame(scene.viewWindow().frame());			
 		}
+		*/
 	}
 }

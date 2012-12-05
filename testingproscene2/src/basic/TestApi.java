@@ -21,25 +21,29 @@ public class TestApi extends PApplet {
 		f1 = new InteractiveFrame(scene);
 		f1.translate(20, 30, 60);
 		f1.rotate(new Quaternion(new Vector3D(1,0,0), HALF_PI));
-		f1.scale(2, 0.5f, 3);
+		//f1.scale(2, 0.5f, -3);
+		f1.scale(-2);
 		
 		f2 = new InteractiveFrame(scene);
 		f2.setReferenceFrame(f1);
 		f2.translate(30, 20, -30);
 		f2.rotate(new Quaternion(new Vector3D(0,1,0), -QUARTER_PI));
-		f2.scale(1.2f, 1.1f, 0.8f);
+		//f2.scale(-1.2f, 1.1f, 0.8f);
+		f2.scale(1.3f);
 		
 		f3 = new InteractiveFrame(scene);
 		f3.setReferenceFrame(f1);
 		f3.translate(15, 20, -30);
 		f3.rotate(new Quaternion(new Vector3D(0,1,0), -HALF_PI));
-		f3.scale(1, 1.5f, 1.8f);
+		//f3.scale(1, -1.5f, 1.8f);
+		f3.scale(-0.7f);
 		
 		f4 = new InteractiveFrame(scene);
 		f4.setReferenceFrame(f2);
 		f4.translate(20, 15, 30);
 		f4.rotate(new Quaternion(new Vector3D(0,1,0), QUARTER_PI));
-		f4.scale(1.4f, 0.5f, 0.8f);
+		//f4.scale(1.4f, 0.5f, 0.8f);
+		f4.scale(1.2f);
 		
 		scene.setRadius(200);
 		scene.showAll();
@@ -164,5 +168,15 @@ public class TestApi extends PApplet {
 			Vector3D v = f4.zAxis();
 			println("f4.zAxis(): " + v + " mag: " + v.mag());			
 		}
+		if(key == 'v' || key == 'V') {
+			if(scene.isRightHanded())
+				scene.setLeftHanded();			
+			else
+				scene.setRightHanded();			
+		}
+		if(scene.isRightHanded())
+			println("Scene is RIGHT handed");
+		else
+			println("Scene is LEFT handed");
 	}
 }

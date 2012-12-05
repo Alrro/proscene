@@ -13,8 +13,8 @@ public class TestApi extends PApplet {
 	Vector3D res;
 	
 	public void setup() {
-		size(640, 360, JAVA2D);
-		//size(640, 360, P2D);
+		size(640, 360, P2D);
+		//size(640, 360, JAVA2D);		
 		scene = new Scene(this);
 		v = new Vector3D(20,30);
 		p = new Vector3D(40,30);
