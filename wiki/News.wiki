@@ -1,5 +1,18 @@
 #summary Wiki page containing all the project news.
 
+=9/11/2012 Release of *Proscene v1.2.0-alpha3 (a.k.a. v-1.1.94)*=
+
+We are pleased to announce the immediate availability of *proscene v1.2.0-alpha3*, supporting the recent *Processing-2.0-beta6* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.94.zip here] and install it manually by yourself.
+
+Thanks to the collaborations/contributions with/from Julian Nembrini, one of the main developers of the [http://anar.ch/ Anar library] (which now uses proscene as its default camera), and Gennaro Senatore from the [http://www.expedition.uk.com Expedition Engineering], this release introduces two new features:
+
+ # *CAD Camera Profile:* This new camera profile mimics the behavior of that found in some CAD applications. To enable it just register it at the scene, e.g., {{{scene.registerCameraProfile(new CameraProfile(scene, "CAD_CAM", CameraProfile.Mode.CAD))}}}. Have a look at the new *CameraHandling.CadCamera* example which also illustrates how to set the camera CAD axis.
+ # *iFrame damping actions:* Proscene approach to damping regards it as special case of spinning/translating with _friction_ which is defined with the (new) methods {{{InteractiveFrame.setSpinningFriction}}} and {{{InteractiveFrame.setTossingFriction}}}. Just bear in mind that damping is disabled by default (which fits current mouse behaviour). Have a look at the new *Basics.MouseSensitivities* example which also illustrates the setting of all variables involved in mouse interaction.
+
+Give it a go and don't hesitate to provide us some feedback to help us improve these new features.
+
+Users of *Processing 1.5.x* may download [http://proscene.googlecode.com/files/proscene-1.1.1.zip Proscene (v1.1.1)] which is the last version supporting it.
+
 =29/09/2012 Release of *Proscene v1.2.0-alpha2 (a.k.a. v-1.1.93)*=
 
 We are pleased to announce the immediate availability of *proscene v1.2.0-alpha2*, supporting the recent *Processing-2.0-beta3* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.93.zip here] and install it manually by yourself (for instance if you get a "could not move library to sketchbook" error message using the above method).
