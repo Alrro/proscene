@@ -328,7 +328,8 @@ public class Scene implements PConstants {
 	public enum Button {
 		// values correspond to: BUTTON1_DOWN_MASK, BUTTON2_DOWN_MASK and BUTTON3_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		LEFT(1024), MIDDLE(2048), RIGHT(4096);
+		//LEFT(1024), MIDDLE(2048), RIGHT(4096);
+		LEFT(PApplet.LEFT), MIDDLE(PApplet.CENTER), RIGHT(PApplet.RIGHT);
 		public final int ID;
     Button(int code) {
     	this.ID = code;
@@ -377,7 +378,8 @@ public class Scene implements PConstants {
 	public enum Modifier {
 		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, META_DOWN_MASK, ALT_GRAPH_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);
+		//ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);
+		ALT(PApplet.ALT), SHIFT(PApplet.SHIFT), CTRL(PApplet.CONTROL)/**, META(128), ALT_GRAPH(8192)*/;
 		public final int ID;
 		Modifier(int code) {
       this.ID = code;
@@ -1267,8 +1269,7 @@ public class Scene implements PConstants {
 		if (isOffscreen()) return;
 		
 		// handle possible resize events
-		// weird: we need to bypass the handling of a resize event when running the
-		// applet from eclipse		
+		// weird: we need to bypass the handling of a resize event when running the applet from eclipse		
 		if ((parent.frame != null) && (parent.frame.isResizable())) {
 			if ((width != pg3d.width) || (height != pg3d.height)) {
 				width = pg3d.width;
@@ -1295,7 +1296,7 @@ public class Scene implements PConstants {
 				camera().lookAt(avatar().target());
 			}
 			bindMatrices();			
-		}
+		}			
 
 		if (frustumEquationsUpdateIsEnable())
 			camera().updateFrustumEquations();
@@ -2620,11 +2621,11 @@ public class Scene implements PConstants {
 		cameraProfileNames = new ArrayList<String>();
 		currentCameraProfile = null;
 		// register here the default profiles
-		//registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
-		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
+		registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
+		//registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
 		registerCameraProfile( new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON) );
-		//setCurrentCameraProfile("ARCBALL");
-		setCurrentCameraProfile("WHEELED_ARCBALL");
+		setCurrentCameraProfile("ARCBALL");
+		//setCurrentCameraProfile("WHEELED_ARCBALL");
 	}
 
 	/**
@@ -2994,7 +2995,8 @@ public class Scene implements PConstants {
 		if( keyboardIsHandled() )
 			return;
 		keyboardHandling = true;
-		parent.registerKeyEvent(dE);
+		//parent.registerKeyEvent(dE);
+		parent.registerMethod("keyEvent", dE);
 	}
 
 	/**
@@ -3006,7 +3008,8 @@ public class Scene implements PConstants {
 		if( !keyboardIsHandled() )
 			return;
 		keyboardHandling = false;
-		parent.unregisterKeyEvent(dE);
+		//parent.unregisterKeyEvent(dE);
+		parent.unregisterMethod("keyEvent", dE);
 	}
 
 	/**
@@ -3805,7 +3808,7 @@ public class Scene implements PConstants {
 		if( mouseIsHandled() )
 			return;
 		mouseHandling = true;
-		parent.registerMouseEvent(dE);
+		parent.registerMethod("mouseEvent", dE);
 	}
 
 	/**
@@ -3817,7 +3820,7 @@ public class Scene implements PConstants {
 		if( !mouseIsHandled() )
 			return;
 		mouseHandling = false;
-		parent.unregisterMouseEvent(dE);
+		parent.unregisterMethod("mouseEvent", dE);
 	}
 
 	/**
