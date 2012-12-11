@@ -25,10 +25,11 @@
 
 package remixlab.proscene;
 
-import java.awt.event.*;
+//import java.awt.event.*;
 import java.util.Map.Entry;
 
 import processing.core.PApplet;
+import processing.event.*;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.MouseAction;
@@ -246,7 +247,7 @@ import remixlab.proscene.Scene.MouseAction;
  * least one THIRD_PERSON camera profile to your Scene.
  */
 public class CameraProfile {
-	public enum Mode {ARCBALL, WHEELED_ARCBALL, CAD, FIRST_PERSON, THIRD_PERSON, CUSTOM}
+	public enum Mode {ARCBALL, /**WHEELED_ARCBALL,*/ CAD, FIRST_PERSON, THIRD_PERSON, CUSTOM}
 	protected String name;
 	protected Scene scene;
 	protected Mode mode;
@@ -294,14 +295,16 @@ public class CameraProfile {
 		clickActions = new Bindings<ClickBinding, Scene.ClickAction>(scene);
 		
 		cameraWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
-		frameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);		
-		scene.parent.addMouseWheelListener( scene.dE );
+		frameWheelActions = new Bindings<Integer, Scene.MouseAction>(scene);
+		
+		//scene.parent.addMouseWheelListener( scene.dE );
 		
 		switch (mode) {
 		case ARCBALL:
 			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
 			arcballDefaultShortcuts();
 			break;
+			/**
 		case WHEELED_ARCBALL:
 			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
 			arcballDefaultShortcuts();			
@@ -309,6 +312,7 @@ public class CameraProfile {
 			//should work only iFrame is an instance of drivable
 			setFrameWheelBinding( MouseAction.ZOOM );			
 			break;
+			*/
 		case CAD:
 			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.CAD_ROTATE);
 			arcballDefaultShortcuts();
@@ -357,11 +361,14 @@ public class CameraProfile {
 	/**
 	 * Internal use. Called by the constructor by ARCBALL and WHEELED_ARCBALL modes.
 	 */
-	private void arcballDefaultShortcuts() {
+	private void arcballDefaultShortcuts() {		
+		/**
+		//TODO: add cam mov
 		setShortcut(KeyEvent.VK_RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);		
 	  setShortcut(KeyEvent.VK_LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
 		setShortcut(KeyEvent.VK_UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
 		setShortcut(KeyEvent.VK_DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
+		*/
 		
 		setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
 		setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
@@ -445,7 +452,7 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
-		MouseAction camMouseAction = cameraMouseBinding( e.getModifiersEx() );
+		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers() );
 		//debug
 		/**
 		PApplet.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
@@ -467,7 +474,7 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
 	protected MouseAction frameMouseAction(MouseEvent e) {
-		MouseAction iFrameMouseAction = frameMouseBinding( e.getModifiersEx() );
+		MouseAction iFrameMouseAction = frameMouseBinding( e.getModifiers() );
 		if (iFrameMouseAction == null)
 			iFrameMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return iFrameMouseAction;
@@ -479,12 +486,15 @@ public class CameraProfile {
 	 * <p>
 	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
+	
+	/**
 	protected MouseAction cameraWheelMouseAction(MouseWheelEvent e) {
 		MouseAction wMouseAction = cameraWheelBinding(e.getModifiersEx());
 		if (wMouseAction == null)
 			wMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return wMouseAction;
 	}
+	*/
 	
 	/**
 	 * Internal method. Parses the event to convert it to a Scene.MouseAction. Returns
@@ -492,20 +502,26 @@ public class CameraProfile {
 	 * <p>
 	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
+	
+	/**
 	protected MouseAction frameWheelMouseAction(MouseWheelEvent e) {
 		MouseAction fMouseAction = frameWheelBinding( e.getModifiersEx() );
 		if (fMouseAction == null)
 			fMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return fMouseAction;
 	}
+	*/
 	
 	/**
 	 * Returns a String containing the camera mouse bindings' descriptions.
 	 */
 	public String cameraMouseBindingsDescription() {
 		String description = new String();
+		/**
+		//TODO handle desctiption
 		for (Entry<Integer, MouseAction> entry : cameraActions.map.entrySet())
       description += KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
+     */
 		return description;
 	}
 	
@@ -514,8 +530,11 @@ public class CameraProfile {
 	 */
 	public String frameMouseBindingsDescription() {
 		String description = new String();
+		/**
+		//TODO handle desctiption
 		for (Entry<Integer, MouseAction> entry : frameActions.map.entrySet())
       description += KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
+    */
 		return description;
 	}
 	
@@ -544,12 +563,15 @@ public class CameraProfile {
 	 */
 	public String cameraWheelBindingsDescription() {
 		String description = new String();
+		/**
+		//TODO handle desctiption
 		for (Entry<Integer, Scene.MouseAction> entry : cameraWheelActions.map.entrySet()) {
 			if (KeyEvent.getModifiersExText(entry.getKey()).length() != 0 )
 				description += "Wheel " + KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 			else
 				description += "Wheel -> " + entry.getValue().description() + "\n";
 		}
+		*/
 		return description;
 	}
 	
@@ -558,11 +580,14 @@ public class CameraProfile {
 	 */
 	public String frameWheelBindingsDescription() {
 		String description = new String();
+		/**
+		//TODO handle desctiption
 		for (Entry<Integer, Scene.MouseAction> entry : frameWheelActions.map.entrySet())
 			if (KeyEvent.getModifiersExText(entry.getKey()).length() != 0 )
 				description += "Wheel " + KeyEvent.getModifiersExText(entry.getKey()) + " -> " + entry.getValue().description() + "\n";
 			else
 				description += "Wheel -> " + entry.getValue().description() + "\n";
+		*/
 		return description;
 	}
 

@@ -25,9 +25,14 @@
 
 package remixlab.proscene;
 
-import java.awt.event.*;
+/**
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+*/
 
-import processing.core.PApplet;
+import processing.core.*;
+import processing.event.*;
 
 import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
@@ -45,7 +50,7 @@ import remixlab.proscene.Scene.MouseAction;
  * generated via Processing will then be directed to {@link #keyEvent(KeyEvent)} and to
  * {@link #mouseEvent(MouseEvent)}.  
  */
-public class DesktopEvents implements MouseWheelListener {
+public class DesktopEvents /** implements MouseWheelListener*/ {
 	protected Scene scene;
 	protected PApplet parent;
 	protected MouseAction camMouseAction;
@@ -71,17 +76,25 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see remixlab.proscene.Scene#keyboardIsHandled()
 	 * @see remixlab.proscene.Scene#enableKeyboardHandling(boolean)
 	 */
-	public void keyEvent(KeyEvent e) {
+	public void keyEvent(KeyEvent e) {		
 		if( !scene.keyboardIsHandled() )
 			return;
+		
+	  //debug
+		/**			
+		PApplet.println( "getModifiersExText: " + KeyEvent.getModifiersExText(e.getModifiersEx()) );
+		PApplet.println( "getMouseModifiersEx Mask: " + e.getModifiersEx() );
+		PApplet.println( "getMouseModifiers Mask: " + e.getModifiers() );
+		// */
+		
 		keyHandled = false;
-		switch (e.getID()) {		
-		case KeyEvent.KEY_PRESSED:
+		switch (e.getAction() ) {
+		case KeyEvent.PRESS:
 			break;
-		case KeyEvent.KEY_TYPED:
+		case KeyEvent.TYPE:
 			keyTyped(e);
 			break;
-		case KeyEvent.KEY_RELEASED:
+		case KeyEvent.RELEASE:
 			keyReleased(e);
 			break;
 		}
@@ -139,7 +152,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 */
 	protected boolean keyTypedCameraKeyboardAction(KeyEvent e) {
 		CameraKeyboardAction kba = null;
-		kba = scene.currentCameraProfile().shortcut( e.getKeyChar() );
+		kba = scene.currentCameraProfile().shortcut( e.getKey() );
 		if (kba == null)
 			return false;
 		else {
@@ -157,8 +170,8 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @return true if a binding was found 
 	 */
 	protected boolean keyTypedKeyboardAction( KeyEvent e) {
-		if (!e.isAltDown() && !e.isAltGraphDown() && !e.isControlDown()	&& !e.isShiftDown()) {
-			Integer path = scene.path(e.getKeyChar());
+		if (!e.isAltDown() /** && !e.isMetaDown() */ && !e.isControlDown()	&& !e.isShiftDown()) {
+			Integer path = scene.path(e.getKey());
 			if (path != null) {
 				scene.camera().playPath(path);
 				return true;
@@ -166,7 +179,7 @@ public class DesktopEvents implements MouseWheelListener {
 		}
 		
 		KeyboardAction kba = null;
-		kba = scene.shortcut(e.getKeyChar());
+		kba = scene.shortcut(e.getKey());
 		if (kba == null)
 			return false;
 		else {
@@ -185,8 +198,9 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @return true if a binding was found 
 	 */
 	protected boolean keyReleasedCameraKeyboardAction(KeyEvent e) {
-		CameraKeyboardAction kba = null;
-		kba = scene.currentCameraProfile().shortcut( e.getModifiersEx(), e.getKeyCode() );
+		CameraKeyboardAction kba = null;		
+		//kba = scene.currentCameraProfile().shortcut( e.getModifiersEx(), e.getKeyCode() );
+		kba = scene.currentCameraProfile().shortcut( e.getModifiers(), e.getKeyCode() );
 		if (kba == null)
 			return false;
 		else {
@@ -207,7 +221,7 @@ public class DesktopEvents implements MouseWheelListener {
 		// 1. Key-frames
 		// 1.1. Need to add a key-frame?
 		if (((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
-	   || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isAltGraphDown()))
+	   /** || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isMetaDown())) */
 		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.CTRL) && (e.isControlDown()))
 		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
@@ -218,7 +232,7 @@ public class DesktopEvents implements MouseWheelListener {
 		}
   	// 1.2. Need to delete a key-frame?
 		if (((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
-		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isAltGraphDown()))
+		 /** || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isMetaDown())) */
 		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.CTRL) && (e.isControlDown()))
 		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
@@ -229,7 +243,8 @@ public class DesktopEvents implements MouseWheelListener {
 		}		
 		// 2. General actions
 		KeyboardAction kba = null;
-		kba = scene.shortcut( e.getModifiersEx(), e.getKeyCode() );
+		//kba = scene.shortcut( e.getModifiersEx(), e.getKeyCode() );
+		kba = scene.shortcut( e.getModifiers(), e.getKeyCode() );
 		if (kba == null)
 			return false;
 		else {
@@ -248,17 +263,19 @@ public class DesktopEvents implements MouseWheelListener {
 	protected Button getButton(MouseEvent e) {
 		Button button = null;
 		switch (e.getButton()) {
-		case MouseEvent.NOBUTTON:
+		/**
+		case MouseEvent.NOBUTTON:		
 			break;
-		case MouseEvent.BUTTON1: // left button
+		*/
+		case PApplet.LEFT: // left button
 			button = Button.LEFT;
 			break;
-		case MouseEvent.BUTTON2: // middle button
+		case PApplet.CENTER: // middle button
 			button = Button.MIDDLE;
 			break;
-		case MouseEvent.BUTTON3: // right button
+		case PApplet.RIGHT: // right button
 			button = Button.RIGHT;
-			break;
+			break;		
 		}
 		return button;
 	}
@@ -272,20 +289,26 @@ public class DesktopEvents implements MouseWheelListener {
 	public void mouseEvent(MouseEvent e) {		
 		if ((scene.currentCameraProfile() == null) || (!scene.mouseIsHandled()) )
 			return;
-		switch (e.getID()) {
-		case MouseEvent.MOUSE_CLICKED:
+		switch (e.getAction() ) {
+		case MouseEvent.CLICK:
 			mouseClicked(e);
 			break;
-		case MouseEvent.MOUSE_DRAGGED:
+		case MouseEvent.DRAG:
 			mouseDragged(e);
 			break;
-		case MouseEvent.MOUSE_MOVED:
+		case MouseEvent.MOVE:
 			mouseMoved(e);
 			break;
-		case MouseEvent.MOUSE_PRESSED:
+		case MouseEvent.PRESS:
+		  //debug
+			// /**
+			//PApplet.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
+			//PApplet.println( "getMouseModifiersEx Mask: " + e.getModifiersEx() );
+			PApplet.println( "getMouseModifiers Mask: " + e.getModifiers() );
+			// */
 			mousePressed(e);
 			break;
-		case MouseEvent.MOUSE_RELEASED:
+		case MouseEvent.RELEASE:
 			mouseReleased(e);
 			break;
 		}
@@ -304,7 +327,7 @@ public class DesktopEvents implements MouseWheelListener {
 		if (scene.mouseGrabber() != null)
 			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ button, numberOfClicks, scene.camera());
 		else {
-			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiersEx(), button, numberOfClicks);
+			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiers(), button, numberOfClicks);
 			if (ca != null)
 				scene.handleClickAction(ca);
 		}		
@@ -345,7 +368,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * @see #mouseReleased(MouseEvent)
 	 * @see #mouseWheelMoved(MouseWheelEvent)
 	 */
-	public void mousePressed(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {		
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
@@ -465,6 +488,8 @@ public class DesktopEvents implements MouseWheelListener {
 	 * 
 	 * @see #mousePressed(MouseEvent)
 	 */
+	
+	/**
 	public void mouseWheelMoved(MouseWheelEvent event) {
 		if(!scene.mouseIsHandled())
 			return;
@@ -485,6 +510,7 @@ public class DesktopEvents implements MouseWheelListener {
 		scene.camera().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
 		scene.camera().frame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
 	}
+	*/
 	
 	// 3. Utility package dependent functions: java.awt wrappers that should be replaced
 	//    by each platform where proscene is going to be implemented.
@@ -494,42 +520,42 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@code java.awt.event.KeyEvent}.
 	 */
 	protected static int getVKey(char key) {
-	  if(key == '0') return KeyEvent.VK_0;
-	  if(key == '1') return KeyEvent.VK_1;
-	  if(key == '2') return KeyEvent.VK_2;
-	  if(key == '3') return KeyEvent.VK_3;
-	  if(key == '4') return KeyEvent.VK_4;
-	  if(key == '5') return KeyEvent.VK_5;
-	  if(key == '6') return KeyEvent.VK_6;
-	  if(key == '7') return KeyEvent.VK_7;
-	  if(key == '8') return KeyEvent.VK_8;
-	  if(key == '9') return KeyEvent.VK_9;		
-	  if((key == 'a')||(key == 'A')) return KeyEvent.VK_A;
-	  if((key == 'b')||(key == 'B')) return KeyEvent.VK_B;
-	  if((key == 'c')||(key == 'C')) return KeyEvent.VK_C;
-	  if((key == 'd')||(key == 'D')) return KeyEvent.VK_D;
-	  if((key == 'e')||(key == 'E')) return KeyEvent.VK_E;
-	  if((key == 'f')||(key == 'F')) return KeyEvent.VK_F;
-	  if((key == 'g')||(key == 'G')) return KeyEvent.VK_G;
-	  if((key == 'h')||(key == 'H')) return KeyEvent.VK_H;
-	  if((key == 'i')||(key == 'I')) return KeyEvent.VK_I;
-	  if((key == 'j')||(key == 'J')) return KeyEvent.VK_J;
-	  if((key == 'k')||(key == 'K')) return KeyEvent.VK_K;
-	  if((key == 'l')||(key == 'L')) return KeyEvent.VK_L;
-	  if((key == 'm')||(key == 'M')) return KeyEvent.VK_M;
-	  if((key == 'n')||(key == 'N')) return KeyEvent.VK_N;
-	  if((key == 'o')||(key == 'O')) return KeyEvent.VK_O;
-	  if((key == 'p')||(key == 'P')) return KeyEvent.VK_P;
-	  if((key == 'q')||(key == 'Q')) return KeyEvent.VK_Q;
-	  if((key == 'r')||(key == 'R')) return KeyEvent.VK_R;
-	  if((key == 's')||(key == 'S')) return KeyEvent.VK_S;
-	  if((key == 't')||(key == 'T')) return KeyEvent.VK_T;
-	  if((key == 'u')||(key == 'U')) return KeyEvent.VK_U;
-	  if((key == 'v')||(key == 'V')) return KeyEvent.VK_V;
-	  if((key == 'w')||(key == 'W')) return KeyEvent.VK_W;
-	  if((key == 'x')||(key == 'X')) return KeyEvent.VK_X;
-	  if((key == 'y')||(key == 'Y')) return KeyEvent.VK_Y;
-	  if((key == 'z')||(key == 'Z')) return KeyEvent.VK_Z;
+	  if(key == '0') return 48;
+	  if(key == '1') return 49;
+	  if(key == '2') return 50;
+	  if(key == '3') return 51;
+	  if(key == '4') return 52;
+	  if(key == '5') return 53;
+	  if(key == '6') return 54;
+	  if(key == '7') return 55;
+	  if(key == '8') return 56;
+	  if(key == '9') return 57;		
+	  if((key == 'a')||(key == 'A')) return 65;
+	  if((key == 'b')||(key == 'B')) return 66;
+	  if((key == 'c')||(key == 'C')) return 67;
+	  if((key == 'd')||(key == 'D')) return 68;
+	  if((key == 'e')||(key == 'E')) return 69;
+	  if((key == 'f')||(key == 'F')) return 70;
+	  if((key == 'g')||(key == 'G')) return 71;
+	  if((key == 'h')||(key == 'H')) return 72;
+	  if((key == 'i')||(key == 'I')) return 73;
+	  if((key == 'j')||(key == 'J')) return 74;
+	  if((key == 'k')||(key == 'K')) return 75;
+	  if((key == 'l')||(key == 'L')) return 76;
+	  if((key == 'm')||(key == 'M')) return 77;
+	  if((key == 'n')||(key == 'N')) return 78;
+	  if((key == 'o')||(key == 'O')) return 79;
+	  if((key == 'p')||(key == 'P')) return 80;
+	  if((key == 'q')||(key == 'Q')) return 81;
+	  if((key == 'r')||(key == 'R')) return 82;
+	  if((key == 's')||(key == 'S')) return 83;
+	  if((key == 't')||(key == 'T')) return 84;
+	  if((key == 'u')||(key == 'U')) return 85;
+	  if((key == 'v')||(key == 'V')) return 86;
+	  if((key == 'w')||(key == 'W')) return 87;
+	  if((key == 'x')||(key == 'X')) return 88;
+	  if((key == 'y')||(key == 'Y')) return 89;
+	  if((key == 'z')||(key == 'Z')) return 90;
 	  return -1;
 	}
 	
@@ -538,7 +564,48 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@code java.awt.event.KeyEvent.getKeyText(key)}.
 	 */
 	protected static String getKeyText(int key) {
-		return KeyEvent.getKeyText(key);
+    String result;
+    switch (key) {
+        case 48: result = "0"; break;
+        case 49: result = "1"; break;
+        case 50: result = "2"; break;
+        case 51: result = "3"; break;
+        case 52: result = "4"; break;
+        case 53: result = "5"; break;
+        case 54: result = "6"; break;
+        case 55: result = "7"; break;
+        case 56: result = "8"; break;
+        case 57: result = "9"; break;
+        case 65: result = "a"; break;
+        case 66: result = "b"; break;
+        case 67: result = "c"; break;
+        case 68: result = "d"; break;
+        case 69: result = "e"; break;
+        case 70: result = "f"; break;
+        case 71: result = "g"; break;
+        case 72: result = "h"; break;
+        case 73: result = "i"; break;
+        case 74: result = "j"; break;
+        case 75: result = "k"; break;
+        case 76: result = "l"; break;
+        case 77: result = "m"; break;
+        case 78: result = "n"; break;
+        case 79: result = "o"; break;
+        case 80: result = "p"; break;
+        case 81: result = "q"; break;
+        case 82: result = "r"; break;
+        case 83: result = "s"; break;
+        case 84: result = "t"; break;
+        case 85: result = "u"; break;
+        case 86: result = "v"; break;
+        case 87: result = "w"; break;
+        case 88: result = "x"; break;
+        case 89: result = "y"; break;
+        case 90: result = "z"; break;
+        default: result = "Unrecognized key";
+                 break;                 
+    }
+    return result;
 	}
 	
 	/**
@@ -546,6 +613,7 @@ public class DesktopEvents implements MouseWheelListener {
 	 * {@code java.awt.event.KeyEvent.getModifiersExText(mask)}.
 	 */
 	protected static String getModifiersExText(int mask) {
-		return KeyEvent.getModifiersExText(mask);
+		//return KeyEvent.getModifiersExText(mask);
+		return "description pending";
 	}
 }
