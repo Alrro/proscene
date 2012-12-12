@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.*;
+import processing.event.Event;
 import processing.opengl.*;
 
 import java.lang.reflect.Method;
@@ -379,7 +380,8 @@ public class Scene implements PConstants {
 		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, META_DOWN_MASK, ALT_GRAPH_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
 		//ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);
-		ALT(PApplet.ALT), SHIFT(PApplet.SHIFT), CTRL(PApplet.CONTROL)/**, META(128), ALT_GRAPH(8192)*/;
+		//ALT(PApplet.ALT), SHIFT(PApplet.SHIFT), CTRL(PApplet.CONTROL)/**, META(128), ALT_GRAPH(8192)*/;
+		ALT(Event.ALT), SHIFT(Event.SHIFT), CTRL(Event.CTRL), META(Event.META) /**, ALT_GRAPH(8192)*/;
 		public final int ID;
 		Modifier(int code) {
       this.ID = code;
@@ -870,7 +872,7 @@ public class Scene implements PConstants {
 	
 	/**
 	 * Returns {@code true}
-	 * if {@link remixlab.proscene.DesktopEvents#mouseMoved(java.awt.event.MouseEvent)}
+	 * if {@link remixlab.proscene.DesktopEvents#mouseMoved(processing.event.MouseEvent)}
 	 * is called even when no mouse button is pressed.
 	 * <p>
 	 * You need to setMouseTracking() to \c true in order to use MouseGrabber (see mouseGrabber()).
