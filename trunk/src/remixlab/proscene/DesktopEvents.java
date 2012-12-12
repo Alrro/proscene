@@ -25,12 +25,6 @@
 
 package remixlab.proscene;
 
-/**
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
-*/
-
 import processing.core.*;
 import processing.event.*;
 
@@ -260,13 +254,11 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	 * <p>
 	 * Utility function that gets the Scene.Button from this MouseEvent.
 	 */
-	protected Button getButton(MouseEvent e) {
+	protected static Button getButton(MouseEvent e) {
 		Button button = null;
-		switch (e.getButton()) {
-		/**
-		case MouseEvent.NOBUTTON:		
-			break;
-		*/
+		switch (e.getButton()) {		
+		//case MouseEvent.NOBUTTON:		
+			//break;		
 		case PApplet.LEFT: // left button
 			button = Button.LEFT;
 			break;
@@ -300,12 +292,6 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 			mouseMoved(e);
 			break;
 		case MouseEvent.PRESS:
-		  //debug
-			// /**
-			//PApplet.println( "getModifiersExText: " + MouseEvent.getModifiersExText(e.getModifiersEx()) );
-			//PApplet.println( "getMouseModifiersEx Mask: " + e.getModifiersEx() );
-			PApplet.println( "getMouseModifiers Mask: " + e.getModifiers() );
-			// */
 			mousePressed(e);
 			break;
 		case MouseEvent.RELEASE:
@@ -365,8 +351,7 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	 * {@link remixlab.proscene.Scene#currentCameraProfile()} mouse bindings.
 	 * 
 	 * @see #mouseDragged(MouseEvent)
-	 * @see #mouseReleased(MouseEvent)
-	 * @see #mouseWheelMoved(MouseWheelEvent)
+	 * @see #mouseReleased(MouseEvent) 
 	 */
 	public void mousePressed(MouseEvent e) {		
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
