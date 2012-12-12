@@ -2553,12 +2553,11 @@ public class Scene implements PConstants {
                        + "endScreenDrawing() and they cannot be nested. Check your implementation!");
     startCoordCalls++;
     renderer().hint(DISABLE_DEPTH_TEST);
-    //renderer().hint(DISABLE_STROKE_PERSPECTIVE);
     renderer().pushProjection();    
     float cameraZ = (height/2.0f) / PApplet.tan(camera().fieldOfView() /2.0f);
     float cameraNear = cameraZ / 2.0f;
     float cameraFar = cameraZ * 2.0f;
-    renderer().ortho(-width/2, width/2, -height/2, height/2, cameraNear, cameraFar);
+    renderer().ortho(0, width, 0, height, cameraNear, cameraFar);
     renderer().pushMatrix();
     renderer().camera();      
           
@@ -2578,7 +2577,6 @@ public class Scene implements PConstants {
     renderer().popProjection();
     renderer().popMatrix();
     renderer().hint(ENABLE_DEPTH_TEST);
-    //renderer().hint(ENABLE_STROKE_PERSPECTIVE);
 	}
 	
 	/**
