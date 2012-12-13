@@ -25,13 +25,16 @@
 
 package remixlab.proscene;
 
+import processing.core.PApplet;
+import processing.event.MouseEvent;
+
 /**
  * This class represents mouse shortcuts.
  * <p>
  * Mouse shortcuts can be of one out of two forms: 1. Mouse buttons (e.g., 'LEFT');
  * 2. Mouse button + Key combinations (e.g., 'RIGHT' + CTRL key).
  */
-public final class MouseShortcut {
+public final class MouseShortcut {	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -84,26 +87,48 @@ public final class MouseShortcut {
 	}	
 	
 	/**
-	 * Returns a textual description of this keyboard shortcut.
+	 * Returns a textual description of this mouse shortcut.
 	 *  
 	 * @return description
 	 */
 	public String description() {
-		String description = new String();
-		
-		//TODO implement me
-		/**
-		if(mask != null)
-			description = mask.toString();
-		else {
-			if(mask == 0)
-				description = DesktopEvents.getKeyText(vKey);
-			else
-				description = DesktopEvents.getModifiersExText(mask) + "+" + DesktopEvents.getKeyText(vKey);
+		return description(button);
+	}	
+	
+	/**
+	 * Internal. Low-level description() function.
+	 */
+	protected String description(Integer b) {
+		String r = DesktopEvents.getModifiersText(mask);
+		switch (b) {
+		case PApplet.LEFT:
+			r += (r.length() > 0) ? "+LEFT_BUTTON" : "LEFT_BUTTON";
+			break;
+		case PApplet.CENTER:
+			r += (r.length() > 0) ? "+MIDDLE_BUTTON" : "MIDDLE_BUTTON";
+			break;
+		case PApplet.RIGHT:
+			r += (r.length() > 0) ? "+RIGHT_BUTTON" : "RIGHT_BUTTON";
+			break;			
+		default:
+			r += (r.length() > 0) ? "+NO_MOUSE_BUTTON" : "NO_MOUSE_BUTTON";
+			break;
 		}		
-		*/
-		
-		return description;
+		return r;
+	}
+	
+	/**
+	 * Internal convenience funtion.
+	 */
+	protected String description(MouseEvent e) {
+		return description(e.getButton());
+	}
+	
+	/**
+	 * Internal convenience funtion.
+	 */
+	protected String description(Scene.Button b) {
+		return description(b.ID);
 	}
 
 	protected final Integer mask;

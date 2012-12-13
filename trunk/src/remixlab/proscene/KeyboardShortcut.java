@@ -114,7 +114,7 @@ public final class KeyboardShortcut {
 			if(mask == 0)
 				description = DesktopEvents.getKeyText(vKey);
 			else
-				description = DesktopEvents.getModifiersExText(mask) + "+" + DesktopEvents.getKeyText(vKey);
+				description = DesktopEvents.getModifiersText(mask) + "+" + DesktopEvents.getKeyText(vKey);
 		}			
 		return description;
 	}
