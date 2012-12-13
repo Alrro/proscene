@@ -411,7 +411,9 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
-		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers(), e.getButton() );		
+		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers(), e.getButton() );
+		if (camMouseAction == null)
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return camMouseAction;
 	}
 	
