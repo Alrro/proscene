@@ -330,6 +330,7 @@ public class Scene implements PConstants {
 		// values correspond to: BUTTON1_DOWN_MASK, BUTTON2_DOWN_MASK and BUTTON3_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
 		//LEFT(1024), MIDDLE(2048), RIGHT(4096);
+		//Sames as P5:
 		LEFT(PApplet.LEFT), MIDDLE(PApplet.CENTER), RIGHT(PApplet.RIGHT);
 		public final int ID;
     Button(int code) {
@@ -353,7 +354,10 @@ public class Scene implements PConstants {
 	 * Constants associated to the different arrow keys. Taken from Processing constants 
 	 * (which follows java conventions). 
 	 */	
-	public enum Arrow {
+	public enum Arrow {		
+		// taken from http://docs.oracle.com/javase/6/docs/api/constant-values.html
+		//UP(38), DOWN(40), LEFT(37), RIGHT(39);
+		// currently P5 values are the same:
 		UP(PApplet.UP), DOWN(PApplet.DOWN), LEFT(PApplet.LEFT), RIGHT(PApplet.RIGHT);
 		public final int ID;
     Arrow(int code) {
@@ -379,8 +383,8 @@ public class Scene implements PConstants {
 	public enum Modifier {
 		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, META_DOWN_MASK, ALT_GRAPH_DOWN_MASK
 		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		//ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);
-		//ALT(PApplet.ALT), SHIFT(PApplet.SHIFT), CTRL(PApplet.CONTROL)/**, META(128), ALT_GRAPH(8192)*/;
+		//ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);		
+		// P5 values are different:
 		ALT(Event.ALT), SHIFT(Event.SHIFT), CTRL(Event.CTRL), META(Event.META) /**, ALT_GRAPH(8192)*/;
 		public final int ID;
 		Modifier(int code) {
@@ -3617,8 +3621,8 @@ public class Scene implements PConstants {
 		
 		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
 			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
-		description += DesktopEvents.getModifiersExText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
-		description += DesktopEvents.getModifiersExText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+		description += DesktopEvents.getModifiersText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
+		description += DesktopEvents.getModifiersText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
 		
 		return description;		
 	}
@@ -3658,11 +3662,12 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.CameraProfile#cameraMouseBindingsDescription()
 	 * @see remixlab.proscene.CameraProfile#frameMouseBindingsDescription()
 	 * @see remixlab.proscene.CameraProfile#mouseClickBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#keyboardShortcutsDescription()
-	 * @see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#frameWheelBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#keyboardShortcutsDescription() 
 	 */
 	public String currentCameraProfileHelp() {
+		//TODO
+		//@see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
+		//@see remixlab.proscene.CameraProfile#frameWheelBindingsDescription()
 		String description = new String();
 		description += currentCameraProfile().name() + " camera profile keyboard shortcuts and mouse bindings\n";
 		int index = 1;
@@ -3686,6 +3691,8 @@ public class Scene implements PConstants {
 			description += currentCameraProfile().frameMouseBindingsDescription();
 			index++;
 		}
+	// TODO wheel
+		/**
 		if( currentCameraProfile().cameraWheelBindingsDescription().length() != 0 ) {
 			description += index + ". " + "Camera mouse wheel bindings\n";
 			description += currentCameraProfile().cameraWheelBindingsDescription();
@@ -3696,6 +3703,7 @@ public class Scene implements PConstants {
 			description += currentCameraProfile().frameWheelBindingsDescription();
 			index++;
 		}
+		*/
 		return description;
 	}
 

@@ -127,16 +127,16 @@ public class ClickBinding {
 	public String description() {
 		String description = new String();
 		if(mask != 0)
-			description += DesktopEvents.getModifiersExText(mask) + " + ";
+			description += DesktopEvents.getModifiersText(mask) + " + ";
 		switch (button) {
 		case LEFT :
-			description += "Button1";
+			description += "LEFT_BUTTON";
 			break;
 		case MIDDLE :
-			description += "Button2";
+			description += "MIDDLE_BUTTON";
 			break;
 		case RIGHT :
-			description += "Button3";
+			description += "RIGHT_BUTTON";
 			break;		
 		}
 		if(numberOfClicks==1)
