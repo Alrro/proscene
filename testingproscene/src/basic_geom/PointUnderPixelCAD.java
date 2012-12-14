@@ -2,52 +2,33 @@ package basic_geom;
 import geom.Box;
 
 import processing.core.*;
-import processing.event.*;
+import processing.event.Event;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
-public class PointUnderPixel extends PApplet {
+public class PointUnderPixelCAD extends PApplet {
 	Scene scene;
 	Box [] boxes;
 
 	public void setup() {
 	  size(640, 360, OPENGL);
 	  scene = new Scene(this);
+	  scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );
+	  scene.camera().frame().setSpinningFriction(1);
 	  scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 	  scene.setShortcut('z', Scene.KeyboardAction.ARP_FROM_PIXEL);
 	  //add the click actions to all camera profiles
 	  CameraProfile [] camProfiles = scene.getCameraProfiles();
-	  /**
-	  for (int i=0; i<camProfiles.length; i++) {
-		    // left click will zoom on pixel:
-		    camProfiles[i].setClickBinding( Scene.Button.LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
-		    // middle click will show all the scene:
-		    camProfiles[i].setClickBinding( Scene.Button.MIDDLE, Scene.ClickAction.SHOW_ALL);
-		    // right click will will set the arcball reference point:
-		    camProfiles[i].setClickBinding( Scene.Button.RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
-		    // double click with the middle button while pressing SHIFT will reset the arcball reference point:
-		    camProfiles[i].setClickBinding( Scene.Modifier.SHIFT.ID, Scene.Button.MIDDLE, 2, Scene.ClickAction.RESET_ARP );
-		  }
-		  //*/
-	  // /**
 	  for (int i=0; i<camProfiles.length; i++) {
 	    // left click will zoom on pixel:
-	    camProfiles[i].setClickBinding( 0, LEFT, 1, Scene.ClickAction.ZOOM_ON_PIXEL );
+	    camProfiles[i].setClickBinding( LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
 	    // middle click will show all the scene:
-	    camProfiles[i].setClickBinding( 0, CENTER, 1, Scene.ClickAction.SHOW_ALL);
+	    camProfiles[i].setClickBinding( CENTER, Scene.ClickAction.SHOW_ALL);
 	    // right click will will set the arcball reference point:
-	    camProfiles[i].setClickBinding( 0, RIGHT, 1, Scene.ClickAction.ARP_FROM_PIXEL );
+	    camProfiles[i].setClickBinding( RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
 	    // double click with the middle button while pressing SHIFT will reset the arcball reference point:
 	    camProfiles[i].setClickBinding( Event.SHIFT, CENTER, 2, Scene.ClickAction.RESET_ARP );
-	    //camProfiles[i].setClickBinding( CENTER, 2, Scene.ClickAction.RESET_ARP );
 	  }
-	  //*/
-	  
-	  /**
-	  GLCamera glCam = new GLCamera(scene);	  
-	  // */
-	  
-	  //scene.setCamera(glCam);
 	  
 	  scene.setGridIsDrawn(false);
 	  scene.setAxisIsDrawn(false);
@@ -58,30 +39,23 @@ public class PointUnderPixel extends PApplet {
 	  for (int i = 0; i < boxes.length; i++)
 	    boxes[i] = new Box(scene);
 	  
-	  println( "PApplet.ALT: " + PApplet.ALT + " Event.ALT: " + Event.ALT );
-	  println( "PApplet.SHIFT: " + PApplet.SHIFT + " Event.SHIFT: " + Event.SHIFT );
-	  println( "PApplet.CONTROL: " + PApplet.CONTROL + " Event.CTRL: " + Event.CTRL );
-	  //println( "PApplet.SHIFT: " + PApplet.m + " Event.SHIFT: " + Event.SHIFT );
-	  
-	  println(SHIFT + ": " + getMT(Event.SHIFT));
+	  scene.camera().optimizeUnprojectCache(true);
 	}
-	
-	public String getMT(int mask) {
-		String r = new String();
-		if((Event.ALT & mask) == Event.ALT) r += "ALT";						
-		if((Event.SHIFT & mask) == Event.SHIFT) r += (r.length() > 0) ? "+SHIFT" : "SHIFT";
-		if((Event.CTRL & mask) == Event.CTRL) r += (r.length() > 0) ? "+CTRL" : "CTRL";
-		if((Event.META & mask) == Event.META) r += (r.length() > 0) ? "+META" : "META";
-		return r;
-	}	
 
 	public void draw() {
-	  background(0);
+		background(0);
 	  for (int i = 0; i < boxes.length; i++)    
 	    boxes[i].draw();
 	}
 	
 	public void keyPressed() {
+		if(key == 'q' || key == 'Q') {
+			scene.camera().optimizeUnprojectCache( !scene.camera().unprojectCacheIsOptimized() );
+			if( scene.camera().unprojectCacheIsOptimized() )
+				println("unproject cache is optimized");
+			else
+				println("unproject cache is NOT optimized");
+		}
 		if(key == 't' || key == 'T') {
 			if( scene.camera().isAttachedToP5Camera() ) {
 				scene.camera().detachFromP5Camera();
@@ -111,7 +85,7 @@ public class PointUnderPixel extends PApplet {
 		    scene.camera().frame().setCADAxis(new PVector(0, 0, 1));
 		// */
 	}
-	
+
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "PointUnderPixel" });
 	}

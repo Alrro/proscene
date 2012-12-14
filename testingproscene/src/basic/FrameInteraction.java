@@ -1,5 +1,6 @@
 package basic;
 import processing.core.*;
+import processing.event.Event;
 //import processing.opengl.*;
 import remixlab.proscene.*;
 
@@ -36,7 +37,7 @@ public class FrameInteraction extends PApplet {
 		// /**
 		scene.interactiveFrame().setSpinningFriction(0.5f);
 		scene.interactiveFrame().setTossingFriction(0.5f);
-		// */
+		// */				
 	}
 
 	public void draw() {	

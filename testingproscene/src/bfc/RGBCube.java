@@ -37,7 +37,7 @@ public class RGBCube extends PApplet {
 		
 		
 		canvas = createGraphics(640, 360, P3D);
-		scene = new Scene(this, (PGraphicsOpenGL) canvas);
+		scene = new Scene(this, (PGraphics3D) canvas);
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		// enable computation of the frustum planes equations (disabled by
 		// default)
@@ -46,7 +46,7 @@ public class RGBCube extends PApplet {
 		scene.addDrawHandler(this, "mainDrawing");
 
 		auxCanvas = createGraphics(640, 360, P3D);
-		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas);
+		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
 		auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
 		auxScene.setAxisIsDrawn(false);
 		auxScene.setGridIsDrawn(false);

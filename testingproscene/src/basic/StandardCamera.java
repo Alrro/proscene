@@ -16,7 +16,7 @@ public class StandardCamera extends PApplet {
 
 		canvas = createGraphics(640, 360, P3D);
 		//canvas = createGraphics(640, 360, OPENGL);
-		scene = new Scene(this, (PGraphicsOpenGL) canvas);
+		scene = new Scene(this, (PGraphics3D) canvas);
 		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		scene.camera().setStandardZNear(0.1f);
 		
@@ -37,7 +37,7 @@ public class StandardCamera extends PApplet {
 		//auxCanvas = createGraphics(640, 360, OPENGL);
 		// Note that we pass the upper left corner coordinates where the scene
 		// is to be drawn (see drawing code below) to its constructor.
-		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas, 0, 360);
+		auxScene = new Scene(this, (PGraphics3D) auxCanvas, 0, 360);
 		auxScene.camera().setType(Camera.Type.ORTHOGRAPHIC);
 		auxScene.setAxisIsDrawn(false);
 		auxScene.setGridIsDrawn(false);

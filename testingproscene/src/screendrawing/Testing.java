@@ -112,7 +112,7 @@ public class Testing extends PApplet {
     }
 
     @Override
-    protected void setPProjectionMatrix() {
+    protected void setP5ProjectionMatrix() {
       if (projMatrixOpt1)
         camera().computeProjectionMatrix();
       else {
@@ -129,7 +129,7 @@ public class Testing extends PApplet {
     }
 
     @Override
-    protected void setPModelViewMatrix() {
+    protected void setP5ModelViewMatrix() {
       if (modelviewMatrixOpt1)
         camera().computeModelViewMatrix();
       else {

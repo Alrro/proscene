@@ -16,14 +16,15 @@ public class CameraCrane extends PApplet {
 	public void setup() {
 		size(640, 720, P3D);
 		canvas = createGraphics(width, mainWinHeight, P3D);
-		scene = new Scene(this, (PGraphicsOpenGL) canvas);
+		scene = new Scene(this, (PGraphics3D) canvas);
 		scene.setGridIsDrawn(false);
 		// the drawing function is shared among the two scenes
 		scene.addDrawHandler(this, "drawing");
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		
 		auxCanvas = createGraphics(width, (height - canvas.height), P3D);
-		auxScene = new Scene(this, (PGraphicsOpenGL) auxCanvas);
+		auxScene = new Scene(this, (PGraphics3D) auxCanvas);
 		auxScene.setRadius(50);
 		auxScene.setGridIsDrawn(false);
 		// same drawing function which is defined below

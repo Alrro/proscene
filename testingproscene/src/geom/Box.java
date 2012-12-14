@@ -4,14 +4,14 @@ import remixlab.proscene.*;
 
 public class Box {
 	Scene scene;
-	PApplet parent;
+	PGraphics pg;
 	InteractiveFrame iFrame;
 	float w, h, d;
 	int c;
 	
 	public Box(Scene scn) {
 		scene = scn;
-		parent = scn.parent;
+		pg = scn.renderer();
 		iFrame = new InteractiveFrame(scn);
 		setSize();
 		setColor();		
@@ -23,7 +23,7 @@ public class Box {
 	}
 	
 	public void draw(boolean drawAxis) {
-		parent.pushMatrix();
+		pg.pushMatrix();
 		
 		//parent.applyMatrix( glIFrame.matrix() );
 		//Same as the previous commented line, but a lot more efficient:
@@ -32,21 +32,21 @@ public class Box {
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
 			scene.drawAxis(PApplet.max(w,h,d)*1.3f);
-		parent.noStroke();
+		pg.noStroke();
 		if (iFrame.grabsMouse())
-			parent.fill(255,0,0);
+			pg.fill(255,0,0);
 		else
-			parent.fill(getColor());
+			pg.fill(getColor());
 		//Draw a box		
-		parent.box(w,h,d);
+		pg.box(w,h,d);
 		
-		parent.popMatrix();
+		pg.popMatrix();
 	}
 	
-	public void setSize() {
-		w = parent.random(10, 40);
-		h = parent.random(10, 40);
-		d = parent.random(10, 40);
+	public void setSize() {		
+		w = scene.parent.random(10, 40);
+		h = scene.parent.random(10, 40);
+		d = scene.parent.random(10, 40);
 	}
 	
 	public void setSize(float myW, float myH, float myD) {
@@ -58,7 +58,7 @@ public class Box {
 	}
 	
 	public void setColor() {
-		c = parent.color(parent.random(0, 255), parent.random(0, 255), parent.random(0, 255));
+		c = scene.parent.color(scene.parent.random(0, 255), scene.parent.random(0, 255), scene.parent.random(0, 255));
 	}
 	
 	public void setColor(int myC) {
@@ -72,7 +72,7 @@ public class Box {
 	public void setPosition() {
 		float low = -100;
 		float high = 100;
-		iFrame.setPosition(new PVector(parent.random(low, high), parent.random(low, high), parent.random(low, high)));
+		iFrame.setPosition(new PVector(scene.parent.random(low, high), scene.parent.random(low, high), scene.parent.random(low, high)));
 	}
 	
 	public void setPosition(PVector pos) {
