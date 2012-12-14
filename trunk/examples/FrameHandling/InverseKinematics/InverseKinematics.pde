@@ -1,6 +1,6 @@
 /**
  * Kinematics.
- * by Juan Pablo Bonilla Gonzalez and Julián Durán. 
+ * by Juan Pablo Bonilla and Julián Durán. 
  * 
  * A example about kinematics for SCARA ROBOT
  * References: https://sites.google.com/site/proyectosroboticos/cinematica-inversa-i

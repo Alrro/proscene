@@ -60,7 +60,7 @@ import remixlab.proscene.Scene.MouseAction;
  * ({@link #unregister()} performs the inverse operation).
  * <p>
  * This class also provide some useful preset bindings which represents some common
- * "camera modes": ARCBALL, WHEELED_ARCBALL, CAD, FIRST_PERSON, THIRD_PERSON, and CUSTOM
+ * "camera modes": ARCBALL, CAD, FIRST_PERSON, THIRD_PERSON, and CUSTOM
  * (see {@link #mode()}). A CUSTOM camera profiles represents an empty set of camera and
  * keyboard shortcuts. Most of the methods of this class provide means to define
  * (or overwrite) custom (or preset bindings). Default keyboard shortcuts and mouse bindings
@@ -198,7 +198,7 @@ import remixlab.proscene.Scene.MouseAction;
  * {@link remixlab.proscene.Scene#setCurrentCameraProfile(CameraProfile)}, among others.
  * <p>
  * <b>Attention:</b> Every instantiated scene provides two camera profiles by default:
- * WHEELED_ARCBALL and FIRST_PERSON. If you define an
+ * ARCBALL and FIRST_PERSON. If you define an
  * {@link remixlab.proscene.Scene#avatar()} (for instance with 
  * {@link remixlab.proscene.Scene#setAvatar(Trackable)}) then you should register at
  * least one THIRD_PERSON camera profile to your Scene.
@@ -230,7 +230,7 @@ public class CameraProfile {
 	 * Main constructor.
 	 * <p>
 	 * This constructor takes the scene instance, the custom name of the camera profile
-	 * and an enum type defining its mode which can be: ARCBALL, WHEELED_ARCBALL, CAD,
+	 * and an enum type defining its mode which can be: ARCBALL, CAD,
 	 * FIRST_PERSON, THIRD_PERSON, CUSTOM.
 	 * <p>
 	 * If you define a {@link remixlab.proscene.Scene#avatar()} (for instance with 
@@ -263,13 +263,13 @@ public class CameraProfile {
 		
 		switch (mode) {
 		case ARCBALL:			
-			//setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+			//setCameraMouseBinding(Integer.LEFT.ID, Scene.MouseAction.ROTATE);
 			setCameraMouseBinding(PApplet.LEFT, Scene.MouseAction.ROTATE);
 			arcballDefaultShortcuts();
 			break;
 			/**
 		case WHEELED_ARCBALL:
-			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
+			setCameraMouseBinding(Integer.LEFT.ID, Scene.MouseAction.ROTATE);
 			arcballDefaultShortcuts();			
 			setCameraWheelBinding( MouseAction.ZOOM );
 			//should work only iFrame is an instance of drivable
@@ -277,21 +277,21 @@ public class CameraProfile {
 			break;
 			*/
 		case CAD:
-			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.CAD_ROTATE);
+			setCameraMouseBinding(PApplet.LEFT, Scene.MouseAction.CAD_ROTATE);
 			arcballDefaultShortcuts();
 			//setCameraWheelBinding( MouseAction.ZOOM );
 			//should work only iFrame is an instance of drivable
 			//setFrameWheelBinding( MouseAction.ZOOM );
 			break;
 		case FIRST_PERSON:
-			setCameraMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.MOVE_FORWARD);
-			setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.LOOK_AROUND);
-			setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.MOVE_BACKWARD);   		
-			setCameraMouseBinding(Scene.Modifier.SHIFT.ID, Scene.Button.LEFT.ID, Scene.MouseAction.ROLL);			
-			setCameraMouseBinding(Scene.Modifier.SHIFT.ID, Scene.Button.RIGHT.ID, Scene.MouseAction.DRIVE);
-			setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
-			setFrameMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
-			setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
+			setCameraMouseBinding(PApplet.LEFT, Scene.MouseAction.MOVE_FORWARD);
+			setCameraMouseBinding(PApplet.CENTER, Scene.MouseAction.LOOK_AROUND);
+			setCameraMouseBinding(PApplet.RIGHT, Scene.MouseAction.MOVE_BACKWARD);   		
+			setCameraMouseBinding(Event.SHIFT, PApplet.LEFT, Scene.MouseAction.ROLL);			
+			setCameraMouseBinding(Event.SHIFT, PApplet.RIGHT, Scene.MouseAction.DRIVE);
+			setFrameMouseBinding(PApplet.LEFT, Scene.MouseAction.ROTATE);
+			setFrameMouseBinding(PApplet.CENTER, Scene.MouseAction.ZOOM);
+			setFrameMouseBinding(PApplet.RIGHT, Scene.MouseAction.TRANSLATE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_CAMERA_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_CAMERA_FLY_SPEED);
@@ -300,11 +300,11 @@ public class CameraProfile {
 			setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 			break;
 		case THIRD_PERSON:
-			setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.MOVE_FORWARD);
-			setFrameMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.LOOK_AROUND);
-			setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.MOVE_BACKWARD);
-			setFrameMouseBinding(Scene.Modifier.SHIFT.ID, Scene.Button.LEFT.ID, Scene.MouseAction.ROLL);
-			setFrameMouseBinding(Scene.Modifier.SHIFT.ID, Scene.Button.RIGHT.ID, Scene.MouseAction.DRIVE);
+			setFrameMouseBinding(PApplet.LEFT, Scene.MouseAction.MOVE_FORWARD);
+			setFrameMouseBinding(PApplet.CENTER, Scene.MouseAction.LOOK_AROUND);
+			setFrameMouseBinding(PApplet.RIGHT, Scene.MouseAction.MOVE_BACKWARD);
+			setFrameMouseBinding(Event.SHIFT, PApplet.LEFT, Scene.MouseAction.ROLL);
+			setFrameMouseBinding(Event.SHIFT, PApplet.RIGHT, Scene.MouseAction.DRIVE);
 
 			setShortcut('+', Scene.CameraKeyboardAction.INCREASE_AVATAR_FLY_SPEED);
 			setShortcut('-', Scene.CameraKeyboardAction.DECREASE_AVATAR_FLY_SPEED);
@@ -324,19 +324,19 @@ public class CameraProfile {
 	 * Internal use. Called by the constructor by ARCBALL and WHEELED_ARCBALL modes.
 	 */
 	private void arcballDefaultShortcuts() {
-		setShortcut(Scene.Arrow.RIGHT.ID, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);		
-	  setShortcut(Scene.Arrow.LEFT.ID, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
+		setShortcut(PApplet.RIGHT, Scene.CameraKeyboardAction.MOVE_CAMERA_RIGHT);		
+	  setShortcut(PApplet.LEFT, Scene.CameraKeyboardAction.MOVE_CAMERA_LEFT);
 		setShortcut(PApplet.UP, Scene.CameraKeyboardAction.MOVE_CAMERA_UP);
 		setShortcut(PApplet.DOWN, Scene.CameraKeyboardAction.MOVE_CAMERA_DOWN);
 		
-		setCameraMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
-		setCameraMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
-		setFrameMouseBinding(Scene.Button.LEFT.ID, Scene.MouseAction.ROTATE);
-		setFrameMouseBinding(Scene.Button.MIDDLE.ID, Scene.MouseAction.ZOOM);
-		setFrameMouseBinding(Scene.Button.RIGHT.ID, Scene.MouseAction.TRANSLATE);
+		setCameraMouseBinding(PApplet.CENTER, Scene.MouseAction.ZOOM);
+		setCameraMouseBinding(PApplet.RIGHT, Scene.MouseAction.TRANSLATE);
+		setFrameMouseBinding(PApplet.LEFT, Scene.MouseAction.ROTATE);
+		setFrameMouseBinding(PApplet.CENTER, Scene.MouseAction.ZOOM);
+		setFrameMouseBinding(PApplet.RIGHT, Scene.MouseAction.TRANSLATE);
 
-		setCameraMouseBinding(Scene.Modifier.SHIFT.ID, Scene.Button.LEFT.ID, Scene.MouseAction.ZOOM_ON_REGION);		
-		setCameraMouseBinding(Scene.Modifier.SHIFT.ID, Scene.Button.RIGHT.ID, Scene.MouseAction.SCREEN_ROTATE);
+		setCameraMouseBinding(Event.SHIFT, PApplet.LEFT, Scene.MouseAction.ZOOM_ON_REGION);		
+		setCameraMouseBinding(Event.SHIFT, PApplet.RIGHT, Scene.MouseAction.SCREEN_ROTATE);
 
 		setShortcut('+', Scene.CameraKeyboardAction.INCREASE_ROTATION_SENSITIVITY);
 		setShortcut('-', Scene.CameraKeyboardAction.DECREASE_ROTATION_SENSITIVITY);
@@ -344,9 +344,9 @@ public class CameraProfile {
 		setShortcut('s', Scene.CameraKeyboardAction.INTERPOLATE_TO_FIT_SCENE);
 		setShortcut('S', Scene.CameraKeyboardAction.SHOW_ALL);
 		
-		setClickBinding(Scene.Button.LEFT, 2, ClickAction.ALIGN_CAMERA);
-		setClickBinding(Scene.Button.MIDDLE, 2, ClickAction.SHOW_ALL);
-		setClickBinding(Scene.Button.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
+		setClickBinding(PApplet.LEFT, 2, ClickAction.ALIGN_CAMERA);
+		setClickBinding(PApplet.CENTER, 2, ClickAction.SHOW_ALL);
+		setClickBinding(PApplet.RIGHT, 2, ClickAction.ZOOM_TO_FIT);
 	}
 	
   // 1. General stuff
@@ -411,7 +411,7 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
-		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers(), e.getButton() );
+		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers(), e.getButton() );	
 		if (camMouseAction == null)
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return camMouseAction;
@@ -590,8 +590,7 @@ public class CameraProfile {
 	/**
 	 * Defines a camera keyboard shortcut to bind the given action.
 	 * 
-	 * @param vKey coded key (such {@link remixlab.proscene.Scene.Arrow#UP}
-	 *             that defines the shortcut
+	 * @param vKey coded key (such PApplet.UP) that defines the shortcut
 	 * @param action action to be binded
 	 */
 	public void setShortcut(Integer vKey, CameraKeyboardAction action) {
@@ -649,8 +648,7 @@ public class CameraProfile {
 	/**
 	 * Removes the camera keyboard shortcut.
 	 * 
-	 * @param vKey coded key (such {@link remixlab.proscene.Scene.Arrow#UP}
-	 *             that defines the shortcut
+	 * @param vKey coded key (such PApplet.UP) that defines the shortcut
 	 */
 	public void removeShortcut(Integer vKey) {
 		keyboard.removeBinding(new KeyboardShortcut(vKey));
@@ -699,8 +697,7 @@ public class CameraProfile {
 	/**
 	 * Returns the action that is binded to the given camera keyboard shortcut.
 	 * 
-	 * @param vKey coded key (such {@link remixlab.proscene.Scene.Arrow#UP}
-	 *             that defines the shortcut
+	 * @param vKey coded key (such PApplet.UP) that defines the shortcut
 	 * @return action
 	 */
 	public CameraKeyboardAction shortcut(Integer vKey) {
@@ -747,8 +744,7 @@ public class CameraProfile {
 	/**
 	 * Returns true if the given camera keyboard shortcut binds an action.
 	 * 
-	 * @param vKey coded key (such {@link remixlab.proscene.Scene.Arrow#UP}
-	 *             that defines the shortcut
+	 * @param vKey coded key (such PApplet.UP) that defines the shortcut
 	 */
 	public boolean isKeyInUse(Integer vKey) {
 		return keyboard.isShortcutInUse(new KeyboardShortcut(vKey));
@@ -973,205 +969,214 @@ public class CameraProfile {
 	
 	// click wrappers:
 	
-	/**
-	 * Removes all camera mouse-click bindings.
-	 */
-	public void removeAllClickBindings() {
-		clickActions.removeAllBindings();
-	}
-	
-	/**
-	 * Returns true if the given binding binds a click-action.
-	 * 	
-	 * @param button binding
-	 */
-	public boolean isClickBindingInUse(Scene.Button button) {
-		return clickActions.isShortcutInUse(new ClickBinding(button));
-	}
-	
-	/**
-	 * Returns true if the given binding binds a click-action.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button button defining the binding
-	 */
-	public boolean isClickBindingInUse(Integer mask, Scene.Button button) {
-		return clickActions.isShortcutInUse(new ClickBinding(mask, button));
-	}
-	
-	/**
-	 * Returns true if the given binding binds a click-action.
-	 * 
-	 * @param button button defining the binding
-	 * @param nc number of clicks defining the binding
-	 */
-	public boolean isClickBindingInUse(Scene.Button button, Integer nc) {
-		return clickActions.isShortcutInUse(new ClickBinding(button, nc));
-	}
+  /**
+   * Removes all camera mouse-click bindings.
+   */
+  public void removeAllClickBindings() {
+  	clickActions.removeAllBindings();
+  }
+  
+  /**
+   * Returns true if the given binding binds a click-action.
+   *      
+   * @param button binding
+   */
+  public boolean isClickBindingInUse(Integer button) {
+          return clickActions.isShortcutInUse(new ClickBinding(button));
+  }
+  
+  /**
+   * Returns true if the given binding binds a click-action.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button button defining the binding
+   */
+  /**
+  public boolean isClickBindingInUse(Integer mask, Integer button) {
+          return clickActions.isShortcutInUse(new ClickBinding(mask, button));
+  }
+  */
+  
+  /**
+   * Returns true if the given binding binds a click-action.
+   * 
+   * @param button button defining the binding
+   * @param nc number of clicks defining the binding
+   */
+  public boolean isClickBindingInUse(Integer button, Integer nc) {
+          return clickActions.isShortcutInUse(new ClickBinding(button, nc));
+  }
 
-	/**
-	 * Returns true if the given binding binds a click-action.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button button defining the binding
-	 * @param nc number of clicks defining the binding
-	 */
-	public boolean isClickBindingInUse(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.isShortcutInUse(new ClickBinding(mask, button, nc)); 
-	}
+  /**
+   * Returns true if the given binding binds a click-action.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button button defining the binding
+   * @param nc number of clicks defining the binding
+   */
+  public boolean isClickBindingInUse(Integer mask, Integer button, Integer nc) {
+          return clickActions.isShortcutInUse(new ClickBinding(mask, button, nc)); 
+  }
 
-	/** 
-	 * Returns true if the given click-action is binded.
-	 */
-	public boolean isClickActionBinded(Scene.ClickAction action) {
-		return clickActions.isActionMapped(action);
-	}
-	
-	/**
-	 * Binds the click-action to the given binding.
-	 * 
-	 * @param button binding
-	 * @param action action to be binded
-	 */
-	public void setClickBinding(Scene.Button button, Scene.ClickAction action) {
-		if ( isClickBindingInUse(button) ) {
-			ClickAction a = clickBinding(button);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
-		}
-		clickActions.setBinding(new ClickBinding(button), action);
-	}
+  /** 
+   * Returns true if the given click-action is binded.
+   */
+  public boolean isClickActionBinded(Scene.ClickAction action) {
+          return clickActions.isActionMapped(action);
+  }
+  
+  /**
+   * Binds the click-action to the given binding.
+   * 
+   * @param button binding
+   * @param action action to be binded
+   */
+  public void setClickBinding(Integer button, Scene.ClickAction action) {
+          if ( isClickBindingInUse(button) ) {
+                  ClickAction a = clickBinding(button);
+                  PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+          }
+          clickActions.setBinding(new ClickBinding(button), action);
+  }
 
-	/**
-	 * Binds the click-action to the given binding.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button mouse button defining the binding
-	 * @param action action to be binded
-	 * 
-	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
-	 * reserved to emulate the right button of the mouse.
-	 */
-	public void setClickBinding(Integer mask, Scene.Button button, Scene.ClickAction action) {
-		if ( isClickBindingInUse(mask, button) ) {
-			ClickAction a = clickBinding(mask, button);
-			PApplet.println("Warning: overwritting bindings which was previously associated to " + a);
-		}
-		clickActions.setBinding(new ClickBinding(mask, button), action);
-	}
-	
-	/**
-	 * Binds the click-action to the given binding.
-	 * 
-	 * @param button mouse button defining the binding
-	 * @param nc number of clicks that defines the binding
-	 * @param action action to be binded
-	 */
-	public void setClickBinding(Scene.Button button, Integer nc, Scene.ClickAction action) {
-		if ( isClickBindingInUse(button, nc) ) {
-			ClickAction a = clickBinding(button, nc);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
-		}
-		clickActions.setBinding(new ClickBinding(button, nc), action);
-	}
+  /**
+   * Binds the click-action to the given binding.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button mouse button defining the binding
+   * @param action action to be binded
+   * 
+   * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+   * reserved to emulate the right button of the mouse.
+   */
+  /**
+  public void setClickBinding(Integer mask, Integer button, Scene.ClickAction action) {
+          if ( isClickBindingInUse(mask, button) ) {
+                  ClickAction a = clickBinding(mask, button);
+                  PApplet.println("Warning: overwritting bindings which was previously associated to " + a);
+          }
+          clickActions.setBinding(new ClickBinding(mask, button), action);
+  }
+  */
+  
+  /**
+   * Binds the click-action to the given binding.
+   * 
+   * @param button mouse button defining the binding
+   * @param nc number of clicks that defines the binding
+   * @param action action to be binded
+   */
+  public void setClickBinding(Integer button, Integer nc, Scene.ClickAction action) {
+          if ( isClickBindingInUse(button, nc) ) {
+                  ClickAction a = clickBinding(button, nc);
+                  PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+          }
+          clickActions.setBinding(new ClickBinding(button, nc), action);
+  }
 
-	/**
-	 * Binds the click-action to the given binding.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button mouse button defining the binding
-	 * @param nc number of clicks that defines the binding
-	 * @param action action to be binded
-	 * 
-	 * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
-	 * reserved to emulate the right button of the mouse.
-	 */
-	public void setClickBinding(Integer mask, Scene.Button button, Integer nc, Scene.ClickAction action) {
-		if ( isClickBindingInUse(mask, button, nc) ) {
-			ClickAction a = clickBinding(mask, button, nc);
-			PApplet.println("Warning: overwritting binding which was previously associated to " + a);
-		}
-		clickActions.setBinding(new ClickBinding(mask, button, nc), action);
-	}
-	
-	/**
-	 * Removes the mouse-click binding.
-	 * 
-	 * @param button binding
-	 */
-	public void removeClickBinding(Scene.Button button) {
-		clickActions.removeBinding(new ClickBinding(button));
-	}
+  /**
+   * Binds the click-action to the given binding.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button mouse button defining the binding
+   * @param nc number of clicks that defines the binding
+   * @param action action to be binded
+   * 
+   * <b>Attention:</b> Mac users should avoid using the CTRL modifier key, since its use is
+   * reserved to emulate the right button of the mouse.
+   */
+  public void setClickBinding(Integer mask, Integer button, Integer nc, Scene.ClickAction action) {
+          if ( isClickBindingInUse(mask, button, nc) ) {
+                  ClickAction a = clickBinding(mask, button, nc);
+                  PApplet.println("Warning: overwritting binding which was previously associated to " + a);
+          }
+          clickActions.setBinding(new ClickBinding(mask, button, nc), action);
+  }
+  
+  /**
+   * Removes the mouse-click binding.
+   * 
+   * @param button binding
+   */
+  public void removeClickBinding(Integer button) {
+          clickActions.removeBinding(new ClickBinding(button));
+  }
 
-	/**
-	 * Removes the mouse-click binding.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button mouse button defining the binding
-	 */
-	public void removeClickBinding(Integer mask, Scene.Button button) {
-		clickActions.removeBinding(new ClickBinding(mask, button));
-	}
-	
-	/**
-	 * Removes the mouse-click binding.
-	 * 
-	 * @param button mouse button defining the binding
-	 * @param nc number of clicks defining the binding
-	 */
-	public void removeClickBinding(Scene.Button button, Integer nc) {
-		clickActions.removeBinding(new ClickBinding(button, nc));
-	}
-	
-	/**
-	 * Removes the mouse-click binding.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button mouse button defining the binding
-	 * @param nc number of clicks defining the binding
-	 */
-	public void removeClickBinding(Integer mask, Scene.Button button, Integer nc) {
-		clickActions.removeBinding(new ClickBinding(mask, button, nc));
-	}
-	
-	/**
-	 * Returns the click-action associated to the given binding.
-	 * 
-	 * @param button binding
-	 */
-	public Scene.ClickAction clickBinding(Scene.Button button) {
-		return clickActions.binding(new ClickBinding(button));
-	}
+  /**
+   * Removes the mouse-click binding.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button mouse button defining the binding
+   */
+  /**
+  public void removeClickBinding(Integer mask, Integer button) {
+          clickActions.removeBinding(new ClickBinding(mask, button));
+  }
+  */
+  
+  /**
+   * Removes the mouse-click binding.
+   * 
+   * @param button mouse button defining the binding
+   * @param nc number of clicks defining the binding
+   */
+  public void removeClickBinding(Integer button, Integer nc) {
+          clickActions.removeBinding(new ClickBinding(button, nc));
+  }
+  
+  /**
+   * Removes the mouse-click binding.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button mouse button defining the binding
+   * @param nc number of clicks defining the binding
+   */
+  public void removeClickBinding(Integer mask, Integer button, Integer nc) {
+          clickActions.removeBinding(new ClickBinding(mask, button, nc));
+  }
+  
+  /**
+   * Returns the click-action associated to the given binding.
+   * 
+   * @param button binding
+   */
+  public Scene.ClickAction clickBinding(Integer button) {
+          return clickActions.binding(new ClickBinding(button));
+  }
 
-	/**
-	 * Returns the click-action associated to the given binding.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button mouse button defining the binding
-	 */
-	public Scene.ClickAction clickBinding(Integer mask, Scene.Button button) {
-		return clickActions.binding(new ClickBinding(mask, button));
-	}
-	
-	/**
-	 * Returns the click-action associated to the given binding.
-	 * 
-	 * @param button mouse button defining the binding
-	 * @param nc number of clicks defining the binding
-	 */
-	public Scene.ClickAction clickBinding(Scene.Button button, Integer nc) {
-		return clickActions.binding(new ClickBinding(button, nc));
-	}
+  /**
+   * Returns the click-action associated to the given binding.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button mouse button defining the binding
+   */
+  /**
+  public Scene.ClickAction clickBinding(Integer mask, Integer button) {
+          return clickActions.binding(new ClickBinding(mask, button));
+  }
+  */
+  
+  /**
+   * Returns the click-action associated to the given binding.
+   * 
+   * @param button mouse button defining the binding
+   * @param nc number of clicks defining the binding
+   */
+  public Scene.ClickAction clickBinding(Integer button, Integer nc) {
+          return clickActions.binding(new ClickBinding(button, nc));
+  }
 
-	/**
-	 * Returns the click-action associated to the given binding.
-	 * 
-	 * @param mask modifier mask defining the binding
-	 * @param button mouse button defining the binding
-	 * @param nc number of clicks defining the binding
-	 */
-	public Scene.ClickAction clickBinding(Integer mask, Scene.Button button, Integer nc) {
-		return clickActions.binding(new ClickBinding(mask, button, nc));
-	}
+  /**
+   * Returns the click-action associated to the given binding.
+   * 
+   * @param mask modifier mask defining the binding
+   * @param button mouse button defining the binding
+   * @param nc number of clicks defining the binding
+   */
+  public Scene.ClickAction clickBinding(Integer mask, Integer button, Integer nc) {
+          return clickActions.binding(new ClickBinding(mask, button, nc));
+  }
+  
 	
 	// wheel
 	//Camera Wheel

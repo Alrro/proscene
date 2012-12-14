@@ -6,7 +6,7 @@ public class ClickButton extends Button2D {
     addBox = addB;
   }
 
-  void mouseClicked(Scene.Button button, int numberOfClicks, Camera camera) {
+  void mouseClicked(Integer button, int numberOfClicks, Camera camera) {
     if(numberOfClicks == 1) {
       if(addBox)
         addBox();

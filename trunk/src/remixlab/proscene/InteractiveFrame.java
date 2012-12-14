@@ -828,18 +828,18 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabbable#mouseClicked(remixlab.proscene.Scene.Button, int, Camera)}.
+	 * {@link remixlab.proscene.MouseGrabbable#mouseClicked(Integer, int, Camera)}.
 	 * <p>
 	 * Left button double click aligns the InteractiveFrame with the camera axis (see {@link #alignWithFrame(Frame)}
 	 * and {@link remixlab.proscene.Scene.ClickAction#ALIGN_FRAME}). Right button projects the InteractiveFrame on
 	 * the camera view direction.
 	 */
-	public void mouseClicked(/**Point eventPoint,*/ Scene.Button button, int numberOfClicks, Camera camera) {
+	public void mouseClicked(/**Point eventPoint,*/ Integer button, int numberOfClicks, Camera camera) {
 		if(numberOfClicks != 2)
 			return;
 		switch (button) {
-		case LEFT:  alignWithFrame(camera.frame()); break;
-    case RIGHT: projectOnLine(camera.position(), camera.viewDirection()); break;
+		case PApplet.LEFT:  alignWithFrame(camera.frame()); break;
+    case PApplet.RIGHT: projectOnLine(camera.position(), camera.viewDirection()); break;
     default: break;
     }
 	}

@@ -8,7 +8,7 @@ public class ClickButton extends Button2D {
     sensitivity = sens;
   }
 
-  public void mouseClicked(Scene.Button button, int numberOfClicks, Camera camera) {
+  public void mouseClicked(Integer button, int numberOfClicks, Camera camera) {
     if (numberOfClicks == 1) {
       if (increase)
         ((MouseSensitivities)scene.parent).increaseSensitivity(sensitivity);

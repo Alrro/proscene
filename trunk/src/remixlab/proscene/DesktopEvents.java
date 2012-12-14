@@ -28,7 +28,6 @@ package remixlab.proscene;
 import processing.core.*;
 import processing.event.*;
 
-import remixlab.proscene.Scene.Button;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
 import remixlab.proscene.Scene.KeyboardAction;
@@ -214,10 +213,10 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	protected boolean keyReleasedKeyboardAction(KeyEvent e) {
 		// 1. Key-frames
 		// 1.1. Need to add a key-frame?
-		if (((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
+		if (((scene.addKeyFrameKeyboardModifier == Event.ALT) && (e.isAltDown()))
 	   /** || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isMetaDown())) */
-		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.CTRL) && (e.isControlDown()))
-		 || ((scene.addKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
+		 || ((scene.addKeyFrameKeyboardModifier == Event.CTRL) && (e.isControlDown()))
+		 || ((scene.addKeyFrameKeyboardModifier == Event.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
 			if (path != null) {
 				scene.camera().addKeyFrameToPath(path);
@@ -225,10 +224,10 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 			}
 		}
   	// 1.2. Need to delete a key-frame?
-		if (((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT) && (e.isAltDown()))
+		if (((scene.deleteKeyFrameKeyboardModifier == Event.ALT) && (e.isAltDown()))
 		 /** || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.ALT_GRAPH) && (e.isMetaDown())) */
-		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.CTRL) && (e.isControlDown()))
-		 || ((scene.deleteKeyFrameKeyboardModifier == Scene.Modifier.SHIFT) && (e.isShiftDown()))) {
+		 || ((scene.deleteKeyFrameKeyboardModifier == Event.CTRL) && (e.isControlDown()))
+		 || ((scene.deleteKeyFrameKeyboardModifier == Event.SHIFT) && (e.isShiftDown()))) {
 			Integer path = scene.path(e.getKeyCode());
 			if (path != null) {
 				scene.camera().deletePath(path);
@@ -284,13 +283,11 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
    * a binding for this click event, taking into account the button, the modifier mask, and
    * the number of clicks.
    */
-	protected void mouseClicked(MouseEvent event) {
-		Button button = getButton(event);
-		int numberOfClicks = event.getClickCount();
+	protected void mouseClicked(MouseEvent event) {		
 		if (scene.mouseGrabber() != null)
-			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ button, numberOfClicks, scene.camera());
+			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ event.getButton(), event.getClickCount(), scene.camera());
 		else {
-			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiers(), button, numberOfClicks);
+			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiers(), event.getButton(), event.getClickCount());
 			if (ca != null)
 				scene.handleClickAction(ca);
 		}		
@@ -300,7 +297,7 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	 * {@link remixlab.proscene.Scene#setMouseGrabber(MouseGrabbable)} to the MouseGrabber that grabs the
 	 * mouse (or to {@code null} if none of them grab it).
 	 */
-	public void mouseMoved(MouseEvent e) {
+	public void mouseMoved(MouseEvent e) {		
 		Point event = new Point((e.getX() - scene.upperLeftCorner.getX()), (e.getY() - scene.upperLeftCorner.getY()));
 		scene.setMouseGrabber(null);
 		if( scene.hasMouseTracking() )
@@ -310,7 +307,7 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 					scene.setMouseGrabber(mg);
 			}
 		if ((scene.currentCameraProfile().mode() == CameraProfile.Mode.FIRST_PERSON) &&
-				(getButton(e) ==  null) && 
+				/**( (e.getButton() != PApplet.LEFT) && (e.getButton() != PApplet.CENTER) && (e.getButton() != PApplet.RIGHT) ) &&*/ 
 				(scene.cursorIsHiddenOnFirstPerson()) ) {
 			scene.camera().frame().startAction(Scene.MouseAction.LOOK_AROUND, scene.drawIsConstrained());
 			scene.camera().frame().mouseDragged(event, scene.camera());
@@ -566,6 +563,10 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
         case 88: result = "x"; break;
         case 89: result = "y"; break;
         case 90: result = "z"; break;
+        case PApplet.LEFT: result = "LEFT"; break;
+        case PApplet.RIGHT: result = "RIGHT"; break;
+        case PApplet.UP: result = "UP"; break;
+        case PApplet.DOWN: result = "DOWN"; break;
         default: result = "Unrecognized key";
                  break;                 
     }
@@ -580,25 +581,4 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 		if((Event.META & mask) == Event.META) r += (r.length() > 0) ? "+META" : "META";
 		return r;
 	}	
-	
-	/**
-	 * Internal use.
-	 * <p>
-	 * Utility function that gets the Scene.Button from this MouseEvent.
-	 */
-	protected static Button getButton(MouseEvent e) {		
-		Button button = null;
-		switch (e.getButton()) {
-		case PApplet.LEFT: // left button
-			button = Button.LEFT;
-			break;
-		case PApplet.CENTER: // middle button
-			button = Button.MIDDLE;
-			break;
-		case PApplet.RIGHT: // right button
-			button = Button.RIGHT;
-			break;		
-		}
-		return button;
-	}
 }
