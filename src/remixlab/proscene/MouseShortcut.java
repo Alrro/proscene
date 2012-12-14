@@ -122,14 +122,7 @@ public final class MouseShortcut {
 	 */
 	protected String description(MouseEvent e) {
 		return description(e.getButton());
-	}
-	
-	/**
-	 * Internal convenience funtion.
-	 */
-	protected String description(Scene.Button b) {
-		return description(b.ID);
-	}
+	}	
 
 	protected final Integer mask;
 	protected final Integer button;

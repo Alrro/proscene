@@ -323,91 +323,10 @@ public class Scene implements PConstants {
     }
 	}
 
-	/**
-	 * Constants associated to the different mouse buttons which follow java conventions.
-	 */
-	public enum Button {
-		// values correspond to: BUTTON1_DOWN_MASK, BUTTON2_DOWN_MASK and BUTTON3_DOWN_MASK
-		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		//LEFT(1024), MIDDLE(2048), RIGHT(4096);
-		//Sames as P5:
-		LEFT(PApplet.LEFT), MIDDLE(PApplet.CENTER), RIGHT(PApplet.RIGHT);
-		public final int ID;
-    Button(int code) {
-    	this.ID = code;
-    }    
-    //The following code works but is considered overkill :)
-    /**
-    public int id() { return ID; }
-    private static final Map<Integer,Button> lookup = new HashMap<Integer,Button>();
-    static {
-    	for(Button s : EnumSet.allOf(Button.class))
-         lookup.put(s.id(), s);
-    }
-    public static Button get(int code) { 
-      return lookup.get(code);
-    }
-    // */
-	}
-
-	/**
-	 * Constants associated to the different arrow keys. Taken from Processing constants 
-	 * (which follows java conventions). 
-	 */	
-	public enum Arrow {		
-		// taken from http://docs.oracle.com/javase/6/docs/api/constant-values.html
-		//UP(38), DOWN(40), LEFT(37), RIGHT(39);
-		// currently P5 values are the same:
-		UP(PApplet.UP), DOWN(PApplet.DOWN), LEFT(PApplet.LEFT), RIGHT(PApplet.RIGHT);
-		public final int ID;
-    Arrow(int code) {
-    	this.ID = code;
-    }
-    //The following code works but is considered overkill :)
-    /**
-    public int id() { return ID; }
-    private static final Map<Integer,Arrow> lookup = new HashMap<Integer,Arrow>();
-    static {
-    	for(Arrow s : EnumSet.allOf(Arrow.class))
-         lookup.put(s.id(), s);
-    }
-    public static Arrow get(int code) { 
-      return lookup.get(code);
-    }
-    // */
-	}
-
-	/**
-	 * Constants associated to the different modifier keys which follow java conventions.
-	 */
-	public enum Modifier {
-		// values correspond to: ALT_DOWN_MASK, SHIFT_DOWN_MASK, CTRL_DOWN_MASK, META_DOWN_MASK, ALT_GRAPH_DOWN_MASK
-		// see: http://download-llnw.oracle.com/javase/6/docs/api/constant-values.html
-		//ALT(512), SHIFT(64), CTRL(128), META(256), ALT_GRAPH(8192);		
-		// P5 values are different:
-		ALT(Event.ALT), SHIFT(Event.SHIFT), CTRL(Event.CTRL), META(Event.META) /**, ALT_GRAPH(8192)*/;
-		public final int ID;
-		Modifier(int code) {
-      this.ID = code;
-    }
-    //The following code works but is considered overkill :)
-    /**
-    public int id() { return ID; }
-    private static final Map<Integer,Modifier> lookup = new HashMap<Integer,Modifier>();
-    static {
-    	for(Modifier s : EnumSet.allOf(Modifier.class))
-         lookup.put(s.id(), s);
-    }
-    public static Modifier get(int code) {
-      return lookup.get(code);
-    }
-    // */
-	}
-
 	// K E Y F R A M E S
 	protected Bindings<Integer, Integer> pathKeys;
-	protected Modifier addKeyFrameKeyboardModifier;
-	protected Modifier deleteKeyFrameKeyboardModifier;
+	protected Integer addKeyFrameKeyboardModifier;
+	protected Integer deleteKeyFrameKeyboardModifier;
 
 	// S h o r t c u t k e y s
 	protected Bindings<KeyboardShortcut, KeyboardAction> gProfile;
@@ -3049,8 +2968,8 @@ public class Scene implements PConstants {
 		setShortcut('r', KeyboardAction.EDIT_CAMERA_PATH);
 
 		// K e y f r a m e s s h o r t c u t k e y s
-		setAddKeyFrameKeyboardModifier(Modifier.CTRL);
-		setDeleteKeyFrameKeyboardModifier(Modifier.ALT);
+		setAddKeyFrameKeyboardModifier(Event.CTRL);
+		setDeleteKeyFrameKeyboardModifier(Event.ALT);
 		setPathKey('1', 1);
 		setPathKey('2', 2);
 		setPathKey('3', 3);
@@ -3165,7 +3084,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @param modifier
 	 */
-	public void setAddKeyFrameKeyboardModifier(Modifier modifier) {
+	public void setAddKeyFrameKeyboardModifier(Integer modifier) {
 		addKeyFrameKeyboardModifier = modifier;
 	}
 
@@ -3174,7 +3093,7 @@ public class Scene implements PConstants {
 	 * 
 	 * @param modifier
 	 */
-	public void setDeleteKeyFrameKeyboardModifier(Modifier modifier) {
+	public void setDeleteKeyFrameKeyboardModifier(Integer modifier) {
 		deleteKeyFrameKeyboardModifier = modifier;
 	}
 
@@ -3621,8 +3540,8 @@ public class Scene implements PConstants {
 		
 		for (Entry<Integer, Integer> entry : pathKeys.map.entrySet())
 			description += DesktopEvents.getKeyText(entry.getKey()) + " -> plays camera path " + entry.getValue().toString() + "\n";
-		description += DesktopEvents.getModifiersText(addKeyFrameKeyboardModifier.ID) + " + one of the above keys -> adds keyframe to the camera path \n";
-		description += DesktopEvents.getModifiersText(deleteKeyFrameKeyboardModifier.ID) + " + one of the above keys -> deletes the camera path \n";
+		description += DesktopEvents.getModifiersText(addKeyFrameKeyboardModifier) + " + one of the above keys -> adds keyframe to the camera path \n";
+		description += DesktopEvents.getModifiersText(deleteKeyFrameKeyboardModifier) + " + one of the above keys -> deletes the camera path \n";
 		
 		return description;		
 	}

@@ -25,15 +25,13 @@
 
 package remixlab.proscene;
 
-import remixlab.proscene.Scene.Button;
-
 /**
  * Base class for mouse grabbers objects that implements the MouseGrabbable interface.
  * <p>
  * If you want to implement your own MouseGrabber objects you should derive from this
  * class (instead of implementing the MouseGrabbable interface), and implement the
  * {@link #checkIfGrabsMouse(int, int, Camera)} method and some of the provided
- * callback methods, such {@link #mouseClicked(Scene.Button, int, Camera)} and/or
+ * callback methods, such {@link #mouseClicked(Integer, int, Camera)} and/or
  * {@link #mouseWheelMoved(int, Camera)}. 
  * <p>
  * <b>Note:</b> The InteractiveFrame object implements the MouseGrabbable interface.
@@ -75,7 +73,7 @@ public class MouseGrabber implements MouseGrabbable {
 	 * <p>
 	 * Current implementation is empty.
 	 */
-	public void mouseClicked(Button button, int numberOfClicks, Camera camera) { }
+	public void mouseClicked(Integer button, int numberOfClicks, Camera camera) { }
 
 	/**
 	 * Callback method called when the MouseGrabber {@link #grabsMouse()} and the

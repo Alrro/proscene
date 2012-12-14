@@ -26,13 +26,13 @@ void setup() {
   CameraProfile [] camProfiles = scene.getCameraProfiles();
   for (int i=0; i<camProfiles.length; i++) {
     // left click will zoom on pixel:
-    camProfiles[i].setClickBinding( Scene.Button.LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
+    camProfiles[i].setClickBinding( LEFT, Scene.ClickAction.ZOOM_ON_PIXEL );
     // middle click will show all the scene:
-    camProfiles[i].setClickBinding( Scene.Button.MIDDLE, Scene.ClickAction.SHOW_ALL);
+    camProfiles[i].setClickBinding( CENTER, Scene.ClickAction.SHOW_ALL);
     // right click will will set the arcball reference point:
-    camProfiles[i].setClickBinding( Scene.Button.RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
+    camProfiles[i].setClickBinding( RIGHT, Scene.ClickAction.ARP_FROM_PIXEL );
     // double click with the middle button while pressing SHIFT will reset the arcball reference point:
-    camProfiles[i].setClickBinding( Scene.Modifier.SHIFT.ID, Scene.Button.MIDDLE, 2, Scene.ClickAction.RESET_ARP );
+    camProfiles[i].setClickBinding( Event.SHIFT, CENTER, 2, Scene.ClickAction.RESET_ARP );
   }	  
 
   scene.setGridIsDrawn(false);

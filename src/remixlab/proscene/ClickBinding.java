@@ -25,6 +25,8 @@
 
 package remixlab.proscene;
 
+import processing.core.PApplet;
+
 /**
  * This class represents mouse click shortcuts.
  * <p>
@@ -32,15 +34,14 @@ package remixlab.proscene;
  * and can be of one out of two forms: 1. A mouse button; and, 2. A mouse
  * button plus a key-modifier (such as the CTRL key).
  */
-public class ClickBinding {	
+public class ClickBinding {
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((button == null) ? 0 : button.hashCode());
 		result = prime * result + ((mask == null) ? 0 : mask.hashCode());
-		result = prime * result
-				+ ((numberOfClicks == null) ? 0 : numberOfClicks.hashCode());
+		result = prime * result	+ ((numberOfClicks == null) ? 0 : numberOfClicks.hashCode());
 		return result;
 	}
 
@@ -69,39 +70,42 @@ public class ClickBinding {
 		} else if (!numberOfClicks.equals(other.numberOfClicks))
 			return false;
 		return true;
-	}
-
-	/**
-	 * Defines a mouse single click shortcut from the given mouse button. 
-	 * 
-	 * @param b mouse button
-	 */
-	public ClickBinding(Scene.Button b) {
-		this(0, b, 1);
-	}
+	}	
 	
-	/**
-	 * Defines a mouse single click shortcut from the given mouse button
-	 * and modifier mask.
-	 * 	
-	 * @param m modifier mask
-	 * @param b mouse button
-	 */
-	public ClickBinding(Integer m, Scene.Button b) {
-		this(m, b, 1);
-	}
+  /**
+   * Defines a mouse single click shortcut from the given mouse button. 
+   * 
+   * @param b mouse button
+   */
+  public ClickBinding(Integer b) {
+  	this(0, b, 1);
+  }
+  
+  /**
+   * Defines a mouse single click shortcut from the given mouse button
+   * and modifier mask.
+   *      
+   * @param m modifier mask
+   * @param b mouse button
+   */
+  /**
+  public ClickBinding(Integer m, Integer b) {
+  	this(m, b, 1);
+  }
+  */
+  
+  /**
+   * Defines a mouse click shortcut from the given mouse button and
+   * number of clicks. 
+   * 
+   * @param b mouse button
+   * @param c number of clicks
+   */
+  public ClickBinding(Integer b, Integer c) {
+  	this(0, b, c);
+  }
 	
-	/**
-	 * Defines a mouse click shortcut from the given mouse button and
-	 * number of clicks. 
-	 * 
-	 * @param b mouse button
-	 * @param c number of clicks
-	 */
-	public ClickBinding(Scene.Button b, Integer c) {
-		this(0, b, c);
-	}
-	
+		
 	/**
 	 * Defines a mouse click shortcut from the given mouse button,
 	 * modifier mask, and number of clicks.
@@ -110,7 +114,7 @@ public class ClickBinding {
 	 * @param b mouse button
 	 * @param c bumber of clicks
 	 */
-	public ClickBinding(Integer m, Scene.Button b, Integer c) {
+	public ClickBinding(Integer m, Integer b, Integer c) {
 		this.mask = m;
 		this.button = b;
 		if(c <= 0)
@@ -129,13 +133,13 @@ public class ClickBinding {
 		if(mask != 0)
 			description += DesktopEvents.getModifiersText(mask) + " + ";
 		switch (button) {
-		case LEFT :
+		case PApplet.LEFT :
 			description += "LEFT_BUTTON";
 			break;
-		case MIDDLE :
+		case PApplet.CENTER :
 			description += "MIDDLE_BUTTON";
 			break;
-		case RIGHT :
+		case PApplet.RIGHT :
 			description += "RIGHT_BUTTON";
 			break;		
 		}
@@ -148,5 +152,5 @@ public class ClickBinding {
 	
 	private final Integer mask;
 	private final Integer numberOfClicks;
-	private final Scene.Button button;
+	private final Integer button;
 }

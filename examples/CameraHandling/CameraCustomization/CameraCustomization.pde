@@ -30,7 +30,7 @@ void setup() {
   // change interaction between camera an interactive frame:
   scene.setShortcut('f', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
   // draw frame selection hint
-  scene.setShortcut(Scene.Modifier.ALT.ID, 'i', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+  scene.setShortcut(Event.ALT, 'i', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
   // change the camera projection
   scene.setShortcut('z', Scene.KeyboardAction.CAMERA_TYPE);
 
