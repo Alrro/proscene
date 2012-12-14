@@ -1193,36 +1193,27 @@ public class Scene implements PConstants {
 	public void pre() {
 		if (isOffscreen()) return;
 		
-		// handle possible resize events
-		// weird: we need to bypass the handling of a resize event when running the applet from eclipse		
-		if ((parent.frame != null) && (parent.frame.isResizable())) {
-			if ((width != pg3d.width) || (height != pg3d.height)) {
-				width = pg3d.width;
-				height = pg3d.height;
-				// weirdly enough we need to bypass what processing does
-				// to the matrices when a resize event takes place
+		if ((width != pg3d.width) || (height != pg3d.height)) {
+			boolean needRetach = false;
+			width = pg3d.width;
+			height = pg3d.height;
+			// weirdly enough we need to bypass what processing does
+			// to the matrices when a resize event takes place
+			if(camera().isAttachedToP5Camera()) {
 				camera().detachFromP5Camera();
-				camera().setScreenWidthAndHeight(width, height);
-				camera().attachToP5Camera();
+				needRetach = true;
+			}			
+			camera().setScreenWidthAndHeight(width, height);
+			if( needRetach ) camera().attachToP5Camera();
 			} else {
-				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-						&& (!camera().anyInterpolationIsStarted())) {
+				if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON) && (!camera().anyInterpolationIsStarted())) {
 					camera().setPosition(avatar().cameraPosition());
 					camera().setUpVector(avatar().upVector());
 					camera().lookAt(avatar().target());
 				}
 				bindMatrices();
 			}
-		} else {
-			if ((currentCameraProfile().mode() == CameraProfile.Mode.THIRD_PERSON)
-					&& (!camera().anyInterpolationIsStarted())) {
-				camera().setPosition(avatar().cameraPosition());
-				camera().setUpVector(avatar().upVector());
-				camera().lookAt(avatar().target());
-			}
-			bindMatrices();			
-		}			
-
+		
 		if (frustumEquationsUpdateIsEnable())
 			camera().updateFrustumEquations();
 	}
