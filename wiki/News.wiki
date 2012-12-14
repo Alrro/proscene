@@ -1,5 +1,21 @@
 #summary Wiki page containing all the project news.
 
+=6/12/2012 *Proscene v1.2.0-alpha4 (a.k.a. v-1.1.95)* "Ibagué dream" released=
+
+----
+
+*11/12/12 Important notice*: Please bear in mind that this release *will not work* with *Processing-2.0-beta7* due to important [https://forum.processing.org/topic/using-2-0b7-p3d-with-contributed-libraries changes introduced to the new event model]. We hope to fix it soon, once we gather more information about it. Please stay tuned...
+
+----
+
+We are pleased to announce the immediate availability of *proscene v1.2.0-alpha4*, supporting *Processing-2.0-beta6*. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.95.zip here] and install it manually by yourself.
+
+This release introduces the ability to set the scene as _left-handed_ (as within *Processing* by default) or _right handed_, see `scene.setLeftHanded()` and `scene.setRightHanded()`, respectively (check also the *CadCamera* example). This release also includes various more of [http://www.alcys.com/ Jacques Maire] fantastic sketches, some of which may also be found at the [http://www.openprocessing.org/classroom/1158 OpenProcessing Proscene Classroom]. These new sketches are found under the *Geometry*, *Quaternions*, and *Shapes* categories of the examples. Finally, thanks to Juan Pablo Bonilla and Julián Durán for the new *InverseKinematics* example which is found under the *FrameHandling* category.
+
+This release completes all of the new features which are expected to be part of the *proscene-v1.2* cycle, and thus it (hopefully) will be the last alpha. As usual, suggestions and bug reports are more than welcome.
+
+Users of *Processing 1.5.x* may download [http://proscene.googlecode.com/files/proscene-1.1.1.zip Proscene (v1.1.1)] which is the last version supporting it.
+
 =9/11/2012 Release of *Proscene v1.2.0-alpha3 (a.k.a. v-1.1.94)*=
 
 We are pleased to announce the immediate availability of *proscene v1.2.0-alpha3*, supporting the recent *Processing-2.0-beta6* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.94.zip here] and install it manually by yourself.
