@@ -3,7 +3,7 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
 	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/remixcam.jar" sourcepath="/home/pierre/Dropbox/workspace/remixcam/src"/>
-	<classpathentry kind="lib" path="/home/pierre/workspace/libs/p5-2b/jar/core.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/joglhead"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/p5-2b"/>
+	<classpathentry kind="lib" path="/home/pierre/workspace/libs/all/controlP5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

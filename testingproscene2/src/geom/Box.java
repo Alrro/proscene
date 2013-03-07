@@ -10,6 +10,13 @@ public class Box {
 	float w, h, d;
 	int c;
 	
+	public Box(Scene scn, InteractiveFrame iF) {
+		scene = scn;
+		iFrame = iF;
+		setSize();
+		setColor();		
+	}
+	
 	public Box(Scene scn) {
 		scene = scn;
 		iFrame = new InteractiveFrame(scn);
@@ -34,7 +41,7 @@ public class Box {
 		scene.pg3d.applyMatrix(pM3d);
 		*/				
 		//Same as the previous commented lines, but a lot more efficient:
-		iFrame.applyTransformation();
+		iFrame.applyWorldTransformation();
 		
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);

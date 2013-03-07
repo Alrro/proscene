@@ -44,9 +44,9 @@ public class FrameInterpolation extends PApplet {
 	    keyFrame[i].setPosition(-100 + 200*i/(nbKeyFrames-1), 0, 0);
 	    
 	    if(i == nbKeyFrames-2)
-	    	keyFrame[i].setScaling(1, -1, 1);
+	    	//keyFrame[i].setScaling(1, -1, 1);
 	    	//keyFrame[i].setScaling(-1, 1, 1);
-	    	//keyFrame[i].setScaling(-1, -1, 1);
+	    	keyFrame[i].setScaling(-1, -1, 1);
 	    	//keyFrame[i].setScaling(-1, -1, -1);
 	    
 	    kfi.addKeyFrame(keyFrame[i]);

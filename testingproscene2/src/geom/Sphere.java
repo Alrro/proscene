@@ -11,6 +11,13 @@ public class Sphere {
 	float r;
 	int c;
 	
+	public Sphere(Scene scn, InteractiveFrame iF) {
+		scene = scn;
+		parent = scn.parent;
+		iFrame = iF;
+		setRadius(10);
+	}
+	
 	public Sphere(Scene scn) {
 		scene = scn;
 		parent = scn.parent;

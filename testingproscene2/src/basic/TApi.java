@@ -8,7 +8,8 @@ import remixlab.remixcam.constraints.*;
 import geom.Box;
 import geom.Sphere;
 
-public class TestApi extends PApplet {
+public class TApi extends PApplet {
+	private static final long serialVersionUID = 1L;
 	Scene scene;
 	InteractiveFrame f1, f2, f3, f4, f5;
 	Vector3D v, p;
@@ -92,7 +93,7 @@ public class TestApi extends PApplet {
 		//scene.camera().frame().updateFlyUpVector();		
 		//drawPrimitives(color(255));
 		
-		drawLine();
+		//drawLine();
 	    
 		/**
 		pushMatrix();		
@@ -162,7 +163,7 @@ public class TestApi extends PApplet {
 		drawArrow(f2, res);
 		// */
 		
-		/**
+		// /**
 		// f3 -> f4
 		res = f4.coordinatesOfFrom(p, f3);
 		drawArrow(f4, res);
@@ -187,8 +188,8 @@ public class TestApi extends PApplet {
 		drawArrow(f2, res);
 		// */
 		
-		/**
-		res = f2.transformOfFrom(res, f1);
+		// /**
+		res = f2.transformOfFrom(res, f4);
 		drawArrow(f2, res);
 		// */
 	}
@@ -367,106 +368,5 @@ public class TestApi extends PApplet {
 		println("zFar: " + scene.camera().zFar());
 		println("cam mag: " + scene.camera().frame().magnitude());
 	}
-	
-	public class TestIFrame extends InteractiveFrame {
-		public TestIFrame(AbstractScene scn) {
-			super(scn);
-		}
-		
-		@Override			
-		protected void deviceDragged3D(Point eventPoint, Camera camera) {
-			int deltaY = 0;
-			if(action != AbstractScene.MouseAction.NO_MOUSE_ACTION) {
-				deltaY = (int) (prevPos.y - eventPoint.y);//as it were LH
-				if( scene.isRightHanded() )
-					deltaY = -deltaY;
-			}
-			switch (action) {
-			case ROTATE: {
-				Vector3D trans = camera.projectedCoordinatesOf(position());
-				Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y, trans.x(), trans.y(), camera);
-				rot = iFrameQuaternion(rot, camera);
-				computeMouseSpeed(eventPoint);
-				setSpinningQuaternion(rot);
-				//drawSpinningQuaternion();
-				spin();
-				prevPos = eventPoint;
-				break;
-			}
-			default: {
-				super.deviceDragged3D(eventPoint, camera);
-			}
-			}
-		}
-		
-		@Override
-		protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy, Camera camera) {			
-			// Points on the deformed ball
-            float px = rotationSensitivity() *                         ((int)prevPos.x - cx)                           / camera.screenWidth();
-            float py = rotationSensitivity() * (scene.isLeftHanded() ? ((int)prevPos.y - cy) : ( cy - (int)prevPos.y)) / camera.screenHeight();
-            float dx = rotationSensitivity() *                         (x - cx)             / camera.screenWidth();
-            float dy = rotationSensitivity() * (scene.isLeftHanded() ? (y - cy) : (cy - y)) / camera.screenHeight();
 
-			Vector3D p1 = new Vector3D(px, py, projectOnBall(px, py));
-			Vector3D p2 = new Vector3D(dx, dy, projectOnBall(dx, dy));
-			// Approximation of rotation angle Should be divided by the projectOnBall size, but it is 1.0
-			Vector3D axis = p2.cross(p1);
-			float angle = 2.0f * (float) Math.asin((float) Math.sqrt(axis.squaredNorm() / p1.squaredNorm() / p2.squaredNorm()));			
-			return new Quaternion(axis, angle);
-		}
-		
-		/**
-		protected Quaternion iFrameQuaternion(Quaternion rot, Camera camera) {
-			Vector3D trans = new Vector3D();	
-			boolean twist = false;
-			
-			trans = rot.axis();
-			trans = transformOfFrom(trans, camera.frame());
-			
-			Vector3D res = new Vector3D(trans);			
-			// perform conversion			
-			if (scaling().x() < 0 )	res.x(-trans.x());
-			if (scaling().y() < 0 )	res.y(-trans.y());
-			if (scaling().z() < 0 )	res.z(-trans.z());
-			
-			if(referenceFrame() != null)
-				twist = (  referenceFrame().magnitude().x()
-						 * referenceFrame().magnitude().y()
-						 * referenceFrame().magnitude().z()
-						 < 0);
-			
-			return new Quaternion(res, twist ? rot.angle() : -rot.angle());						
-		}*/
-		
-		public void drawSpinningQuaternion() {
-			if(spinningQuaternion()== null)
-				return;
-			Vector3D axis = ((Quaternion)spinningQuaternion()).axis();			
-			axis = Vector3D.mult(axis, 60);
-			((Scene)scene).pg3d().pushStyle();
-			((Scene)scene).pg3d().pushMatrix();
-			applyWorldTransformation();
-			
-			((Scene)scene).pg3d().noStroke();
-			((Scene)scene).pg3d().fill(color(0, 126, 255, 10));			
-			((Scene)scene).pg3d().sphere(50);
-			
-			((Scene)scene).pg3d().stroke(255,0,0);
-			((Scene)scene).pg3d().strokeWeight(4);
-			((Scene)scene).pg3d().line(0,0,0, axis.x(), axis.y(), axis.z());
-						
-			((Scene)scene).pg3d().popMatrix();
-			((Scene)scene).pg3d().popStyle();
-		}
-		
-		@Override
-		public final void setSpinningQuaternion(Orientable spinningQuaternion) {
-			spngQuat = spinningQuaternion;
-			/**
-			if(this.scaling().x() < 0) ((Quaternion)spngQuat).quat[0] *= -1;
-			if(this.scaling().y() < 0) ((Quaternion)spngQuat).quat[1] *= -1;
-			if(this.scaling().z() < 0) ((Quaternion)spngQuat).quat[2] *= -1;
-			// */			
-		}
-	}
 }

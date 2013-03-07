@@ -160,7 +160,7 @@ public class Combo extends PApplet {
 		}
 	}
 	
-	public void printFrame(VFrame frame) {
+	public void printFrame(GeomFrame frame) {
 		println("Translation: " + frame.translation());
 		println("Angle: " + frame.rotation().angle());
 		println("Scaling: " + frame.scaling());

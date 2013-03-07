@@ -28,7 +28,7 @@ public class HeliCam {
 	    }
 
 	    frameArray[4] = new InteractiveFrame(parent.mainScene);
-	    // set the propeller's refecence frame as the body of the heli
+	    // set the propeller's reference frame as the body of the heli
 	    frame(4).setReferenceFrame(frame(0));
 
 	    // Initialize frames

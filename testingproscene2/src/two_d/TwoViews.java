@@ -76,6 +76,26 @@ public class TwoViews extends PApplet {
 	}
 	
 	public void keyPressed() {
+		if(key == 'w') {
+			if(scene.isRightHanded())
+				scene.setLeftHanded();			
+			else
+				scene.setRightHanded();
+			if(scene.isRightHanded())
+				println("Scene is RIGHT handed");
+			else
+				println("Scene is LEFT handed");
+		}
+		if(key == 'W') {
+			if(auxScene.isRightHanded())
+				auxScene.setLeftHanded();			
+			else
+				auxScene.setRightHanded();
+			if(auxScene.isRightHanded())
+				println("auxScene is RIGHT handed");
+			else
+				println("auxScene is LEFT handed");
+		}
 		if(key == 'u' || key== 'U' ) {
 			println("projection matrix:");
 			scene.viewWindow().projection().print();

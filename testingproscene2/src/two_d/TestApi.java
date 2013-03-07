@@ -37,14 +37,14 @@ public class TestApi extends PApplet {
 		f3.translate(15, 20);
 		f3.rotate(new Rotation(-HALF_PI));
 		//f3.scale(1, 1.5f);
-		f3.scale(1.5f, 1f);
+		f3.scale(-1.5f, -1f);
 		
 		f4 = new InteractiveFrame(scene);
 		f4.setReferenceFrame(f2);
 		f4.translate(20, 15);
 		f4.rotate(new Rotation(QUARTER_PI));
 		//f4.scale(1.4f, 0.5f);
-		f4.scale(1.4f, 0.5f);
+		f4.scale(1.4f, -0.5f);
 		
 		scene.setRadius(200);
 		scene.showAll();
@@ -134,7 +134,7 @@ public class TestApi extends PApplet {
 		drawArrow(null, vec);
 	}
 	
-	public void drawArrow(VFrame frame, Vector3D vec) {		
+	public void drawArrow(GeomFrame frame, Vector3D vec) {		
 		if(frame != null) {
 			pushMatrix();
 			// Multiply matrix to get in the frame coordinate system.
@@ -153,6 +153,12 @@ public class TestApi extends PApplet {
 			stroke(0,255,255);
 			line(0, 0, vec.x(), vec.y());
 			popStyle();
+		}
+	}
+	
+	public void keyPressed() { 
+		if (key == 'v' || key == 'V') {
+			scene.viewWindow().flip();
 		}
 	}
 }

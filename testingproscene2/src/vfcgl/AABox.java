@@ -6,13 +6,13 @@ import remixlab.proscene.*;
 
 public class AABox {
 	Scene scene;
-	VFrame frame;
+	GeomFrame frame;
 	float w, h, d, halfW, halfH, halfD, radius;
 	int r, g, b;
 
 	AABox(Scene scn) {
 		scene = scn;
-		frame = new VFrame();
+		frame = new GeomFrame();
 		setSize();
 		setPosition();
 		setColor();
