@@ -14,7 +14,20 @@ public class BasicUse extends PApplet {
 	  // Ortho projection is buggy. Uncomment the following line to see it.
 	  // (you can also press 'e' to switch the projection at run time). 
 	  //scene.setCameraType(Camera.Type.ORTHOGRAPHIC);	  
-	  //scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );	  
+	  //scene.registerCameraProfile( new CameraProfile(scene, "CAD_ARCBALL", CameraProfile.Mode.CAD) );	 
+	  //frame.setResizable(true);
+	  
+	  int s;
+	  s = 1 << 0;
+	  println("s: " + s);
+	  s = 1 << 1;
+	  println("s: " + s);
+	  s = 1 << 2;
+	  println("s: " + s);
+	  s = 1 << 3;
+	  println("s: " + s);
+	  s = 1 << 4;
+	  println("s: " + s);
 	}	
 
 	public void draw() {
