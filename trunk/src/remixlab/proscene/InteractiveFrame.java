@@ -1201,7 +1201,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	 * For a point outside the ball, it is proportional to the inverse of this
 	 * distance (tends to zero) on the ball, the function is continuous.
 	 */
-	static float projectOnBall(float x, float y) {
+	protected static float projectOnBall(float x, float y) {
 		// If you change the size value, change angle computation in
 		// deformedBallQuaternion().
 		float size = 1.0f;
