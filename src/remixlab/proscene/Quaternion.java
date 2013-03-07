@@ -763,18 +763,7 @@ public class Quaternion implements PConstants {
 
 		fromRotationMatrix(m);
 	}
-	
-	// TODO experimental
-	// /**
-	public final PVector axis() {
-		PVector res = new PVector(x, y, z);
-		float sinus = res.mag();
-		if (sinus > 1E-8f)
-			res.div(sinus);
-		return res;
-	}
-	// */
-
+		
 	/**
 	 * Returns the normalized axis direction of the rotation represented by the
 	 * Quaternion.
@@ -783,29 +772,13 @@ public class Quaternion implements PConstants {
 	 * 
 	 * @see #angle()
 	 */
-	/**
 	public final PVector axis() {
-		PVector res = new PVector(this.x, this.y, this.z);
+		PVector res = new PVector(x, y, z);
 		float sinus = res.mag();
 		if (sinus > 1E-8f)
 			res.div(sinus);
-		if (PApplet.acos(this.w) <= HALF_PI)
-			return res;
-		else {
-			res.x = -res.x;
-			res.y = -res.y;
-			res.z = -res.z;
-			return res;
-		}
+		return res;
 	}
-	// */
-	
-	// TODO experimental
-	// /**
-	public final float angle() {
-		return 2.0f * PApplet.acos(w);		
-	}
-	// */
 
 	/**
 	 * Returns the {@code angle} (in radians) of the rotation represented by the
@@ -816,51 +789,16 @@ public class Quaternion implements PConstants {
 	 * 
 	 * @see #axis()
 	 */
-	/**
 	public final float angle() {
-		float angle = 2.0f * PApplet.acos(this.w);
-		return (angle <= PI) ? angle : 2.0f * PI - angle;
-	}
-	// */
+		return 2.0f * PApplet.acos(w);		
+	}	
 	
 	/**
-	// QGLViewer version
-	public void axisAngle(PVector axis, float angle) {
-	  angle = 2.0*acos(q[3]);
-	  axis = Vec(q[0], q[1], q[2]);
-	  const double sinus = axis.norm();
-	  if (sinus > 1E-8)
-	    axis /= sinus;
-
-	  if (angle > M_PI)
-	    {
-	      angle = 2.0*M_PI - angle;
-	      axis = -axis;
-	    }
-	}
-	*/	
-	
-	// TODO experimental
-	// took from: http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToAngle/index.htm
-	/**
-	public void axisAngle(PVector axis, float angle) {
-	   if (w > 1) normalize(); // if w>1 acos and sqrt will produce errors, this cant happen if quaternion is normalised
-	   angle = 2 * (float) Math.acos(w);
-	   float s = (float) Math.sqrt(1-w*w); // assuming quaternion normalised then w is less than 1, so term always positive.
-	   if (s < 0.00001) { // test to avoid divide by zero, s is always positive due to sqrt
-	     // if s close to zero then direction of axis not important
-	     axis.x = x; // if it is important that axis is normalised then replace with x=1; y=z=0;
-	     axis.y = y;
-	     axis.z = z;
-	   } else {
-	     axis.x = x / s; // normalise axis
-	     axis.y = y / s;
-	     axis.z = z / s;
-	   }
-	}
-	*/
-	
-	// TODO experimantal
+	 * Fills params with {@link #axis()} and {@link #angle()}.
+	 * 
+	 * @param axis
+	 * @param angle
+	 */
 	public void axisAngle(PVector axis, float angle) {
 		angle = 2 * (float) Math.acos(w);
 	  axis.x = x;
