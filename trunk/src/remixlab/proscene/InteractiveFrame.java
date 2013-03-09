@@ -174,7 +174,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		
 		isTossed = false;
 		setTossingSensitivity(0.3f);
-		setTossingFriction(0.16f);
+		setTossingFriction(1.0f);
 		
 		prevConstraint = null;		
 
