@@ -62,7 +62,8 @@ public class MouseSensitivities extends PApplet {
 		scene.interactiveFrame().setTossingFriction(0.5f);	
 		
 		scene.setRadius(150);
-		scene.showAll();				
+		scene.showAll();
+		println( "total grabbers: " + scene.mouseGrabberPool().size() );
 	}	
 
 	public void draw() {
@@ -157,15 +158,15 @@ public class MouseSensitivities extends PApplet {
 			decreaseSensitivity(scene.camera().frame(), sens);
 	}	
 		
-	public void increaseSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens) {
+	public void increaseSensitivity(InteractiveFrame iFrame, Sensitivity sens) {
 		changeSensitivity(iFrame, sens, true);
 	}
 	
-	public void decreaseSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens) {
+	public void decreaseSensitivity(InteractiveFrame iFrame, Sensitivity sens) {
 		changeSensitivity(iFrame, sens, false);
 	}	
 	
-	protected void changeSensitivity(remixlab.proscene.InteractiveFrame iFrame, Sensitivity sens, boolean increase) {
+	protected void changeSensitivity(InteractiveFrame iFrame, Sensitivity sens, boolean increase) {
 		float step = 1;
 		float res;
 		switch (sens) {
@@ -214,7 +215,7 @@ public class MouseSensitivities extends PApplet {
       }
 	}
 	
-	public boolean areDefaultsSet(remixlab.proscene.InteractiveFrame iFrame) {
+	public boolean areDefaultsSet(InteractiveFrame iFrame) {
 		if(equals(iFrame.rotationSensitivity(), 1.0f) &&
 		   equals(iFrame.translationSensitivity(), 1.0f) &&
 		   equals(iFrame.spinningSensitivity(), 0.3f) &&
@@ -226,7 +227,7 @@ public class MouseSensitivities extends PApplet {
 		return false;
 	}
 	
-	public void setDefaults(remixlab.proscene.InteractiveFrame iFrame) {
+	public void setDefaults(InteractiveFrame iFrame) {
 		iFrame.setRotationSensitivity(1.0f);
 		iFrame.setTranslationSensitivity(1.0f);
 		iFrame.setSpinningSensitivity(0.3f);

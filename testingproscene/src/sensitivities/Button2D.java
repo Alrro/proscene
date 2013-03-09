@@ -40,6 +40,7 @@ public class Button2D extends MouseGrabber {
 		scene.parent.popStyle();		
 	}
 
+	@Override
 	public void checkIfGrabsMouse(int x, int y, Camera camera) {
 		// Rectangular activation area
 		setGrabsMouse((position.x <= x) && (x <= position.x + myWidth) && (position.y <= y) && (y <= position.y + myHeight));

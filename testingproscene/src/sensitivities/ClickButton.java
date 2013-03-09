@@ -14,6 +14,7 @@ public class ClickButton extends Button2D {
 		sensitivity = sens;
 	}
 
+	@Override
 	public void mouseClicked(Integer button, int numberOfClicks, Camera camera) {
 		if (numberOfClicks == 1) {
 			if (increase)
