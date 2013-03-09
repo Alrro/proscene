@@ -458,15 +458,5 @@ public class TestApi extends PApplet {
 			((Scene)scene).pg3d().popMatrix();
 			((Scene)scene).pg3d().popStyle();
 		}
-		
-		@Override
-		public final void setSpinningQuaternion(Orientable spinningQuaternion) {
-			spngQuat = spinningQuaternion;
-			/**
-			if(this.scaling().x() < 0) ((Quaternion)spngQuat).quat[0] *= -1;
-			if(this.scaling().y() < 0) ((Quaternion)spngQuat).quat[1] *= -1;
-			if(this.scaling().z() < 0) ((Quaternion)spngQuat).quat[2] *= -1;
-			// */			
-		}
 	}
 }
