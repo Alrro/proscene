@@ -485,15 +485,12 @@ public class CameraProfile {
 	 * <p>
 	 * Called by {@link remixlab.proscene.DesktopEvents#mouseWheelMoved(MouseWheelEvent)}.
 	 */
-	
-	// /**
 	protected MouseAction frameWheelMouseAction(MouseEvent e) {
 		MouseAction fMouseAction = frameWheelBinding( e.getModifiers() );
 		if (fMouseAction == null)
 			fMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return fMouseAction;
 	}
-	// */
 	
 	/**
 	 * Returns a String containing the camera mouse bindings' descriptions.

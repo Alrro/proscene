@@ -267,7 +267,7 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 			mouseReleased(e);
 			break;
 		case MouseEvent.WHEEL:
-			this.mouseWheelMoved(e);
+			mouseWheelMoved(e);
 			break;
 		}
 	}
