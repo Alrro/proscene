@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -310,8 +310,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveDrivableFrame#mouseWheelMoved(int, Camera)}
-	 * .
+	 * {@link remixlab.proscene.InteractiveDrivableFrame#mouseWheelMoved(float, Camera)}.
 	 * <p>
 	 * The wheel behavior depends on the wheel binded action. Current possible
 	 * actions are {@link remixlab.proscene.Scene.MouseAction#ZOOM},
@@ -320,18 +319,13 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 	 * {@link remixlab.proscene.Scene.MouseAction#ZOOM} speed depends on
 	 * #wheelSensitivity() the other two depend on #flySpeed().
 	 */
-	public void mouseWheelMoved(int rotation, Camera camera) {
+	public void mouseWheelMoved(float rotation, Camera camera) {
 		switch (action) {
 		case ZOOM: {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
-			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera
-					.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
-			PVector trans = new PVector(0.0f, 0.0f, coef * (-rotation)
-					* wheelSensitivity() * wheelSensitivityCoef);
-			// right_handed coordinate system should go like this:
-			// PVector trans = new PVector(0.0f, 0.0f, coef * rotation *
-			// wheelSensitivity() * wheelSensitivityCoef);
+			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
+			PVector trans = new PVector(0.0f, 0.0f, coef * rotation * wheelSensitivity() * wheelSensitivityCoef);						
 			translate(inverseTransformOf(trans));
 			break;
 		}

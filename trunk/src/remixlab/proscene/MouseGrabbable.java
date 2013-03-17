@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -136,5 +136,5 @@ public interface MouseGrabbable {
 	 * Callback method called when the MouseGrabber {@link #grabsMouse()} and the
 	 * mouse wheel is used.
 	 */
-	void mouseWheelMoved(int rotation, Camera camera);
+	void mouseWheelMoved(float rotation, Camera camera);
 }
