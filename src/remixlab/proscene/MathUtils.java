@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           

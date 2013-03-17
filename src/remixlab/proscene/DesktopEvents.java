@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -72,13 +72,6 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	public void keyEvent(KeyEvent e) {		
 		if( !scene.keyboardIsHandled() )
 			return;
-		
-	  //debug
-		/**			
-		PApplet.println( "getModifiersExText: " + KeyEvent.getModifiersExText(e.getModifiersEx()) );
-		PApplet.println( "getMouseModifiersEx Mask: " + e.getModifiersEx() );
-		PApplet.println( "getMouseModifiers Mask: " + e.getModifiers() );
-		// */
 		
 		keyHandled = false;
 		switch (e.getAction() ) {
@@ -273,6 +266,9 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 		case MouseEvent.RELEASE:
 			mouseReleased(e);
 			break;
+		case MouseEvent.WHEEL:
+			this.mouseWheelMoved(e);
+			break;
 		}
 	}
 	
@@ -435,8 +431,6 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	
 	// 2.b Wheel	
 	
-	//TODO wheel
-	
 	/**
 	 * The action generated when the user start rotating the mouse wheel is handled by the
 	 * {@link remixlab.proscene.Scene#mouseGrabber()} (if any), or the
@@ -449,29 +443,26 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 	 * 
 	 * @see #mousePressed(MouseEvent)
 	 */
-	
-	/**
-	public void mouseWheelMoved(MouseWheelEvent event) {
+	public void mouseWheelMoved(MouseEvent event) {
 		if(!scene.mouseIsHandled())
 			return;
 		if (scene.mouseGrabber() != null) {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
 				iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
-				iFrame.mouseWheelMoved(event.getWheelRotation(), scene.camera());				
+				iFrame.mouseWheelMoved(event.getAmount(), scene.camera());				
 			} else
-				scene.mouseGrabber().mouseWheelMoved(event.getWheelRotation(), scene.camera());
+				scene.mouseGrabber().mouseWheelMoved(event.getAmount(), scene.camera());
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
-			scene.interactiveFrame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
+			scene.interactiveFrame().mouseWheelMoved(event.getAmount(), scene.camera());
 			return;
 		}
 		scene.camera().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
-		scene.camera().frame().mouseWheelMoved(event.getWheelRotation(), scene.camera());
+		scene.camera().frame().mouseWheelMoved(event.getAmount(), scene.camera());
 	}
-	*/
 	
 	// 3. Utility package dependent functions: java.awt wrappers that should be replaced
 	//    by each platform where proscene is going to be implemented.

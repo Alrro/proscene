@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -315,7 +315,7 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelMoved(int, Camera)}.
+	 * {@link remixlab.proscene.InteractiveFrame#mouseWheelMoved(float, Camera)}.
 	 * <p>
 	 * The wheel behavior depends on the wheel binded action. Current possible
 	 * actions are {@link remixlab.proscene.Scene.MouseAction#ZOOM},
@@ -324,17 +324,11 @@ public class InteractiveDrivableFrame extends InteractiveFrame {
 	 * {@link remixlab.proscene.Scene.MouseAction#ZOOM} speed depends on
 	 * #wheelSensitivity() the other two depend on #flySpeed().
 	 */
-	public void mouseWheelMoved(int rotation, Camera camera) {
+	public void mouseWheelMoved(float rotation, Camera camera) {
 		switch (action) {
 		case ZOOM: {
-			float wheelSensitivityCoef = 8E-4f;
-			
-			PVector trans;
-			if( scene.isRightHanded() )
-				trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
-			else
-				trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
-			
+			float wheelSensitivityCoef = 8E-4f;			
+			PVector trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity()	* wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());			
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)

@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -99,7 +99,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.96";
+	public static final String version = "1.1.97";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>
@@ -2535,11 +2535,11 @@ public class Scene implements PConstants {
 		cameraProfileNames = new ArrayList<String>();
 		currentCameraProfile = null;
 		// register here the default profiles
-		registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
-		//registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
+		//registerCameraProfile(new CameraProfile(this, "ARCBALL", CameraProfile.Mode.ARCBALL));
+		registerCameraProfile( new CameraProfile(this, "WHEELED_ARCBALL", CameraProfile.Mode.WHEELED_ARCBALL) );
 		registerCameraProfile( new CameraProfile(this, "FIRST_PERSON", CameraProfile.Mode.FIRST_PERSON) );
-		setCurrentCameraProfile("ARCBALL");
-		//setCurrentCameraProfile("WHEELED_ARCBALL");
+		//setCurrentCameraProfile("ARCBALL");
+		setCurrentCameraProfile("WHEELED_ARCBALL");
 	}
 
 	/**
@@ -3572,12 +3572,11 @@ public class Scene implements PConstants {
 	 * @see remixlab.proscene.CameraProfile#cameraMouseBindingsDescription()
 	 * @see remixlab.proscene.CameraProfile#frameMouseBindingsDescription()
 	 * @see remixlab.proscene.CameraProfile#mouseClickBindingsDescription()
-	 * @see remixlab.proscene.CameraProfile#keyboardShortcutsDescription() 
+	 * @see remixlab.proscene.CameraProfile#keyboardShortcutsDescription()
+	 * @see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
+	 * @see remixlab.proscene.CameraProfile#frameWheelBindingsDescription()
 	 */
 	public String currentCameraProfileHelp() {
-		//TODO
-		//@see remixlab.proscene.CameraProfile#cameraWheelBindingsDescription()
-		//@see remixlab.proscene.CameraProfile#frameWheelBindingsDescription()
 		String description = new String();
 		description += currentCameraProfile().name() + " camera profile keyboard shortcuts and mouse bindings\n";
 		int index = 1;
@@ -3601,8 +3600,6 @@ public class Scene implements PConstants {
 			description += currentCameraProfile().frameMouseBindingsDescription();
 			index++;
 		}
-	// TODO wheel
-		/**
 		if( currentCameraProfile().cameraWheelBindingsDescription().length() != 0 ) {
 			description += index + ". " + "Camera mouse wheel bindings\n";
 			description += currentCameraProfile().cameraWheelBindingsDescription();
@@ -3613,7 +3610,6 @@ public class Scene implements PConstants {
 			description += currentCameraProfile().frameWheelBindingsDescription();
 			index++;
 		}
-		*/
 		return description;
 	}
 

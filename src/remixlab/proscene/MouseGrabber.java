@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -32,7 +32,7 @@ package remixlab.proscene;
  * class (instead of implementing the MouseGrabbable interface), and implement the
  * {@link #checkIfGrabsMouse(int, int, Camera)} method and some of the provided
  * callback methods, such {@link #mouseClicked(Integer, int, Camera)} and/or
- * {@link #mouseWheelMoved(int, Camera)}. 
+ * {@link #mouseWheelMoved(float, Camera)}. 
  * <p>
  * <b>Note:</b> The InteractiveFrame object implements the MouseGrabbable interface.
  */
@@ -127,7 +127,7 @@ public class MouseGrabber implements MouseGrabbable {
 	 * <p>
 	 * Current implementation is empty.
 	 */
-	public void mouseWheelMoved(int rotation, Camera camera) { }
+	public void mouseWheelMoved(float rotation, Camera camera) { }
 
 	/**
 	 * Sets the {@link #grabsMouse()} flag. Normally used by

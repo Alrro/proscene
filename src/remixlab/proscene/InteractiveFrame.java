@@ -1,6 +1,6 @@
 /**
- *                     ProScene (version 1.1.96)      
- *    Copyright (c) 2010-2012 by National University of Colombia
+ *                     ProScene (version 1.1.97)      
+ *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
  *                           
@@ -170,7 +170,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 		
 		isSpng = false;
 		setSpinningSensitivity(0.3f);
-		setSpinningFriction(0.16f);
+		setSpinningFriction(0.0f);
 		
 		isTossed = false;
 		setTossingSensitivity(0.3f);
@@ -1048,22 +1048,16 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 
 	/**
 	 * Overloading of
-	 * {@link remixlab.proscene.MouseGrabbable#mouseWheelMoved(int, Camera)}.
+	 * {@link remixlab.proscene.MouseGrabbable#mouseWheelMoved(float, Camera)}.
 	 * <p>
 	 * Using the wheel is equivalent to a {@link remixlab.proscene.Scene.MouseAction#ZOOM}.
 	 * 
 	 * @see #setWheelSensitivity(float)
 	 */
-	public void mouseWheelMoved(int rotation, Camera camera) {
+	public void mouseWheelMoved(float rotation, Camera camera) {
 		if (action == Scene.MouseAction.ZOOM) {
-			float wheelSensitivityCoef = 8E-4f;
-			// PVector trans(0.0, 0.0,
-			// -event.delta()*wheelSensitivity()*wheelSensitivityCoef*(camera.position()-position()).norm());
-			
-			PVector	trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
-		  //right_handed coordinate system should go like this:
-			//PVector trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
-			
+			float wheelSensitivityCoef = 8E-4f;			
+			PVector trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)
