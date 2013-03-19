@@ -4,7 +4,7 @@
 
 Run the following sketch in different OS's under P5-2b8 using proscene-v.1.1.96 (_Tumaco_), and have a look at the output:
 
-*WeirdCamProfile*
+*BasicUse.pde*
 
 {{{
 import remixlab.proscene.*;
@@ -31,7 +31,7 @@ void draw() {
 }
 }}}
 
-*WeirdCamProfile*
+*WeirdCamProfile.pde*
 
 {{{
 public class WeirdCamProfile extends CameraProfile {
