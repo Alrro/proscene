@@ -10,8 +10,8 @@ public class FrameInteraction extends PApplet {
 	Scene scene;
 
 	public void setup() {
-		//size(640, 360, P2D);
-		size(640, 360, JAVA2D);
+		size(640, 360, P2D);
+		//size(640, 360, JAVA2D);
 		//scene = new Java2DScene(this);
 		scene = new Scene(this);
 		// A Scene has a single InteractiveFrame (null by default). We set it
@@ -27,8 +27,7 @@ public class FrameInteraction extends PApplet {
 	}
 
 	public void draw() {		
-		if (scene.renderer() instanceof RendererJava2D  && scene instanceof Java2DScene)
-			bindM();
+		//if (scene.renderer() instanceof RendererJava2D  && scene instanceof Java2DScene) bindM();
 
 		background(0);
 		fill(204, 102, 0);
@@ -58,13 +57,12 @@ public class FrameInteraction extends PApplet {
 		scene.endScreenDrawing(); //		
 	}
 
-	public void bindM() {
-		// /**
+	/**
+	public void bindM() {		
 		scene.viewWindow().computeProjectionMatrix();
 		scene.viewWindow().computeViewMatrix();
 		scene.viewWindow().computeProjectionViewMatrix();
-		// */
-
+		
 		Vector3D pos = scene.viewWindow().position();
 		Orientable quat = scene.viewWindow().frame().orientation();
 
@@ -81,6 +79,7 @@ public class FrameInteraction extends PApplet {
 		
 		//if(scene.isRightHanded()) scale(1,-1);
 	}
+	*/
 
 	public void keyPressed() {
 		if (key == 'x')

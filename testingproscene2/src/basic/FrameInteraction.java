@@ -11,7 +11,8 @@ public class FrameInteraction extends PApplet {
 	
 	public void setup()	{
 		size(640, 360, P3D);		
-		scene = new Scene(this);		
+		scene = new Scene(this);
+		scene.setShortcut('q', Scene.KeyboardAction.CAMERA_KIND);
 		//scene.setInteractiveFrame(new InteractiveFrameTesting(scene));
 		scene.setInteractiveFrame(new InteractiveFrame(scene));
 		//scene.camera().setKind(Camera.Kind.STANDARD);
@@ -87,6 +88,11 @@ public class FrameInteraction extends PApplet {
 		else
 			println("scene.camera().frame() is NOT inverted");
 		*/
+		
+		if( key == 'u' || key == 'U') {
+			print("cam pos: ");
+			scene.camera().position().print();
+		}
 	}
 		
 	public static void main(String args[]) {

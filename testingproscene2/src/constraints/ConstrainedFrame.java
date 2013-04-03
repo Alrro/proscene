@@ -37,7 +37,6 @@ public class ConstrainedFrame extends PApplet {
 		constraints[2] = new CameraConstraint(scene.camera());
 		transDir = 0;
 		rotDir   = 0;
-		sclDir   = 0;
 		activeConstraint = 0;
 		
 		frame = new InteractiveFrame(scene);
@@ -75,18 +74,6 @@ public class ConstrainedFrame extends PApplet {
 		return rType;
 	}
 	
-	public static AxisPlaneConstraint.Type nextScalingConstraintType(AxisPlaneConstraint.Type type) {
-		AxisPlaneConstraint.Type rType;
-		switch (type) {
-		case FREE  : rType = AxisPlaneConstraint.Type.PLANE; break;
-	    case PLANE : rType = AxisPlaneConstraint.Type.AXIS;  break;
-	    case AXIS  : rType = AxisPlaneConstraint.Type.FORBIDDEN;  break;
-	    case FORBIDDEN   : rType = AxisPlaneConstraint.Type.FREE; break;
-	    default : rType = AxisPlaneConstraint.Type.FREE;
-	    }
-		return rType;
-	}
-	
 	private void changeConstraint() {
 	  int previous = activeConstraint;
 	  activeConstraint = (activeConstraint+1)%3;
@@ -95,8 +82,6 @@ public class ConstrainedFrame extends PApplet {
 	  constraints[activeConstraint].setTranslationConstraintDirection(constraints[previous].translationConstraintDirection());
 	  constraints[activeConstraint].setRotationConstraintType(constraints[previous].rotationConstraintType());
 	  constraints[activeConstraint].setRotationConstraintDirection(constraints[previous].rotationConstraintDirection());
-	  constraints[activeConstraint].setScalingConstraintType(constraints[previous].scalingConstraintType());
-	  constraints[activeConstraint].setScalingConstraintDirection(constraints[previous].scalingConstraintDirection());
 
 	  frame.setConstraint(constraints[activeConstraint]);
 	}
@@ -143,21 +128,29 @@ public class ConstrainedFrame extends PApplet {
 	    textToDisplay += ")";
 	    break;
 	    }
+		
+		text("SCALING :", 150, height-30);
+		displayDir(sclDir, (150+90), height-30, 'O');
+		
 		text(textToDisplay, x, y);
 	}
 	
 	protected void displayDir(int dir, int x, int y, char c) {
 		String textToDisplay = new String();
 		switch (dir) {
-	    case 0: textToDisplay = "X (";
+	    case 0: textToDisplay = "FREE (";
 	    textToDisplay += c;
 	    textToDisplay += ")";
 	    break;
-	    case 1: textToDisplay = "Y (";
+	    case 1: textToDisplay = "X (";
 	    textToDisplay += c;
 	    textToDisplay += ")";
 	    break;
-	    case 2: textToDisplay = "Z (";
+	    case 2: textToDisplay = "Y (";
+	    textToDisplay += c;
+	    textToDisplay += ")";
+	    break;
+	    case 3: textToDisplay = "Z (";
 	    textToDisplay += c;
 	    textToDisplay += ")";
 	    break;
@@ -166,10 +159,6 @@ public class ConstrainedFrame extends PApplet {
 	}
 	
 	public void displayText() {		
-		text("SCALING :", 150, height-30);
-		displayDir(sclDir, (150+90), height-30, 'O');
-		displayType(constraints[activeConstraint].scalingConstraintType(), 150, height-60, 'V');
-		
 		text("TRANSLATION :", 350, height-30);
 		displayDir(transDir, (350+90), height-30, 'D');
 		displayType(constraints[activeConstraint].translationConstraintType(), 350, height-60, 'T');
@@ -188,9 +177,6 @@ public class ConstrainedFrame extends PApplet {
 	public void keyPressed() {
 		//scene.defaultKeyBindings();
 	
-		if (key == 'o' || key == 'O') {
-			sclDir   = (sclDir+1)%3;
-		}
 		if (key == 'b' || key == 'B') {
 			rotDir   = (rotDir+1)%3;
 		}
@@ -199,9 +185,6 @@ public class ConstrainedFrame extends PApplet {
 		}
 		if (key == 'u' || key == 'U') {
 			changeConstraint();
-		}
-		if (key == 'v' || key == 'V') {
-			constraints[activeConstraint].setScalingConstraintType(nextScalingConstraintType(constraints[activeConstraint].scalingConstraintType()));
 		}
 		if (key == 't' || key == 'T') {
 			constraints[activeConstraint].setTranslationConstraintType(nextTranslationConstraintType(constraints[activeConstraint].translationConstraintType()));
@@ -226,15 +209,17 @@ public class ConstrainedFrame extends PApplet {
 		}		
 		constraints[activeConstraint].setRotationConstraintDirection(dir);
 		
-		dir.set(0.0f, 0.0f, 0.0f);
-		switch (sclDir) {
-		case 0 : dir.x(1.0f); break;
-		case 1 : dir.y(1.0f); break;
-		case 2 : dir.z(1.0f); break;
-		}
-		//TODO test
-		dir.set(2.0f, 1.0f, -2.0f);
-		constraints[activeConstraint].setScalingConstraintDirection(dir);
+		if (key == 'o' || key == 'O') {
+			sclDir   = (sclDir+1)%4;
+			
+			switch (sclDir) {		
+			case 1 : dir.set(1.0f, 0.0f, 0.0f); break;
+			case 2 : dir.set(0.0f, 1.0f, 0.0f); break;
+			case 3 : dir.set(0.0f, 0.0f, 1.0f); break;
+			case 0 : dir.set(1.0f, 1.0f, 1.0f); break;
+			}
+			constraints[activeConstraint].setScalingConstraintValues(dir);
+		}		
 	}
 	
 	public static void main(String args[]) {

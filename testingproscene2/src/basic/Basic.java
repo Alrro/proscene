@@ -14,6 +14,7 @@ public class Basic extends PApplet {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
 	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);	  
+	  scene.setSingleThreadedTimers();
 	  scene.showAll();
 	}	
 
