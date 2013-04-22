@@ -3,6 +3,7 @@ import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
+import remixlab.remixcam.devices.*;
 
 @SuppressWarnings("serial")
 public class FrameInteraction extends PApplet {

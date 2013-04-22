@@ -3,6 +3,7 @@ package basic;
 import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.geom.*;
+import remixlab.remixcam.devices.*;
 
 
 public class BasicCad extends PApplet {

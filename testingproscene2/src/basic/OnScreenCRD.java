@@ -4,6 +4,7 @@ import processing.core.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.devices.*;
 import remixlab.proscene.*;
 import controlP5.*;
 

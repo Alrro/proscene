@@ -6,6 +6,7 @@ import processing.core.*;
 import processing.event.Event;
 import processing.opengl.*;
 import remixlab.proscene.*;
+import remixlab.remixcam.devices.CameraProfile;
 
 @SuppressWarnings("serial")
 public class PointUnderPixel extends PApplet {

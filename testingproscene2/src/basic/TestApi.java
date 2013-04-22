@@ -376,7 +376,7 @@ public class TestApi extends PApplet {
 		@Override			
 		protected void deviceDragged3D(Point eventPoint, Camera camera) {
 			int deltaY = 0;
-			if(action != AbstractScene.MouseAction.NO_MOUSE_ACTION) {
+			if(action != AbstractScene.DeviceAction.NO_MOUSE_ACTION) {
 				deltaY = (int) (prevPos.y - eventPoint.y);//as it were LH
 				if( scene.isRightHanded() )
 					deltaY = -deltaY;

@@ -10,8 +10,8 @@ public class Combo extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;	
 	InteractiveFrame frame1, auxFrame1, frame2, auxFrame2, frame3, auxFrame3;
-	//String renderer = P2D;
-	String renderer = JAVA2D;	
+	String renderer = P2D;
+	//String renderer = JAVA2D;	
 	boolean drawHints = false;
 
 	public void setup() {

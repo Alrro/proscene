@@ -4,8 +4,8 @@ import processing.opengl.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.devices.*;
 import remixlab.proscene.*;
-import remixlab.proscene.CameraProfile.Mode;
 
 @SuppressWarnings("serial")
 public class ThirdPerson extends PApplet {
