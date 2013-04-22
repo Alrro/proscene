@@ -1,4 +1,4 @@
-package basic;
+package events;
 
 import processing.core.*;
 import remixlab.proscene.*;
