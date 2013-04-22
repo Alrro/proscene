@@ -7,7 +7,7 @@ import remixlab.remixcam.core.*;
 import remixlab.remixcam.devices.*;
 import remixlab.remixcam.events.*;
 
-public class KeyBasic extends PApplet {
+public class LowLevelEventRegistration extends PApplet {
 	Scene scene;
 
 	public void setup() {
@@ -45,36 +45,14 @@ public class KeyBasic extends PApplet {
 		popMatrix();
 	}
 	
-	/**
-	public void keyReleased() {
-		new DLKeyEvent(scene, DLKeyEvent.TYPE, 0, key, keyCode);
-	}
-	//*/
-
-	/**
-	public void keyReleased() {
-		kEvent = new DLKeyEvent();
-		kEvent.setKey(key);
-		kEvent.setKeyCode(keyCode);
-		kEvent.setAction(DLKeyEvent.TYPE);
-		//scene.addEvent(kEvent);
-		scene.queueEvent(kEvent);
-	}
-	//*/
-	
-    // /**
 	public void keyTyped() {
 		new DLKeyEvent(scene, DLKeyEvent.TYPE, 0, key, keyCode);
 	}
-	//*/
 	
-    // /**
 	public void keyReleased() {
 		new DLKeyEvent(scene, DLKeyEvent.RELEASE, 0, key, keyCode);
 	}
-	// */
 	
-	// /**
     public void mousePressed() {
     	new DLMouseEvent(scene, DLMouseEvent.PRESS, 0, mouseX, mouseY, mouseButton, 0);
     }
@@ -90,5 +68,4 @@ public class KeyBasic extends PApplet {
     public void mouseDragged() {
     	new DLMouseEvent(scene, DLMouseEvent.DRAG, 0, mouseX, mouseY, mouseButton, 0);
     }
-    // */	
 }
