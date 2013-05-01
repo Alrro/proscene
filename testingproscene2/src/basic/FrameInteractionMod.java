@@ -48,7 +48,7 @@ public class FrameInteractionMod extends PApplet {
 		
 		// /**
 		// Draw a second box
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			box(12, 17, 22);
 		}

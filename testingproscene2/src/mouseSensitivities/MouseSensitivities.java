@@ -43,21 +43,21 @@ public class MouseSensitivities extends PApplet {
 
 		buttons = new ArrayList();
 
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 50), "+",	Sensitivity.ROTATION, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5), 50), "-", Sensitivity.ROTATION, false));
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 70), "+", Sensitivity.TRANSLATION, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5), 70), "-", Sensitivity.TRANSLATION, false));
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 90), "+",	Sensitivity.SPINNING, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5), 90), "-", Sensitivity.SPINNING, false));
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 110), "+", Sensitivity.TOSSING, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),110), "-", Sensitivity.TOSSING, false));
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 130), "+", Sensitivity.WHEEL, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),130), "-", Sensitivity.WHEEL, false));
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 150), "+", Sensitivity.SPINNING_FRICTION, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),150), "-", Sensitivity.SPINNING_FRICTION, false));
-		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 170), "+", Sensitivity.TOSSING_FRICTION, true));
-		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),170), "-", Sensitivity.TOSSING_FRICTION, false));
-
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 50), "+",	14, Sensitivity.ROTATION, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5), 50), "-", 14, Sensitivity.ROTATION, false));
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 70), "+",	14, Sensitivity.TRANSLATION, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5), 70), "-", 14, Sensitivity.TRANSLATION, false));
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 90), "+",	14,	Sensitivity.SPINNING, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5), 90), "-", 14, Sensitivity.SPINNING, false));
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 110), "+", 14, Sensitivity.TOSSING, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),110), "-", 14, Sensitivity.TOSSING, false));
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 130), "+", 14, Sensitivity.WHEEL, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),130), "-", 14, Sensitivity.WHEEL, false));
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 150), "+", 14, Sensitivity.SPINNING_FRICTION, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),150), "-", 14, Sensitivity.SPINNING_FRICTION, false));
+		buttons.add(new ClickButton(scene, new Vector3D(xM + 210, 170), "+", 14, Sensitivity.TOSSING_FRICTION, true));
+		buttons.add(new ClickButton(scene, new Vector3D((xM + 210 + ((ClickButton) buttons.get(buttons.size() - 1)).myWidth + 5),170), "-", 14, Sensitivity.TOSSING_FRICTION, false));
+		
 		// Damping is disabled by default. We set it here:
 		scene.camera().frame().setSpinningFriction(0.5f);
 		scene.camera().frame().setTossingFriction(0.5f);
@@ -67,7 +67,7 @@ public class MouseSensitivities extends PApplet {
 		scene.setRadius(150);
 		scene.showAll();
 		scene.setSingleThreadedTimers();
-		println( "total grabbers: " + scene.mouseGrabberPool().size() );
+		println( "total grabbers: " + scene.deviceGrabberPool().size() );
 	}
 
 	public void draw() {
@@ -85,7 +85,7 @@ public class MouseSensitivities extends PApplet {
 		// Draw an axis using the Scene static function
 		scene.drawAxis(20);
 		// Draw a second box
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			box(12, 17, 22);
 		} else if (scene.interactiveFrameIsDrawn()) {
@@ -140,17 +140,19 @@ public class MouseSensitivities extends PApplet {
 		displayText(String.format("%.2f", iFrame.spinningFriction()), xM + 165, 150);
 		displayText(equals(iFrame.tossingFriction(), 1.0f) ? "Tossing friction" : "Tossing friction *", xM, 170);
 		displayText(String.format("%.2f", iFrame.tossingFriction()), xM + 165, 170);
-
+		scene.endScreenDrawing();
+		
 		for (int i = 0; i < buttons.size(); i++)
 			((ClickButton) buttons.get(i)).display();
 
 		fill(200);
-		if (!areDefaultsSet(iFrame))
+		if (!areDefaultsSet(iFrame)) {
+			scene.beginScreenDrawing();
 			displayText(
 					"Press 'd' to set sensitivities to their default values",
 					xM, 190);
-
-		scene.endScreenDrawing();
+			scene.endScreenDrawing();
+		}
 	}
 
 	void increaseSensitivity(Sensitivity sens) {
@@ -269,9 +271,9 @@ public class MouseSensitivities extends PApplet {
 			dispControls = !dispControls;
 			for (int i = 0; i < buttons.size(); i++)
 				if (dispControls)
-					scene.addInMouseGrabberPool((ClickButton) buttons.get(i));
+					scene.addInDeviceGrabberPool((ClickButton) buttons.get(i));
 				else
-					scene.removeFromMouseGrabberPool((ClickButton) buttons.get(i));
+					scene.removeFromDeviceGrabberPool((ClickButton) buttons.get(i));
 		}
 		if (key == 'd' || key == 'D') {
 			if (isIFrame)

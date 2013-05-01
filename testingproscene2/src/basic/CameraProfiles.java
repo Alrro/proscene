@@ -5,7 +5,7 @@ import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.core.AbstractScene.KeyboardAction;
-import remixlab.remixcam.devices.*;
+import remixlab.remixcam.profile.*;
 
 @SuppressWarnings("serial")
 public class CameraProfiles extends PApplet {
@@ -51,7 +51,7 @@ public class CameraProfiles extends PApplet {
 		// Draw an axis using the Scene static function
 		scene.drawAxis(20);
 		// Draw a second box attached to the interactive frame
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			box(12, 17, 22);
 		} else if (scene.interactiveFrameIsDrawn()) {

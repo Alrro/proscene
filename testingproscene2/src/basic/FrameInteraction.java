@@ -3,7 +3,7 @@ import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.devices.*;
+import remixlab.remixcam.profile.*;
 
 @SuppressWarnings("serial")
 public class FrameInteraction extends PApplet {
@@ -24,7 +24,7 @@ public class FrameInteraction extends PApplet {
 		// press 'f' to display frame selection hints
 		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);		
 		//Register a CAD Camera profile and name it "CAD_CAM"
-		scene.registerCameraProfile(new CameraProfile(scene, "CAD_CAM", CameraProfile.Mode.CAD));
+		scene.registerCameraProfile(new CadCameraProfile(scene, "CAD_CAM"));
 		//Set the CAD_CAM as the current camera profile
 		//scene.setCurrentCameraProfile("CAD_CAM");
 	}
@@ -43,7 +43,7 @@ public class FrameInteraction extends PApplet {
 		scene.drawAxis(20);
 		
 		// Draw a second box
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			box(12, 17, 22);
 		}

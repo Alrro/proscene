@@ -2,7 +2,7 @@ package luxo;
 import processing.core.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import remixlab.proscene.*;
 
 public class Lamp {
@@ -65,24 +65,24 @@ public class Lamp {
 		// Luxo's local frame
 		parent.pushMatrix();
 		frame(0).applyTransformation();
-		setColor( frame(0).grabsMouse() );
+		setColor( frame(0).grabsDevice() );
 		drawBase();
 		
 		parent.pushMatrix();//not really necessary here
 		frame(1).applyTransformation();
-		setColor( frame(1).grabsMouse() );
+		setColor( frame(1).grabsDevice() );
 		drawCylinder();
 		drawArm();		
 		
 		parent.pushMatrix();//not really necessary here
 		frame(2).applyTransformation();
-		setColor( frame(2).grabsMouse() );
+		setColor( frame(2).grabsDevice() );
 		drawCylinder();
 		drawArm();		
 		
 		parent.pushMatrix();//not really necessary here
 		frame(3).applyTransformation();
-		setColor( frame(3).grabsMouse() );
+		setColor( frame(3).grabsDevice() );
 		drawHead();
 		
 		// Add light

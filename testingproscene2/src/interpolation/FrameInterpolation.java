@@ -3,9 +3,9 @@ package interpolation;
 import processing.core.*;
 import processing.opengl.*;
 
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import remixlab.remixcam.core.*;
-import remixlab.remixcam.devices.*;
+import remixlab.remixcam.profile.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.util.*;
 
@@ -71,7 +71,7 @@ public class FrameInterpolation extends PApplet {
 	    kfi.keyFrame(i).applyTransformation(scene);
 	    
 	    // /**
-	    if ( keyFrame[i].grabsMouse() )
+	    if ( keyFrame[i].grabsDevice() )
 	      scene.drawAxis(40);
 	    else
 	      scene.drawAxis(20);

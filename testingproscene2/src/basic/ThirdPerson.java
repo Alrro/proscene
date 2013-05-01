@@ -3,8 +3,8 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.core.*;
-import remixlab.remixcam.constraints.*;
-import remixlab.remixcam.devices.*;
+import remixlab.remixcam.constraint.*;
+import remixlab.remixcam.profile.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -32,7 +32,7 @@ public class ThirdPerson extends PApplet {
 		avatar.setConstraint(baseConstraint);
 		
 		scene.setInteractiveFrame(avatar);
-		scene.registerCameraProfile( new CameraProfile(scene, "THIRD_PERSON", CameraProfile.Mode.THIRD_PERSON ) );
+		scene.registerCameraProfile( new ThirdPersonCameraProfile(scene, "THIRD_PERSON") );
 		//scene.setCameraMode( Scene.CameraMode.THIRD_PERSON );
 	}
 

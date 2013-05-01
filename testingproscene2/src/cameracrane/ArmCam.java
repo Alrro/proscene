@@ -2,7 +2,7 @@ package cameracrane;
 
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
@@ -82,22 +82,22 @@ public class ArmCam {
 
 	    pg3d.pushMatrix();
 	    frame(0).applyTransformation();
-	    setColor(scn, frame(0).grabsMouse());
+	    setColor(scn, frame(0).grabsDevice());
 	    drawTripod(scn);
 
 	    pg3d.pushMatrix();
 	    frame(1).applyTransformation();
-	    setColor(scn, frame(1).grabsMouse());
+	    setColor(scn, frame(1).grabsDevice());
 	    drawBase(scn);
 
 	    pg3d.pushMatrix();
 	    frame(2).applyTransformation();
-	    setColor(scn, frame(2).grabsMouse());
+	    setColor(scn, frame(2).grabsDevice());
 	    drawLongArm(scn);
 
 	    pg3d.pushMatrix();
 
-	    setColor(scn, frame(3).grabsMouse());
+	    setColor(scn, frame(3).grabsDevice());
 
 	    // here goes the movement constraint that keeps the camera holder
 	    // attached to the rails
@@ -111,12 +111,12 @@ public class ArmCam {
 
 	    pg3d.pushMatrix();
 	    frame(4).applyTransformation();
-	    setColor(scn, frame(4).grabsMouse());
+	    setColor(scn, frame(4).grabsDevice());
 	    drawInvertedBase(scn);
 
 	    pg3d.pushMatrix();
 	    frame(5).applyTransformation();
-	    setColor(scn, frame(5).grabsMouse());
+	    setColor(scn, frame(5).grabsDevice());
 	    drawHead(scn);
 
 	    // Add light if the flag enables it

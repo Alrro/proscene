@@ -4,8 +4,8 @@ import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.geom.*;
 import remixlab.remixcam.core.*;
-import remixlab.remixcam.devices.*;
-import remixlab.remixcam.events.*;
+import remixlab.remixcam.profile.*;
+import remixlab.remixcam.event.*;
 
 public class LowLevelEventRegistration extends PApplet {
 	Scene scene;
@@ -31,7 +31,7 @@ public class LowLevelEventRegistration extends PApplet {
 		scene.drawAxis(20);
 
 		// Draw a second box
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			box(12, 17, 22);
 		} else if (scene.interactiveFrameIsDrawn()) {

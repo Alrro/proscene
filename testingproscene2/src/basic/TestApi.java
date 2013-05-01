@@ -4,7 +4,7 @@ import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import geom.Box;
 import geom.Sphere;
 
@@ -374,9 +374,9 @@ public class TestApi extends PApplet {
 		}
 		
 		@Override			
-		protected void deviceDragged3D(Point eventPoint, Camera camera) {
+		protected void execAction3D(Point eventPoint, Camera camera) {
 			int deltaY = 0;
-			if(action != AbstractScene.DeviceAction.NO_MOUSE_ACTION) {
+			if(action != AbstractScene.DeviceAction.NO_DEVICE_ACTION) {
 				deltaY = (int) (prevPos.y - eventPoint.y);//as it were LH
 				if( scene.isRightHanded() )
 					deltaY = -deltaY;
@@ -386,7 +386,7 @@ public class TestApi extends PApplet {
 				Vector3D trans = camera.projectedCoordinatesOf(position());
 				Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y, trans.x(), trans.y(), camera);
 				rot = iFrameQuaternion(rot, camera);
-				computeMouseSpeed(eventPoint);
+				computeDeviceSpeed(eventPoint);
 				setSpinningQuaternion(rot);
 				//drawSpinningQuaternion();
 				spin();
@@ -394,7 +394,7 @@ public class TestApi extends PApplet {
 				break;
 			}
 			default: {
-				super.deviceDragged3D(eventPoint, camera);
+				super.execAction3D(eventPoint, camera);
 			}
 			}
 		}

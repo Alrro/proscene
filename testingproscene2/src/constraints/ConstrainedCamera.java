@@ -2,7 +2,7 @@ package constraints;
 import processing.core.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -77,7 +77,9 @@ public class ConstrainedCamera extends PApplet  {
 		fill(204, 102, 0);
 		box(20, 30, 50);
 		fill(0, 0, 255);
+		scene.beginScreenDrawing();
 		displayText();
+		scene.endScreenDrawing();
 	}	
 	
 	protected void displayType(AxisPlaneConstraint.Type type, int x, int y, char c)	{

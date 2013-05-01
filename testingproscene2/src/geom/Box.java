@@ -6,7 +6,7 @@ import remixlab.remixcam.geom.*;
 
 public class Box {
 	Scene scene;
-	InteractiveFrame iFrame;
+	public InteractiveFrame iFrame;
 	float w, h, d;
 	int c;
 	
@@ -47,7 +47,7 @@ public class Box {
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
 			scene.drawAxis(PApplet.max(w,h,d)*1.3f);
 		scene.pg3d().noStroke();
-		if (iFrame.grabsMouse())
+		if (iFrame.grabsDevice())
 			scene.pg3d().fill(255,0,0);
 		else
 			scene.pg3d().fill(getColor());

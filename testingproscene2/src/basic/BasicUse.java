@@ -9,7 +9,7 @@ import remixlab.remixcam.core.AbstractScene.CameraKeyboardAction;
 import remixlab.remixcam.core.AbstractScene.KeyboardAction;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.devices.*;
+import remixlab.remixcam.profile.*;
 
 @SuppressWarnings("serial")
 public class BasicUse extends PApplet {

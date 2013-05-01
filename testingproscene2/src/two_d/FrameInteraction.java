@@ -41,7 +41,7 @@ public class FrameInteraction extends PApplet {
 		// Draw an axis using the Scene static function
 		scene.drawAxis(40);
 		// Draw a second box attached to the interactive frame
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			rect(0, 0, 35, 35);
 		} else if (scene.interactiveFrameIsDrawn()) {

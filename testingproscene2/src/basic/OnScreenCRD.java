@@ -3,8 +3,8 @@ package basic;
 import processing.core.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
-import remixlab.remixcam.devices.*;
+import remixlab.remixcam.constraint.*;
+import remixlab.remixcam.profile.*;
 import remixlab.proscene.*;
 import controlP5.*;
 
@@ -82,7 +82,7 @@ public class OnScreenCRD extends PApplet {
 		controlP5.addSlider("sliderValue", -100, 100, sliderValue, 10, 50, 100, 10);
 		controlP5.setAutoDraw(false);
 
-		scene.registerCameraProfile(new CameraProfile(scene, "CAD",	CameraProfile.Mode.CAD));
+		scene.registerCameraProfile(new CadCameraProfile(scene, "CAD"));
 		scene.setCurrentCameraProfile("CAD");
 		
 		// Needs testing: disabling it gives better results in my setup. See:
@@ -106,7 +106,7 @@ public class OnScreenCRD extends PApplet {
 		iFrame.applyTransformation();
 		scene.drawAxis(boxLenghtRatio * 1.3f);
 		// Draw a second box
-		if (scene.interactiveFrame().grabsMouse()) {
+		if (scene.interactiveFrame().grabsDevice()) {
 			fill(255, 0, 0);
 			box(boxLenghtRatio);
 		} else

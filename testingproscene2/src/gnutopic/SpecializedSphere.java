@@ -2,7 +2,7 @@ package gnutopic;
 import processing.core.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import remixlab.proscene.*;
 
 public class SpecializedSphere {
@@ -31,7 +31,7 @@ public class SpecializedSphere {
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, radius()*1.3f);
 		     scene.drawAxis(radius()*1.3f);
-		if (iFrame.grabsMouse()) {
+		if (iFrame.grabsDevice()) {
 			parent.fill(255, 0, 0);
 			parent.sphere(radius()*1.2f);
 		}

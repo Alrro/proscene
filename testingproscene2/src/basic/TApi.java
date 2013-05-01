@@ -4,7 +4,7 @@ import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import geom.Box;
 import geom.Sphere;
 

@@ -88,7 +88,7 @@ public class Combo extends PApplet {
 			auxFrame1.applyTransformation();		
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame1.grabsMouse()) {
+		if (drawHints && frame1.grabsDevice()) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -104,7 +104,7 @@ public class Combo extends PApplet {
 			auxFrame2.applyTransformation();
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame2.grabsMouse()) {
+		if (drawHints && frame2.grabsDevice()) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -120,7 +120,7 @@ public class Combo extends PApplet {
 			auxFrame3.applyTransformation();
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame3.grabsMouse()) {
+		if (drawHints && frame3.grabsDevice()) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}

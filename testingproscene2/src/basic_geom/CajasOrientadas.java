@@ -128,8 +128,8 @@ public class CajasOrientadas extends PApplet {
 	
 	public void keyPressed() {
 		if ((key == 'x') || (key == 'X')) {
-			scene.toggleMouseTracking();
-			println(scene.hasMouseTracking());
+			scene.toggleDeviceTracking();
+			println(scene.isTrackingDevice());
 		}
 		if ((key == 'y') || (key == 'Y')) {
 			scene.setGridDotted(!scene.gridIsDotted());

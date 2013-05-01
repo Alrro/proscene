@@ -4,7 +4,7 @@ import geom.Box;
 import geom.Sphere;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
@@ -48,8 +48,8 @@ public class GalaxyVisualization extends PApplet {
 	
 	public void keyPressed() {
 		if ((key == 'x') || (key == 'x')) {
-			scene.toggleMouseTracking();
-			println(scene.hasMouseTracking());
+			scene.toggleDeviceTracking();
+			println(scene.isTrackingDevice());
 		}
 	}
 		

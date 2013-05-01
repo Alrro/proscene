@@ -7,7 +7,7 @@ package cameracrane;
 
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraints.*;
+import remixlab.remixcam.constraint.*;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
@@ -69,7 +69,7 @@ public class HeliCam {
 	    0.0f, 0.0f, 1.0f));
 	    frame(4).setConstraint(rotor);
 	    frame(4).setSpinningQuaternion(rotation);
-	    frame(4).removeFromMouseGrabberPool();
+	    frame(4).removeFromDeviceGrabberPool();
 	    frame(4).startSpinning(60);
 	  }
 
@@ -79,24 +79,24 @@ public class HeliCam {
 
 	    pg3d.pushMatrix();
 	    frame(0).applyTransformation();
-	    setColor(scn, frame(0).grabsMouse());
+	    setColor(scn, frame(0).grabsDevice());
 	    drawBody(scn);
 
 	    pg3d.pushMatrix();
 	    frame(1).applyTransformation();
-	    setColor(scn, frame(1).grabsMouse());
+	    setColor(scn, frame(1).grabsDevice());
 	    drawSmallCylinder(scn);
 	    drawOneArm(scn);
 
 	    pg3d.pushMatrix();
 	    frame(2).applyTransformation();
-	    setColor(scn, frame(2).grabsMouse());
+	    setColor(scn, frame(2).grabsDevice());
 	    drawSmallCylinder(scn);
 	    drawOneArm(scn);
 
 	    pg3d.pushMatrix();
 	    frame(3).applyTransformation();
-	    setColor(scn, frame(3).grabsMouse());
+	    setColor(scn, frame(3).grabsDevice());
 	    drawHead(scn);
 
 	    // Add light if the flag enables it
@@ -113,7 +113,7 @@ public class HeliCam {
 
 	    pg3d.pushMatrix();
 	    frame(4).applyTransformation();
-	    setColor(scn, frame(4).grabsMouse());
+	    setColor(scn, frame(4).grabsDevice());
 	    drawPropeller(scn);
 
 	    pg3d.popMatrix();// frame(4)
