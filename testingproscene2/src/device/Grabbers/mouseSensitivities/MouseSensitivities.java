@@ -1,4 +1,4 @@
-package mouseSensitivities;
+package device.Grabbers.mouseSensitivities;
 
 import java.util.ArrayList;
 

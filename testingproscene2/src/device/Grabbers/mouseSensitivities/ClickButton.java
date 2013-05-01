@@ -1,10 +1,10 @@
-package mouseSensitivities;
+package device.Grabbers.mouseSensitivities;
 
+import device.Grabbers.mouseSensitivities.MouseSensitivities.Sensitivity;
 import deviceGrabbers.buttons.Button2D;
 import remixlab.proscene.*;
 import remixlab.remixcam.core.*;
 import remixlab.remixcam.geom.*;
-import mouseSensitivities.MouseSensitivities.Sensitivity;
 
 public class ClickButton extends Button2D {
 	boolean increase;
