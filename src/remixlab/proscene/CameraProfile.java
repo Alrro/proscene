@@ -27,7 +27,7 @@ package remixlab.proscene;
 
 import java.util.Map.Entry;
 
-import processing.core.PApplet;
+import processing.core.*;
 import processing.event.*;
 import remixlab.proscene.Scene.CameraKeyboardAction;
 import remixlab.proscene.Scene.ClickAction;
@@ -245,7 +245,7 @@ import remixlab.proscene.Scene.MouseAction;
  * {@link remixlab.proscene.Scene#setAvatar(Trackable)}) then you should register at
  * least one THIRD_PERSON camera profile to your Scene.
  */
-public class CameraProfile {
+public class CameraProfile implements PConstants {
 	public enum Mode {ARCBALL, WHEELED_ARCBALL, CAD, FIRST_PERSON, THIRD_PERSON, CUSTOM}
 	protected String name;
 	protected Scene scene;
@@ -444,10 +444,32 @@ public class CameraProfile {
 	 * Called by {@link remixlab.proscene.DesktopEvents#mousePressed(MouseEvent)}.
 	 */
 	protected MouseAction cameraMouseAction(MouseEvent e) {
+		// /**
 		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers(), e.getButton() );	
 		if (camMouseAction == null)
 			camMouseAction = MouseAction.NO_MOUSE_ACTION;
 		return camMouseAction;
+		// */
+		
+		/**
+		//TODO debug		
+		MouseAction camMouseAction = cameraMouseBinding( e.getModifiers(), e.getButton() );	
+		if (camMouseAction == null)
+			camMouseAction = MouseAction.NO_MOUSE_ACTION;		
+		
+		String button = new String();
+		if(e.getButton() == PApplet.RIGHT)
+			button = "RIGHT ";
+		else if (e.getButton() == PApplet.LEFT)
+			button = "LEFT ";
+		else if (e.getButton() == PApplet.CENTER)
+			button = "CENTER ";
+		System.out.println("Button: " + button + 
+				               ", modifiers: " + DesktopEvents.getModifiersText(e.getModifiers()) +
+                       ", action bound: " + camMouseAction.description());
+		
+		return camMouseAction;
+		// */
 	}
 	
 	/**
