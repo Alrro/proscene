@@ -3358,7 +3358,7 @@ public class Scene implements PConstants {
 			toggleFrameSelectionHintIsDrawn();
 			break;
 		case CONSTRAIN_FRAME:
-			toggleDrawInteractiveFrame();
+			toggleDrawWithConstraint();
 			break;
 		}
 	}
