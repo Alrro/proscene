@@ -281,9 +281,9 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
    */
 	protected void mouseClicked(MouseEvent event) {		
 		if (scene.mouseGrabber() != null)
-			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ event.getButton(), event.getClickCount(), scene.camera());
+			scene.mouseGrabber().mouseClicked(/**event.getPoint(),*/ event.getButton(), event.getCount(), scene.camera());
 		else {
-			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiers(), event.getButton(), event.getClickCount());
+			ClickAction ca = scene.currentCameraProfile().clickBinding(event.getModifiers(), event.getButton(), event.getCount());
 			if (ca != null)
 				scene.handleClickAction(ca);
 		}		
@@ -450,18 +450,18 @@ public class DesktopEvents /** implements MouseWheelListener*/ {
 			if (scene.mouseGrabberIsAnIFrame) { //covers also the case when mouseGrabberIsADrivableFrame
 				InteractiveFrame iFrame = (InteractiveFrame) scene.mouseGrabber();
 				iFrame.startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
-				iFrame.mouseWheelMoved(event.getAmount(), scene.camera());				
+				iFrame.mouseWheelMoved(event.getCount(), scene.camera());	
 			} else
-				scene.mouseGrabber().mouseWheelMoved(event.getAmount(), scene.camera());
+				scene.mouseGrabber().mouseWheelMoved(event.getCount(), scene.camera());
 			return;
 		}
 		if (scene.interactiveFrameIsDrawn()) {
 			scene.interactiveFrame().startAction(scene.currentCameraProfile().frameWheelMouseAction(event), scene.drawIsConstrained());
-			scene.interactiveFrame().mouseWheelMoved(event.getAmount(), scene.camera());
+			scene.interactiveFrame().mouseWheelMoved(event.getCount(), scene.camera());
 			return;
 		}
 		scene.camera().frame().startAction(scene.currentCameraProfile().cameraWheelMouseAction(event), scene.drawIsConstrained());
-		scene.camera().frame().mouseWheelMoved(event.getAmount(), scene.camera());
+		scene.camera().frame().mouseWheelMoved(event.getCount(), scene.camera());
 	}
 	
 	// 3. Utility package dependent functions: java.awt wrappers that should be replaced
