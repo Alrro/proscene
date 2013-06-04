@@ -26,7 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.PApplet;
-import processing.event.MouseEvent;
+import processing.event.*;
 
 /**
  * This class represents mouse shortcuts.
@@ -82,8 +82,21 @@ public final class MouseShortcut {
 	 * @param b mouse button
 	 */
 	public MouseShortcut(Integer m, Integer b) {
-		this.mask = m;
 		this.button = b;
+	  //this.mask = m;
+		// /**
+		//HACK see issue: https://github.com/processing/processing/issues/1693
+		//ALT
+		if(button == PApplet.CENTER) {
+			mask = (Event.ALT | m);
+		}
+		//META
+		else if(button == PApplet.RIGHT) {
+    	mask = (Event.META | m);
+		}
+		else
+			mask = m;
+		// */
 	}	
 	
 	/**

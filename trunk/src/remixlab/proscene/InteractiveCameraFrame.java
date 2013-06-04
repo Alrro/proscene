@@ -325,7 +325,7 @@ public class InteractiveCameraFrame extends InteractiveDrivableFrame {
 			float wheelSensitivityCoef = 8E-4f;
 			// #CONNECTION# mouseMoveEvent() ZOOM case
 			float coef = PApplet.max(PApplet.abs((camera.frame().coordinatesOf(camera.arcballReferencePoint())).z), 0.2f * camera.sceneRadius());
-			PVector trans = new PVector(0.0f, 0.0f, coef * rotation * wheelSensitivity() * wheelSensitivityCoef);						
+			PVector trans = new PVector(0.0f, 0.0f, coef * -rotation * wheelSensitivity() * wheelSensitivityCoef);						
 			translate(inverseTransformOf(trans));
 			break;
 		}

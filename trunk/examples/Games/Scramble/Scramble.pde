@@ -27,7 +27,7 @@ void setup() {
   scene.camera().setPosition(new PVector(-20, 100, 230)); // move the camera
   scene.camera().lookAt(new PVector(0, 0, 0)); // make the camera look at the center of the board
   font1 = loadFont("FreeSans-16.vlw");
-  font2 = loadFont("FreeSans-48.vlw");
+  font2 = loadFont("FreeSans-36.vlw");
 }
 
 void draw() {

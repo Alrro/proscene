@@ -1057,7 +1057,7 @@ public class InteractiveFrame extends Frame implements MouseGrabbable, Cloneable
 	public void mouseWheelMoved(float rotation, Camera camera) {
 		if (action == Scene.MouseAction.ZOOM) {
 			float wheelSensitivityCoef = 8E-4f;			
-			PVector trans = new PVector(0.0f, 0.0f, -rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
+			PVector trans = new PVector(0.0f, 0.0f, rotation * wheelSensitivity() * wheelSensitivityCoef * (PVector.sub(camera.position(), position())).mag());
 			// #CONNECTION# Cut-pasted from the mouseMoveEvent ZOOM case
 			trans = camera.frame().orientation().rotate(trans);
 			if (referenceFrame() != null)
