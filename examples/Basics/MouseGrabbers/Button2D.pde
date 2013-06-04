@@ -21,7 +21,7 @@ public class Button2D extends MouseGrabber {
     super(scn);
     position = p;
     myText = t;    
-    myFont = loadFont("FreeSans-48.vlw"); 
+    myFont = loadFont("FreeSans-36.vlw"); 
     textFont(myFont);
     textAlign(CENTER);
     setText(t);    
