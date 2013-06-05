@@ -1,5 +1,22 @@
 #summary Wiki page containing all the project news.
 
+=14/12/2012 *Proscene v1.2.0-beta1 (a.k.a. v-1.1.96)* "Tumaco Head-_in_" released=
+
+We are pleased to announce the immediate availability of *proscene v1.2.0-beta1*, supporting the recent *Processing-2.0-beta7* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.96.zip here] and install it manually by yourself.
+
+This release supports the new [http://code.google.com/p/processing/wiki/LibraryBasics Processing event model] which completely replaces the [http://docs.oracle.com/javase/6/docs/api/java/awt/event/package-summary.html Java awt one], previously used. Important notes regarding it:
+
+ # *API changes*
+  * Since modifier keys are now directly implemented in *Processing*, some *Proscene* internal enum classes have been removed: `Scene.Button`, `Scene.Arrow`, and `Scene.Modifier`.
+  * For the above reason, the API used to define keyboard shortcuts and mouse bindings has slightly changed, and now looks even simpler. For instance, `setCameraMouseBinding((Scene.Modifier.SHIFT.ID | Scene.Modifier.ALT.ID | Scene.Button.LEFT.ID)`, Scene.MouseAction.ROTATE) which would have bound SHIFT + ALT + mouse left button to camera rotation, has become: `setCameraMouseBinding((Event.SHIFT | Event.ALT), LEFT, Scene.MouseAction.ROTATE)`. You might be able to guess what all the others look like (please refer to the *CameraProfile* documentation for the details). Note, however, that `Processing.Event` key modifier constants differ from their `Processing.PApplet` counterparts, and that you should *only* use the former ones within *Proscene*.
+ # *Known issues*
+  * As of *Processing-2.0-beta7* the mouse wheel is no longer supported. However, its [http://code.google.com/p/processing/issues/detail?id=1423 re-adoption is scheduled] for a future release. In the meantime, you can pressed and drag the CENTER mouse button which zooms in (and out) by default.
+  * Since the new event model doesn't support [http://docs.oracle.com/javase/6/docs/api/java/awt/event/InputEvent.html#getModifiersEx() extended modifier masks], there's no longer possible to bind a *proscene* action to a combination of mouse buttons which represents, admittedly, a rare use case. Fortunately, it's still possible to bind actions to any combination of modifier keys + any _single_ button (as in the above example).
+
+Please refer to the *Basics.PointUnderPixel*, and the *CameraHandling.CameraCustomization* examples which illustrate the new mouse and keyboard customization dialect, and let us know any issue or suggestion you may have.
+
+Users of *Processing 1.5.x* may download [http://proscene.googlecode.com/files/proscene-1.1.1.zip Proscene (v1.1.1)] which is the last version supporting it.
+
 =6/12/2012 *Proscene v1.2.0-alpha4 (a.k.a. v-1.1.95)* "Ibagué dream" released=
 
 ----
