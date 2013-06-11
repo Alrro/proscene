@@ -26,6 +26,7 @@
 package remixlab.proscene;
 
 import processing.core.PApplet;
+import processing.event.Event;
 
 /**
  * This class represents mouse click shortcuts.
@@ -115,12 +116,34 @@ public class ClickBinding {
 	 * @param c bumber of clicks
 	 */
 	public ClickBinding(Integer m, Integer b, Integer c) {
+		/**
 		this.mask = m;
 		this.button = b;
 		if(c <= 0)
 			this.numberOfClicks = 1;
 		else
 			this.numberOfClicks = c;
+		// */
+		
+		// /**
+	  //TODO HACK see issue: https://github.com/processing/processing/issues/1693
+		this.button = b;	  
+		//ALT
+		if(button == PApplet.CENTER) {
+			mask = (Event.ALT | m);
+		}
+		//META
+		else if(button == PApplet.RIGHT) {
+    	mask = (Event.META | m);
+		}
+		else
+			mask = m;	
+		
+		if(c <= 0)
+			this.numberOfClicks = 1;
+		else
+			this.numberOfClicks = c;
+	  // */
 	}
 	
 	/**
