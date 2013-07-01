@@ -1,5 +1,4 @@
 #summary Introducing TerseHandling: proscene-2 action-driven event handler supporting multiple DOFs devices.
-
 #sidebar TableOfContents
 
 <wiki:toc max_depth="1" />
