@@ -8,7 +8,7 @@
   * Choose among one of the provided `TerseHandling` *Agents* (extending it if necessary) and attach to it an event listening mechanism.
   * Reduce (hardware or software) input events: transform inputs event into their `TerseHandling` counterparts.
   * Choose a callback mechanism: direct actionless approach (non-generic programming), or high-level action-driven (which extensively uses generic programming). In the latter case:
-    * Define *shortcuts* over `TerseHandling` events to trigger actions.
+    * Define *shortcuts* over `TerseHandling` events to trigger different actions.
     * Implement the actions to be performed by object grabbers.
 
 `TerseHandling` is a full-fledged, stand-alone library which will become the new event backend for the upcoming Procene-2 series, but can also backed up the event sub-system of any other third party *Java* or *Processing* library.
