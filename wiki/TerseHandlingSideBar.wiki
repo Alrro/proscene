@@ -2,4 +2,4 @@
   * [CallBack Call back mechanism]
   * [GlobalActions Handling global actions]
   * [EventGrabberTupples Enqueueing EventGrabberTupples]
-  * [DOF6Agent Deploying a HIDAgent]
+  * [DOF6Agent Deploying an HIDAgent]
