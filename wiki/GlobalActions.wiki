@@ -1,4 +1,4 @@
-#TerseHandling global actions
+#Terse Handling global actions
 
 = Introduction =
 
