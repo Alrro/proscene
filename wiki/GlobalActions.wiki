@@ -7,9 +7,5 @@ Suppose that we know in advance the precise set of actions our library should su
 
   # Declare groups of actions defined respect to a _global_ set.
   # Implement a much more expressive `TerseHandling` agent able to not only transform input events, but to parse the resulting (transformed) `TerseHandling` events into actions, using generic parameterized *profiles*. Each individual profile holds a mapping between `TerseHandling` *shortcuts* and user-defined actions, allowing full customization of the user-experience, something we dubbed _generic input event sketching_.
-  # Implement an object grabber, define its behavior, and register it at the agent.
+  # Implement an object grabber, define its behavior according to a given group of actions (or to the global set), and register it at the agent.
   # Handle agents and events calling `TerseHandler.handle()` in the main event loop, just as we did in the [CallBack previous tutorial].
-
-With little extra effort.
-Define global actions
-Suppose your library implements a set of pre-defined actions
