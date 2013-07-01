@@ -5,7 +5,19 @@
 
 = Introduction =
 
-Add your content here.
+TerseHandling is a framework designed to [http://processing.org/tutorials/overview/ _skectching_] hardware events
+
+ designed to handle up to [http://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics) 6-DOFs] events which transforms them into actions using a simple callback mechanism, or by allowing the 
+
+It uses two mechanisms using a simple callback mechanism or a user-defined action-driven one.
+
+http://en.wikipedia.org/wiki/Generics_in_Java
+
+. TerseHandling can handle both 
+
+It's 
+
+the new event backend for the upcoming Procene-2 series. 
 
 
 = Details =
