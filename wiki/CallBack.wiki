@@ -1,4 +1,5 @@
 #summary Tersehandling call back mechanism
+#sidebar TerseHandlingSideBar
 
 = Introduction =
 
