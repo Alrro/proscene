@@ -104,4 +104,4 @@ If you run the sketch (found complete at the zip package here), you should see s
 
 http://otrolado.info/local/remixcam-latest/snapshots/boring.png
 
-Mode the mouse around and drag a circle once one is selected!
+Move the mouse around and drag a circle once one is selected!
