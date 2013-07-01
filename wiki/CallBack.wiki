@@ -13,7 +13,7 @@ A simple callback mechanism is illustrated in the example `BoringClickAndDrag`, 
 
 Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, only one of which may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent*, which will be responsible for:
 
-  # Transforming *Processing* MouseEvents into `TerseHandling` DOF2Events.
+  # Transforming *Processing* `MouseEvents` into `TerseHandling` DOF2Events.
   # Defining which `TerseHandling` event will update the grabber in the Agent pool.
   # Defining which `TerseHandling` event will actually trigger an action to be performed by the grabber (if there's one selected).
 
