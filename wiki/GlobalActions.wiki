@@ -1,4 +1,5 @@
-#Terse Handling global actions
+#summary TerseHandling global actions
+#sidebar TerseHandlingSideBar
 
 = Introduction =
 
