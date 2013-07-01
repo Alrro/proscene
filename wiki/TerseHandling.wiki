@@ -1,9 +1,7 @@
 #summary Introducing TerseHandling: proscene-2 action-driven event handler supporting multiple DOFs devices.
 #sidebar TerseHandlingSideBar
 
-<wiki:toc max_depth="1" />
-
-= Introduction to `TerseHandling`=
+=Introduction to `TerseHandling`=
 
 `TerseHandling` is a framework designed to _sketching_ generic input events, i.e., transforming software or hardware input events into high-level user-defined actions, mainly implemented using [http://en.wikipedia.org/wiki/Generics_in_Java generic programming] techniques. It provides its own set of events which supports up to [http://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics) 6-DOFs], together with a set of *agents* which parses them, i.e., identifies object *grabbers* and the *actions* they should perform, allowing the developer to focus on implementing those actions. A developer workflow using `TerseHandling` would typically involve the following tasks:
 
@@ -14,4 +12,4 @@
 
 `TerseHandling` is a full-fledged, stand-alone library which will become the new event backend for the upcoming Procene-2 series, but can also backed up the event sub-system of any other third party *Java* or *Processing* library.
 
-These is a series of `TerseHandling` tutorials implemented as a well commented *Processing* sketches. It requires [https://processing.org/download/ Processing >= 2.x]. The library source code may be found [http://otrolado.info/remixcam.zip here], and its installation instructions [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library#Manual_Install here]. The zip package includes the fully functional tutorials source code under the examples section of the library for you to run them.
+Here we introduce a series of `TerseHandling` tutorials, implemented as a well commented *Processing* sketches. It requires [https://processing.org/download/ Processing >= 2.x]. The library source code may be found [http://otrolado.info/remixcam.zip here], and its installation instructions [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library#Manual_Install here]. The zip package includes the fully functional tutorials source code under the examples section of the library for you to run them. The tutorial series include: CallBack, GlobalActions, EventGrabberTupples, and DOF6Agent. Please use the side bar to navigate among them.
