@@ -29,10 +29,11 @@ public class MouseAgent extends Agent {
   public void mouseEvent(processing.event.MouseEvent e) {
     // Convert the Processing mouse event into the DOF2Event just declared above
     event = new DOF2Event(e.getX(), e.getY());
-    // A Processing mouse move event will update the agent grabber:
+    // A Processing mouse move event will update the agent grabber, i.e.,
+    // it will seek if a grabber in the agent pool grabs the agent:
     if ( e.getAction() == processing.event.MouseEvent.MOVE )
       updateGrabber(event);
-    // ... and a Processing mouse drag event will trigger an action,
+    // ... while a Processing mouse drag event will trigger an action on it,
     // provided that there's an object grabbing the Agent.
     // Note that it could have been the other way around,
     // i.e., a mouse move could have been perfectly used to trigger the action. Please refer to this discussion:
@@ -44,6 +45,8 @@ public class MouseAgent extends Agent {
 }}}
 
 =2. Implementing a simple object grabber=
+
+Implementing an object grabber requires to derive from `AbstractGrabber`, and implement its two abstract methods: `checkIfGrabsInput(BaseEvent event)`, and `performInteraction(BaseEvent event)`. Whilst the former will check if the object grabs the agent, the latter will will attempt to perform an action on the event, provided the object is grabbing the agent.
 
 {{{
 public class GrabbableCircle extends AbstractGrabber {
@@ -67,12 +70,20 @@ public class GrabbableCircle extends AbstractGrabber {
 
 =3. Handling agents=
 
+Finally, we declare a MouseAgent, a TerseHandler object, register our agent at the handler, and call `terseHandler.handle()` at the main event loop.
+
 {{{
+// Declare MouseAgent object, just defined above
+MouseAgent agent;
+// Declare a TerseHandler object
 TerseHandler terseHandler;
 
 void setup() {
   ...
+  // Instantiate the TerseHandler object
   terseHandler = new TerseHandler();
+  // Instantiate the MouseAgent.
+  // Notice that the agent will automatically be added to the TerseHandler object.
   agent = new MouseAgent(terseHandler, "my_mouse");
   registerMethod("mouseEvent", agent);
   ...
