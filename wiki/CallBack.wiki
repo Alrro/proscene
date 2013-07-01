@@ -9,7 +9,7 @@ A simple callback mechanism is illustrated in the example `BoringClickAndDrag`, 
   # Implement an object grabber, define its behavior, and register it at the agent.
   # Handle agents and events calling `TerseHandler.handle()` in the main event loop.
 
-=1. A simple `TerseHandling` Agent=
+=1. Implementing a simple `TerseHandling` Agent=
 
 Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, and only one of those grabbers may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent*, which will be responsible for:
 
@@ -37,12 +37,26 @@ public class MouseAgent extends Agent {
 }
 }}}
 
-=2. A simple object grabber=
+=2. Implementing a simple object grabber=
 
 {{{
 public class GrabbableCircle extends AbstractGrabber {
   ...
-  
+  @Override
+  public boolean checkIfGrabsInput(BaseEvent event) {
+    if (event instanceof DOF2Event) {
+      float x = ((DOF2Event)event).getX();
+      float y = ((DOF2Event)event).getY();
+      return(pow((x - center.x), 2) + pow((y - center.y), 2) <= pow(radius, 2));
+    }      
+    return false;
+  }
+
+  @Override
+  public void performInteraction(BaseEvent event) {
+    setColor();
+    setPositionAndRadius();
+  }
 }}}
 
 =3. Handling agents=
