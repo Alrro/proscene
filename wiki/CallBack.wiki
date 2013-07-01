@@ -11,7 +11,7 @@ A simple callback mechanism is illustrated in the example `BoringClickAndDrag`, 
 
 =1. A simple `TerseHandling` Agent=
 
-Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, and only one grabber pool may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent* which will be responsible for:
+Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, and only one of those grabbers may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent*, which will be responsible for:
 
   # Transforming *Processing* MouseEvents into `TerseHandling` DOF2Events.
   # Defining which `TerseHandling` event will update the grabber in the Agent pool
@@ -19,8 +19,8 @@ Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level
 
 {{{
 public class MouseAgent extends Agent {
+  //Declare a DOF2Event (two degrees-of-freedom) and a ClickEvent TerseHandling events:
   DOF2Event event;
-  ClickEvent clickEvent;
 
   public MouseAgent(TerseHandler scn, String n) {
     super(scn, n);
@@ -28,6 +28,7 @@ public class MouseAgent extends Agent {
 
   public void mouseEvent(processing.event.MouseEvent e) {
     event = new DOF2Event(e.getX(), e.getY());
+    // A Processing mouse move will update the agent grabber:
     if ( e.getAction() == processing.event.MouseEvent.MOVE )
       updateGrabber(event);
     if ( e.getAction() == processing.event.MouseEvent.DRAG )
