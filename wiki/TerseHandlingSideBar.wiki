@@ -1,7 +1,0 @@
-#summary TerseHandling side bar.
-
-* [TerseHandling Introduction]
-* [CallBack Call back mechanism]
-* [GlobalActions Handling global actions]
-* [EventGrabberTupples Enqueueing EventGrabberTupples]
-* [DOF6Agent Deploying a HIDAgent]
