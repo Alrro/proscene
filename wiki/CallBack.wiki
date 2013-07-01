@@ -70,7 +70,7 @@ public class GrabbableCircle extends AbstractGrabber {
 
 =3. Handling agents=
 
-Finally, we declare a MouseAgent, a TerseHandler object, register our agent at the handler, and call `terseHandler.handle()` at the main event loop.
+Finally, we declare a `MouseAgent`, a `TerseHandler` object, register our agent at the handler, and call `terseHandler.handle()` at the main event loop.
 
 {{{
 // Declare MouseAgent object, just defined above
