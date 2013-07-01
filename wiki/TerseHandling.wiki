@@ -12,4 +12,6 @@
     * Define *shortcuts* over `TerseHandling` events to trigger actions.
     * Implement the actions to be performed by object grabbers.
 
-`TerseHandling` is a full-fledged, stand-alone library which will become the new event backend for the upcoming Procene-2 series, but can also backed up the event sub-system of any other third party Java or Processing library.
+`TerseHandling` is a full-fledged, stand-alone library which will become the new event backend for the upcoming Procene-2 series, but can also backed up the event sub-system of any other third party *Java* or *Processing* library.
+
+These is a series of `TerseHandling` tutorials implemented as a well commented *Processing* sketches. It requires [https://processing.org/download/ Processing >= 2.x]. The library source code may be found [http://otrolado.info/remixcam.zip here], and its installation instructions [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library#Manual_Install here]. The zip package includes the fully functional tutorials source code under the examples section of the library for you to run them.
