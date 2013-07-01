@@ -1,7 +1,31 @@
 #summary Tersehandling call back mechanism
 #sidebar TerseHandlingSideBar
 
-= Introduction =
+=Simple callback=
+
+The example `BoringClickAndDrag` implements a simple callback mechanism in which we:
+
+  # Implement a simple `TerseHandling` Agent which transform [http://processing.org/reference/javadoc/core/processing/event/package-summary.html *Processing* mouse events]
+  # Implement an object grabber
+
+{{{
+public class MouseAgent extends Agent {
+  DOF2Event event;
+  ClickEvent clickEvent;
+
+  public MouseAgent(TerseHandler scn, String n) {
+    super(scn, n);
+  }
+
+  public void mouseEvent(processing.event.MouseEvent e) {
+    event = new DOF2Event(e.getX(), e.getY());
+    if ( e.getAction() == processing.event.MouseEvent.MOVE )
+      updateGrabber(event);
+    if ( e.getAction() == processing.event.MouseEvent.DRAG )
+      handle(event);
+  }
+}
+}}}
 
 Add your content here.
 
