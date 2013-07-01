@@ -19,7 +19,7 @@ Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level
 
 {{{
 public class MouseAgent extends Agent {
-  //Declare a DOF2Event (two degrees-of-freedom) and a ClickEvent TerseHandling events:
+  //Declare a DOF2Event (two degrees-of-freedom) event:
   DOF2Event event;
 
   public MouseAgent(TerseHandler scn, String n) {
@@ -91,6 +91,13 @@ void setup() {
 
 void draw() {
   ...
+  // Call the terseHandler handle() method.
+  // In a future tutorial we will study what this function does, and how to bypass it
+  // to handle TerseHandling events "at low level".
   terseHandler.handle();
 }
 }}}
+
+If you run the sketch (found complete at the zip package here), you should see something like this:
+
+http://code.google.com/images/code_sm.png
