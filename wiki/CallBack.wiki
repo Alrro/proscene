@@ -56,6 +56,7 @@ public class GrabbableCircle extends AbstractGrabber {
     if (event instanceof DOF2Event) {
       float x = ((DOF2Event)event).getX();
       float y = ((DOF2Event)event).getY();
+      // Since each grabber has a circle shape, select it if the mouse position lies within it:
       return(pow((x - center.x), 2) + pow((y - center.y), 2) <= pow(radius, 2));
     }      
     return false;
@@ -63,6 +64,7 @@ public class GrabbableCircle extends AbstractGrabber {
 
   @Override
   public void performInteraction(BaseEvent event) {
+    // These functions just update randomly the color and position of the grabber.
     setColor();
     setPositionAndRadius();
   }
