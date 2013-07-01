@@ -1,14 +1,6 @@
 #summary TerseHandling global actions
 #sidebar TerseHandlingSideBar
 
-= Introduction =
-
-Add your content here.
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+With little extra effort.
+Define global actions
+Suppose your library implements a set of pre-defined actions
