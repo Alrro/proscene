@@ -5,32 +5,11 @@
 
 = Introduction =
 
-`TerseHandling` is a framework designed to _sketching_ generic input events, i.e., transforming software or hardware input events into high-level user-defined actions. It provides its own set of events which supports up to [http://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics) 6-DOFs], together with a set of *agents* which parse them, i.e., identify object *grabbers* and the *actions* they should perform, allowing the developer to focus on implementing those actions. A developer workflow using `TerseHandling` would typically involve the following tasks:
+`TerseHandling` is a framework designed to _sketching_ generic input events, i.e., transforming software or hardware input events into high-level user-defined actions, implemented using [http://en.wikipedia.org/wiki/Generics_in_Java generic programming]. It provides its own set of events which supports up to [http://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics) 6-DOFs], together with a set of *agents* which parse them, i.e., identify object *grabbers* and the *actions* they should perform, allowing the developer to focus on implementing those actions. A developer workflow using `TerseHandling` would typically involve the following tasks:
 
-  # Reduce (hardware or software) input events: transform inputs event into their `TerseHandling` counterparts.
-  # Choose a callback mechanism: 1. direct actionless approach, or 2. high-level action-driven. In the latter case:
-    # Define *shortcuts* over `TerseHandling` events to trigger actions.
-    # Implement the actions tp be performed by object grabbers.
+  * Reduce (hardware or software) input events: transform inputs event into their `TerseHandling` counterparts.
+  * Choose a callback mechanism: a. direct actionless approach (no generic programming involve here); or, b. high-level action-driven (which extensively uses generic programming). In the latter case:
+    * Define *shortcuts* over `TerseHandling` events to trigger actions.
+    * Implement the actions to be performed by object grabbers.
 
-
-It can be thought of a 
-
- designed to handle up to [http://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics) 6-DOFs] events which transforms them into actions using a simple callback mechanism, or by allowing the 
-
-It uses two mechanisms using a simple callback mechanism or a user-defined action-driven one.
-
-http://en.wikipedia.org/wiki/Generics_in_Java
-
-. TerseHandling can handle both 
-
-It's 
-
-the new event backend for the upcoming Procene-2 series. 
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+`TerseHandling` is a full-fledged, stand-alone library which is expected to become the new event backend for the upcoming Procene-2 series.
