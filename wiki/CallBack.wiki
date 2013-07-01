@@ -11,10 +11,10 @@ A simple callback mechanism is illustrated in the example `BoringClickAndDrag`, 
 
 =1. Implementing a simple `TerseHandling` Agent=
 
-Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, and only one of those grabbers may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent*, which will be responsible for:
+Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, only one of which may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent*, which will be responsible for:
 
   # Transforming *Processing* MouseEvents into `TerseHandling` DOF2Events.
-  # Defining which `TerseHandling` event will update the grabber in the Agent pool
+  # Defining which `TerseHandling` event will update the grabber in the Agent pool.
   # Defining which `TerseHandling` event will actually trigger an action to be performed by the grabber (if there's one selected).
 
 {{{
@@ -27,10 +27,16 @@ public class MouseAgent extends Agent {
   }
 
   public void mouseEvent(processing.event.MouseEvent e) {
+    // Convert the Processing mouse event into the DOF2Event just declared above
     event = new DOF2Event(e.getX(), e.getY());
-    // A Processing mouse move will update the agent grabber:
+    // A Processing mouse move event will update the agent grabber:
     if ( e.getAction() == processing.event.MouseEvent.MOVE )
       updateGrabber(event);
+    // ... and a Processing mouse drag event will trigger an action,
+    // provided that there's an object grabbing the Agent.
+    // Note that it could have been the other way around,
+    // i.e., a mouse move could have been perfectly used to trigger the action. Please refer to this discussion:
+    // https://forum.processing.org/topic/proscene-rotate-camera-around-scene-center-according-to-2d-mouse-position
     if ( e.getAction() == processing.event.MouseEvent.DRAG )
       handle(event);
   }
