@@ -1,12 +1,17 @@
 #summary Tersehandling call back mechanism
 #sidebar TerseHandlingSideBar
 
+<wiki:toc max_depth="1" />
+
 =Simple callback=
 
-The example `BoringClickAndDrag` implements a simple callback mechanism in which we:
+A simple callback mechanism is illustrated in the example `BoringClickAndDrag`, in which we:
 
-  # Implement a simple `TerseHandling` Agent which transform [http://processing.org/reference/javadoc/core/processing/event/package-summary.html *Processing* mouse events]
-  # Implement an object grabber
+  # Implement a simple `TerseHandling` Agent, which transforms [http://processing.org/reference/javadoc/core/processing/event/package-summary.html Processing mouse events] into `TerseHandling` events.
+  # Implement an object grabber, define its behavior, and register it at the agent.
+  # Call the TerseHandler main loop.
+
+=A simple `TerseHandling` Agent=
 
 {{{
 public class MouseAgent extends Agent {
@@ -27,12 +32,84 @@ public class MouseAgent extends Agent {
 }
 }}}
 
-Add your content here.
+=A simple object grabber=
 
+{{{
+public class GrabbableCircle extends AbstractGrabber {
+  public float radius;
+  public PVector center;
+  public int colour;
 
-= Details =
+  public GrabbableCircle(Agent agent) {
+    agent.addInPool(this);
+    setColor();
+    setPositionAndRadius();
+  }
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  public GrabbableCircle(Agent agent, PVector c, float r) {
+    agent.addInPool(this);
+    radius = r;
+    center = c;    
+    setColor();
+  }
+
+  public void setColor() {
+    setColor(color(random(0, 255), random(0, 255), random(0, 255)));
+  }
+
+  public void setColor(int myC) {
+    colour = myC;
+  }
+
+  public void setPositionAndRadius(PVector p, float r) {
+    center = p;
+    radius = r;
+  }
+
+  public void setPositionAndRadius() {
+    float maxRadius = 50;
+    float low = maxRadius;
+    float highX = w - maxRadius;
+    float highY = h - maxRadius;
+    setPositionAndRadius(new PVector(random(low, highX), random(low, highY)), random(20, maxRadius));
+  }
+
+  public void draw() {
+    draw(colour);
+  }
+
+  public void draw(int c) {
+    pushStyle();
+    fill(c);
+    ellipse(center.x, center.y, 2*radius, 2*radius);
+    popStyle();
+  }
+
+  @Override
+  public boolean checkIfGrabsInput(BaseEvent event) {
+    if (event instanceof DOF2Event) {
+      float x = ((DOF2Event)event).getX();
+      float y = ((DOF2Event)event).getY();
+      return(pow((x - center.x), 2) + pow((y - center.y), 2) <= pow(radius, 2));
+    }      
+    return false;
+  }
+
+  @Override
+  public void performInteraction(BaseEvent event) {
+    setColor();
+    setPositionAndRadius();
+  }
+}
+}}}
+
+=Main loop=
+
+{{{
+void draw() {
+  scene = new TerseHandler();
+  agent = new MouseAgent(scene, "my_mouse");
+  ...
+  scene.handle();
+}
+}}}
