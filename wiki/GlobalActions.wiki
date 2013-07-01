@@ -9,3 +9,86 @@ Suppose that we know in advance the precise set of actions our library should su
   # Implement a much more expressive `TerseHandling` agent able to not only transform input events, but to parse the resulting (transformed) `TerseHandling` events into actions, using generic parameterized *profiles*. Each individual profile holds a mapping between `TerseHandling` *shortcuts* and user-defined actions, allowing full customization of the user-experience, something we dubbed _generic input event sketching_.
   # Implement an object grabber, define its behavior according to a given group of actions (or to the global set), and register it at the agent.
   # Handle agents and events calling `TerseHandler.handle()` in the main event loop, just as we did in the [CallBack previous tutorial].
+
+=Declaring groups of actions respect to a global set=
+
+{{{
+public enum GlobalAction {
+  CHANGE_COLOR, 
+  CHANGE_STROKE_WEIGHT, 
+  CHANGE_POSITION, 
+  CHANGE_SHAPE
+}
+}}}
+
+To circumvent some of the limitations found within Java enums, 
+
+{{{
+public enum MotionAction implements Actionable<GlobalAction> {
+  CHANGE_POSITION(GlobalAction.CHANGE_POSITION), 
+  CHANGE_SHAPE(GlobalAction.CHANGE_SHAPE);
+
+  @Override
+  public GlobalAction referenceAction() {
+    return act;
+  }
+
+  @Override
+  public String description() {
+    return "A simple motion action";
+  }
+
+  @Override
+  public boolean is2D() {
+    return true;
+  }
+
+  @Override
+  public int dofs() {
+    return 2;
+  }
+
+  GlobalAction act;
+
+  MotionAction(GlobalAction a) {
+    act = a;
+  }
+}
+}}}
+
+Same as with the ClickActions, i.e., actions to be carried out as mouse clicked events are triggered (or simulated). 
+
+{{{
+public enum ClickAction implements Actionable<GlobalAction> {
+  CHANGE_COLOR(GlobalAction.CHANGE_COLOR), 
+  CHANGE_STROKE_WEIGHT(GlobalAction.CHANGE_STROKE_WEIGHT);
+
+  // Return the action global mapping defined above.
+  @Override
+  public GlobalAction referenceAction() {
+    return act;
+  }
+
+  ...
+
+  GlobalAction act;
+
+  ClickAction(GlobalAction a) {
+    act = a;
+  }
+}
+}}}
+
+=Implementing a generic `TerseHandling` agent using parameterized profiles=
+
+{{{
+}}}
+
+=Implementing an _action-driven_ object grabber=
+
+{{{
+}}}
+
+=Handlilng agents=
+
+Same as it was shown in the [CallBac previous example].
