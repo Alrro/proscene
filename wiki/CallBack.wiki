@@ -11,6 +11,12 @@ A simple callback mechanism is illustrated in the example `BoringClickAndDrag`, 
 
 =1. A simple `TerseHandling` Agent=
 
+Every `TerseHandling` *Agent* holds a pool of input *grabbers*, i.e., high-level objects which can react to user input, and only one grabber pool may grabbed the agent at a given time (or none). So here we begin by implementing our first `TerseHandling` *Agent* which will be responsible for:
+
+  # Transforming *Processing* MouseEvents into `TerseHandling` DOF2Events.
+  # Defining which `TerseHandling` event will update the grabber in the Agent pool
+  # Defining which `TerseHandling` event will actually trigger an action to be performed by the grabber (if there's one selected).
+
 {{{
 public class MouseAgent extends Agent {
   DOF2Event event;
@@ -30,7 +36,7 @@ public class MouseAgent extends Agent {
 }
 }}}
 
-=A simple object grabber=
+=2. A simple object grabber=
 
 {{{
 public class GrabbableCircle extends AbstractGrabber {
@@ -101,7 +107,7 @@ public class GrabbableCircle extends AbstractGrabber {
 }
 }}}
 
-=Main loop=
+=3. Handling agents=
 
 {{{
 void draw() {
