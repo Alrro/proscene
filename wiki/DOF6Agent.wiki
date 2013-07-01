@@ -1,4 +1,5 @@
-#summary Deploying a DOF6Agent
+#summary Deploying an DOF6Agent
+#sidebar TerseHandlingSideBar
 
 = Introduction =
 
