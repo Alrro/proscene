@@ -90,7 +90,7 @@ As with any generic class, its type is defined according to its parameterization
   # Similar with the `GenericClickProfile`. To put it into words is left as an excercise for the reader:
   # Finally, parameterize the events using the `MotionAction` and the `ClickAction` too (the set of provided generic events reflect those of their non-generic counterparts, shares the same inheritance tree, and may be found at the `remixlab.tersehandling.event` package).
 
-Observe that, while not strictly necessary, we parameterize events to preserve both, consistency and simplicity, e.g., it encourages a given event and the action it encapsulates to share the same DOFs, and allows to keep the following method signature: `AbstractGrabber.performInteraction(BaseEvent event)`, instead of the more complex and ambiguous: `AbstractGrabber.performInteraction(BaseEvent event, Actionable<?> action)`.
+Observe that, while not strictly necessary, we parameterize events to preserve both, consistency and simplicity, e.g., it encourages a given event and the action it encapsulates to share the same DOFs, and it allows to keep the following method signature: `AbstractGrabber.performInteraction(BaseEvent event)`, instead of the more complex and ambiguous: `AbstractGrabber.performInteraction(BaseEvent event, Actionable<?> action)`.
 
 
 {{{
