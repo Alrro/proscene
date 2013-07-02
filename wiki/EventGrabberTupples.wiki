@@ -1,7 +1,7 @@
 #summary EventGrabberTuples
 #sidebar TerseHandlingSideBar
 
-This is a much simpler tutorial showing how "to force" and action on a grabber, bypassing event parsing and simply using message passing from the agent to the grabber instead. The syntax is as follows:
+This is a much simpler tutorial showing how "to force" and action on a grabber, bypassing event parsing, and simply using message passing from the agent to the grabber instead. The syntax is as follows:
 
 {{{
 enqueueEventTuple(new EventGrabberDuobleTuple(event, LOCAL_ACTION, grabber));
