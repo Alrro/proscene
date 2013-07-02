@@ -76,7 +76,7 @@ Therefore, we simply instruct our `MouseAgent` to set our HIDAgent default grabb
 hidAgent.setDefaultGrabber(trackedGrabber());
 }}}
 
-That is all there's to it. Our `MouseAgent` should now look like this:
+That is all there's to it. Our `MouseAgent` `mouseEvent` method should now look like this:
 
 {{{
   public void mouseEvent(processing.event.MouseEvent e) {      
