@@ -98,6 +98,7 @@ public class MouseAgent extends GenericMotionAgent<GenericMotionProfile<MotionAc
     super(new GenericMotionProfile<MotionAction>(), 
     new GenericClickProfile<ClickAction>(), scn, n);
     //Here we can define some default bindings:
+    //(after all, this is what we were after)
     clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
     clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
     clickProfile().setClickBinding(TH_SHIFT, TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
