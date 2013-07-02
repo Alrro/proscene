@@ -12,7 +12,7 @@ Suppose that we know in advance the precise set of actions our library should su
 
 =Declaring groups of actions respect to a global set=
 
-Suppose then that our action global set defining our library functionality is defined as follows:
+Suppose then that our global set of actions defining our library functionality is defined as follows:
 
 {{{
 public enum GlobalAction {
@@ -50,7 +50,7 @@ public enum MotionAction implements Actionable<GlobalAction> {
 }
 }}}
 
-Same as with the `ClickActions`, i.e., actions to be carried out as mouse clicked events are triggered (or simulated). 
+Same as with the `ClickActions`, i.e., actions to be handled as mouse clicked events are triggered (or simulated). 
 
 {{{
 public enum ClickAction implements Actionable<GlobalAction> {
@@ -80,12 +80,94 @@ public enum ClickAction implements Actionable<GlobalAction> {
 
 =Implementing a generic `TerseHandling` agent using parameterized profiles=
 
+We now need to choose a generic `TerseHandling` agent where to start from, and here we choose a `GenericMotionAgent` which seems to be fine suiting our needs since it precisely holds a `GenericMotionProfile` and a `GenericClickProfile` (for the different options, please refer to the `remixlab.tersehandling.duoable.agent` package).
+
+
+As with any generic class, its type is defined according to its parameterization. Here we:
+1. Parameterize the GenericMotionProfile using the MotionAction, and the resulting parameterized GenericMotionProfile to parameterize the GenericMotionAgent.
+2. Similar with the GenericClickProfile. To put it into words is freely left as an excercise for the reader:
+
+
 {{{
+//here we do what what was just so poorly said above:
+public class MouseAgent extends GenericMotionAgent<GenericMotionProfile<MotionAction>, GenericClickProfile<ClickAction>> implements EventConstants {
+  GenericDOF2Event<MotionAction> event, prevEvent;
+  public MouseAgent(TerseHandler scn, String n) {
+    super(new GenericMotionProfile<MotionAction>(), 
+    new GenericClickProfile<ClickAction>(), scn, n);
+    //Here we can define some default bindings:
+    clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
+    clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
+    clickProfile().setClickBinding(TH_SHIFT, TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
+    profile().setBinding(TH_LEFT, MotionAction.CHANGE_POSITION);
+    profile().setBinding(TH_SHIFT, TH_LEFT, MotionAction.CHANGE_SHAPE);
+    profile().setBinding(TH_RIGHT, MotionAction.CHANGE_SHAPE);
+  }
+  
+  //Event listening and transformation:
+  public void mouseEvent(processing.event.MouseEvent e) {
+    //Event chosen to define the selection of grabbers      
+    if ( e.getAction() == processing.event.MouseEvent.MOVE ) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
+      updateGrabber(event);
+      prevEvent = event.get();
+    }
+    //... and the one chosen to perform actions:
+    if ( e.getAction() == processing.event.MouseEvent.DRAG ) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
+      handle(event);
+      prevEvent = event.get();
+    }
+    if ( e.getAction() == processing.event.MouseEvent.CLICK ) {
+      //so "handle" just means: try to perform an action:
+      handle(new GenericClickEvent<ClickAction>(e.getModifiers(), e.getButton(), e.getCount()));
+    }
+  }
+}
 }}}
 
 =Implementing an _action-driven_ object grabber=
 
 {{{
+public class GrabbableCircle extends AbstractGrabber {
+  ...
+  @Override
+  public boolean checkIfGrabsInput(BaseEvent event) {
+    if (event instanceof GenericDOF2Event) {
+      float x = ((GenericDOF2Event<?>)event).getX();
+      float y = ((GenericDOF2Event<?>)event).getY();
+      //It now is an ellipse:
+      return(pow((x - center.x), 2)/pow(radiusX, 2) + pow((y - center.y), 2)/pow(radiusY, 2) <= 1);
+    }      
+    return false;
+  }
+
+  @Override
+  public void performInteraction(BaseEvent event) {
+    if (event instanceof Duoable) {
+      switch ((GlobalAction) ((Duoable<?>)event).action().referenceAction()) {
+        case CHANGE_COLOR:
+        contourColour = color(random(100, 255), random(100, 255), random(100, 255));
+        break;
+      case CHANGE_STROKE_WEIGHT:
+        if (event.isShiftDown()) {					
+          if (sWeight > 1)
+            sWeight--;
+        }
+        else			
+          sWeight++;		
+        break;
+      case CHANGE_POSITION:
+        setPosition( ((GenericDOF2Event<?>)event).getX(), ((GenericDOF2Event<?>)event).getY() );
+        break;
+        case CHANGE_SHAPE:
+        radiusX += ((GenericDOF2Event<?>)event).getDX();
+        radiusY += ((GenericDOF2Event<?>)event).getDY();
+        break;
+      }
+    }
+  }
+}
 }}}
 
 =Handlilng agents=
