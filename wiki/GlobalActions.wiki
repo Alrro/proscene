@@ -12,6 +12,8 @@ Suppose that we know in advance the precise set of actions our library should su
 
 =Declaring groups of actions respect to a global set=
 
+Suppose then that our action global set to be supported by our library is defined as follows:
+
 {{{
 public enum GlobalAction {
   CHANGE_COLOR, 
@@ -21,28 +23,20 @@ public enum GlobalAction {
 }
 }}}
 
-To circumvent some of the limitations found within Java enums, 
+To circumvent some of the limitations found within Java enums, we implement action sub-sets using a generic `interface` expected to be parametarized with the global `enum` action set, and then defining a one-to-one mapping among the local subset and the global set.
 
 {{{
 public enum MotionAction implements Actionable<GlobalAction> {
   CHANGE_POSITION(GlobalAction.CHANGE_POSITION), 
   CHANGE_SHAPE(GlobalAction.CHANGE_SHAPE);
 
+  // Return the action global mapping defined above.
   @Override
   public GlobalAction referenceAction() {
     return act;
   }
-
-  @Override
-  public String description() {
-    return "A simple motion action";
-  }
-
-  @Override
-  public boolean is2D() {
-    return true;
-  }
-
+  ...
+  // local action requires two degrees-of-freedom
   @Override
   public int dofs() {
     return 2;
@@ -56,7 +50,7 @@ public enum MotionAction implements Actionable<GlobalAction> {
 }
 }}}
 
-Same as with the ClickActions, i.e., actions to be carried out as mouse clicked events are triggered (or simulated). 
+Same as with the `ClickActions`, i.e., actions to be carried out as mouse clicked events are triggered (or simulated). 
 
 {{{
 public enum ClickAction implements Actionable<GlobalAction> {
@@ -68,8 +62,13 @@ public enum ClickAction implements Actionable<GlobalAction> {
   public GlobalAction referenceAction() {
     return act;
   }
-
   ...
+  // local "click" action requires no degrees-of-freedom?
+  // yes, why not?
+  @Override
+  public int dofs() {
+    return 0;
+  }
 
   GlobalAction act;
 
