@@ -22,7 +22,7 @@ public enum GlobalAction {
 }
 }}}
 
-and declare a new 6DOF subset of actions:
+and declare a new 6DOF subset of actions (holding just the new one):
 
 {{{
 public enum SpaceAction implements Actionable<GlobalAction> {
@@ -43,7 +43,7 @@ public enum SpaceAction implements Actionable<GlobalAction> {
 
 = Overriding an event feed =
 
-We will implement our `HIDAgent` similarly as we have done it before with our `MouseAgent`, i.e., by extending a paremeterized GenericMotionAgent, but this time using the `SpaceAction` instead of the `MotionAction` for that purpose.
+We will implement our `HIDAgent` similarly as we have done it before with our `MouseAgent`, i.e., by extending a paremeterized GenericMotionAgent, but this time using the `SpaceAction` instead of the `MotionAction`.
 
 {{{
 public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceAction>, GenericClickProfile<ClickAction>> implements EventConstants {
@@ -70,13 +70,13 @@ public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceActio
 
 Each `TerseHandling` *Agent* holds a grabber pool and a default grabber which need no to be in that pool. An Agent can only grab a single object at a given frame. It attempts to do that by first querying the objects in the pool, and, if there's no reply, checking if a default grabber was set.
 
-Therefore we simply instruct our MouseAgent to set our default grabber when an object from its grabber pool gets tracked:
+Therefore, we simply instruct our `MouseAgent` to set our HIDAgent default grabber, whenever an object from its grabber pool gets tracked:
 
 {{{
 `hidAgent.setDefaultGrabber(trackedGrabber());`
 }}}
 
-That is all there's to it. Our MouseAgent should now look like this:
+That is all there's to it. Our `MouseAgent` should now look like this:
 
 {{{
   public void mouseEvent(processing.event.MouseEvent e) {      
