@@ -4,7 +4,7 @@
 This is a much simpler tutorial showing how "to force" and action on a grabber, bypassing parsing and simply using message passing from the agent to the grabber instead. The syntax is as follows:
 
 {{{
-enqueueEventTuple(new EventGrabberDuobleTuple(event, LOCALACTION, grabber));
+enqueueEventTuple(new EventGrabberDuobleTuple(event, LOCAL_ACTION, grabber));
 }}}
 
 The example `ReactableCirclesBypassAgent`, illustrates the idea. The code is identical to that of the previous tutorial, but we just modified a bit the agent mouse listener:
@@ -31,5 +31,3 @@ public void mouseEvent(processing.event.MouseEvent e) {
     }
   }
 }}}
-
-
