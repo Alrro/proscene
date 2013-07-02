@@ -83,6 +83,7 @@ That is all there's to it. Our `MouseAgent` should now look like this:
     if ( e.getAction() == processing.event.MouseEvent.MOVE ) {
       event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
       updateGrabber(event);
+      // and here it comes the new line:
       hidAgent.setDefaultGrabber(trackedGrabber());
       prevEvent = event.get();
     }
