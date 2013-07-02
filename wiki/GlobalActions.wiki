@@ -175,7 +175,7 @@ public class GrabbableCircle extends AbstractGrabber {
 }
 }}}
 
-=Handlilng agents=
+=Handling agents=
 
 Same as it was shown in the [CallBack previous example]. Now if you run the sketch (found complete at the zip package here), you should see something like this:
 
