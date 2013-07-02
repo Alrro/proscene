@@ -1,14 +1,35 @@
 #summary EventGrabberTuples
 #sidebar TerseHandlingSideBar
 
-= Introduction =
+This is a much simpler tutorial showing how "to force" and action on a grabber, bypassing parsing and simply using message passing from the agent to the grabber instead. The syntax is as follows:
 
-Add your content here.
+{{{
+enqueueEventTuple(new EventGrabberDuobleTuple(event, LOCALACTION, grabber));
+}}}
+
+The example `ReactableCirclesBypassAgent`, illustrates the idea. The code is identical to that of the previous tutorial, but we just modified a bit the agent mouse listener:
+
+{{{
+public void mouseEvent(processing.event.MouseEvent e) {      
+    if ( e.getAction() == processing.event.MouseEvent.MOVE ) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
+      updateGrabber(event);
+      prevEvent = event.get();
+    }
+    if ( e.getAction() == processing.event.MouseEvent.DRAG ) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
+      // If the Control modifier key is down when a mouse drag occurs, force a MotionAction.CHANGE_POSITION
+      // on grabber circles[20], using event.
+      if(event.isControlDown())
+        tearseHandler().enqueueEventTuple(new EventGrabberDuobleTuple(event, MotionAction.CHANGE_POSITION, circles[20]));
+      else
+        handle(event);
+      prevEvent = event.get();
+    }
+    if ( e.getAction() == processing.event.MouseEvent.CLICK ) {
+      handle(new GenericClickEvent<ClickAction>(e.getModifiers(), e.getButton(), e.getCount()));
+    }
+  }
+}}}
 
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
