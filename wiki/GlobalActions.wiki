@@ -12,7 +12,7 @@ Suppose that we know in advance the precise set of actions our library should su
 
 =Declaring groups of actions respect to a global set=
 
-Suppose then that our action global set to be supported by our library is defined as follows:
+Suppose then that our action global set defining our library functionality is defined as follows:
 
 {{{
 public enum GlobalAction {
