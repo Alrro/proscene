@@ -84,8 +84,8 @@ We now need to choose a generic `TerseHandling` agent where to start from, and h
 
 As with any generic class, its type is defined according to its parameterization. Here we:
 
-  # Parameterize the GenericMotionProfile using the MotionAction, and the resulting parameterized GenericMotionProfile to parameterize the GenericMotionAgent.
-  # Similar with the GenericClickProfile. To put it into words is freely left as an excercise for the reader:
+  # Parameterize the `GenericMotionProfile` using the `MotionAction`, and the resulting parameterized `GenericMotionProfile` to parameterize the `GenericMotionAgent`.
+  # Similar with the `GenericClickProfile`. To put it into words is freely left as an excercise for the reader:
 
 
 {{{
