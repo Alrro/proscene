@@ -43,7 +43,7 @@ public enum SpaceAction implements Actionable<GlobalAction> {
 
 = Overriding an event feed =
 
-We will implement our `HIDAgent` similarly as we have done it before with our `MouseAgent`, i.e., by extending a paremeterized GenericMotionAgent, but this time using the `SpaceAction` instead of the `MotionAction`.
+We will implement our `HIDAgent` similarly as we have done it before with our `MouseAgent`, i.e., by extending a paremeterized `GenericMotionAgent`, but this time using the `SpaceAction` instead of the `MotionAction`.
 
 {{{
 public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceAction>, GenericClickProfile<ClickAction>> implements EventConstants {
@@ -96,3 +96,5 @@ That is all there's to it. Our `MouseAgent` should now look like this:
     }
   }
 }}}
+
+Now you can play with a space navigator to control some of the objects you declare within your Processing sketch.
