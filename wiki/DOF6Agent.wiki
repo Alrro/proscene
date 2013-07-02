@@ -1,6 +1,8 @@
 #summary Deploying an DOF6Agent
 #sidebar TerseHandlingSideBar
 
+This is a much more
+
 = Adding a new action=
 
 {{{
@@ -67,6 +69,27 @@ public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceActio
 }}}
 
 = `Updating our MouseAgent` =
+
+
+
+{{{
+  public void mouseEvent(processing.event.MouseEvent e) {      
+    if ( e.getAction() == processing.event.MouseEvent.MOVE ) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
+      updateGrabber(event);
+      hidAgent.setDefaultGrabber(trackedGrabber());
+      prevEvent = event.get();
+    }
+    if ( e.getAction() == processing.event.MouseEvent.DRAG ) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(), e.getY(), e.getModifiers(), e.getButton());
+      handle(event);
+      prevEvent = event.get();
+    }
+    if ( e.getAction() == processing.event.MouseEvent.CLICK ) {
+      handle(new GenericClickEvent<ClickAction>(e.getModifiers(), e.getButton(), e.getCount()));
+    }
+  }
+}}}
 
 {{{
 hidAgent.setDefaultGrabber(trackedGrabber());
