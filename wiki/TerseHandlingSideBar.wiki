@@ -2,4 +2,4 @@
   * [CallBack Simple callback mechanism]
   * [GlobalActions Handling global actions]
   * [EventGrabberTupples Enqueueing EventGrabberTupples]
-  * [DOF6Agent Deploying an HIDAgent]
+  * [DOF6Agent Agent feeds]
