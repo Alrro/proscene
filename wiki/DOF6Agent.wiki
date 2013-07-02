@@ -1,14 +1,73 @@
 #summary Deploying an DOF6Agent
 #sidebar TerseHandlingSideBar
 
-= Introduction =
+= Adding a new action=
 
-Add your content here.
+{{{
+public enum GlobalAction {
+  CHANGE_COLOR, 
+  CHANGE_STROKE_WEIGHT, 
+  CHANGE_POSITION, 
+  CHANGE_SHAPE,
+  CHANGE_POS_SHAPE
+}
 
+}}}
 
-= Details =
+{{{
+public enum SpaceAction implements Actionable<GlobalAction> {
+  CHANGE_POS_SHAPE(GlobalAction.CHANGE_POS_SHAPE);
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  @Override
+  public GlobalAction referenceAction() {
+    return act;
+  }
+
+  @Override
+  public String description() {
+    return "A simple motion action";
+  }
+
+  @Override
+  public boolean is2D() {
+    return true;
+  }
+
+  @Override
+  public int dofs() {
+    return 6;
+  }
+
+  GlobalAction act;
+
+  SpaceAction(GlobalAction a) {
+    act = a;
+  }
+}
+}}}
+
+= Overriding an event feed =
+
+{{{
+public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceAction>, GenericClickProfile<ClickAction>> implements EventConstants {
+  public HIDAgent(TerseHandler h, String n) {
+    super(new GenericMotionProfile<SpaceAction>(), new GenericClickProfile<ClickAction>(), h, n);
+    //default bindings
+    profile().setBinding(SpaceAction.CHANGE_POS_SHAPE);
+    disableTracking();
+    setSensitivities(0.01, 0.01, 0.01, 0.0001, 0.0001, 0.0001);
+  }
+
+  @Override
+  public GenericDOF6Event<SpaceAction> feed() {
+    return new GenericDOF6Event<SpaceAction>(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue(),
+                                             sliderXrot.getValue(), sliderYrot.getValue(), sliderZrot.getValue(), 0, 0);
+  }
+}
+}}}
+
+= `Updating our MouseAgent` =
+
+{{{
+hidAgent.setDefaultGrabber(trackedGrabber());
+}}}
