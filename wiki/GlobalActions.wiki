@@ -83,8 +83,9 @@ public enum ClickAction implements Actionable<GlobalAction> {
 We now need to choose a generic `TerseHandling` agent where to start from, and here we take a `GenericMotionAgent` which seems to be fine suiting our needs (for the different options, please refer to the `remixlab.tersehandling.duoable.agent` package): Since it precisely holds a `GenericMotionProfile` and a `GenericClickProfile` (in this case for the different options, please refer to the `remixlab.tersehandling.duoable.profile` package).
 
 As with any generic class, its type is defined according to its parameterization. Here we:
-1. Parameterize the GenericMotionProfile using the MotionAction, and the resulting parameterized GenericMotionProfile to parameterize the GenericMotionAgent.
-2. Similar with the GenericClickProfile. To put it into words is freely left as an excercise for the reader:
+
+  # Parameterize the GenericMotionProfile using the MotionAction, and the resulting parameterized GenericMotionProfile to parameterize the GenericMotionAgent.
+  # Similar with the GenericClickProfile. To put it into words is freely left as an excercise for the reader:
 
 
 {{{
@@ -127,6 +128,8 @@ public class MouseAgent extends GenericMotionAgent<GenericMotionProfile<MotionAc
 
 =Implementing an _action-driven_ object grabber=
 
+We know seek to switch among the different global (or local if sometimes is preferred) actions on the grabber, reacting to the different types of events (or a single type, if local was preferred above):
+
 {{{
 public class GrabbableCircle extends AbstractGrabber {
   ...
@@ -141,6 +144,7 @@ public class GrabbableCircle extends AbstractGrabber {
     return false;
   }
 
+  //Switch on the global action (requires sometimes casting the event then):
   @Override
   public void performInteraction(BaseEvent event) {
     if (event instanceof Duoable) {
