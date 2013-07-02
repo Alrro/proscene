@@ -27,10 +27,11 @@ To circumvent some of the limitations found within Java enums, we implement acti
 
 {{{
 public enum MotionAction implements Actionable<GlobalAction> {
+  //Define the mapping using a proper constructor
   CHANGE_POSITION(GlobalAction.CHANGE_POSITION), 
   CHANGE_SHAPE(GlobalAction.CHANGE_SHAPE);
 
-  // Return the action global mapping defined above.
+  // Return the global mapping just defined above.
   @Override
   public GlobalAction referenceAction() {
     return act;
@@ -54,10 +55,11 @@ Same as with the `ClickActions`, i.e., actions to be handled as mouse clicked ev
 
 {{{
 public enum ClickAction implements Actionable<GlobalAction> {
+  //Define the mapping using a proper constructor
   CHANGE_COLOR(GlobalAction.CHANGE_COLOR), 
   CHANGE_STROKE_WEIGHT(GlobalAction.CHANGE_STROKE_WEIGHT);
 
-  // Return the action global mapping defined above.
+  // Return the global mapping defined above.
   @Override
   public GlobalAction referenceAction() {
     return act;
