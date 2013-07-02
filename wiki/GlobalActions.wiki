@@ -175,4 +175,8 @@ public class GrabbableCircle extends AbstractGrabber {
 
 =Handlilng agents=
 
-Same as it was shown in the [CallBac previous example].
+Same as it was shown in the [CallBack previous example]. Now if you run the sketch (found complete at the zip package here), you should see something like this:
+
+http://otrolado.info/local/remixcam-latest/snapshots/reactable.png
+
+Move the mouse around, drag a circle once one is selected or click it!
