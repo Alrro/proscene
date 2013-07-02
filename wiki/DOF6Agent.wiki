@@ -73,7 +73,7 @@ Each `TerseHandling` *Agent* holds a grabber pool and a default grabber which ne
 Therefore, we simply instruct our `MouseAgent` to set our HIDAgent default grabber, whenever an object from its grabber pool gets tracked:
 
 {{{
-`hidAgent.setDefaultGrabber(trackedGrabber());`
+hidAgent.setDefaultGrabber(trackedGrabber());
 }}}
 
 That is all there's to it. Our `MouseAgent` should now look like this:
@@ -95,8 +95,4 @@ That is all there's to it. Our `MouseAgent` should now look like this:
       handle(new GenericClickEvent<ClickAction>(e.getModifiers(), e.getButton(), e.getCount()));
     }
   }
-}}}
-
-{{{
-hidAgent.setDefaultGrabber(trackedGrabber());
 }}}
