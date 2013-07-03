@@ -55,6 +55,7 @@ public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceActio
     profile().setBinding(SpaceAction.CHANGE_POS_SHAPE);
     //Tracking will only be performed by our MouseAgent:
     disableTracking();
+    //by trial an error we arrived at the following space navigator callibration
     setSensitivities(0.01, 0.01, 0.01, 0.0001, 0.0001, 0.0001);
   }
 
