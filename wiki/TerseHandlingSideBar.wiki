@@ -1,5 +1,6 @@
   * [TerseHandling Introduction]
   * [CallBack A Simple callback mechanism]
+    * [CallBack#Implementing_a_simple_TerseHandling_Agent A Simple Agent]
   * [GlobalActions Handling global actions]
   * [EventGrabberTupples EventGrabberTupples]
   * [DOF6Agent Agent feeds]
