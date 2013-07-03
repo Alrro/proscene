@@ -57,8 +57,7 @@ public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceActio
   }
 
   //Here we convert our external event (the one reported by a third party hardware controller)
-  //to its TerseHandling counterpart, this time an "absolute event"
-  //(please refer to the GlobalActions tutorial for absolute and relative event notions):
+  //to its TerseHandling counterpart, this time an "absolute event" (remembered from our GlobalActions tutorial:
   @Override
   public GenericDOF6Event<SpaceAction> feed() {
     return new GenericDOF6Event<SpaceAction>(sliderXpos.getValue(), sliderYpos.getValue(), sliderZpos.getValue(),
