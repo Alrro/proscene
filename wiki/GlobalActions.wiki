@@ -104,10 +104,12 @@ public class MouseAgent extends GenericMotionAgent<GenericMotionProfile<MotionAc
     new GenericClickProfile<ClickAction>(), scn, n);
     //Here we can define some default bindings:
     //(after all, this is what we were after)
+    //Left button + 1 click -> binds a CHANGE_COLOR click action
     clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
     clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
     clickProfile().setClickBinding(TH_SHIFT, TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
     profile().setBinding(TH_LEFT, MotionAction.CHANGE_POSITION);
+    //Shift modifier + Left button -> binds a CHANGE_SHAPE mouse action
     profile().setBinding(TH_SHIFT, TH_LEFT, MotionAction.CHANGE_SHAPE);
     profile().setBinding(TH_RIGHT, MotionAction.CHANGE_SHAPE);
   }
