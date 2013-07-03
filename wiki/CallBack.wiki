@@ -46,7 +46,7 @@ public class MouseAgent extends Agent {
 
 =Implementing a simple object grabber=
 
-Implementing an object grabber requires to derive from `AbstractGrabber`, and implement its two abstract methods: `checkIfGrabsInput(BaseEvent event)`, and `performInteraction(BaseEvent event)`. Whilst the former will check if the object grabs the agent, the latter will attempt to perform an action on the event, provided the object is grabbing the agent.
+Implementing an object grabber requires either to implement the `AbstractGrabbable` interface, or to derive from `AbstractGrabber`, which is a default implementation of that interface provided for convenience, and to implement its two abstract methods: `checkIfGrabsInput(BaseEvent event)`, and `performInteraction(BaseEvent event)`. Whilst the former will check if the object grabs the agent, the latter will attempt to perform an action on the event, provided the object is grabbing the agent.
 
 {{{
 public class GrabbableCircle extends AbstractGrabber {
