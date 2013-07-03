@@ -140,7 +140,7 @@ public class MouseAgent extends GenericMotionAgent<GenericMotionProfile<MotionAc
 
 =Implementing an _action-driven_ object grabber=
 
-We know seek to switch among the different global actions (or local action if that's your preference) on the grabber, reacting to the different types of events (or it could be a single type, if local actions were the preference above):
+We know seek to switch among the different global actions (or local action if that was the preference) on the grabber, reacting to the different types of events (or it could be a single type, if local actions were the preference above):
 
 {{{
 public class GrabbableCircle extends AbstractGrabber {
