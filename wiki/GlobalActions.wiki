@@ -26,7 +26,7 @@ public enum GlobalAction {
 }
 }}}
 
-To circumvent some of the limitations found within Java enums, we implement action sub-sets using a generic `interface` expected to be parametarized with the global `enum` action set, and then defining a one-to-one mapping among the local subset and the global set. Sounds a bit intimidating, but actually it is quite simple:
+To circumvent some of the limitations found within Java enums, we implement action sub-sets using a generic `interface` expected to be parametarized with the global `enum` action set, and then defining a one-to-one mapping among the local subset and the global set. It sounds a bit intimidating, but actually it is quite simple:
 
 {{{
 public enum MotionAction implements Actionable<GlobalAction> {
