@@ -85,7 +85,7 @@ public enum ClickAction implements Actionable<GlobalAction> {
 
 =Implementing a generic `TerseHandling` agent using parameterized profiles=
 
-We now need to choose a generic `TerseHandling` agent where to start from, and here we take a `GenericMotionAgent` which seems to be fine suiting our needs (for the different options, please refer to the `remixlab.tersehandling.duoable.agent` package): Since it precisely holds a `GenericMotionProfile` and a `GenericClickProfile` (for the different profile options, please refer to the `remixlab.tersehandling.duoable.profile` package).
+We now need to choose a generic `TerseHandling` agent where to start from, and here we take a `GenericMotionAgent` which seems to be fine suiting our needs (for the different options, please refer to the `remixlab.tersehandling.duoable.agent` package): it precisely holds a `GenericMotionProfile` and a `GenericClickProfile` (for the different profile options, please refer to the `remixlab.tersehandling.duoable.profile` package).
 
 As with any generic class, its type is defined according to its parameterization. Here we:
 
