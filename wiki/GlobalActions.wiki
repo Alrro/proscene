@@ -3,7 +3,9 @@
 
 <wiki:toc max_depth="1" />
 
-Suppose that we know in advance the precise set of actions our library should support (a reasonable assumption), together with the hardware needed to carrying them out, i.e., we expect groups of these actions to be carried out only by some specific hardware (or group of events). Hence, a much richer callback mechanism is needed than the one [CallBack previously introduced]. By just putting little extra effort, in the example `ReactableCircles` we show how to:
+Suppose that we know in advance the precise set of actions our library should support (a reasonable assumption), together with the hardware needed to carrying them out. By design, our framework expects groups of these actions to be carried out only by some specific hardware (or group of events), even simultaneously, i.e., to performing different actions, on different objects, eventually controlled with a specific group of events, at the same time, such as within a collaborative immersive experience.
+
+By just putting little extra effort, in the example `ReactableCircles` we show how to implement a much richer callback mechanism than the one [CallBack previously introduced]
 
   # Declare groups of actions defined respect to a _global_ set.
   # Implement a much more expressive `TerseHandling` agent able not only to transform input events, but to parse the resulting `TerseHandling` events counterparts into actions, using generic parameterized *profiles*. Each individual profile holds a mapping between `TerseHandling` *shortcuts* and user-defined actions, allowing easy customization of user input gestures. <wiki:comment>, dubbed _generic input event sketching_</wiki:comment>
