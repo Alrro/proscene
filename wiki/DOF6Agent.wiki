@@ -102,7 +102,7 @@ That is all there's to it. Our `MouseAgent` `mouseEvent` method should now look 
 
 =Updating our reactable circles=
 
-Finally, we implement our now circle 6DOF action in the following `GrabbableCircle.performInteraction` excerpt code:
+Finally, we implement our reactable circle 6DOF action with the code in the following `GrabbableCircle.performInteraction` excerpt:
 
 {{{
       //Here we only take the three event translations and forget about the rotations.
