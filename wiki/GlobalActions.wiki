@@ -95,6 +95,7 @@ As with any generic class, its type is defined according to its parameterization
 
 Observe that, while not strictly necessary, we parameterize events to preserve both, consistency and simplicity, i.e., it encourages a given event and the action it encapsulates to share the same DOFs, and it allows to keep the following method signature: `AbstractGrabber.performInteraction(BaseEvent event)`, instead of the more complex and ambiguous: `AbstractGrabber.performInteraction(BaseEvent event, Actionable<?> action)`.
 
+Also note that each time we generate a `GenericDOF2Event`, we passed to it its predecesor. In such a way we define a _relative event_: by taking a sequence of such events we expect to generate an action. In constrast to that, an _absolute event_ can generate an action by its own, and therefore no event sequence is needed, i.e., no predecesor is needed to instantiate it.
 
 {{{
 //here we do what what was just so poorly said above:
