@@ -100,11 +100,15 @@ That is all there's to it. Our `MouseAgent` `mouseEvent` method should now look 
   }
 }}}
 
-=Updating our Grabbable Circle=
+=Updating our reactable circles=
 
-Finally, we implement our now grabbable circle action in the following `GrabbableCircle.performInteraction` excerpt code:
+Finally, we implement our now circle 6DOF action in the following `GrabbableCircle.performInteraction` excerpt code:
 
 {{{
+      //Here we only take the three event translations and forget about the rotations.
+      //Actually, we also could have converted our DOF6Event into a DOF3Event, lossing 3DOFs.
+      //However, that's part of another future tutorial. In the mean time please check
+      //the remixlab.tersehandling.duoable.event.* API
       case CHANGE_POS_SHAPE:
         radiusX += ((GenericDOF6Event<?>)event).getZ();
         radiusY += ((GenericDOF6Event<?>)event).getZ();
