@@ -119,4 +119,4 @@ Finally, we implement our reactable circle 6DOF action with the code in the foll
         break;
 }}}
 
-Now you can play with a space navigator to control some of the objects you declare within your Processing sketch.
+Now you can play with a space navigator to control (change position and shape) some of the objects you declare within your Processing sketch.
