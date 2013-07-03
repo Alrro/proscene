@@ -74,7 +74,7 @@ public class HIDAgent extends GenericMotionAgent<GenericMotionProfile<SpaceActio
 
 Each `TerseHandling` *Agent* holds a grabber pool and a default grabber which need no to be in that pool. An Agent can only grab a single object at a given frame. It attempts to do that by first querying the objects in the pool, and, if there's no reply, checking if a default grabber was set.
 
-Therefore, after diabling object tracking on the `HIDAgent`, we simply instruct our `MouseAgent` to set our HIDAgent default grabber, whenever an object from its own grabber pool gets tracked:
+Therefore, after disabling object tracking on the `HIDAgent`, we simply instruct our `MouseAgent` to set our HIDAgent default grabber, whenever an object from its own grabber pool gets tracked:
 
 {{{
 hidAgent.setDefaultGrabber(trackedGrabber());
