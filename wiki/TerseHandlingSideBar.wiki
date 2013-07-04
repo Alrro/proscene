@@ -13,3 +13,4 @@
     * [DOF6Agent#Overriding_an_event_feed Overriding an event feed]
     * [DOF6Agent#Updating_our_MouseAgent Updating our mouse agent]
     * [DOF6Agent#Updating_our_reactable_circles Updating our reactable circles]
+  * [http://otrolado.info/tersehandling_api/ Tersehandling API]
