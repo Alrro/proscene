@@ -9,7 +9,7 @@ This is a much simpler tutorial showing how "to force" and action on a grabber, 
 enqueueEventTuple(new EventGrabberDuobleTuple(event, LOCAL_ACTION, grabber));
 }}}
 
-The code is identical to that of the [GlobalActions previous tutorial], but we have modified a bit the agent mouse listener as follows:
+The code is identical to that of the [ActionDrivenCallback previous tutorial], but we have modified a bit the agent mouse listener as follows:
 
 {{{
 public void mouseEvent(processing.event.MouseEvent e) {      
