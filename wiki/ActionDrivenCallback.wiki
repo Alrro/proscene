@@ -3,6 +3,9 @@
 
 <wiki:toc max_depth="1" />
 
+|| These tutorials require [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library]. ||
+|| The complete source code of the tutorials are found under the "*examples*" section of the library package ||
+
 Suppose that we know in advance the precise set of actions our library should support (a reasonable assumption), together with the hardware needed to carrying them out. By design, our framework expects groups of these actions to be carried out only by some specific hardware (or group of events), even simultaneously, i.e., to performing different actions, on different objects, eventually controlled with a specific group of events at the same time, such as within a collaborative immersive experience setup.
 
 By just putting little extra effort, in the example `ReactableCircles` we show how to implement a much richer callback mechanism than the one [CallBack previously introduced]. In this tutorial we will:
