@@ -1,4 +1,4 @@
-#summary EventGrabberTuples
+#summary BaseEventTuples
 #sidebar TerseHandlingSideBar
 
 This is a much simpler tutorial showing how "to force" and action on a grabber, bypassing event parsing, simply by using message passing from the agent to the grabber instead. The syntax is as follows:
