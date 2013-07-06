@@ -7,12 +7,12 @@
 
 Suppose that we know in advance the precise set of actions our library should support (a reasonable assumption), together with the hardware needed to carrying them out. By design, our framework expects groups of these actions to be carried out only by some specific hardware (or group of events), even simultaneously, i.e., to performing different actions, on different objects, eventually controlled with a specific group of events at the same time, such as within a collaborative immersive experience setup.
 
-By just putting little extra effort, in the example `ReactableCircles` we show how to implement a much richer callback mechanism than the one [SimpleCallBack previously introduced]. In this tutorial we will:
+By just putting little extra effort, in the example `ReactableCircles` we show how to implement a much richer callback mechanism than the one [SimpleCallback previously introduced]. In this tutorial we will:
 
   # Declare groups of actions defined respect to a _global_ set.
   # Implement a much more expressive `TerseHandling` agent able not only to transform input events, but to parse the resulting `TerseHandling` events counterparts into actions, using generic parameterized *profiles*. Each individual profile holds a mapping between `TerseHandling` *shortcuts* and user-defined actions, providing reacher means to characterize `TerseHandling` events and hence allowing to trigger more final user actions unambiguously. <wiki:comment>, dubbed _generic input event sketching_</wiki:comment>
   # Implement an object grabber, define its behavior according to a given group of actions (or to the global set), and register it at the agent.
-  # Handle agents and events calling `TerseHandler.handle()` in the main event loop, just as we did in the [SimpleCallBack previous tutorial].
+  # Handle agents and events calling `TerseHandler.handle()` in the main event loop, just as we did in the [SimpleCallback previous tutorial].
 
 =Declaring groups of actions respect to a global set=
 
