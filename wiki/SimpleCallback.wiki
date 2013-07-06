@@ -3,6 +3,9 @@
 
 <wiki:toc max_depth="1" />
 
+|| These tutorials require [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library]. ||
+|| The complete source code of the tutorials are found under the "*examples*" section of the library package ||
+
 To implement a simple callback we will:
 
   # Implement a simple `TerseHandling` Agent, which transforms [http://processing.org/reference/javadoc/core/processing/event/package-summary.html Processing mouse events] into `TerseHandling` events.
