@@ -1,10 +1,10 @@
 #summary Tersehandling call back mechanism
 #sidebar TerseHandlingSideBar
 
-<wiki:toc max_depth="1" />
-
 || These tutorials require [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library]. ||
 || The complete source code of the tutorials are found under the "*examples*" section of the library package ||
+
+<wiki:toc max_depth="1" />
 
 To implement a simple callback we will:
 
