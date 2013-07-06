@@ -12,7 +12,7 @@ By just putting little extra effort, in the example `ReactableCircles` we show h
   # Declare groups of actions defined respect to a _global_ set.
   # Implement a much more expressive `TerseHandling` agent able not only to transform input events, but to parse the resulting `TerseHandling` events counterparts into actions, using generic parameterized *profiles*. Each individual profile holds a mapping between `TerseHandling` *shortcuts* and user-defined actions, providing reacher means to characterize `TerseHandling` events and hence allowing to trigger more final user actions unambiguously. <wiki:comment>, dubbed _generic input event sketching_</wiki:comment>
   # Implement an object grabber, define its behavior according to a given group of actions (or to the global set), and register it at the agent.
-  # Handle agents and events calling `TerseHandler.handle()` in the main event loop, just as we did in the [CallBack previous tutorial].
+  # Handle agents and events calling `TerseHandler.handle()` in the main event loop, just as we did in the [SimpleCallBack previous tutorial].
 
 =Declaring groups of actions respect to a global set=
 
