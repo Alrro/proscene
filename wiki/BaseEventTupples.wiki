@@ -1,8 +1,7 @@
 #summary BaseEventTuples
 #sidebar TerseHandlingSideBar
 
-|| These tutorials require [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library]. ||
-|| The complete source code of the tutorials are found under the "*examples*" section of the library package ||
+|| Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package ||
 
 This is a much simpler tutorial showing how "to force" and action on a grabber, bypassing event parsing, simply by using message passing from the agent to the grabber instead. The syntax is as follows:
 
