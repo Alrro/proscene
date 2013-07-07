@@ -14,4 +14,4 @@
     * [SpaceNavigatorAgentFeed#Updating_our_MouseAgent Updating our mouse agent]
     * [SpaceNavigatorAgentFeed#Updating_our_reactable_circles Updating our reactable circles]
   * [BasicKinect Agent feeds: kinect]
-  * [http://otrolado.info/tersehandling_api/ Tersehandling API]
+  * [http://otrolado.info/tersehandlingApi/ Tersehandling API]
