@@ -7,7 +7,7 @@
     * [ActionDrivenCallback#Implementing_a_generic_TerseHandling_agent_using_parameterized_p Action sets and subsets]
     * [ActionDrivenCallback#Implementing_an_action-driven_object_grabber An action-driven grabber]
     * [ActionDrivenCallback#Handling_agents Handling agents]
-  * [TerseEventTupples TerseEventTupples]
+  * [TerseEventTuples TerseEventTuples]
   * [SpaceNavigatorAgentFeed SpaceNavigatorAgentFeed]
     * [SpaceNavigatorAgentFeed#Adding_a_new_action Adding a 6DOF Action]
     * [SpaceNavigatorAgentFeed#Overriding_an_event_feed Overriding an event feed]
