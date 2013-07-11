@@ -35,10 +35,11 @@ now, each time a finger starts interaction we invoke `updateGrabber(event)` to c
 {{{
 //this is the TUIO function telling us a new finger enters interaction:
 public void addTuioCursor(TuioCursor tcur) {
+    //Reduce tuio report event into its TerseHandling counterpart:
     event = new GenericDOF2Event<MotionAction>(prevEvent, tcur.getScreenX(canvas.width), tcur.getScreenY(canvas.height), 
     0, 0);
 
-    //so we just update the grabber in the agent pool:
+    //so we just update the grabber in the agent pool, using our terseEvent:
     updateGrabber(event);
     Grabbable grabbable = this.trackedGrabber();
 
@@ -49,18 +50,22 @@ public void addTuioCursor(TuioCursor tcur) {
   }
 }}}
 
-Finnally,
+Finally, each time a finger is "dragged", our agent automatically handles the event:
 
 {{{
   public void updateTuioCursor(TuioCursor tcur) {
     Grabbable trackedGrabber = grabMap.get(tcur.getCursorID());
     if (trackedGrabber != null) {
+      //reduce the tuio event into its TerseEvent counterpart:
       event = new GenericDOF2Event<MotionAction>(prevEvent, 
       tcur.getScreenX(canvas.width), 
       tcur.getScreenY(canvas.height), 0, TH_LEFT);
+      //disable tracking to not intervene with the action being performed,
+      //possibly, by more than one finger:
       disableTracking();
       setDefaultGrabber(trackedGrabber);
       handle(event);
+      //renable tracking to allow more fingers to be added or removed:
       enableTracking();
     } 
     else {
