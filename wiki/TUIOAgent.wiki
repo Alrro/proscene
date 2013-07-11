@@ -18,7 +18,7 @@ To achieve this extra-functionality we will:
 
 = Implementing the TUIOAgent =
 
-We declare our TUIOAgent in the same exact way [ActionDrivenCallback#Implementing_a_generic_TerseHandling_agent_using_parameterized_p we've done so far] with our MouseAgent,
+We declare our TUIOAgent in the same exact way [ActionDrivenCallback#Implementing_a_generic_TerseHandling_agent_using_parameterized_p we've done so far] with our MouseAgent, and then
 defining the CHANGE_POSITION motion action binding:
 
 {{{
