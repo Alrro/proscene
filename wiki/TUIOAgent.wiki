@@ -5,11 +5,11 @@
 
 We are happy to offer this new example in collaboration with [http://edumo.net/wp/ Edumo], whom we are very grateful. This example additionally requires:
 
-|| Extra-requirements: 1. [http://www.tuio.org/?processing TUIO Processing client] and, 2. [https://code.google.com/p/tuiodroid/ tuiodroid] (if have an Android enable device) and/or a [http://www.tuio.org/?software tuiosimulator] (if you don't)||
+|| Extra-requirements: 1. [http://www.tuio.org/?processing TUIO Processing client] and, 2. [https://code.google.com/p/tuiodroid/ tuiodroid] (if you have an Android enable device) and/or a [http://www.tuio.org/?software tuiosimulator] (if you don't)||
 
 <wiki:toc max_depth="1" />
 
-This example shows how to plug-in, and setup a touch device allowing to select and control the circles in our [ActionDrivenCallback  previous example]. To make it more interesting, we will allow concurrent finger control, so that various circles can be manipulated with different fingers at the same time. We will also keep the mouse agent intact, so that we still can manipulate the circles using the mouse, as we have done it so far. This examples requires the [http://www.tuio.org/?processing TUIO Processing client] and, either a TUIO tracker such as [https://code.google.com/p/tuiodroid/ android's] (if have an Android enable device) and/or a [http://www.tuio.org/?software TUIO simulator] (if you don't), to send TUIO _finger_ messages from.
+This example shows how to plug-in, and setup a touch device allowing to select and control the circles in our [ActionDrivenCallback  previous example]. To make it more interesting, we will allow concurrent finger control, so that various circles can be manipulated with different fingers at the same time. We will also keep the mouse agent intact, so that we still can manipulate the circles using the mouse, as we have done it so far. This examples requires the [http://www.tuio.org/?processing TUIO Processing client] and, either a TUIO tracker such as [https://code.google.com/p/tuiodroid/ android's] (if you have an Android enable device) and/or a [http://www.tuio.org/?software TUIO simulator] (if you don't), to send TUIO _finger_ messages from.
 
 To implement this setup we will:
 
