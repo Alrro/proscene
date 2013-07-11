@@ -18,14 +18,13 @@ To implement this setup we will:
 
 = Implementing a TUIO Agent =
 
-We  *[*Finger, circle tuples*]* `HashMap` will keep information of which circle is being selected/manipulated by which finger:
+We declare a *[*Finger, circle tuples*]* `HashMap` to keep information about which circle is being selected/manipulated by which finger:
 
 {{{
 Map<Integer, Grabbable> grabMap = new HashMap<Integer, Grabbable>();
 }}}
 
-now, each time a finger starts interaction we just update that map, invoking `updateGrabber(event)`:
-and,
+now, each time a finger starts interaction we just update our `grabMap` first, invoking `updateGrabber(event)`:
 
 {{{
 //this is the TUIO function telling us a new finger enters interaction:
