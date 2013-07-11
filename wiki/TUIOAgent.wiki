@@ -24,14 +24,13 @@ We declare our TUIOAgent in the same exact way [ActionDrivenCallback#Implementin
 public class TUIOAgent extends GenericMotionAgent<GenericMotionProfile<MotionAction>, GenericClickProfile<ClickAction>> implements EventConstants
 }}}
 
-
-and we also declare a *[*Finger, circle tuples*]* `HashMap` to keep information about which circle is being selected/manipulated by which finger:
+and declare a *[*Finger, circle tuples*]* `HashMap` agent extra-attribute, to keep information about which circle is being selected/manipulated by which finger:
 
 {{{
 Map<Integer, Grabbable> grabMap = new HashMap<Integer, Grabbable>();
 }}}
 
-now, each time a finger starts interaction we just update our `grabMap`, invoking `updateGrabber(event)` first to see whether or not a circle was picked:
+now, each time a finger starts interaction we invoke `updateGrabber(event)` to check whether or not a circle was picked, and then update the `grabMap` accordingly:
 
 {{{
 //this is the TUIO function telling us a new finger enters interaction:
@@ -47,6 +46,26 @@ public void addTuioCursor(TuioCursor tcur) {
     if (grabbable != null) {
       grabMap.put(tcur.getCursorID(), grabbable);
     }
+  }
+}}}
+
+Finnally,
+
+{{{
+  public void updateTuioCursor(TuioCursor tcur) {
+    Grabbable trackedGrabber = grabMap.get(tcur.getCursorID());
+    if (trackedGrabber != null) {
+      event = new GenericDOF2Event<MotionAction>(prevEvent, 
+      tcur.getScreenX(canvas.width), 
+      tcur.getScreenY(canvas.height), 0, TH_LEFT);
+      disableTracking();
+      setDefaultGrabber(trackedGrabber);
+      handle(event);
+      enableTracking();
+    } 
+    else {
+    }
+    prevEvent = event.get();
   }
 }}}
 
