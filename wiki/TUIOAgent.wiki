@@ -17,3 +17,31 @@ To implement this setup we will:
   # Register the tuioAgent by updating our scene setup.
 
 = Implementing a TUIO Agent =
+
+We  *[*Finger, circle tuples*]* `HashMap` will keep information of which circle is being selected/manipulated by which finger:
+
+{{{
+Map<Integer, Grabbable> grabMap = new HashMap<Integer, Grabbable>();
+}}}
+
+now, each time a finger starts interaction we just update that map, invoking `updateGrabber(event)`:
+and,
+
+{{{
+//this is the TUIO function telling us a new finger enters interaction:
+public void addTuioCursor(TuioCursor tcur) {
+    event = new GenericDOF2Event<MotionAction>(prevEvent, tcur.getScreenX(canvas.width), tcur.getScreenY(canvas.height), 
+    0, 0);
+
+    //so we just update the grabber in the agent pool:
+    updateGrabber(event);
+    Grabbable grabbable = this.trackedGrabber();
+
+    //and if something gets catched, we update the hashMap:
+    if (grabbable != null) {
+      grabMap.put(tcur.getCursorID(), grabbable);
+    }
+  }
+}}}
+
+= Scene setup update =
