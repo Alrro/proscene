@@ -16,7 +16,7 @@ To implement this setup we will:
   # Implement a TUIOAgent.
   # Register the tuioAgent by updating our scene setup.
 
-= Implementing a TUIO Agent =
+= Implementing the TUIOAgent =
 
 We declare our TUIOAgent in the same exact way [ActionDrivenCallback#Implementing_a_generic_TerseHandling_agent_using_parameterized_p we've done so far] with our MouseAgent:
 
@@ -75,3 +75,27 @@ Finally, each time a finger is "dragged", our agent automatically handles the ev
 }}}
 
 = Scene setup update =
+
+Now that we have implemented our TUIOAgent, we just add it to our TerseHandler, using the scene [http://processing.org/reference/setup_.html setup], and fill in with our circles:
+
+{{{
+...
+MOUSEAgent mouseAgent;
+TUIOAgent tuioAgent;
+...
+void setup() {
+  terseHandler = new TerseHandler();
+  //instantiate the new agent
+  tuioAgent = new TUIOAgent(terseHandler, "my_tuio", g);
+  mouseAgent = new MOUSEAgent(terseHandler, "my_mouse");
+  registerMethod("mouseEvent", mouseAgent);
+  circles = new GrabbableCircle[50];
+  for (int i = 0; i < circles.length; i++) {
+    //circles are added to the mouse agent by default
+    circles[i] = new GrabbableCircle(this, g, mouseAgent);
+    //we also add them to the tuio's:
+    tuioAgent.addInPool(circles[i]);
+  }
+  ...
+}
+}}}
