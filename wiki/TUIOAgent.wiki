@@ -41,7 +41,7 @@ now, each time a finger starts interaction we invoke `updateGrabber(event)` to c
 {{{
 //this is the TUIO function telling us a new finger enters interaction:
 public void addTuioCursor(TuioCursor tcur) {
-    //Reduce tuio report event into its TerseHandling counterpart:
+    //Reduce tuio reported event into its TerseHandling counterpart:
     event = new GenericDOF2Event<MotionAction>(prevEvent, tcur.getScreenX(canvas.width), tcur.getScreenY(canvas.height), 
     0, 0);
 
