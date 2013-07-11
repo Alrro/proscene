@@ -13,6 +13,6 @@
     * [SpaceNavigatorAgentFeed#Overriding_an_event_feed Overriding an event feed]
     * [SpaceNavigatorAgentFeed#Updating_our_MouseAgent Updating our mouse agent]
     * [SpaceNavigatorAgentFeed#Updating_our_reactable_circles Updating our reactable circles]
-  * [TUIOAgent 5. TuioAgent [new] ]
+  * [TUIOAgent 5. TuioAgent (new) ]
   * [BasicKinect 6. More Agent feeds: kinect (soon)]
   * [http://otrolado.info/tersehandlingApi/ Tersehandling API]
