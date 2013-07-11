@@ -18,7 +18,14 @@ To implement this setup we will:
 
 = Implementing a TUIO Agent =
 
-First, we declare a *[*Finger, circle tuples*]* `HashMap` to keep information about which circle is being selected/manipulated by which finger:
+We declare our TUIOAgent in the same exact way we've done [ActionDrivenCallback previously] with our MouseAgent:
+
+{{{
+public class TUIOAgent extends GenericMotionAgent<GenericMotionProfile<MotionAction>, GenericClickProfile<ClickAction>> implements EventConstants
+}}}
+
+
+and we also declare a *[*Finger, circle tuples*]* `HashMap` to keep information about which circle is being selected/manipulated by which finger:
 
 {{{
 Map<Integer, Grabbable> grabMap = new HashMap<Integer, Grabbable>();
