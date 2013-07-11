@@ -18,10 +18,16 @@ To implement this setup we will:
 
 = Implementing the TUIOAgent =
 
-We declare our TUIOAgent in the same exact way [ActionDrivenCallback#Implementing_a_generic_TerseHandling_agent_using_parameterized_p we've done so far] with our MouseAgent:
+We declare our TUIOAgent in the same exact way [ActionDrivenCallback#Implementing_a_generic_TerseHandling_agent_using_parameterized_p we've done so far] with our MouseAgent,
+defining the CHANGE_POSITION motion action binding:
 
 {{{
-public class TUIOAgent extends GenericMotionAgent<GenericMotionProfile<MotionAction>, GenericClickProfile<ClickAction>> implements EventConstants
+public class TUIOAgent extends GenericMotionAgent<GenericMotionProfile<MotionAction>, GenericClickProfile<ClickAction>> implements EventConstants {
+  ...
+  //We use the profile to define the CHANGE_POSITION motion action binding:
+  profile().setBinding(TH_LEFT, MotionAction.CHANGE_POSITION);
+  ...
+}
 }}}
 
 and declare a *[*Finger, circle tuples*]* `HashMap` agent extra-attribute, to keep information about which circle is being selected/manipulated by which finger:
