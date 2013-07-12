@@ -56,6 +56,20 @@ public void addTuioCursor(TuioCursor tcur) {
   }
 }}}
 
+and conversely, we also remove the tuple from the `grabMap` when a finger ends interaction as it leaves tuio touch surface.
+
+{{{
+  // called when a cursor is removed from the scene
+  public void removeTuioCursor(TuioCursor tcur) {
+    event = new GenericDOF2Event<MotionAction>(prevEvent, -1000, -1000, 0, 
+    0);
+
+    updateGrabber(event);
+
+    grabMap.remove(tcur.getCursorID());
+  }
+}}}
+
 Finally, each time a finger is "dragged", our agent automatically handles the event:
 
 {{{
