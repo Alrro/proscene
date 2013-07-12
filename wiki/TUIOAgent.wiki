@@ -88,8 +88,6 @@ Finally, each time a finger is "dragged", our agent automatically handles the ev
       //renable tracking to allow more fingers to be added or removed:
       enableTracking();
     } 
-    else {
-    }
     prevEvent = event.get();
   }
 }}}
