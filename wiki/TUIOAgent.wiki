@@ -73,6 +73,7 @@ Finally, each time a finger is "dragged", our agent automatically handles the ev
 
 {{{
   public void updateTuioCursor(TuioCursor tcur) {
+    //retrieve the circle according to the given finger:
     Grabbable trackedGrabber = grabMap.get(tcur.getCursorID());
     if (trackedGrabber != null) {
       //reduce the tuio event into its TerseEvent counterpart:
