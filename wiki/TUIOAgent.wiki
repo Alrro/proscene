@@ -30,7 +30,7 @@ public class TUIOAgent extends GenericMotionAgent<GenericMotionProfile<MotionAct
 }
 }}}
 
-and declare a *[*Finger, circle tuples*]* `HashMap` agent extra-attribute, to keep track about which circle is being selected/manipulated by which finger:
+and declare a *[*Finger, circle*]* tuple `HashMap` agent extra-attribute, to keep track about which circle is being selected/manipulated by which finger:
 
 {{{
 Map<Integer, Grabbable> grabMap = new HashMap<Integer, Grabbable>();
