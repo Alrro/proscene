@@ -14,5 +14,7 @@
     * [SpaceNavigatorAgentFeed#Updating_our_MouseAgent Updating our mouse agent]
     * [SpaceNavigatorAgentFeed#Updating_our_reactable_circles Updating our reactable circles]
   * [TUIOAgent 5. TuioAgent (new) ]
+    * [TUIOAgent#Implementing_the_TUIOAgent Implementing the TUIOAgent]
+    * [TUIOAgent#Scene_setup_update  Scene setup update]
   * [BasicKinect 6. More Agent feeds: kinect (soon)]
   * [http://otrolado.info/tersehandlingApi/ Tersehandling API]
