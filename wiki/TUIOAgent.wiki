@@ -111,7 +111,7 @@ void setup() {
   for (int i = 0; i < circles.length; i++) {
     //circles are added to the mouse agent by default
     circles[i] = new GrabbableCircle(this, g, mouseAgent);
-    //we also add them to the tuio's:
+    //we also add them to tuio's:
     tuioAgent.addInPool(circles[i]);
   }
   ...
