@@ -49,7 +49,7 @@ public void addTuioCursor(TuioCursor tcur) {
     updateGrabber(event);
     Grabbable grabbable = this.trackedGrabber();
 
-    //and if something gets catched, we update the hashMap:
+    //and if something gets caught, we update the hashMap:
     if (grabbable != null) {
       grabMap.put(tcur.getCursorID(), grabbable);
     }
