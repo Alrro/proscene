@@ -1,5 +1,11 @@
 #summary Wiki page containing all the project news.
 
+=04/06/2013 *Proscene v1.2.0-beta2 (a.k.a. v-1.1.97)* "Casabe wanted" released=
+
+We are pleased to announce the immediate availability of *proscene v1.2.0-beta2*, supporting the recent *Processing-2.0* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.97.zip here] and install it manually by yourself.
+
+MouseShortcuts were slightly modified to deal with a Processing [https://github.com/processing/processing/issues/1693 mouse issue] which was preventing proper scene interactivity. Hopefully this is the last 1.2-beta release, so please give it a thorough testing and report any issue you may find to help us fine tune it before the final 1.2 release.
+
 =14/12/2012 *Proscene v1.2.0-beta1 (a.k.a. v-1.1.96)* "Tumaco Head-_in_" released=
 
 We are pleased to announce the immediate availability of *proscene v1.2.0-beta1*, supporting the recent *Processing-2.0-beta7* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.96.zip here] and install it manually by yourself.
