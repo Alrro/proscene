@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.97)      
+ *                     ProScene (version 1.2.0)      
  *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -99,7 +99,7 @@ import java.util.TimerTask;
  */
 public class Scene implements PConstants {
 	// proscene version
-	public static final String version = "1.1.97";
+	public static final String version = "1.2.0";
 	/**
 	 * Returns the major release version number of proscene as an integer.
 	 * <p>

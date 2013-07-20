@@ -1,5 +1,5 @@
 /**
- *                     ProScene (version 1.1.97)      
+ *                     ProScene (version 1.2.0)      
  *    Copyright (c) 2010-2013 by National University of Colombia
  *                 @author Jean Pierre Charalambos      
  *           http://www.disi.unal.edu.co/grupos/remixlab/
@@ -85,7 +85,7 @@ public final class MouseShortcut {
 		this.button = b;
 	  //this.mask = m;
 		// /**
-		//HACK see issue: https://github.com/processing/processing/issues/1693
+	  //TODO HACK see issue: https://github.com/processing/processing/issues/1693
 		//ALT
 		if(button == PApplet.CENTER) {
 			mask = (Event.ALT | m);
