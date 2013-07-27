@@ -38,13 +38,10 @@ public class Box {
 		
 		parent.fill(255, 0, 0);
 		
-		/**
-		//TODO pending
-		if (iFrame.grabsAgent(agent) )
+		if (iFrame.grabsAgent(scene.prosceneMouse) )
 			parent.fill(255, 0, 0);
 		else
 			parent.fill(getColor());
-		//*/
 		
 		// Draw a box
 		parent.box(w, h, d);

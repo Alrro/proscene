@@ -4,6 +4,7 @@ import grabbers.button.Button2D;
 import processing.core.PVector;
 import remixlab.proscene.Scene;
 import remixlab.tersehandling.event.*;
+import remixlab.tersehandling.generic.event.GenericClickEvent;
 
 public class ClickButton extends Button2D {
 	boolean addBox;
