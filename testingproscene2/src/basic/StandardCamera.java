@@ -35,14 +35,6 @@ public class StandardCamera extends PApplet {
 		scene.setGridIsDrawn(false);
 		scene.addDrawHandler(this, "mainDrawing");
 		
-		/**
-		WorldConstraint constraint2d = new WorldConstraint();
-		PVector direction = new PVector(0,0,1);
-		constraint2d.setRotationConstraint(Type.AXIS, direction);
-		//constraint2d.setTranslationConstraint(Type.PLANE, direction);
-		scene.camera().frame().setConstraint(constraint2d);
-		*/		
-
 		auxCanvas = createGraphics(640, 360, P3D);
 		//auxCanvas = createGraphics(640, 360, OPENGL);
 		// Note that we pass the upper left corner coordinates where the scene
@@ -123,92 +115,6 @@ public class StandardCamera extends PApplet {
 			auxScene.terseHandler().registerAgent(auxKeyboard);
 		}
 	}
-
-	/**
-	public void handleMouse() {
-		if (mouseY < 360) {
-			scene.enableMouseHandling();
-			scene.enableKeyboardHandling();
-			auxScene.disableMouseHandling();
-			auxScene.disableKeyboardHandling();
-		} else {
-			scene.disableMouseHandling();
-			scene.disableKeyboardHandling();
-			auxScene.enableMouseHandling();
-			auxScene.enableKeyboardHandling();
-		}
-	}
-	
-	public void keyPressed() {
-		if(key == 'w') {
-			if(scene.isRightHanded())
-				scene.setLeftHanded();			
-			else
-				scene.setRightHanded();
-			if(scene.isRightHanded())
-				println("Scene is RIGHT handed");
-			else
-				println("Scene is LEFT handed");
-		}
-		if(key == 'W') {
-			if(auxScene.isRightHanded())
-				auxScene.setLeftHanded();			
-			else
-				auxScene.setRightHanded();
-			if(auxScene.isRightHanded())
-				println("auxScene is RIGHT handed");
-			else
-				println("auxScene is LEFT handed");
-		}
-		if(key == 'x') {
-			scene.camera().frame().setScaling(-scene.camera().frame().scaling().x(),
-					                           scene.camera().frame().scaling().y(),
-					                           scene.camera().frame().scaling().z());
-            println("scaling by -x");
-		}
-		if(key == 'X') {
-			scene.camera().frame().setScaling(2*scene.camera().frame().scaling().x(),
-                                              scene.camera().frame().scaling().y(),
-                                              scene.camera().frame().scaling().z());                                              
-			println("scaling by 2x");
-		}
-		if(key == 'y') {
-			scene.camera().frame().setScaling( scene.camera().frame().scaling().x(),
-					                          -scene.camera().frame().scaling().y(),
-					                           scene.camera().frame().scaling().z());
-            println("scaling by -y");
-		}
-		if(key == 'Y') {
-			scene.camera().frame().setScaling(scene.camera().frame().scaling().x(),
-											  2*scene.camera().frame().scaling().y(),
-                                              scene.camera().frame().scaling().z());                                              
-			println("scaling by 2y");
-		}
-		if(key == 'z') {
-			scene.camera().frame().setScaling( scene.camera().frame().scaling().x(),
-					                           scene.camera().frame().scaling().y(),
-					                          -scene.camera().frame().scaling().z());
-            println("scaling by -z");
-		}
-		if(key == 'Z') {
-			scene.camera().frame().setScaling(scene.camera().frame().scaling().x(),
-                                              scene.camera().frame().scaling().y(),
-                                              2*scene.camera().frame().scaling().z());                                              
-			println("scaling by 2z");
-		}		
-		if(key == 'q' || key == 'Q') {
-			/**
-			f1.setScaling( f1.scaling().x(),
-					-f1.scaling().y(),
-					f1.scaling().z()
-					);*/
-	/**
-			scene.camera().lookAt(scene.center());
-		}
-		println("cam mag: " + scene.camera().frame().magnitude());
-	}
-	*/
-
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "basic.StandardCamera" });

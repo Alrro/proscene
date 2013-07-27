@@ -48,6 +48,7 @@ public class ScreenDrawing extends PApplet {
 	
 
 	/**
+	 //TODO pending but really easy :)
 	public void mouseDragged() {
 		if(!scene.mouseIsHandled()) {			
 			if (index < LINE_ITEMS ) {

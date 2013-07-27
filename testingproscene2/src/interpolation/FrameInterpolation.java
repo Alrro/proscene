@@ -65,25 +65,7 @@ public class FrameInterpolation extends PApplet {
 	}
 
 	public void keyPressed() {
-		if( key == 'x' || key == 'X' ) {
-			println(" size: " + scene.terseHandler().globalGrabberList().size());
-			for (Grabbable mg : scene.terseHandler().globalGrabberList()) {
-				if(mg instanceof InteractiveFrame) {
-					InteractiveFrame iF = (InteractiveFrame) mg;// downcast needed
-					if (iF.isInCameraPath()) {
-						println("frame is in cam path! win!!!");
-					}
-					else 
-						println("frame is not in cam path!");
-				}
-				else {
-					println("NOT INSTANCE !!??");
-				}
-			}
-			//println("cam listeners: " + scene.pinhole().frame().listeners() + " number: " + scene.pinhole().frame().listeners().size());
-		}
-		
-	  if ((key == ENTER) || (key == RETURN))
+		if ((key == ENTER) || (key == RETURN))
 	  kfi.toggleInterpolation();
 	  if ( key == 'u')
 	    kfi.setInterpolationSpeed(kfi.interpolationSpeed()-0.25f);
