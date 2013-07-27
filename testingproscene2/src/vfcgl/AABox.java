@@ -1,7 +1,7 @@
 package vfcgl;
 import processing.core.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 import remixlab.proscene.*;
 
 public class AABox {
@@ -37,8 +37,8 @@ public class AABox {
 			drawCube(parent, drawBoundingVolumes, drawAxis);
 			break;
 		case SEMIVISIBLE:
-			Vector3D BBCorner1 = new Vector3D(frame.position().x() - this.halfW, frame.position().y() + this.halfH, frame.position().z() - this.halfD);
-			Vector3D BBCorner2 = new Vector3D(frame.position().x() + this.halfW, frame.position().y() - this.halfH, frame.position().z() + this.halfD);
+			Vec BBCorner1 = new Vec(frame.position().x() - this.halfW, frame.position().y() + this.halfH, frame.position().z() - this.halfD);
+			Vec BBCorner2 = new Vec(frame.position().x() + this.halfW, frame.position().y() - this.halfH, frame.position().z() + this.halfD);
 			switch (camera.aaBoxIsVisible(BBCorner1, BBCorner2)) {
 			case VISIBLE:
 			case SEMIVISIBLE:
@@ -100,22 +100,22 @@ public class AABox {
 				* halfD);
 	}
 
-	public Vector3D getPosition() {
+	public Vec getPosition() {
 		return frame.position();
 	}
 
 	public void setPosition() {
-		frame.setPosition(new Vector3D((float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize,
+		frame.setPosition(new Vec((float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize,
 				                      (float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize, 
 				                      (float) (2 * TestVFCGL.volSize * Math.random()) - TestVFCGL.volSize));
 	}
 
-	public void setPosition(Vector3D pos) {
+	public void setPosition(Vec pos) {
 		frame.setPosition(pos);
 	}
 
-	public Quaternion getOrientation() {
-		return (Quaternion)frame.orientation();
+	public Quat getOrientation() {
+		return (Quat)frame.orientation();
 	}
 
 	public void setColor() {

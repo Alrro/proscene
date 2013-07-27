@@ -2,8 +2,8 @@ package interpolation;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 @SuppressWarnings("serial")
 public class CameraInterpolation extends PApplet {
@@ -16,32 +16,32 @@ public class CameraInterpolation extends PApplet {
 		scene.setAxisIsDrawn(true);
 		//create the camera path:
 		//scene.camera().setPosition(new PVector(80,0,0));
-		scene.camera().setPosition(new Vector3D(80,0,0));
+		scene.camera().setPosition(new Vec(80,0,0));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
 		//scene.camera().setPosition(new PVector(30,30,-80));
-		scene.camera().setPosition(new Vector3D(30,30,-80));
+		scene.camera().setPosition(new Vec(30,30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
 		//scene.camera().setPosition(new PVector(-30,-30,-80));
-		scene.camera().setPosition(new Vector3D(-30,-30,-80));
+		scene.camera().setPosition(new Vec(-30,-30,-80));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
 		//scene.camera().setPosition(new PVector(-80,0,0));
-		scene.camera().setPosition(new Vector3D(-80,0,0));
+		scene.camera().setPosition(new Vec(-80,0,0));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		//scene.showAll();
 		scene.camera().addKeyFrameToPath(1);
 		
 		//
 		//scene.camera().setPosition(new PVector(0,0,1));
-		scene.camera().setPosition(new Vector3D(0,0,1));
+		scene.camera().setPosition(new Vec(0,0,1));
 		scene.camera().lookAt( scene.camera().sceneCenter() );
 		scene.showAll();
 		
@@ -53,7 +53,7 @@ public class CameraInterpolation extends PApplet {
 			scene.camera().keyFrameInterpolator(1).removeKeyFrame(1);
 		}
 		
-		KeyFrameInterpolator kfi = scene.camera().keyFrameInterpolator(scene.path('1'));
+		KeyFrameInterpolator kfi = scene.camera().keyFrameInterpolator(1);
 		if (kfi == null)
 			return;
 		

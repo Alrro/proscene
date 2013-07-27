@@ -3,20 +3,24 @@ package stdcam;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.proscene.Scene.ProsceneKeyboard;
+import remixlab.proscene.Scene.ProsceneMouse;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 // TODO fix me, add draw handler
 public class StandardCamera extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
+	
+	ProsceneMouse mouse, auxMouse;
+	ProsceneKeyboard keyboard, auxKeyboard;
 
 	public void setup() {
 	  size(640, 720, P3D);
 
 	  canvas = createGraphics(640, 360, P3D);
 	  scene = new Scene(this, (PGraphicsOpenGL) canvas);
-	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 	  // enable computation of the frustum planes equations (disabled by default)
 	  scene.enableFrustumEquationsUpdate();
 	  scene.setGridIsDrawn(false);
@@ -32,6 +36,11 @@ public class StandardCamera extends PApplet {
 	  auxScene.setRadius(200);
 	  auxScene.showAll();
 	  auxScene.addDrawHandler(this, "auxiliarDrawing");
+	  
+	  mouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		keyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
+		auxMouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		auxKeyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
 
 	  handleMouse();
 	}
@@ -42,7 +51,7 @@ public class StandardCamera extends PApplet {
 	  p.noStroke();
 	  // the main viewer camera is used to cull the sphere object against its
 	  // frustum
-	  switch (scene.camera().sphereIsVisible(new Vector3D(0, 0, 0), 40)) {
+	  switch (scene.camera().sphereIsVisible(new Vec(0, 0, 0), 40)) {
 	  case VISIBLE:
 	    p.fill(0, 255, 0);
 	    p.sphere(40);
@@ -83,18 +92,17 @@ public class StandardCamera extends PApplet {
 	}
 
 	public void handleMouse() {
-	  if (mouseY < 360) {
-	    scene.enableMouseHandling();
-	    scene.enableKeyboardHandling();
-	    auxScene.disableMouseHandling();
-	    auxScene.disableKeyboardHandling();
-	  } 
-	  else {
-	    scene.disableMouseHandling();
-	    scene.disableKeyboardHandling();
-	    auxScene.enableMouseHandling();
-	    auxScene.enableKeyboardHandling();
-	  }
+		if (mouseY < 360) {		
+			scene.terseHandler().registerAgent(mouse);
+			scene.terseHandler().registerAgent(keyboard);			
+			auxScene.terseHandler().unregisterAgent(auxMouse);
+			auxScene.terseHandler().unregisterAgent(auxKeyboard);
+		} else {
+			scene.terseHandler().unregisterAgent(mouse);
+			scene.terseHandler().unregisterAgent(keyboard);			
+			auxScene.terseHandler().registerAgent(auxMouse);
+			auxScene.terseHandler().registerAgent(auxKeyboard);
+		}
 	}
 	
 	public static void main(String args[]) {

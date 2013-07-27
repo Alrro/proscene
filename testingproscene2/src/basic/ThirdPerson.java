@@ -1,11 +1,12 @@
 package basic;
 import processing.core.*;
 import processing.opengl.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.constraint.*;
-import remixlab.remixcam.profile.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.core.Constants.DOF2Action;
+import remixlab.dandelion.constraint.*;
 import remixlab.proscene.*;
+import remixlab.tersehandling.core.EventConstants;
 
 @SuppressWarnings("serial")
 public class ThirdPerson extends PApplet {
@@ -19,20 +20,21 @@ public class ThirdPerson extends PApplet {
 		scene.setGridIsDrawn(false);
 		scene.setAxisIsDrawn(false);
 		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		
 		avatar = new InteractiveAvatarFrame(scene);
 		avatar.setTrackingDistance(300);
 		avatar.setAzimuth(PI/12);
 		avatar.setInclination(PI/6);
 		
+		//scene.setAvatar(avatar);
+		
 		WorldConstraint baseConstraint = new WorldConstraint();
-		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new Vector3D(0.0f,1.0f,0.0f));
-		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(0.0f,1.0f,0.0f));
+		baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, new Vec(0.0f,1.0f,0.0f));
+		baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vec(0.0f,1.0f,0.0f));
 		avatar.setConstraint(baseConstraint);
 		
-		scene.setInteractiveFrame(avatar);
-		scene.registerCameraProfile( new ThirdPersonCameraProfile(scene, "THIRD_PERSON") );
+		//scene.setInteractiveFrame(avatar);
+		//scene.registerCameraProfile( new ThirdPersonCameraProfile(scene, "THIRD_PERSON") );
 		//scene.setCameraMode( Scene.CameraMode.THIRD_PERSON );
 	}
 
@@ -43,13 +45,10 @@ public class ThirdPerson extends PApplet {
 		// Multiply matrix to get in the frame coordinate system.
 		// applyMatrix(scene.interactiveFrame().matrix()) is possible but inefficient 
 		//scene.interactiveFrame().applyTransformation(this);//very efficient
-		scene.applyTransformation(scene.interactiveFrame());
+		scene.applyTransformation(avatar);
 		// Draw an axis using the Scene static function
 		scene.drawAxis(20);
-		if (scene.interactiveFrameIsDrawn())
-			fill(255, 0, 0);
-		else
-			fill(0,0,255);
+		fill(0,0,255);
 		box(15, 20, 30);
 		popMatrix();
 		
@@ -63,6 +62,31 @@ public class ThirdPerson extends PApplet {
 		vertex(-400, 10, 400);
 		endShape(CLOSE);
 	}	
+	
+	public void keyPressed() { 
+		if(key == 'x') {
+			print("avatar up vector: ");
+			scene.avatar().upVector().print();
+			print("camara up vector b4: ");
+			scene.camera().upVector().print();
+			scene.camera().setUpVector(scene.avatar().upVector());
+			print("camara up vector after: ");
+			scene.camera().upVector().print();
+		}
+		if( key == ' ' )
+		if( !scene.isIn3RDPersonMode() ) {
+			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
+		    scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
+		    scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
+		}
+		else {
+			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.ROTATE);
+			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.ZOOM);
+			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.TRANSLATE);
+			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.SCREEN_TRANSLATE);
+			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_RIGHT, DOF2Action.SCREEN_ROTATE);
+		}
+	}
 		
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "ThirdPerson" });

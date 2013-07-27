@@ -1,8 +1,8 @@
 package cameracrane;
 
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
@@ -25,54 +25,54 @@ public class ArmCam {
 	    // Initialize frames
 	    frame(0).setTranslation(x, y, 0);
 	    frame(1).setTranslation(0, 0, 21);
-	    frame(1).setRotation(new Quaternion(new Vector3D(0.0f, 0.0f, 1.0f), ang));
+	    frame(1).setRotation(new Quat(new Vec(0.0f, 0.0f, 1.0f), ang));
 	    frame(2).setTranslation(0, 0, 35);
 	    frame(3).setTranslation(0, 0, -55);
 	    frame(4).setTranslation(0, -8, 0);    
 	    frame(5).setTranslation(0, -3, 12);
-	    frame(2).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), 1.8f));
-	    frame(3).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), 0.0f));
-	    frame(4).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
-	    frame(5).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
+	    frame(2).setRotation(new Quat(new Vec(1.0f, 0.0f, 0.0f), 1.8f));
+	    frame(3).setRotation(new Quat(new Vec(1.0f, 0.0f, 0.0f), 0.0f));
+	    frame(4).setRotation(new Quat(new Vec(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
+	    frame(5).setRotation(new Quat(new Vec(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
 
 	    // Set frame constraints
 	    WorldConstraint baseConstraint = new WorldConstraint();
 	    baseConstraint.setTranslationConstraint(AxisPlaneConstraint.Type.PLANE, 
-	    new Vector3D(0.0f, 0.0f, 1.0f));
+	    new Vec(0.0f, 0.0f, 1.0f));
 	    baseConstraint.setRotationConstraint(
-	    AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 1.0f));
+	    AxisPlaneConstraint.Type.FORBIDDEN, new Vec(0.0f, 0.0f, 1.0f));
 	    frame(0).setConstraint(baseConstraint);
 
 	    LocalConstraint rotor = new LocalConstraint();
-	    rotor.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 1.0f));
-	    rotor.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(0.0f, 0.0f, 1.0f));
+	    rotor.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vec(0.0f, 0.0f, 1.0f));
+	    rotor.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vec(0.0f, 0.0f, 1.0f));
 	    frame(1).setConstraint(rotor);
 
 	    LocalConstraint XAxis = new LocalConstraint();
-	    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 0.0f));
-	    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(1.0f, 0.0f, 0.0f));
+	    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vec(0.0f, 0.0f, 0.0f));
+	    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vec(1.0f, 0.0f, 0.0f));
 	    frame(2).setConstraint(XAxis);
 
 	    LocalConstraint freeBarMove = new LocalConstraint();
 	    freeBarMove.setRotationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, 
-	    new Vector3D(0.0f, 0.0f, 0.0f));
+	    new Vec(0.0f, 0.0f, 0.0f));
 	    freeBarMove.setTranslationConstraint(AxisPlaneConstraint.Type.AXIS, 
-	    new Vector3D(0.0f, 0.0f, 1.0f));
+	    new Vec(0.0f, 0.0f, 1.0f));
 	    frame(3).setConstraint(freeBarMove);
 
 	    LocalConstraint camBase = new LocalConstraint();
 	    camBase.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, 
-	    new Vector3D(0.0f, 0.0f, 1.0f));
+	    new Vec(0.0f, 0.0f, 1.0f));
 	    camBase.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, 
-	    new Vector3D(0.0f, 0.0f, 1.0f));
+	    new Vec(0.0f, 0.0f, 1.0f));
 	    frame(4).setConstraint(camBase);
-	    frame(4).rotate(new Quaternion(new Vector3D(0,0,1), -PApplet.HALF_PI));
+	    frame(4).rotate(new Quat(new Vec(0,0,1), -PApplet.HALF_PI));
 
 	    LocalConstraint headConstraint = new LocalConstraint();
 	    headConstraint.setTranslationConstraint(
-	    AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 0.0f));
+	    AxisPlaneConstraint.Type.FORBIDDEN, new Vec(0.0f, 0.0f, 0.0f));
 	    headConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, 
-	    new Vector3D(1.0f, 0.0f, 0.0f));
+	    new Vec(1.0f, 0.0f, 0.0f));
 	    frame(5).setConstraint(headConstraint);
 	  }
 
@@ -82,22 +82,22 @@ public class ArmCam {
 
 	    pg3d.pushMatrix();
 	    frame(0).applyTransformation();
-	    setColor(scn, frame(0).grabsDevice());
+	    setColor(scn, frame(0).grabsAgent(scn.prosceneMouse));
 	    drawTripod(scn);
 
 	    pg3d.pushMatrix();
 	    frame(1).applyTransformation();
-	    setColor(scn, frame(1).grabsDevice());
+	    setColor(scn, frame(1).grabsAgent(scn.prosceneMouse));
 	    drawBase(scn);
 
 	    pg3d.pushMatrix();
 	    frame(2).applyTransformation();
-	    setColor(scn, frame(2).grabsDevice());
+	    setColor(scn, frame(2).grabsAgent(scn.prosceneMouse));
 	    drawLongArm(scn);
 
 	    pg3d.pushMatrix();
 
-	    setColor(scn, frame(3).grabsDevice());
+	    setColor(scn, frame(3).grabsAgent(scn.prosceneMouse));
 
 	    // here goes the movement constraint that keeps the camera holder
 	    // attached to the rails
@@ -111,12 +111,12 @@ public class ArmCam {
 
 	    pg3d.pushMatrix();
 	    frame(4).applyTransformation();
-	    setColor(scn, frame(4).grabsDevice());
+	    setColor(scn, frame(4).grabsAgent(scn.prosceneMouse));
 	    drawInvertedBase(scn);
 
 	    pg3d.pushMatrix();
 	    frame(5).applyTransformation();
-	    setColor(scn, frame(5).grabsDevice());
+	    setColor(scn, frame(5).grabsAgent(scn.prosceneMouse));
 	    drawHead(scn);
 
 	    // Add light if the flag enables it

@@ -1,9 +1,9 @@
 package constraints;
 
 import processing.core.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -26,10 +26,6 @@ public class ConstrainedFrame extends PApplet {
 
 		scene = new Scene(this);
 		// press 'i' to switch the interaction between the camera frame and the
-		// interactive frame
-		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
-		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setAxisIsDrawn(true);
 
@@ -44,14 +40,12 @@ public class ConstrainedFrame extends PApplet {
 		activeConstraint = 0;
 
 		frame = new InteractiveFrame(scene);
-		frame.translate(new Vector3D(20f, 20f, 0));
-		scene.setInteractiveFrame(frame);
+		frame.translate(new Vec(20f, 20f, 0));
 		frame.setConstraint(constraints[activeConstraint]);
-		scene.setDrawInteractiveFrame(true);
 
-		Vector3D t = new Vector3D(4, 8, 16);
-		Vector3D s = new Vector3D(-2, -3, -7);
-		Vector3D.projectVectorOnAxis(s, t).print();
+		Vec t = new Vec(4, 8, 16);
+		Vec s = new Vec(-2, -3, -7);
+		Vec.projectVectorOnAxis(s, t).print();
 	}
 
 	public static AxisPlaneConstraint.Type nextTranslationConstraintType(
@@ -272,7 +266,7 @@ public class ConstrainedFrame extends PApplet {
 							.rotationConstraintType()));
 		}
 
-		Vector3D dir = new Vector3D(0.0f, 0.0f, 0.0f);
+		Vec dir = new Vec(0.0f, 0.0f, 0.0f);
 		switch (transDir) {
 		case 0:
 			dir.x(1.0f);

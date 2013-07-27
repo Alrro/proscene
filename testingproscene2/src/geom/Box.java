@@ -1,8 +1,8 @@
 package geom;
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 public class Box {
 	Scene scene;
@@ -47,7 +47,7 @@ public class Box {
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
 			scene.drawAxis(PApplet.max(w,h,d)*1.3f);
 		scene.pg3d().noStroke();
-		if (iFrame.grabsDevice())
+		if (iFrame.grabsAgent(scene.prosceneMouse))
 			scene.pg3d().fill(255,0,0);
 		else
 			scene.pg3d().fill(getColor());
@@ -79,26 +79,26 @@ public class Box {
 		c = myC;
 	}
 	
-	public Vector3D getPosition() {
+	public Vec getPosition() {
 		return iFrame.position();
 	}	
 	
 	public void setPosition() {
 		float low = -100;
 		float high = 100;
-		iFrame.setPosition(new Vector3D(scene.parent.random(low, high), scene.parent.random(low, high), scene.parent.random(low, high)));
+		iFrame.setPosition(new Vec(scene.parent.random(low, high), scene.parent.random(low, high), scene.parent.random(low, high)));
 	}
 	
-	public void setPosition(Vector3D pos) {
+	public void setPosition(Vec pos) {
 		iFrame.setPosition(pos);
 	}
 	
-	public Quaternion getOrientation() {
-		return (Quaternion)iFrame.orientation();
+	public Quat getOrientation() {
+		return (Quat)iFrame.orientation();
 	}
 	
-	public void setOrientation(Vector3D v) {
-		Vector3D to = Vector3D.sub(v, iFrame.position()); 
-		iFrame.setOrientation(new Quaternion(new Vector3D(0,1,0), to));
+	public void setOrientation(Vec v) {
+		Vec to = Vec.sub(v, iFrame.position()); 
+		iFrame.setOrientation(new Quat(new Vec(0,1,0), to));
 	}
 }

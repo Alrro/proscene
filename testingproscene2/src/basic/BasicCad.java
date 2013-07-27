@@ -2,9 +2,6 @@ package basic;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.geom.*;
-//import remixlab.remixcam.device.*;
-import remixlab.remixcam.profile.*;
 
 public class BasicCad extends PApplet {
 	private static final long serialVersionUID = 1L;
@@ -14,14 +11,7 @@ public class BasicCad extends PApplet {
 	public void setup() {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
-	  //Register a CAD Camera profile and name it "CAD_CAM"
-	  scene.registerCameraProfile(new CadCameraProfile(scene, "CAD_CAM"));
-	  //Set the CAD_CAM as the current camera profile
-	  scene.setCurrentCameraProfile("CAD_CAM");
-	  //Unregister the  first-person camera profile (i.e., leave WHEELED_ARCBALL and CAD_CAM)
-	  scene.unregisterCameraProfile("FIRST_PERSON");	  
-	  //scene.camera().frame().setCADAxis(new Vector3D(0, 1, 0));
-	  //scene.camera().frame().setCADAxis(new Vector3D(0, 0, -1));
+	  scene.camera().setCadRotate(true);
 	}	
 
 	public void draw() {

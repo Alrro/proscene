@@ -1,8 +1,8 @@
 package geom;
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 public class Sphere {
 	Scene scene;
@@ -37,7 +37,7 @@ public class Sphere {
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, radius()*1.3f);
 		     scene.drawAxis(radius()*1.3f);
-		if (iFrame.grabsDevice()) {
+		if (iFrame.grabsAgent(scene.prosceneMouse)) {
 			parent.fill(255, 0, 0);
 			parent.sphere(radius()*1.2f);
 		}
@@ -68,11 +68,11 @@ public class Sphere {
 		c = myC;
 	}
 	
-	public void setPosition(Vector3D pos) {
+	public void setPosition(Vec pos) {
 		iFrame.setPosition(pos);
 	}
 	
-	public Vector3D getPosition() {
+	public Vec getPosition() {
 		return iFrame.position();
 	}
 }

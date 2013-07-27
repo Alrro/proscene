@@ -1,10 +1,9 @@
 package basic;
 
 import processing.core.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
-import remixlab.remixcam.profile.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 import remixlab.proscene.*;
 import controlP5.*;
 
@@ -53,8 +52,8 @@ public class OnScreenCRD extends PApplet {
 	Scene scene;
 	InteractiveFrame iFrame;
 	InteractiveFrame planeIFrame;
-	Vector3D slide = new Vector3D();
-	Vector3D tranSlide = new Vector3D();
+	Vec slide = new Vec();
+	Vec tranSlide = new Vec();
 	ControlP5 controlP5;
 
 	int sliderValue = 0;
@@ -63,9 +62,6 @@ public class OnScreenCRD extends PApplet {
 	public void setup() {
 		size(w, h, P3D);
 		scene = new Scene(this);
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
-		// press 'i' to switch the interaction between the camera frame and the interactive frame
-		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		scene.showAll();
 
 		iFrame = new InteractiveFrame(scene);
@@ -74,16 +70,12 @@ public class OnScreenCRD extends PApplet {
 		LocalConstraint constraint = new LocalConstraint();
 		constraint.setTranslationConstraintType(AxisPlaneConstraint.Type.FORBIDDEN);
 		iFrame.setConstraint(constraint);
-
-		scene.setInteractiveFrame(iFrame);		
+	
 		planeIFrame = new InteractiveFrame(scene);
 		
 		controlP5 = new ControlP5(this);
 		controlP5.addSlider("sliderValue", -100, 100, sliderValue, 10, 50, 100, 10);
 		controlP5.setAutoDraw(false);
-
-		scene.registerCameraProfile(new CadCameraProfile(scene, "CAD"));
-		scene.setCurrentCameraProfile("CAD");
 		
 		// Needs testing: disabling it gives better results in my setup. See:
 		// 1. http://code.google.com/p/proscene/issues/detail?id=7
@@ -105,30 +97,18 @@ public class OnScreenCRD extends PApplet {
 		pushMatrix();
 		iFrame.applyTransformation();
 		scene.drawAxis(boxLenghtRatio * 1.3f);
-		// Draw a second box
-		if (scene.interactiveFrame().grabsDevice()) {
-			fill(255, 0, 0);
-			box(boxLenghtRatio);
-		} else
-		if (scene.interactiveFrameIsDrawn()) {
-			fill(0, 255, 255);
-			box(boxLenghtRatio);
-		} else {
-			fill(0, 0, 255);
-			box(boxLenghtRatio);
-		}
 		popMatrix();
 		popMatrix();
 
 		if (rotateRespectToWorld) {
-			slide = Vector3D.mult(iFrame.yAxis(), -sliderValue);
+			slide = Vec.mult(iFrame.yAxis(), -sliderValue);
 			planeIFrame.setTranslation(slide);
 			planeIFrame.setRotation(iFrame.rotation());
 		}		
 		else {
 			// far from simple
-			Vector3D oldSlide = slide.get();
-			slide = new Vector3D(0, 0, (sliderValue-oldSliderValue));
+			Vec oldSlide = slide.get();
+			slide = new Vec(0, 0, (sliderValue-oldSliderValue));
 			boolean changed = ((oldSlide.x() != slide.x()) || (oldSlide.y() != slide.y()) || (oldSlide.z() != slide.z()));
 			tranSlide = planeIFrame.inverseTransformOf(slide);			
 			if (planeIFrame.referenceFrame() != null)
@@ -137,7 +117,7 @@ public class OnScreenCRD extends PApplet {
 				oldSliderValue = sliderValue;
 				planeIFrame.translate(tranSlide);
 			}
-			planeIFrame.setRotation( (Quaternion) iFrame.rotation().get() );
+			planeIFrame.setRotation( (Quat) iFrame.rotation().get() );
 		}		
 
 		pushMatrix();
@@ -170,7 +150,7 @@ public class OnScreenCRD extends PApplet {
 	 * zFar Please refer to camera.unprojectedCoordinatesOf.
 	 */
 	public void parameteriseNavigator() {
-		iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new Vector3D(screenX, screenY, screenZ)));
+		iFrame.setPosition(scene.camera().unprojectedCoordinatesOf(new Vec(screenX, screenY, screenZ)));
 		this.boxLenghtRatio = boxLenght	* scene.camera().pixelP5Ratio(iFrame.position());
 	}	
 
@@ -236,13 +216,5 @@ public class OnScreenCRD extends PApplet {
 		else
 			println("Scene is LEFT handed");
 		println("cam mag: " + scene.camera().frame().magnitude());
-	}
-
-	public void mousePressed() {
-		if (mouseX < 100) {
-			scene.disableMouseHandling();
-		} else {
-			scene.enableMouseHandling();
-		}
 	}
 }

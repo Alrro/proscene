@@ -1,8 +1,8 @@
 package constraints;
 import processing.core.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 import remixlab.proscene.*;
 
 @SuppressWarnings("serial")
@@ -158,7 +158,7 @@ public class ConstrainedCamera extends PApplet  {
 			constraints[activeConstraint].setRotationConstraintType(nextRotationConstraintType(constraints[activeConstraint].rotationConstraintType()));
 		}
 		
-		Vector3D dir = new Vector3D(0.0f, 0.0f, 0.0f);
+		Vec dir = new Vec(0.0f, 0.0f, 0.0f);
 		switch (transDir) {
 		case 0 : dir.x(1.0f); break;
 		case 1 : dir.y(1.0f); break;

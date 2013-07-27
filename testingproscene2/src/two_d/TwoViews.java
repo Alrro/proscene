@@ -2,15 +2,18 @@ package two_d;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.proscene.Scene.ProsceneKeyboard;
+import remixlab.proscene.Scene.ProsceneMouse;
 
 @SuppressWarnings("serial")
 public class TwoViews extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
-	String renderer = P2D;
-	//String renderer = JAVA2D;
+	//String renderer = P2D;
+	String renderer = JAVA2D;
+	
+	ProsceneMouse mouse, auxMouse;
+	ProsceneKeyboard keyboard, auxKeyboard;
 	
 	public void setup() {		
 		size(640, 720, renderer);
@@ -25,6 +28,11 @@ public class TwoViews extends PApplet {
 		auxScene = new Scene(this, auxCanvas, 0, 360);		
 		auxScene.setRadius(200);
 		auxScene.showAll();
+		
+		mouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		keyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
+		auxMouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		auxKeyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
 		
 		handleMouse();
 	}
@@ -62,16 +70,16 @@ public class TwoViews extends PApplet {
 	}
 	
 	public void handleMouse() {
-		if (mouseY < 360) {
-			scene.enableMouseHandling();
-			scene.enableKeyboardHandling();
-			auxScene.disableMouseHandling();
-			auxScene.disableKeyboardHandling();
+		if (mouseY < 360) {		
+			scene.terseHandler().registerAgent(mouse);
+			scene.terseHandler().registerAgent(keyboard);			
+			auxScene.terseHandler().unregisterAgent(auxMouse);
+			auxScene.terseHandler().unregisterAgent(auxKeyboard);
 		} else {
-			scene.disableMouseHandling();
-			scene.disableKeyboardHandling();
-			auxScene.enableMouseHandling();
-			auxScene.enableKeyboardHandling();			
+			scene.terseHandler().unregisterAgent(mouse);
+			scene.terseHandler().unregisterAgent(keyboard);			
+			auxScene.terseHandler().registerAgent(auxMouse);
+			auxScene.terseHandler().registerAgent(auxKeyboard);
 		}
 	}
 	

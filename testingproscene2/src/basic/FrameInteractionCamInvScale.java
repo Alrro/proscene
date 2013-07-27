@@ -1,8 +1,8 @@
 package basic;
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 @SuppressWarnings("serial")
 public class FrameInteractionCamInvScale extends PApplet {
@@ -14,12 +14,10 @@ public class FrameInteractionCamInvScale extends PApplet {
 		scene = new Scene(this);		
 		iFrame1 = new InteractiveFrame(scene);
 		iFrame2 = new InteractiveFrame(scene);
-		iFrame1.translate(new Vector3D(0, 0, 100));
-		iFrame2.translate(new Vector3D(0, 0, -100));
-		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		iFrame1.translate(new Vec(0, 0, 100));
+		iFrame2.translate(new Vec(0, 0, -100));
 		scene.setAxisIsDrawn(false);
-		scene.camera().setPosition(new Vector3D(0,0,0));
+		scene.camera().setPosition(new Vec(0,0,0));
 	}
 
 	public void draw() {

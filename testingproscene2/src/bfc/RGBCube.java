@@ -4,30 +4,35 @@ import java.util.ArrayList;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.core.Camera.Cone;
-
+import remixlab.proscene.Scene.ProsceneKeyboard;
+import remixlab.proscene.Scene.ProsceneMouse;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.core.Camera.Cone;
 
 @SuppressWarnings("serial")
 public class RGBCube extends PApplet {
 	float size = 50;
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
+	
+	ProsceneMouse mouse, auxMouse;
+	ProsceneKeyboard keyboard, auxKeyboard;
+
 	PGraphics3D g3;
-	Vector3D normalXPos = new Vector3D(1,0,0);
-	Vector3D normalYPos = new Vector3D(0,1,0);
-	Vector3D normalZPos = new Vector3D(0,0,1);
-	Vector3D normalXNeg = new Vector3D(-1,0,0);
-	Vector3D normalYNeg = new Vector3D(0,-1,0);
-	Vector3D normalZNeg = new Vector3D(0,0,-1);
+	Vec normalXPos = new Vec(1,0,0);
+	Vec normalYPos = new Vec(0,1,0);
+	Vec normalZPos = new Vec(0,0,1);
+	Vec normalXNeg = new Vec(-1,0,0);
+	Vec normalYNeg = new Vec(0,-1,0);
+	Vec normalZNeg = new Vec(0,0,-1);
 	ArrayList<Camera.Cone> normalCones; 
-	ArrayList<Vector3D> normals;
-	Vector3D [] normalArray = new Vector3D [2];	
+	ArrayList<Vec> normals;
+	Vec [] normalArray = new Vec [2];	
 
 	public void setup() {
 		size(640, 720, P3D);
-		normals = new ArrayList<Vector3D>();
+		normals = new ArrayList<Vec>();
 		normals.add(normalZPos);
 		normals.add(normalXPos);
 		normals.add(normalYPos);
@@ -41,7 +46,6 @@ public class RGBCube extends PApplet {
 		
 		canvas = createGraphics(640, 360, P3D);
 		scene = new Scene(this, (PGraphicsOpenGL) canvas);
-		scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 		// enable computation of the frustum planes equations (disabled by
 		// default)
 		//scene.enableFrustumEquationsUpdate();
@@ -56,6 +60,11 @@ public class RGBCube extends PApplet {
 		auxScene.setRadius(200);
 		auxScene.showAll();
 		auxScene.addDrawHandler(this, "auxiliarDrawing");
+		
+		mouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		keyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
+		auxMouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		auxKeyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
 
 		handleMouse();
 
@@ -66,16 +75,16 @@ public class RGBCube extends PApplet {
 		Cone cone = scene.camera().new Cone(normals);
 		println( "cone angle: " + cone.angle() + " cone axis: " + cone.axis() );
 		
-		ArrayList<Vector3D> nT = new ArrayList<Vector3D>();
-		nT.add(new Vector3D(1,1,1));
-		nT.add(new Vector3D(1,1,-1));
-		nT.add(new Vector3D(1,-1,1));
-		nT.add(new Vector3D(1,-1,-1));
+		ArrayList<Vec> nT = new ArrayList<Vec>();
+		nT.add(new Vec(1,1,1));
+		nT.add(new Vec(1,1,-1));
+		nT.add(new Vec(1,-1,1));
+		nT.add(new Vec(1,-1,-1));
 		
-		nT.add(new Vector3D(-1,1,1));
-		nT.add(new Vector3D(-1,1,-1));
-		nT.add(new Vector3D(-1,-1,1));
-		nT.add(new Vector3D(-1,-1,-1));
+		nT.add(new Vec(-1,1,1));
+		nT.add(new Vec(-1,1,-1));
+		nT.add(new Vec(-1,-1,1));
+		nT.add(new Vec(-1,-1,-1));
 		
 		/**
 		 [ 1.0, 1.0, 1.0 ]
@@ -129,7 +138,7 @@ public class RGBCube extends PApplet {
 		p.noStroke();
 		p.beginShape(QUADS);		
 		
-        Vector3D nVD = scene.camera().viewDirection();
+        Vec nVD = scene.camera().viewDirection();
         
         if(!scene.camera().coneIsBackFacing(nVD, normals)) {        
         
@@ -217,18 +226,18 @@ public class RGBCube extends PApplet {
 			println(scene.camera().viewDirection());
 		}
 	}
-
+	
 	public void handleMouse() {
-		if (mouseY < 360) {
-			scene.enableMouseHandling();
-			scene.enableKeyboardHandling();
-			auxScene.disableMouseHandling();
-			auxScene.disableKeyboardHandling();
+		if (mouseY < 360) {		
+			scene.terseHandler().registerAgent(mouse);
+			scene.terseHandler().registerAgent(keyboard);			
+			auxScene.terseHandler().unregisterAgent(auxMouse);
+			auxScene.terseHandler().unregisterAgent(auxKeyboard);
 		} else {
-			scene.disableMouseHandling();
-			scene.disableKeyboardHandling();
-			auxScene.enableMouseHandling();
-			auxScene.enableKeyboardHandling();
+			scene.terseHandler().unregisterAgent(mouse);
+			scene.terseHandler().unregisterAgent(keyboard);			
+			auxScene.terseHandler().registerAgent(auxMouse);
+			auxScene.terseHandler().registerAgent(auxKeyboard);
 		}
 	}
 }

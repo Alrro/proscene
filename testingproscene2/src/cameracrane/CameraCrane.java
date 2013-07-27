@@ -31,7 +31,6 @@ public class CameraCrane extends PApplet {
 	  mainScene.setRadius(110);
 	  mainScene.showAll();
 	  // press 'f' to display frame selection hints
-	  mainScene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
 
 	  armCanvas = createGraphics(width / 2, (height - canvas.height), P3D);
 	  // Note that we pass the upper left corner coordinates where the scene
@@ -58,7 +57,7 @@ public class CameraCrane extends PApplet {
 
 	// off-screen rendering
 	public void draw() {
-	  handleMouse();
+	  //handleMouse();
 	  canvas.beginDraw();
 	  mainScene.beginDraw();
 	  drawing(mainScene);
@@ -83,6 +82,7 @@ public class CameraCrane extends PApplet {
 	  image(heliCanvas, heliScene.upperLeftCorner.x, heliScene.upperLeftCorner.y);
 	}
 
+	/**
 	public void handleMouse() {
 	  if (mouseY < canvas.height) {
 	    mainScene.enableMouseHandling();
@@ -111,6 +111,7 @@ public class CameraCrane extends PApplet {
 	    }
 	  }
 	}
+	*/
 
 	// the actual drawing function, shared by the two scenes
 	public void drawing(Scene scn) {  

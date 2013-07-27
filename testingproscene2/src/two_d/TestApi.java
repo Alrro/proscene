@@ -2,22 +2,22 @@ package two_d;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 
 public class TestApi extends PApplet {
 	Scene scene;
 	InteractiveFrame f1, f2, f3, f4;
-	Vector3D v, p;
-	Vector3D res;
+	Vec v, p;
+	Vec res;
 	
 	public void setup() {
 		size(640, 360, P2D);
 		//size(640, 360, JAVA2D);		
 		scene = new Scene(this);
-		v = new Vector3D(20,30);
-		p = new Vector3D(40,30);
+		v = new Vec(20,30);
+		p = new Vec(40,30);
 		
 		f1 = new InteractiveFrame(scene);
 		f1.translate(20, 30);
@@ -50,7 +50,7 @@ public class TestApi extends PApplet {
 		scene.showAll();
 		
 		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		//scene.setShortcut('f', DLKeyboardAction.DRAW_FRAME_SELECTION_HINT);
 	}
 	
 	public void draw() {
@@ -130,11 +130,11 @@ public class TestApi extends PApplet {
 		popStyle();
 	}
 	
-	public void drawArrow(Vector3D vec) {
+	public void drawArrow(Vec vec) {
 		drawArrow(null, vec);
 	}
 	
-	public void drawArrow(GeomFrame frame, Vector3D vec) {		
+	public void drawArrow(GeomFrame frame, Vec vec) {		
 		if(frame != null) {
 			pushMatrix();
 			// Multiply matrix to get in the frame coordinate system.
@@ -157,6 +157,15 @@ public class TestApi extends PApplet {
 	}
 	
 	public void keyPressed() { 
+		if (key == 'x')
+			f1.scale(-1, 1);
+		if (key == 'X')
+			scene.viewWindow().frame().scale(-1, 1);
+		if (key == 'y')
+			f1.scale(1, -1);
+		if (key == 'Y')
+			scene.viewWindow().frame().scale(1, -1);
+		
 		if (key == 'v' || key == 'V') {
 			scene.viewWindow().flip();
 		}

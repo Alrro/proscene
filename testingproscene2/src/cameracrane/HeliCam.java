@@ -5,9 +5,9 @@
 
 package cameracrane;
 
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
@@ -15,7 +15,7 @@ import remixlab.proscene.*;
 public class HeliCam {
 	CameraCrane parent;
 	  InteractiveFrame[] frameArray;
-	  Quaternion rotation = new Quaternion(new Vector3D(0.0f, 0.0f, 1.0f), 0.3f);
+	  Quat rotation = new Quat(new Vec(0.0f, 0.0f, 1.0f), 0.3f);
 
 	  HeliCam(CameraCrane pnt) {
 		  parent = pnt;
@@ -33,44 +33,44 @@ public class HeliCam {
 
 	    // Initialize frames
 	    frame(0).setRotation(
-	    new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
+	    new Quat(new Vec(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
 	    frame(0).setTranslation(-25, 56, 62);
 	    frame(1).setTranslation(0, 0, 6);
 	    frame(2).setTranslation(0, 0, 15);
 	    frame(3).setTranslation(0, 0, 15);
 	    frame(4).setTranslation(0, 6, 0);
 	    frame(1).setRotation(
-	    new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), 0.6f));
-	    frame(2).setRotation(new Quaternion(new Vector3D(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
-	    frame(3).setRotation(new Quaternion(new Vector3D(1.0f, -0.3f, 0.0f), 1.7f));
-	    frame(4).setRotation(new Quaternion(new Vector3D(1.0f, -0.0f, 0.0f), -PApplet.HALF_PI));
+	    new Quat(new Vec(1.0f, 0.0f, 0.0f), 0.6f));
+	    frame(2).setRotation(new Quat(new Vec(1.0f, 0.0f, 0.0f), PApplet.HALF_PI));
+	    frame(3).setRotation(new Quat(new Vec(1.0f, -0.3f, 0.0f), 1.7f));
+	    frame(4).setRotation(new Quat(new Vec(1.0f, -0.0f, 0.0f), -PApplet.HALF_PI));
 
 	    // Set frame constraints
 	    WorldConstraint baseConstraint = new WorldConstraint();
 	    baseConstraint.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, 
-	    new Vector3D(0.0f, 0.0f, 1.0f));
+	    new Vec(0.0f, 0.0f, 1.0f));
 	    frame(0).setConstraint(baseConstraint);
 
 	    LocalConstraint XAxis = new LocalConstraint();
-	    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 0.0f));
-	    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(1.0f, 0.0f, 0.0f));
+	    XAxis.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, new Vec(0.0f, 0.0f, 0.0f));
+	    XAxis.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vec(1.0f, 0.0f, 0.0f));
 	    frame(1).setConstraint(XAxis);
 	    frame(2).setConstraint(XAxis);
 
 	    LocalConstraint headConstraint = new LocalConstraint();
 	    headConstraint.setTranslationConstraint(
-	    AxisPlaneConstraint.Type.FORBIDDEN, new Vector3D(0.0f, 0.0f, 0.0f));
+	    AxisPlaneConstraint.Type.FORBIDDEN, new Vec(0.0f, 0.0f, 0.0f));
 	    frame(3).setConstraint(headConstraint);
 
 	    LocalConstraint rotor = new LocalConstraint();
 	    rotor.setTranslationConstraint(AxisPlaneConstraint.Type.FORBIDDEN, 
-	    new Vector3D(0.0f, 0.0f, 0.0f));
-	    rotor.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vector3D(
+	    new Vec(0.0f, 0.0f, 0.0f));
+	    rotor.setRotationConstraint(AxisPlaneConstraint.Type.AXIS, new Vec(
 	    0.0f, 0.0f, 1.0f));
 	    frame(4).setConstraint(rotor);
 	    frame(4).setSpinningQuaternion(rotation);
-	    frame(4).removeFromDeviceGrabberPool();
-	    frame(4).startSpinning(60);
+	    frame(4).removeFromAgentPool(((CameraCrane)parent).mainScene.prosceneMouse);
+	    //frame(4).startSpinning(60);
 	  }
 
 	  public void draw(Scene scn) {
@@ -79,24 +79,24 @@ public class HeliCam {
 
 	    pg3d.pushMatrix();
 	    frame(0).applyTransformation();
-	    setColor(scn, frame(0).grabsDevice());
+	    setColor(scn, frame(0).grabsAgent(scn.prosceneMouse));
 	    drawBody(scn);
 
 	    pg3d.pushMatrix();
 	    frame(1).applyTransformation();
-	    setColor(scn, frame(1).grabsDevice());
+	    setColor(scn, frame(1).grabsAgent(scn.prosceneMouse));
 	    drawSmallCylinder(scn);
 	    drawOneArm(scn);
 
 	    pg3d.pushMatrix();
 	    frame(2).applyTransformation();
-	    setColor(scn, frame(2).grabsDevice());
+	    setColor(scn, frame(2).grabsAgent(scn.prosceneMouse));
 	    drawSmallCylinder(scn);
 	    drawOneArm(scn);
 
 	    pg3d.pushMatrix();
 	    frame(3).applyTransformation();
-	    setColor(scn, frame(3).grabsDevice());
+	    setColor(scn, frame(3).grabsAgent(scn.prosceneMouse));
 	    drawHead(scn);
 
 	    // Add light if the flag enables it
@@ -113,7 +113,7 @@ public class HeliCam {
 
 	    pg3d.pushMatrix();
 	    frame(4).applyTransformation();
-	    setColor(scn, frame(4).grabsDevice());
+	    setColor(scn, frame(4).grabsAgent(scn.prosceneMouse));
 	    drawPropeller(scn);
 
 	    pg3d.popMatrix();// frame(4)

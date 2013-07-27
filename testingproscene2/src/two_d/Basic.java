@@ -2,8 +2,8 @@ package two_d;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.core.*;
 
 @SuppressWarnings("serial")
 public class Basic extends PApplet {	
@@ -25,12 +25,12 @@ public class Basic extends PApplet {
 		//scene.camera().centerScene();
 		//scene.showAll();	
 		
-		Quaternion q = new Quaternion();
+		Quat q = new Quat();
 		println("axis: " + q.axis()					
 		          + " angle: " + q.angle() );		
 		
-		Vector3D from = new Vector3D(-1,1);
-		Vector3D to = new Vector3D(-1,-1);
+		Vec from = new Vec(-1,1);
+		Vec to = new Vec(-1,-1);
 	}	
 
 	public void draw() {
@@ -74,16 +74,16 @@ public class Basic extends PApplet {
 			println("screenHeight: " + scene.viewWindow().screenHeight() );			
 		}
 		if(key == 'x' || key == 'X') {
-			Vector3D v = scene.pinhole().projectedCoordinatesOf(new Vector3D(0,0,0));
+			Vec v = scene.pinhole().projectedCoordinatesOf(new Vec(0,0,0));
 			println(v);
 		}
 		if(key == 'v' || key == 'V') {
-			Vector3D v = scene.pinhole().unprojectedCoordinatesOf(new Vector3D(width/2,height/2,0.5f));
+			Vec v = scene.pinhole().unprojectedCoordinatesOf(new Vec(width/2,height/2,0.5f));
 			println(v);
 		}
 		if(key == 'z' || key == 'Z') {
-			//scene.viewWindow().fitCircle(new Vector3D(0,0), 20);
-			scene.viewWindow().fitCircle(new Vector3D(65,65), 15);
+			//scene.viewWindow().fitCircle(new Vec(0,0), 20);
+			scene.viewWindow().fitCircle(new Vec(65,65), 15);
 		}
 		if(key == 'y' || key == 'Y') {
 			scene.viewWindow().flip();			

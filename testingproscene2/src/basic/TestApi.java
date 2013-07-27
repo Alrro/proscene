@@ -2,39 +2,42 @@ package basic;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
-import remixlab.remixcam.constraint.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
+import remixlab.dandelion.constraint.*;
 import geom.Box;
 import geom.Sphere;
 
 public class TestApi extends PApplet {
 	Scene scene;
 	InteractiveFrame f1, f2, f3, f4, f5;
-	Vector3D v, p;
-	Vector3D res;
+	Vec v, p;
+	Vec res;
 
 	Box box1, box5;
 	Point screenPoint = new Point();
 	Camera.WorldPoint wp;
-	Vector3D orig = new Vector3D();
-	Vector3D dir = new Vector3D();
-	Vector3D end = new Vector3D();
+	Vec orig = new Vec();
+	Vec dir = new Vec();
+	Vec end = new Vec();
 	
 	public void setup() {
 		size(640, 360, P3D);
 		scene = new Scene(this);
 		
+		//scene.setSingleThreadedTimers();
+		//scene.switchTimers();
+		
 		scene.setRadius(500);
 		
 		scene.setFrameSelectionHintIsDrawn(true);
-		v = new Vector3D(20,30,40);
-		p = new Vector3D(40,30,20);
+		v = new Vec(20,30,40);
+		p = new Vec(40,30,20);
 		
 		f1 = new InteractiveFrame(scene);
 		//f1 = new TestIFrame(scene);
 		f1.translate(20, 30, 60);
-		//f1.rotate(new Quaternion(new Vector3D(1,0,0), HALF_PI));
+		//f1.rotate(new Quat(new Vec(1,0,0), HALF_PI));
 		f1.scale(2, 1.7f, -2.3f);
 		//f1.scale(1, 1, -1);
 		//f1.removeFromMouseGrabberPool();
@@ -45,7 +48,7 @@ public class TestApi extends PApplet {
 		//f2 = new TestIFrame(scene);
 		f2.setReferenceFrame(f1);
 		f2.translate(30, 20, -30);
-		//f2.rotate(new Quaternion(new Vector3D(0,1,0), -QUARTER_PI));
+		//f2.rotate(new Quat(new Vec(0,1,0), -QUARTER_PI));
 		f2.scale(-1.2f, 1.1f, 0.8f);
 		//f2.scale(-1, 1, 1);
 		//f2.removeFromMouseGrabberPool();
@@ -54,7 +57,7 @@ public class TestApi extends PApplet {
 		//f3 = new TestIFrame(scene);
 		f3.setReferenceFrame(f1);
 		f3.translate(15, 20, -30);
-		f3.rotate(new Quaternion(new Vector3D(0,1,0), -HALF_PI));		
+		f3.rotate(new Quat(new Vec(0,1,0), -HALF_PI));		
 		f3.scale(1, -1.3f, 1.2f);
 		//f3.scale(1, -1, 1);
 		//f3.removeFromMouseGrabberPool();
@@ -63,7 +66,7 @@ public class TestApi extends PApplet {
 		//f4 = new TestIFrame(scene);
 		f4.setReferenceFrame(f2);
 		f4.translate(20, 15, 30);
-		f4.rotate(new Quaternion(new Vector3D(0,1,0), QUARTER_PI));
+		f4.rotate(new Quat(new Vec(0,1,0), QUARTER_PI));
 		f4.scale(-1.3f, -0.9f, 0.8f);
 		//f4.scale(-1, -1, 1);
 		//f4.removeFromMouseGrabberPool();
@@ -72,7 +75,7 @@ public class TestApi extends PApplet {
 		//f5 = new TestIFrame(scene);
 		f5.setReferenceFrame(f4);
 		f5.translate(20, 15, 30);
-		f5.rotate(new Quaternion(new Vector3D(0,1,0), QUARTER_PI));
+		f5.rotate(new Quat(new Vec(0,1,0), QUARTER_PI));
 		f5.scale(-1.3f, -0.9f, 0.8f);
 		//f5.scale(-1, -1, 1);
 		//f5.removeFromMouseGrabberPool();
@@ -83,7 +86,16 @@ public class TestApi extends PApplet {
 		scene.showAll();
 		
 		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);	
+		//scene.setShortcut('f', remixlab.remixcam.core.AbstractScene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);	
+		
+		//scene.camera().frame().setSpinningSensitivity(3);
+		//scene.camera().frame().setSpinningFriction(0.5f);
+		scene.camera().frame().setRotationSensitivity(1.3f);
+		//scene.camera().frame().setSpinningFriction(0.5f);
+		//scene.camera().frame().setSpinningFriction(0.5f);
+		//scene.camera().frame().setTossingFriction(0.6f);
+		
+		frameRate(200);
 	}
 	
 	public void draw() {
@@ -175,7 +187,7 @@ public class TestApi extends PApplet {
 		// */
 		
 		/**
-		v = new Vector3D(50,50,50);		 
+		v = new Vec(50,50,50);		 
 		drawArrow(v);
 		res = f1.transformOfNoScl(v);
 		//res.print();
@@ -223,11 +235,11 @@ public class TestApi extends PApplet {
 		popStyle();
 	}
 	
-	public void drawArrow(Vector3D vec) {
+	public void drawArrow(Vec vec) {
 		drawArrow(null, vec);
 	}
 	
-	public void drawArrow(GeomFrame frame, Vector3D vec) {		
+	public void drawArrow(GeomFrame frame, Vec vec) {		
 		if(frame != null) {
 			pushMatrix();
 			// Multiply matrix to get in the frame coordinate system.
@@ -254,7 +266,7 @@ public class TestApi extends PApplet {
 		if( wp.found ) {
 			screenPoint.set(mouseX, mouseY);
 			scene.camera().convertClickToLine(screenPoint, orig, dir);				
-			end = Vector3D.add(orig, Vector3D.mult(dir, 1000.0f));
+			end = Vec.add(orig, Vec.mult(dir, 1000.0f));
 			orig.print();
 			dir.print();
 			end.print();
@@ -266,17 +278,17 @@ public class TestApi extends PApplet {
 	}
 	
 	public float distanceToSC2() {				
-		Vector3D zCam = scene.camera().frame().zAxis();		
+		Vec zCam = scene.camera().frame().zAxis();		
 		zCam.normalize();
-		Vector3D cam2SceneCenter = Vector3D.sub(scene.camera().position(), scene.camera().sceneCenter());
-		return Math.abs(Vector3D.dot(cam2SceneCenter, zCam));
+		Vec cam2SceneCenter = Vec.sub(scene.camera().position(), scene.camera().sceneCenter());
+		return Math.abs(Vec.dot(cam2SceneCenter, zCam));
 	}
 	
 	public float distanceToSC3() {	
-		Vector3D zCam = scene.camera().frame().magnitude().z() > 0 ? scene.camera().frame().zAxis() : scene.camera().frame().zAxis(false);
+		Vec zCam = scene.camera().frame().magnitude().z() > 0 ? scene.camera().frame().zAxis() : scene.camera().frame().zAxis(false);
 		zCam.normalize();
-		Vector3D cam2SceneCenter = Vector3D.sub(scene.camera().position(), scene.camera().sceneCenter());
-		return Math.abs(Vector3D.dot(cam2SceneCenter, zCam));
+		Vec cam2SceneCenter = Vec.sub(scene.camera().position(), scene.camera().sceneCenter());
+		return Math.abs(Vec.dot(cam2SceneCenter, zCam));
 	}
 
 	public float distanceToARP1() {
@@ -284,22 +296,22 @@ public class TestApi extends PApplet {
 	}
 	
 	public float distanceToARP2() {
-		Vector3D zCam = scene.camera().frame().zAxis();	
+		Vec zCam = scene.camera().frame().zAxis();	
 		zCam.normalize();
-		Vector3D cam2arp = Vector3D.sub(scene.camera().position(), scene.camera().arcballReferencePoint());
-		return Math.abs(Vector3D.dot(cam2arp, zCam));
+		Vec cam2arp = Vec.sub(scene.camera().position(), scene.camera().arcballReferencePoint());
+		return Math.abs(Vec.dot(cam2arp, zCam));
 	}
 	
 	public float distanceToARP3() {
-		Vector3D zCam = scene.camera().frame().magnitude().z() > 0 ? scene.camera().frame().zAxis() : scene.camera().frame().zAxis(false);
+		Vec zCam = scene.camera().frame().magnitude().z() > 0 ? scene.camera().frame().zAxis() : scene.camera().frame().zAxis(false);
 		zCam.normalize();
-		Vector3D cam2arp = Vector3D.sub(scene.camera().position(), scene.camera().arcballReferencePoint());
-		return Math.abs(Vector3D.dot(cam2arp, zCam));
+		Vec cam2arp = Vec.sub(scene.camera().position(), scene.camera().arcballReferencePoint());
+		return Math.abs(Vec.dot(cam2arp, zCam));
 	}
 	
 	public void keyPressed() {
 		if(key == 'u' || key == 'U') {
-			Vector3D v = f4.zAxis();
+			Vec v = f4.zAxis();
 			println("f4.zAxis(): " + v + " mag: " + v.mag());			
 		}
 		if(key == 'v' || key == 'V') {
@@ -368,6 +380,7 @@ public class TestApi extends PApplet {
 		println("cam mag: " + scene.camera().frame().magnitude());
 	}
 	
+	/**
 	public class TestIFrame extends InteractiveFrame {
 		public TestIFrame(AbstractScene scn) {
 			super(scn);
@@ -376,15 +389,15 @@ public class TestApi extends PApplet {
 		@Override			
 		protected void execAction3D(Point eventPoint, Camera camera) {
 			int deltaY = 0;
-			if(action != AbstractScene.DeviceAction.NO_DEVICE_ACTION) {
+			if(action != remixlab.remixcam.core.AbstractScene.DeviceAction.NO_DEVICE_ACTION) {
 				deltaY = (int) (prevPos.y - eventPoint.y);//as it were LH
 				if( scene.isRightHanded() )
 					deltaY = -deltaY;
 			}
 			switch (action) {
 			case ROTATE: {
-				Vector3D trans = camera.projectedCoordinatesOf(position());
-				Quaternion rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y, trans.x(), trans.y(), camera);
+				Vec trans = camera.projectedCoordinatesOf(position());
+				Quat rot = deformedBallQuaternion((int)eventPoint.x, (int)eventPoint.y, trans.x(), trans.y(), camera);
 				rot = iFrameQuaternion(rot, camera);
 				computeDeviceSpeed(eventPoint);
 				setSpinningQuaternion(rot);
@@ -400,49 +413,48 @@ public class TestApi extends PApplet {
 		}
 		
 		@Override
-		protected Quaternion deformedBallQuaternion(int x, int y, float cx, float cy, Camera camera) {			
+		protected Quat deformedBallQuaternion(int x, int y, float cx, float cy, Camera camera) {			
 			// Points on the deformed ball
             float px = rotationSensitivity() *                         ((int)prevPos.x - cx)                           / camera.screenWidth();
             float py = rotationSensitivity() * (scene.isLeftHanded() ? ((int)prevPos.y - cy) : ( cy - (int)prevPos.y)) / camera.screenHeight();
             float dx = rotationSensitivity() *                         (x - cx)             / camera.screenWidth();
             float dy = rotationSensitivity() * (scene.isLeftHanded() ? (y - cy) : (cy - y)) / camera.screenHeight();
 
-			Vector3D p1 = new Vector3D(px, py, projectOnBall(px, py));
-			Vector3D p2 = new Vector3D(dx, dy, projectOnBall(dx, dy));
+			Vec p1 = new Vec(px, py, projectOnBall(px, py));
+			Vec p2 = new Vec(dx, dy, projectOnBall(dx, dy));
 			// Approximation of rotation angle Should be divided by the projectOnBall size, but it is 1.0
-			Vector3D axis = p2.cross(p1);
+			Vec axis = p2.cross(p1);
 			float angle = 2.0f * (float) Math.asin((float) Math.sqrt(axis.squaredNorm() / p1.squaredNorm() / p2.squaredNorm()));			
-			return new Quaternion(axis, angle);
+			return new Quat(axis, angle);
 		}
 		
-		/**
-		protected Quaternion iFrameQuaternion(Quaternion rot, Camera camera) {
-			Vector3D trans = new Vector3D();	
-			boolean twist = false;
-			
-			trans = rot.axis();
-			trans = transformOfFrom(trans, camera.frame());
-			
-			Vector3D res = new Vector3D(trans);			
-			// perform conversion			
-			if (scaling().x() < 0 )	res.x(-trans.x());
-			if (scaling().y() < 0 )	res.y(-trans.y());
-			if (scaling().z() < 0 )	res.z(-trans.z());
-			
-			if(referenceFrame() != null)
-				twist = (  referenceFrame().magnitude().x()
-						 * referenceFrame().magnitude().y()
-						 * referenceFrame().magnitude().z()
-						 < 0);
-			
-			return new Quaternion(res, twist ? rot.angle() : -rot.angle());						
-		}*/
+//		protected Quat iFrameQuaternion(Quat rot, Camera camera) {
+//			Vec trans = new Vec();	
+//			boolean twist = false;
+//			
+//			trans = rot.axis();
+//			trans = transformOfFrom(trans, camera.frame());
+//			
+//			Vec res = new Vec(trans);			
+//			// perform conversion			
+//			if (scaling().x() < 0 )	res.x(-trans.x());
+//			if (scaling().y() < 0 )	res.y(-trans.y());
+//			if (scaling().z() < 0 )	res.z(-trans.z());
+//			
+//			if(referenceFrame() != null)
+//				twist = (  referenceFrame().magnitude().x()
+//						 * referenceFrame().magnitude().y()
+//						 * referenceFrame().magnitude().z()
+//						 < 0);
+//			
+//			return new Quat(res, twist ? rot.angle() : -rot.angle());						
+//		}
 		
 		public void drawSpinningQuaternion() {
 			if(spinningQuaternion()== null)
 				return;
-			Vector3D axis = ((Quaternion)spinningQuaternion()).axis();			
-			axis = Vector3D.mult(axis, 60);
+			Vec axis = ((Quat)spinningQuaternion()).axis();			
+			axis = Vec.mult(axis, 60);
 			((Scene)scene).pg3d().pushStyle();
 			((Scene)scene).pg3d().pushMatrix();
 			applyWorldTransformation();
@@ -459,4 +471,5 @@ public class TestApi extends PApplet {
 			((Scene)scene).pg3d().popStyle();
 		}
 	}
+	*/
 }

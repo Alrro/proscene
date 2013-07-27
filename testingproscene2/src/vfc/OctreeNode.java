@@ -2,15 +2,15 @@ package vfc;
 
 import processing.core.*;
 import processing.opengl.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 public class OctreeNode {
-	Vector3D p1, p2;
+	Vec p1, p2;
 	OctreeNode child[];
 	int level;
 
-	OctreeNode(Vector3D P1, Vector3D P2) {
+	OctreeNode(Vec P1, Vec P2) {
 		p1 = P1;
 		p2 = P2;
 		child = new OctreeNode[8];
@@ -58,10 +58,10 @@ public class OctreeNode {
 
 	public void buildBoxHierarchy(int l) {
 		level = l;
-		Vector3D middle = Vector3D.mult(Vector3D.add(p1, p2), 1 / 2.0f);
+		Vec middle = Vec.mult(Vec.add(p1, p2), 1 / 2.0f);
 		for (int i = 0; i < 8; ++i) {
 			// point in one of the 8 box corners
-			Vector3D point = new Vector3D(((i & 4) != 0) ? p1.x() : p2.x(), ((i & 2) != 0) ? p1.y() : p2.y(), ((i & 1) != 0) ? p1.z() : p2.z());			
+			Vec point = new Vec(((i & 4) != 0) ? p1.x() : p2.x(), ((i & 2) != 0) ? p1.y() : p2.y(), ((i & 1) != 0) ? p1.z() : p2.z());			
 			if (level > 0) {
 				child[i] = new OctreeNode(point, middle);
 				child[i].buildBoxHierarchy(level - 1);

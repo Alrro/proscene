@@ -14,7 +14,6 @@ public class Animation extends PApplet {
 		// We instantiate our MyScene class defined below
 		scene = new Scene(this);
 		scene.addAnimationHandler(this, "performAnimation");
-		scene.setShortcut('m', Scene.KeyboardAction.ANIMATION);
 		smooth();			
 		nbPart = 2000;
 		particle = new Particle[nbPart];

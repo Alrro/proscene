@@ -43,7 +43,7 @@ public class Animation extends PApplet {
 		// Initialization stuff could have also been performed at
 		// setup(), once after the Scene object have been instantiated
 		public void init() {
-			setShortcut('m', Scene.KeyboardAction.ANIMATION);
+			//setShortcut('m', DLKeyboardAction.ANIMATION);
 			smooth();			
 			nbPart = 2000;
 			particle = new Particle[nbPart];

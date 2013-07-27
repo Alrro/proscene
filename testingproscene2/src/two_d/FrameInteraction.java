@@ -3,26 +3,28 @@ package two_d;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 public class FrameInteraction extends PApplet {
 	Scene scene;
+	InteractiveFrame iFrame;
 
 	public void setup() {
-		size(640, 360, P2D);
-		//size(640, 360, JAVA2D);
+		//size(640, 360, P2D);
+		size(640, 360, JAVA2D);
 		//scene = new Java2DScene(this);
 		scene = new Scene(this);
+		iFrame = new InteractiveFrame(scene);
 		// A Scene has a single InteractiveFrame (null by default). We set it
 		// here.
-		scene.setInteractiveFrame(new InteractiveFrame(scene));
-		scene.interactiveFrame().translate(new Vector3D(30, 30));
+		//scene.setInteractiveFrame(new InteractiveFrame(scene));
+		//iFrame.translate(new Vec(30, 30));
 		// press 'i' to switch the interaction between the camera frame and the
 		// interactive frame
-		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		//scene.setShortcut('i', DLKeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		//scene.setShortcut('f', DLKeyboardAction.DRAW_FRAME_SELECTION_HINT);
 		scene.setFrameSelectionHintIsDrawn(true);
 	}
 
@@ -35,19 +37,19 @@ public class FrameInteraction extends PApplet {
 		// Save the current model view matrix
 		pushMatrix();
 		// Multiply matrix to get in the frame coordinate system.
-		// applyMatrix(scene.interactiveFrame().matrix()) is handy but
+		// applyMatrix(iFrame.matrix()) is handy but
 		// inefficient
-		scene.interactiveFrame().applyTransformation();// optimum
+		iFrame.applyTransformation();// optimum
 		// Draw an axis using the Scene static function
 		scene.drawAxis(40);
 		// Draw a second box attached to the interactive frame
-		if (scene.interactiveFrame().grabsDevice()) {
+		if (iFrame.grabsAgent(scene.prosceneMouse)) {
 			fill(255, 0, 0);
-			rect(0, 0, 35, 35);
-		} else if (scene.interactiveFrameIsDrawn()) {
+			rect(0, 0, 35, 35);			
+		} /** else if (scene.interactiveFrameIsDrawn()) {
 			fill(0, 255, 255);
 			rect(0, 0, 35, 35);
-		} else {
+		} */ else {
 			fill(0, 0, 255);
 			rect(0, 0, 30, 30);
 		}
@@ -63,7 +65,7 @@ public class FrameInteraction extends PApplet {
 		scene.viewWindow().computeViewMatrix();
 		scene.viewWindow().computeProjectionViewMatrix();
 		
-		Vector3D pos = scene.viewWindow().position();
+		Vec pos = scene.viewWindow().position();
 		Orientable quat = scene.viewWindow().frame().orientation();
 
 		translate(scene.width() / 2, scene.height() / 2);
@@ -83,16 +85,16 @@ public class FrameInteraction extends PApplet {
 
 	public void keyPressed() {
 		if (key == 'x')
-			scene.interactiveFrame().scale(-1, 1);
+			iFrame.scale(-1, 1);
 		if (key == 'X')
 			scene.viewWindow().frame().scale(-1, 1);
 		if (key == 'y')
-			scene.interactiveFrame().scale(1, -1);
+			iFrame.scale(1, -1);
 		if (key == 'Y')
 			scene.viewWindow().frame().scale(1, -1);
 
 		/**
-		 * if(key == 't' || key == 'T') scene.interactiveFrame().scale(-1, 1);
+		 * if(key == 't' || key == 'T') iFrame.scale(-1, 1);
 		 * if(key == 'u' || key == 'U') glIFrame
 		 * scene.viewWindow().frame().scale(1, -1);
 		 */
@@ -101,17 +103,17 @@ public class FrameInteraction extends PApplet {
 			scene.viewWindow().flip();
 		}
 
-		println("iFrame scaling: " + scene.interactiveFrame().scaling());
-		println("iFrame magnitude: " + scene.interactiveFrame().magnitude());
+		println("iFrame scaling: " + iFrame.scaling());
+		println("iFrame magnitude: " + iFrame.magnitude());
 
 		if (scene.isRightHanded())
 			println("Scene is RIGHT handed");
 		else
 			println("Scene is LEFT handed");
-		if (scene.interactiveFrame().isInverted())
-			println("scene.interactiveFrame() is inverted");
+		if (iFrame.isInverted())
+			println("iFrame is inverted");
 		else
-			println("scene.interactiveFrame() is NOT inverted");
+			println("iFrame is NOT inverted");
 		if (scene.viewWindow().frame().isInverted())
 			println("scene.viewWindow().frame() is inverted");
 		else

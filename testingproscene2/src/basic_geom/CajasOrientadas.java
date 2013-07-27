@@ -4,8 +4,8 @@ import geom.Sphere;
 import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 //import codeanticode.glgraphics.*;
 
 @SuppressWarnings("serial")
@@ -17,8 +17,7 @@ public class CajasOrientadas extends PApplet {
 	public void setup()	{
 		//size(640, 360, P3D);
 		size(640, 360, OPENGL);
-		scene = new Scene(this);		
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		scene = new Scene(this);	
 		scene.setGridIsDrawn(true);		
 		scene.setCameraType(Camera.Type.ORTHOGRAPHIC);
 		scene.setRadius(160);
@@ -28,7 +27,7 @@ public class CajasOrientadas extends PApplet {
 		//scene.disableBackgroundHanddling();		
 		
 		esfera = new Sphere(scene);
-		esfera.setPosition(new Vector3D(0.0f, 1.4f, 0.0f));
+		esfera.setPosition(new Vec(0.0f, 1.4f, 0.0f));
 		esfera.setColor(color(0,0,255));
 		
 		cajas = new Box[30];
@@ -49,7 +48,7 @@ public class CajasOrientadas extends PApplet {
 		
 		/**
 		int c = color(255,0,0);
-		scene.drawFilledCircle(c, new Vector3D(width/2,height/2,0), 50);
+		scene.drawFilledCircle(c, new Vec(width/2,height/2,0), 50);
 		//scene.drawFilledCircle(120, c, new PVector(width/2,height/2,0), 50);
 		// */
 		
@@ -127,12 +126,8 @@ public class CajasOrientadas extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if ((key == 'x') || (key == 'X')) {
-			scene.toggleDeviceTracking();
-			println(scene.isTrackingDevice());
-		}
 		if ((key == 'y') || (key == 'Y')) {
-			scene.setGridDotted(!scene.gridIsDotted());
+			scene.setDottedGrid(!scene.gridIsDotted());
 		}
 		if ((key == 'u') || (key == 'U')) {
 			println("papplet's frame count: " + frameCount);

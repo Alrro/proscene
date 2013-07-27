@@ -2,8 +2,7 @@ package basic;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.geom.*;
-
+import remixlab.dandelion.geom.*;
 
 public class PixelP5Ratio extends PApplet {
 	private static final long serialVersionUID = 1L;
@@ -13,7 +12,6 @@ public class PixelP5Ratio extends PApplet {
 	public void setup() {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
-	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);
 	  scene.showAll();
 	}	
 
@@ -23,8 +21,8 @@ public class PixelP5Ratio extends PApplet {
 	  this.strokeWeight(3);	  
 	  this.stroke(255,0,0);
 	  
-	  Vector3D p1 = scene.center();
-	  Vector3D p2 = Vector3D.add(scene.center(), Vector3D.mult(scene.camera().upVector(), 50 * scene.camera().pixelP5Ratio(scene.center()))); 
+	  Vec p1 = scene.center();
+	  Vec p2 = Vec.add(scene.center(), Vec.mult(scene.camera().upVector(), 50 * scene.camera().pixelP5Ratio(scene.center()))); 
 	  
 	  line(p1.x(), p1.y(), p1.z(), p2.x(), p2.y(), p2.z());
 	}

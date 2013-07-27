@@ -1,9 +1,9 @@
 package basic;
 
 import processing.core.*;
+import remixlab.dandelion.core.Constants.DOF0Action;
+import remixlab.dandelion.geom.Vec;
 import remixlab.proscene.*;
-import remixlab.remixcam.geom.*;
-
 
 public class Basic extends PApplet {
 	private static final long serialVersionUID = 1L;
@@ -13,7 +13,7 @@ public class Basic extends PApplet {
 	public void setup() {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
-	  scene.setShortcut('v', Scene.KeyboardAction.CAMERA_KIND);	  
+	  scene.prosceneKeyboard.profile().setShortcut('v', DOF0Action.CAMERA_KIND);	  
 	  scene.setSingleThreadedTimers();
 	  scene.showAll();
 	}	
@@ -57,6 +57,18 @@ public class Basic extends PApplet {
 	*/
 	
 	public void keyPressed() {
+		if( key == 'x' || key == 'X' ) {
+			scene.camera().setUpVector(new Vec(1,0,0));
+			println("x -> dir");
+		}
+		if( key == 'y' || key == 'Y' ) {
+			scene.camera().setUpVector(new Vec(0,1,0));
+			println("y -> dir");
+		}
+		if( key == 'z' || key == 'Z' ) {
+			scene.camera().setUpVector(new Vec(0,0,1));
+			println("z -> dir");
+		}
 		if(key == 'u' || key == 'U') {
 			if(scene.isRightHanded()) {
 				scene.setLeftHanded();

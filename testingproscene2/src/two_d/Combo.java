@@ -2,17 +2,22 @@ package two_d;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.remixcam.core.*;
-import remixlab.remixcam.geom.*;
+import remixlab.proscene.Scene.ProsceneKeyboard;
+import remixlab.proscene.Scene.ProsceneMouse;
+import remixlab.dandelion.core.*;
+import remixlab.dandelion.geom.*;
 
 @SuppressWarnings("serial")
 public class Combo extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;	
 	InteractiveFrame frame1, auxFrame1, frame2, auxFrame2, frame3, auxFrame3;
-	String renderer = P2D;
-	//String renderer = JAVA2D;	
+	//String renderer = P2D;
+	String renderer = JAVA2D;	
 	boolean drawHints = false;
+	
+	ProsceneMouse mouse, auxMouse;
+	ProsceneKeyboard keyboard, auxKeyboard;
 
 	public void setup() {
 		size(640, 720, renderer);
@@ -24,18 +29,18 @@ public class Combo extends PApplet {
 		// here.
 		//scene.setInteractiveFrame(new InteractiveFrame(scene));
 		frame1 = new InteractiveFrame(scene);
-		frame1.translate(new Vector3D(30, 30));
+		frame1.translate(new Vec(30, 30));
 		frame2 = new InteractiveFrame(scene);
 		frame2.setReferenceFrame(frame1);
-		frame2.translate(new Vector3D(40,0,0));
+		frame2.translate(new Vec(40,0,0));
 		frame3 = new InteractiveFrame(scene);
 		frame3.setReferenceFrame(frame2);
-		frame3.translate(new Vector3D(40,0,0));
+		frame3.translate(new Vec(40,0,0));
 		// press 'i' to switch the interaction between the camera frame and the
 		// interactive frame
-		scene.setShortcut('i', Scene.KeyboardAction.FOCUS_INTERACTIVE_FRAME);
+		//scene.setShortcut('i', DLKeyboardAction.FOCUS_INTERACTIVE_FRAME);
 		// press 'f' to display frame selection hints
-		scene.setShortcut('f', Scene.KeyboardAction.DRAW_FRAME_SELECTION_HINT);
+		//scene.setShortcut('f', DLKeyboardAction.DRAW_FRAME_SELECTION_HINT);
 
 		auxCanvas = createGraphics(640, 360, renderer);
 		auxCanvas.smooth();
@@ -55,12 +60,17 @@ public class Combo extends PApplet {
 		auxFrame3 = new InteractiveFrame(auxScene);
 		auxFrame3.linkTo(frame3);
 
+		mouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		keyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
+		auxMouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
+		auxKeyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
+		
 		handleMouse();
 		smooth();
 	}
 
 	public void draw() {
-		handleMouse();
+		//handleMouse();
 
 		canvas.beginDraw();
 		scene.beginDraw();
@@ -88,7 +98,7 @@ public class Combo extends PApplet {
 			auxFrame1.applyTransformation();		
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame1.grabsDevice()) {
+		if (drawHints && frame1.grabsAgent(scene.prosceneMouse)) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -104,7 +114,7 @@ public class Combo extends PApplet {
 			auxFrame2.applyTransformation();
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame2.grabsDevice()) {
+		if (drawHints && frame2.grabsAgent(scene.prosceneMouse)) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -120,7 +130,7 @@ public class Combo extends PApplet {
 			auxFrame3.applyTransformation();
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame3.grabsDevice()) {
+		if (drawHints && frame3.grabsAgent(scene.prosceneMouse)) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -147,16 +157,16 @@ public class Combo extends PApplet {
 	}	
 
 	public void handleMouse() {
-		if (mouseY < 360) {
-			scene.enableMouseHandling();
-			scene.enableKeyboardHandling();
-			auxScene.disableMouseHandling();
-			auxScene.disableKeyboardHandling();
+		if (mouseY < 360) {		
+			scene.terseHandler().registerAgent(mouse);
+			scene.terseHandler().registerAgent(keyboard);			
+			auxScene.terseHandler().unregisterAgent(auxMouse);
+			auxScene.terseHandler().unregisterAgent(auxKeyboard);
 		} else {
-			scene.disableMouseHandling();
-			scene.disableKeyboardHandling();
-			auxScene.enableMouseHandling();
-			auxScene.enableKeyboardHandling();
+			scene.terseHandler().unregisterAgent(mouse);
+			scene.terseHandler().unregisterAgent(keyboard);			
+			auxScene.terseHandler().registerAgent(auxMouse);
+			auxScene.terseHandler().registerAgent(auxKeyboard);
 		}
 	}
 	
@@ -173,16 +183,5 @@ public class Combo extends PApplet {
 		if(key == 'v' || key == 'V') {
 			scene.viewWindow().flip();			
 		}
-		/**
-		if (key == 'v' || key == 'V') {
-			VFrame tmpFrame = new VFrame(scene.is3D());
-			tmpFrame.fromMatrix(scene.viewWindow().frame().worldMatrix(), scene.viewWindow().frame().magnitude());
-			println("tmpFrame");
-			printFrame(tmpFrame);
-			println();
-			println("scene.viewWindow().frame()");
-			printFrame(scene.viewWindow().frame());			
-		}
-		*/
 	}
 }
