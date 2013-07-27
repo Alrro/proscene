@@ -58,40 +58,6 @@ public class FrameInteraction extends PApplet {
 			}
 			focusIFrame = !focusIFrame;
 		}
-		if(key == 'x') iFrame.scale(-1, 1, 1);
-		//if(key == 'X') scene.camera().frame().scale(-1, 1, 1);
-		if(key == 'y') iFrame.scale(1, -1, 1);
-		//if(key == 'Y') scene.camera().frame().scale(1, -1, 1);
-		if(key == 'z') iFrame.scale(1, 1, -1);
-		//if(key == 'Z') scene.camera().frame().scale(1, 1, -1);
-		
-		if(key == 'v' || key == 'V') {
-			if(scene.isRightHanded())
-				scene.setLeftHanded();			
-			else
-				scene.setRightHanded();			
-		}			
-		
-		if(scene.isRightHanded())
-			println("Scene is RIGHT handed");
-		else
-			println("Scene is LEFT handed");		
-		if(iFrame.isInverted())
-			println("iFrame is inverted");
-		else
-			println("iFrame is NOT inverted");
-		
-		/**
-		if(scene.camera().frame().isInverted())
-			println("scene.camera().frame() is inverted");
-		else
-			println("scene.camera().frame() is NOT inverted");
-		*/
-		
-		if( key == 'u' || key == 'U') {
-			print("cam pos: ");
-			scene.camera().position().print();
-		}
 	}
 		
 	public static void main(String args[]) {
