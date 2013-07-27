@@ -69,10 +69,8 @@ public class EventHandling extends PApplet {
 			println("'S' key is in use");
 	    // */
 		
-		// /**
-		//TODO fix setting default frame speed as it's done in camera frmae
+		/**
 		// and in proscene drivable
-		//iFrame.setFlySpeed(1);
 		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
 		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
 		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
