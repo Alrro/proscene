@@ -17,11 +17,11 @@ public class EventHandling extends PApplet {
 	boolean enforced = false;	
 	boolean grabsInput;
 
-	Constants.DOF0Action keyAction;
+	Constants.KeyboardAction keyAction;
 	Constants.DOF2Action mouseAction;
 	GenericDOF2Event<Constants.DOF2Action> prevEvent, event;
 	GenericDOF2Event<Constants.DOF2Action> gEvent, prevGenEvent;
-	GenericKeyboardEvent<Constants.DOF0Action> kEvent;
+	GenericKeyboardEvent<Constants.KeyboardAction> kEvent;
 	
 	int count = 4;
 
@@ -61,7 +61,7 @@ public class EventHandling extends PApplet {
 		// /**
 		if( scene.prosceneKeyboard.keyboardProfile().isKeyInUse('f') )
 			println("'f' key is in use");
-		if( scene.prosceneKeyboard.keyboardProfile().isKeyboardActionBound(DOF0Action.DRAW_FRAME_SELECTION_HINT ) )
+		if( scene.prosceneKeyboard.keyboardProfile().isKeyboardActionBound(KeyboardAction.DRAW_FRAME_SELECTION_HINT ) )
 			println("DRAW_FRAME_SELECTION_HINT action is bound");		
 		if( scene.prosceneKeyboard.keyboardProfile().isKeyInUse('s') )
 			println("'s' key is in use");
@@ -165,10 +165,10 @@ public class EventHandling extends PApplet {
 		if (!scene.terseHandler().isAgentRegistered("proscene_keyboard")) {
 			if (key == 'a' || key == 'g') {
 				if (key == 'a')
-					keyAction = Constants.DOF0Action.DRAW_GRID;
+					keyAction = Constants.KeyboardAction.DRAW_GRID;
 				if (key == 'g')
-					keyAction = Constants.DOF0Action.DRAW_AXIS;
-				kEvent = new GenericKeyboardEvent<Constants.DOF0Action>(key, keyAction);
+					keyAction = Constants.KeyboardAction.DRAW_AXIS;
+				kEvent = new GenericKeyboardEvent<Constants.KeyboardAction>(key, keyAction);
 				//scene.terseHandler().enqueueEventTuple(new EventGrabberTuple(kEvent, iFrame));
 				scene.terseHandler().enqueueEventTuple(new EventGrabberTuple(kEvent, scene));
 			}

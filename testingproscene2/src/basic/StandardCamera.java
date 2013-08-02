@@ -2,7 +2,7 @@ package basic;
 
 import processing.core.*;
 import processing.opengl.*;
-import remixlab.dandelion.core.Constants.DOF0Action;
+import remixlab.dandelion.core.Constants.KeyboardAction;
 import remixlab.proscene.*;
 import remixlab.proscene.Scene.ProsceneKeyboard;
 import remixlab.proscene.Scene.ProsceneMouse;
@@ -28,7 +28,7 @@ public class StandardCamera extends PApplet {
 		//canvas = createGraphics(640, 360, OPENGL);
 		scene = new Scene(this, canvas);
 		
-		scene.prosceneKeyboard.profile().setShortcut('v', DOF0Action.CAMERA_KIND);
+		scene.prosceneKeyboard.profile().setShortcut('v', KeyboardAction.CAMERA_KIND);
 		// enable computation of the frustum planes equations (disabled by
 		// default)
 		scene.enableFrustumEquationsUpdate();

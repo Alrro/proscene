@@ -9,6 +9,8 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.proscene.*;
 
+//TODO linking seems broken!
+
 @SuppressWarnings("serial")
 public class CameraCrane extends PApplet {
 	boolean enabledLights = true;

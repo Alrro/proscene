@@ -15,6 +15,8 @@ public class FrameInteraction extends PApplet {
 		scene = new Scene(this);	
 		iFrame = new InteractiveAvatarFrame(scene);
 		iFrame.translate(new Vec(30, 30, 0));
+		scene.setJavaTimers();
+		//scene.prosceneMouse.setAsThirdPersonBindings();
 	}
 
 	public void draw() {

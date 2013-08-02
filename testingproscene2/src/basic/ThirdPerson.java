@@ -48,7 +48,10 @@ public class ThirdPerson extends PApplet {
 		scene.applyTransformation(avatar);
 		// Draw an axis using the Scene static function
 		scene.drawAxis(20);
-		fill(0,0,255);
+		if( scene.avatar() != null )
+			fill(255,0,0);
+		else
+			fill(0,0,255);
 		box(15, 20, 30);
 		popMatrix();
 		
@@ -74,17 +77,17 @@ public class ThirdPerson extends PApplet {
 			scene.camera().upVector().print();
 		}
 		if( key == ' ' )
-		if( !scene.isIn3RDPersonMode() ) {
-			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-		    scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-		    scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
+		if( scene.avatar() == null ) {
+			scene.setAvatar(avatar);
+			scene.prosceneMouse.setAsThirdPersonBindings();
+			scene.prosceneMouse.setDefaultGrabber(avatar);
+			scene.prosceneMouse.disableTracking();
 		}
 		else {
-			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.ROTATE);
-			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.ZOOM);
-			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.TRANSLATE);
-			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.SCREEN_TRANSLATE);
-			scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_RIGHT, DOF2Action.SCREEN_ROTATE);
+			scene.unsetAvatar(); //simply sets avatar as null
+			scene.prosceneMouse.setAsArcballBindings();
+			scene.prosceneMouse.setDefaultGrabber(scene.pinhole().frame());
+			scene.prosceneMouse.enableTracking();
 		}
 	}
 		

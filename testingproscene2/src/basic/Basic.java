@@ -1,7 +1,7 @@
 package basic;
 
 import processing.core.*;
-import remixlab.dandelion.core.Constants.DOF0Action;
+import remixlab.dandelion.core.Constants.KeyboardAction;
 import remixlab.dandelion.geom.Vec;
 import remixlab.proscene.*;
 
@@ -13,8 +13,8 @@ public class Basic extends PApplet {
 	public void setup() {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
-	  scene.prosceneKeyboard.profile().setShortcut('v', DOF0Action.CAMERA_KIND);	  
-	  scene.setSingleThreadedTimers();
+	  scene.prosceneKeyboard.profile().setShortcut('v', KeyboardAction.CAMERA_KIND);	  
+	  //scene.setSingleThreadedTimers();
 	  scene.showAll();
 	}	
 
@@ -24,6 +24,7 @@ public class Basic extends PApplet {
 	  box(20, 30, 50);
 	}
 		
+	/**
 	public void keyPressed() {
 		if( key == 'x' || key == 'X' ) {
 			scene.camera().setUpVector(new Vec(1,0,0));
@@ -48,6 +49,7 @@ public class Basic extends PApplet {
 			}
 		}
 	}
+	*/
 	
 	public static void main(String args[]) {
 		PApplet.main(new String[] { "--present", "basic.Basic" });

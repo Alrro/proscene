@@ -4,22 +4,12 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.dandelion.geom.*;
 import remixlab.dandelion.core.*;
-import remixlab.dandelion.core.Constants.DOF0Action;
-import remixlab.dandelion.core.Constants.DOF2Action;
-import remixlab.dandelion.constraint.*;
 import remixlab.proscene.*;
-import remixlab.proscene.Scene.ProsceneKeyboard;
-import remixlab.proscene.Scene.ProsceneMouse;
-import remixlab.tersehandling.core.EventConstants;
-import remixlab.tersehandling.core.EventGrabberTuple;
-import remixlab.tersehandling.core.Grabbable;
-import remixlab.tersehandling.generic.event.GenericDOF2Event;
-import remixlab.tersehandling.generic.event.GenericKeyboardEvent;
 
 public class FirstPerson extends PApplet {
 	Scene scene;
 	boolean focusIFrame;
-	boolean firstPerson = true;
+	boolean firstPerson;
 	InteractiveFrame iFrame;
 	
 	public void setup()	{
@@ -27,18 +17,8 @@ public class FirstPerson extends PApplet {
 		scene = new Scene(this);	
 		iFrame = new InteractiveFrame(scene);
 		iFrame.translate(new Vec(30, 30, 0));
-		
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ROLL);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.DRIVE);
-		
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ROLL);
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.DRIVE);
+		scene.prosceneMouse.setAsFirstPersonBindings();
+		firstPerson = true;
 	}
 
 	public void draw() {
@@ -83,36 +63,13 @@ public class FirstPerson extends PApplet {
 			focusIFrame = !focusIFrame;
 		}
 		if( key == ' ') {
+			firstPerson = !firstPerson;
 			if ( firstPerson ) {
-				//copy & paste from MouseAgent:
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.ROTATE);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.ZOOM);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.TRANSLATE);	
-				
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ZOOM_ON_REGION);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.SCREEN_TRANSLATE);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_RIGHT, DOF2Action.SCREEN_ROTATE);
-				
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.ROTATE);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.ZOOM);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.TRANSLATE);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.SCREEN_TRANSLATE);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_RIGHT, DOF2Action.SCREEN_ROTATE);
+				scene.prosceneMouse.setAsFirstPersonBindings();
 			}
 			else {
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ROLL);
-				scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.DRIVE);
-				
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ROLL);
-				scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_CENTER, DOF2Action.DRIVE);			
-			}
-			firstPerson = !firstPerson;
+				scene.prosceneMouse.setAsArcballBindings();			
+			}		
 		}
 	}
 		
