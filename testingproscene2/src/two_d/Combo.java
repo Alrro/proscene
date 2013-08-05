@@ -2,8 +2,6 @@ package two_d;
 
 import processing.core.*;
 import remixlab.proscene.*;
-import remixlab.proscene.Scene.ProsceneKeyboard;
-import remixlab.proscene.Scene.ProsceneMouse;
 import remixlab.dandelion.core.*;
 import remixlab.dandelion.geom.*;
 
@@ -15,9 +13,6 @@ public class Combo extends PApplet {
 	//String renderer = P2D;
 	String renderer = JAVA2D;	
 	boolean drawHints = false;
-	
-	ProsceneMouse mouse, auxMouse;
-	ProsceneKeyboard keyboard, auxKeyboard;
 
 	public void setup() {
 		size(640, 720, renderer);
@@ -59,19 +54,13 @@ public class Combo extends PApplet {
 		
 		auxFrame3 = new InteractiveFrame(auxScene);
 		auxFrame3.linkTo(frame3);
-
-		mouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
-		keyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
-		auxMouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
-		auxKeyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
 		
 		handleMouse();
 		smooth();
 	}
 
 	public void draw() {
-		//handleMouse();
-
+		handleMouse();
 		canvas.beginDraw();
 		scene.beginDraw();
 		canvas.background(0);
@@ -98,7 +87,7 @@ public class Combo extends PApplet {
 			auxFrame1.applyTransformation();		
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame1.grabsAgent(scene.prosceneMouse)) {
+		if (drawHints && frame1.grabsAgent(scene.defaultMouseAgent())) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -114,7 +103,7 @@ public class Combo extends PApplet {
 			auxFrame2.applyTransformation();
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame2.grabsAgent(scene.prosceneMouse)) {
+		if (drawHints && frame2.grabsAgent(scene.defaultMouseAgent())) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -130,7 +119,7 @@ public class Combo extends PApplet {
 			auxFrame3.applyTransformation();
 		if(drawHints)
 			s.drawAxis(40);
-		if (drawHints && frame3.grabsAgent(scene.prosceneMouse)) {
+		if (drawHints && frame3.grabsAgent(scene.defaultMouseAgent())) {
 			s.pg().fill(255, 0, 0);
 			s.pg().rect(0, 0, 40, 10, 5);
 		}
@@ -154,19 +143,19 @@ public class Combo extends PApplet {
 		s.pg().fill(255, 255, 0, 160);
 		s.drawViewWindow(scene.viewWindow());
 		s.pg().popStyle();	
-	}	
-
+	}
+	
 	public void handleMouse() {
-		if (mouseY < 360) {		
-			scene.terseHandler().registerAgent(mouse);
-			scene.terseHandler().registerAgent(keyboard);			
-			auxScene.terseHandler().unregisterAgent(auxMouse);
-			auxScene.terseHandler().unregisterAgent(auxKeyboard);
+		if (mouseY < 360) {
+			scene.enableDefaultMouseAgent();
+			scene.enableDefaultKeyboardAgent();
+			auxScene.disableDefaultMouseAgent();
+			auxScene.disableDefaultKeyboardAgent();
 		} else {
-			scene.terseHandler().unregisterAgent(mouse);
-			scene.terseHandler().unregisterAgent(keyboard);			
-			auxScene.terseHandler().registerAgent(auxMouse);
-			auxScene.terseHandler().registerAgent(auxKeyboard);
+			scene.disableDefaultMouseAgent();
+			scene.disableDefaultKeyboardAgent();
+			auxScene.enableDefaultMouseAgent();
+			auxScene.enableDefaultKeyboardAgent();
 		}
 	}
 	

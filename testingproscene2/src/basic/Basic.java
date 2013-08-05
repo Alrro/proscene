@@ -2,7 +2,6 @@ package basic;
 
 import processing.core.*;
 import remixlab.dandelion.core.Constants.KeyboardAction;
-import remixlab.dandelion.geom.Vec;
 import remixlab.proscene.*;
 
 public class Basic extends PApplet {
@@ -13,7 +12,7 @@ public class Basic extends PApplet {
 	public void setup() {
 	  size(640, 360, P3D);
 	  scene = new Scene(this);
-	  scene.prosceneKeyboard.profile().setShortcut('v', KeyboardAction.CAMERA_KIND);	  
+	  scene.defaultKeyboardAgent().profile().setShortcut('v', KeyboardAction.CAMERA_KIND);	  
 	  //scene.setSingleThreadedTimers();
 	  scene.showAll();
 	}	

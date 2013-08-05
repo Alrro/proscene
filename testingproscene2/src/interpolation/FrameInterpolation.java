@@ -1,15 +1,8 @@
 package interpolation;
 
 import processing.core.*;
-import processing.event.Event;
 import remixlab.proscene.*;
-import remixlab.proscene.Scene.ProsceneKeyboard;
-import remixlab.proscene.Scene.ProsceneMouse;
-import remixlab.tersehandling.core.*;
-import remixlab.tersehandling.generic.event.*;
-import remixlab.dandelion.geom.*;
 import remixlab.dandelion.core.*;
-import remixlab.dandelion.core.Constants.*;
 
 public class FrameInterpolation extends PApplet {
 	Scene scene;
@@ -55,7 +48,7 @@ public class FrameInterpolation extends PApplet {
 	    pushMatrix();
 	    kfi.keyFrame(i).applyTransformation(scene);
 	    
-	    if ( keyFrame[i].grabsAgent(scene.prosceneMouse) )
+	    if ( keyFrame[i].grabsAgent(scene.defaultMouseAgent()) )
 	      scene.drawAxis(40);
 	    else
 	      scene.drawAxis(20);

@@ -4,21 +4,13 @@ import processing.core.*;
 import processing.opengl.*;
 import remixlab.dandelion.core.Constants.KeyboardAction;
 import remixlab.proscene.*;
-import remixlab.proscene.Scene.ProsceneKeyboard;
-import remixlab.proscene.Scene.ProsceneMouse;
 import remixlab.dandelion.core.*;
 import remixlab.dandelion.geom.*;
-//import remixlab.dandelion.constraints.*;
-
-//import remixlab.proscene.AxisPlaneConstraint.Type;
 
 @SuppressWarnings("serial")
 public class StandardCamera extends PApplet {
 	Scene scene, auxScene;
 	PGraphics canvas, auxCanvas;
-	
-	ProsceneMouse mouse, auxMouse;
-	ProsceneKeyboard keyboard, auxKeyboard;
 
 	public void setup() {
 		size(640, 720, P3D);
@@ -28,7 +20,7 @@ public class StandardCamera extends PApplet {
 		//canvas = createGraphics(640, 360, OPENGL);
 		scene = new Scene(this, canvas);
 		
-		scene.prosceneKeyboard.profile().setShortcut('v', KeyboardAction.CAMERA_KIND);
+		scene.defaultKeyboardAgent().profile().setShortcut('v', KeyboardAction.CAMERA_KIND);
 		// enable computation of the frustum planes equations (disabled by
 		// default)
 		scene.enableFrustumEquationsUpdate();
@@ -46,11 +38,6 @@ public class StandardCamera extends PApplet {
 		auxScene.setRadius(200);
 		auxScene.showAll();
 		auxScene.addDrawHandler(this, "auxiliarDrawing");
-		
-		mouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
-		keyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
-		auxMouse = (ProsceneMouse)scene.terseHandler().getAgent("proscene_mouse");
-		auxKeyboard = (ProsceneKeyboard)scene.terseHandler().getAgent("proscene_keyboard");
 
 		handleMouse();
 	}
@@ -103,16 +90,16 @@ public class StandardCamera extends PApplet {
 	}
 	
 	public void handleMouse() {
-		if (mouseY < 360) {		
-			scene.terseHandler().registerAgent(mouse);
-			scene.terseHandler().registerAgent(keyboard);			
-			auxScene.terseHandler().unregisterAgent(auxMouse);
-			auxScene.terseHandler().unregisterAgent(auxKeyboard);
+		if (mouseY < 360) {
+			scene.enableDefaultMouseAgent();
+			scene.enableDefaultKeyboardAgent();
+			auxScene.disableDefaultMouseAgent();
+			auxScene.disableDefaultKeyboardAgent();
 		} else {
-			scene.terseHandler().unregisterAgent(mouse);
-			scene.terseHandler().unregisterAgent(keyboard);			
-			auxScene.terseHandler().registerAgent(auxMouse);
-			auxScene.terseHandler().registerAgent(auxKeyboard);
+			scene.disableDefaultMouseAgent();
+			scene.disableDefaultKeyboardAgent();
+			auxScene.enableDefaultMouseAgent();
+			auxScene.enableDefaultKeyboardAgent();
 		}
 	}
 	

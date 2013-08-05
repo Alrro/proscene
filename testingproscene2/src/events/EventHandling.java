@@ -37,6 +37,9 @@ public class EventHandling extends PApplet {
 		size(640, 360, P3D);
 		scene = new Scene(this);
 		
+		mouse = scene.defaultMouseAgent();
+		keyboard = scene.defaultKeyboardAgent();
+		
 		/**
 		iFrame = new MyIFrame(scene);
 		iFrame.translate(new DLVector(30, 30, 0));	
@@ -59,30 +62,30 @@ public class EventHandling extends PApplet {
 		//Testing some things out to test whether framework is ill behave or not ;)
 		
 		// /**
-		if( scene.prosceneKeyboard.keyboardProfile().isKeyInUse('f') )
+		if( scene.defaultKeyboardAgent().keyboardProfile().isKeyInUse('f') )
 			println("'f' key is in use");
-		if( scene.prosceneKeyboard.keyboardProfile().isKeyboardActionBound(KeyboardAction.DRAW_FRAME_SELECTION_HINT ) )
+		if( scene.defaultKeyboardAgent().keyboardProfile().isKeyboardActionBound(KeyboardAction.DRAW_FRAME_SELECTION_HINT ) )
 			println("DRAW_FRAME_SELECTION_HINT action is bound");		
-		if( scene.prosceneKeyboard.keyboardProfile().isKeyInUse('s') )
+		if( scene.defaultKeyboardAgent().keyboardProfile().isKeyInUse('s') )
 			println("'s' key is in use");
-		if( scene.prosceneKeyboard.keyboardProfile().isKeyInUse('S') )
+		if( scene.defaultKeyboardAgent().keyboardProfile().isKeyInUse('S') )
 			println("'S' key is in use");
 	    // */
 		
 		/**
 		// and in proscene drivable
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-		scene.prosceneMouse.frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
+		scene.defaultMouseAgent().frameProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
+		scene.defaultMouseAgent().frameProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
+		scene.defaultMouseAgent().frameProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
 		// */
 		
 		 /**
-		//scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
-		//scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ROLL);
-		scene.prosceneMouse.cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_RIGHT, DOF2Action.DRIVE);
+		//scene.defaultMouseAgent().cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
+		scene.defaultMouseAgent().cameraProfile().setBinding(EventConstants.TH_LEFT, DOF2Action.MOVE_FORWARD);
+		scene.defaultMouseAgent().cameraProfile().setBinding(EventConstants.TH_CENTER, DOF2Action.LOOK_AROUND);
+		scene.defaultMouseAgent().cameraProfile().setBinding(EventConstants.TH_RIGHT, DOF2Action.MOVE_BACKWARD);
+		//scene.defaultMouseAgent().cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_LEFT, DOF2Action.ROLL);
+		scene.defaultMouseAgent().cameraProfile().setBinding(EventConstants.TH_SHIFT, EventConstants.TH_RIGHT, DOF2Action.DRIVE);
 		// */
 	}
 
@@ -112,14 +115,14 @@ public class EventHandling extends PApplet {
 	
 	public boolean iFrameGrabsInput() {
 		if (scene.terseHandler().isAgentRegistered("proscene_mouse"))
-			return iFrame.grabsAgent(scene.prosceneMouse);
+			return iFrame.grabsAgent(scene.defaultMouseAgent());
 		else
 			return grabsInput;
 	}
 
 	@Override
 	public void mouseMoved() {
-		if(!scene.terseHandler().isAgentRegistered(scene.prosceneMouse)) {
+		if(!scene.terseHandler().isAgentRegistered(scene.defaultMouseAgent())) {
 		//if (!scene.isAgentRegistered("proscene_mouse")) {
 			event = new GenericDOF2Event<Constants.DOF2Action>(prevEvent, (float) mouseX, (float) mouseY);
 			if(enforced)
@@ -185,14 +188,14 @@ public class EventHandling extends PApplet {
 		}
 		if (key == 'y') {
 			enforced = !enforced;
-			if(scene.terseHandler().isAgentRegistered(scene.prosceneMouse))
+			if(scene.terseHandler().isAgentRegistered(scene.defaultMouseAgent()))
 				if(enforced) {
-					scene.prosceneMouse.setDefaultGrabber(iFrame);
-					scene.prosceneMouse.disableTracking();
+					scene.defaultMouseAgent().setDefaultGrabber(iFrame);
+					scene.defaultMouseAgent().disableTracking();
 				}
 				else {
-					scene.prosceneMouse.setDefaultGrabber(scene.pinhole().frame());
-					scene.prosceneMouse.enableTracking();
+					scene.defaultMouseAgent().setDefaultGrabber(scene.pinhole().frame());
+					scene.defaultMouseAgent().enableTracking();
 				}
 			else
 				if(enforced)

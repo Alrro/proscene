@@ -29,8 +29,8 @@ public class Grabbers extends PApplet {
 		agent.addInPool(button1);
 		agent.addInPool(button2);
 		
-		scene.prosceneMouse.addInPool(button1);
-		scene.prosceneMouse.addInPool(button2);
+		scene.defaultMouseAgent().addInPool(button1);
+		scene.defaultMouseAgent().addInPool(button2);
 		
 		//scene.terseHandler().addInAllAgentPools(button1);
 		//scene.terseHandler().addInAllAgentPools(button2);
@@ -70,10 +70,10 @@ public class Grabbers extends PApplet {
 	}
 	
 	public void keyPressed() {
-		if(  button1.grabsAgent(scene.prosceneMouse) )
-			println("prosceneMouse grabs button1");
+		if(  button1.grabsAgent(scene.defaultMouseAgent()) )
+			println("defaultMouseAgent() grabs button1");
 		else
-			println("prosceneMouse doesn't grab button1");
+			println("defaultMouseAgent() doesn't grab button1");
 		if(  button1.grabsAgent(agent) )
 			println("agent grabs button1");
 		else

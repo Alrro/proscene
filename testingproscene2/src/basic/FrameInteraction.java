@@ -16,7 +16,7 @@ public class FrameInteraction extends PApplet {
 		iFrame = new InteractiveAvatarFrame(scene);
 		iFrame.translate(new Vec(30, 30, 0));
 		scene.setJavaTimers();
-		//scene.prosceneMouse.setAsThirdPersonBindings();
+		//scene.defaultMouseAgent().setAsThirdPersonBindings();
 	}
 
 	public void draw() {
@@ -37,7 +37,7 @@ public class FrameInteraction extends PApplet {
 			fill(0, 255, 255);
 			box(12, 17, 22);
 		}
-		else if (iFrame.grabsAgent(scene.prosceneMouse)) {
+		else if (iFrame.grabsAgent(scene.defaultMouseAgent())) {
 			fill(255, 0, 0);
 			box(12, 17, 22);
 		}
@@ -52,11 +52,11 @@ public class FrameInteraction extends PApplet {
 	public void keyPressed() {
 		if( key == 'i') {
 			if( focusIFrame ) {
-				scene.prosceneMouse.setDefaultGrabber(scene.pinhole().frame());
-				scene.prosceneMouse.enableTracking();
+				scene.defaultMouseAgent().setDefaultGrabber(scene.pinhole().frame());
+				scene.defaultMouseAgent().enableTracking();
 			} else {
-				scene.prosceneMouse.setDefaultGrabber(iFrame);
-				scene.prosceneMouse.disableTracking();
+				scene.defaultMouseAgent().setDefaultGrabber(iFrame);
+				scene.defaultMouseAgent().disableTracking();
 			}
 			focusIFrame = !focusIFrame;
 		}

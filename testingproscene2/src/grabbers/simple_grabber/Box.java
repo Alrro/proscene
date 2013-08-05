@@ -38,7 +38,7 @@ public class Box {
 		
 		parent.fill(255, 0, 0);
 		
-		if (iFrame.grabsAgent(scene.prosceneMouse) )
+		if (iFrame.grabsAgent(scene.defaultMouseAgent()) )
 			parent.fill(255, 0, 0);
 		else
 			parent.fill(getColor());

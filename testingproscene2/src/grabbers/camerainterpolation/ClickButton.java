@@ -38,7 +38,7 @@ public class ClickButton extends Button2D {
 			else
 				text = "edit camera paths";
 		else {
-			if (grabsAgent(scene.prosceneMouse)) {
+			if (grabsAgent(scene.defaultMouseAgent())) {
 				if (scene.camera().keyFrameInterpolator(path)
 						.numberOfKeyFrames() > 1)
 					if (scene.camera().keyFrameInterpolator(path)

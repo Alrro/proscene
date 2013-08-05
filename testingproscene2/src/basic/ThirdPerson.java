@@ -79,15 +79,15 @@ public class ThirdPerson extends PApplet {
 		if( key == ' ' )
 		if( scene.avatar() == null ) {
 			scene.setAvatar(avatar);
-			scene.prosceneMouse.setAsThirdPersonBindings();
-			scene.prosceneMouse.setDefaultGrabber(avatar);
-			scene.prosceneMouse.disableTracking();
+			scene.defaultMouseAgent().setAsThirdPersonBindings();
+			scene.defaultMouseAgent().setDefaultGrabber(avatar);
+			scene.defaultMouseAgent().disableTracking();
 		}
 		else {
 			scene.unsetAvatar(); //simply sets avatar as null
-			scene.prosceneMouse.setAsArcballBindings();
-			scene.prosceneMouse.setDefaultGrabber(scene.pinhole().frame());
-			scene.prosceneMouse.enableTracking();
+			scene.defaultMouseAgent().setAsArcballBindings();
+			scene.defaultMouseAgent().setDefaultGrabber(scene.pinhole().frame());
+			scene.defaultMouseAgent().enableTracking();
 		}
 	}
 		

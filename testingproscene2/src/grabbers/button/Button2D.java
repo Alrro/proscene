@@ -28,7 +28,7 @@ public abstract class Button2D extends AbstractGrabber {
 		parent.textFont(myFont);
 		parent.textAlign(PApplet.CENTER);
 		setText(t);
-		scene.prosceneMouse.addInPool(this);
+		scene.defaultMouseAgent().addInPool(this);
 	}
 
 	public void setText(String text) {
@@ -40,7 +40,7 @@ public abstract class Button2D extends AbstractGrabber {
 	public void display() {
 		parent.pushStyle();		
 		parent.fill(255);
-		if (grabsAgent(scene.prosceneMouse))
+		if (grabsAgent(scene.defaultMouseAgent()))
 			parent.fill(255);
 		else
 			parent.fill(100);
