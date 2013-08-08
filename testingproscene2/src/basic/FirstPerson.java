@@ -17,7 +17,7 @@ public class FirstPerson extends PApplet {
 		scene = new Scene(this);	
 		iFrame = new InteractiveFrame(scene);
 		iFrame.translate(new Vec(30, 30, 0));
-		scene.defaultMouseAgent().setAsFirstPersonBindings();
+		scene.defaultMouseAgent().setAsFirstPerson();
 		firstPerson = true;
 	}
 
@@ -54,7 +54,7 @@ public class FirstPerson extends PApplet {
 	public void keyPressed() {
 		if( key == 'i') {
 			if( focusIFrame ) {
-				scene.defaultMouseAgent().setDefaultGrabber(scene.pinhole().frame());
+				scene.defaultMouseAgent().setDefaultGrabber(scene.viewport().frame());
 				scene.defaultMouseAgent().enableTracking();
 			} else {
 				scene.defaultMouseAgent().setDefaultGrabber(iFrame);
@@ -65,10 +65,10 @@ public class FirstPerson extends PApplet {
 		if( key == ' ') {
 			firstPerson = !firstPerson;
 			if ( firstPerson ) {
-				scene.defaultMouseAgent().setAsFirstPersonBindings();
+				scene.defaultMouseAgent().setAsFirstPerson();
 			}
 			else {
-				scene.defaultMouseAgent().setAsArcballBindings();			
+				scene.defaultMouseAgent().setAsArcball();			
 			}		
 		}
 	}

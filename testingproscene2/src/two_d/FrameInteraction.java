@@ -61,19 +61,19 @@ public class FrameInteraction extends PApplet {
 
 	/**
 	public void bindM() {		
-		scene.viewWindow().computeProjectionMatrix();
-		scene.viewWindow().computeViewMatrix();
-		scene.viewWindow().computeProjectionViewMatrix();
+		scene.window().computeProjectionMatrix();
+		scene.window().computeViewMatrix();
+		scene.window().computeProjectionViewMatrix();
 		
-		Vec pos = scene.viewWindow().position();
-		Orientable quat = scene.viewWindow().frame().orientation();
+		Vec pos = scene.window().position();
+		Orientable quat = scene.window().frame().orientation();
 
 		translate(scene.width() / 2, scene.height() / 2);
 		
 		if(scene.isRightHanded()) scale(1,-1);
 		
-		scale(scene.viewWindow().frame().inverseMagnitude().x(), 
-			  scene.viewWindow().frame().inverseMagnitude().y());
+		scale(scene.window().frame().inverseMagnitude().x(), 
+			  scene.window().frame().inverseMagnitude().y());
 		
 		rotate(-quat.angle());
 		
@@ -87,20 +87,20 @@ public class FrameInteraction extends PApplet {
 		if (key == 'x')
 			iFrame.scale(-1, 1);
 		if (key == 'X')
-			scene.viewWindow().frame().scale(-1, 1);
+			scene.window().frame().scale(-1, 1);
 		if (key == 'y')
 			iFrame.scale(1, -1);
 		if (key == 'Y')
-			scene.viewWindow().frame().scale(1, -1);
+			scene.window().frame().scale(1, -1);
 
 		/**
 		 * if(key == 't' || key == 'T') iFrame.scale(-1, 1);
 		 * if(key == 'u' || key == 'U') glIFrame
-		 * scene.viewWindow().frame().scale(1, -1);
+		 * scene.window().frame().scale(1, -1);
 		 */
 
 		if (key == 'v' || key == 'V') {
-			scene.viewWindow().flip();
+			scene.window().flip();
 		}
 
 		println("iFrame scaling: " + iFrame.scaling());
@@ -114,10 +114,10 @@ public class FrameInteraction extends PApplet {
 			println("iFrame is inverted");
 		else
 			println("iFrame is NOT inverted");
-		if (scene.viewWindow().frame().isInverted())
-			println("scene.viewWindow().frame() is inverted");
+		if (scene.window().frame().isInverted())
+			println("scene.window().frame() is inverted");
 		else
-			println("scene.viewWindow().frame() is NOT inverted");
+			println("scene.window().frame() is NOT inverted");
 	}
 	
 	public class Java2DScene extends Scene {

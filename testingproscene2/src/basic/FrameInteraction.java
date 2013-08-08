@@ -52,7 +52,7 @@ public class FrameInteraction extends PApplet {
 	public void keyPressed() {
 		if( key == 'i') {
 			if( focusIFrame ) {
-				scene.defaultMouseAgent().setDefaultGrabber(scene.pinhole().frame());
+				scene.defaultMouseAgent().setDefaultGrabber(scene.viewport().frame());
 				scene.defaultMouseAgent().enableTracking();
 			} else {
 				scene.defaultMouseAgent().setDefaultGrabber(iFrame);

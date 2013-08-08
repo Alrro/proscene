@@ -21,29 +21,29 @@ public class CameraInterpolation extends PApplet {
 
 		// create a camera path and add some key frames:
 		// key frames can be added at runtime with keys [j..n]
-		scene.camera().setPosition(new Vec(80, 0, 0));
-		scene.camera().lookAt(scene.camera().sceneCenter());
-		scene.camera().addKeyFrameToPath(1);
+		scene.viewport().setPosition(new Vec(80, 0, 0));
+		scene.viewport().lookAt(scene.viewport().sceneCenter());
+		scene.viewport().addKeyFrameToPath(1);
 
-		scene.camera().setPosition(new Vec(30, 30, -80));
-		scene.camera().lookAt(scene.camera().sceneCenter());
-		scene.camera().addKeyFrameToPath(1);
+		scene.viewport().setPosition(new Vec(30, 30, -80));
+		scene.viewport().lookAt(scene.viewport().sceneCenter());
+		scene.viewport().addKeyFrameToPath(1);
 
-		scene.camera().setPosition(new Vec(-30, -30, -80));
-		scene.camera().lookAt(scene.camera().sceneCenter());
-		scene.camera().addKeyFrameToPath(1);
+		scene.viewport().setPosition(new Vec(-30, -30, -80));
+		scene.viewport().lookAt(scene.viewport().sceneCenter());
+		scene.viewport().addKeyFrameToPath(1);
 
-		scene.camera().setPosition(new Vec(-80, 0, 0));
-		scene.camera().lookAt(scene.camera().sceneCenter());
-		scene.camera().addKeyFrameToPath(1);
+		scene.viewport().setPosition(new Vec(-80, 0, 0));
+		scene.viewport().lookAt(scene.viewport().sceneCenter());
+		scene.viewport().addKeyFrameToPath(1);
 
 		// re-position the camera:
-		scene.camera().setPosition(new Vec(0, 0, 1));
-		scene.camera().lookAt(scene.camera().sceneCenter());
+		scene.viewport().setPosition(new Vec(0, 0, 1));
+		scene.viewport().lookAt(scene.viewport().sceneCenter());
 		scene.showAll();
 
 		// drawing of camera paths are toggled with key 'r'.
-		scene.setCameraPathsAreDrawn(true);
+		scene.setViewportPathsAreDrawn(true);
 
 		buttons = new ArrayList(6);
 		for (int i = 0; i < 5; ++i)
@@ -67,10 +67,10 @@ public class CameraInterpolation extends PApplet {
 		for (int i = 1; i < buttons.size(); i++) {
 			// Check if CameraPathPlayer is still valid
 			if ((buttons.get(i) != null)
-					&& (scene.camera().keyFrameInterpolator(i) == null))
+					&& (scene.viewport().keyFrameInterpolator(i) == null))
 				buttons.set(i, null);
 			// Or add it if needed
-			if ((scene.camera().keyFrameInterpolator(i) != null)
+			if ((scene.viewport().keyFrameInterpolator(i) != null)
 					&& (buttons.get(i) == null))
 				buttons.set(i, new ClickButton(scene, new PVector(10, +(i)
 						* (h + 7)), i));

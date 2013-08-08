@@ -10,7 +10,7 @@ public class ClickButton extends Button2D {
 	boolean addBox;
 
 	public ClickButton(Scene scn, PVector p, String t, boolean addB) {
-		super(scn, p, t);
+		super(scn, p, t, 24);
 		addBox = addB;
 	}
 

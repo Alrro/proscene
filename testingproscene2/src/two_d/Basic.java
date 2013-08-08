@@ -3,7 +3,6 @@ package two_d;
 import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.dandelion.geom.*;
-import remixlab.dandelion.core.*;
 
 @SuppressWarnings("serial")
 public class Basic extends PApplet {	
@@ -21,7 +20,7 @@ public class Basic extends PApplet {
 		// */
 		scene = new Scene(this);
 		
-		//scene.viewWindow().flip();
+		//scene.window().flip();
 		//scene.camera().centerScene();
 		//scene.showAll();	
 		
@@ -64,29 +63,29 @@ public class Basic extends PApplet {
 	
 	public void keyPressed() {
 		if(key == 'u' || key == 'U') {
-			//scene.viewWindow().interpolateToZoomOnPixel(new Point(mouseX, mouseY));			
+			//scene.window().interpolateToZoomOnPixel(new Point(mouseX, mouseY));			
 			println("scale factor: " );
-			scene.viewWindow().frame().scaling().print();
-			float[] wh = scene.viewWindow().getOrthoWidthHeight();
+			scene.window().frame().scaling().print();
+			float[] wh = scene.window().getOrthoWidthHeight();
 			println("halfWidth: " + wh[0]);
 			println("halfHeight: " + wh[1]);
-			println("screenWidth: " + scene.viewWindow().screenWidth() );
-			println("screenHeight: " + scene.viewWindow().screenHeight() );			
+			println("screenWidth: " + scene.window().screenWidth() );
+			println("screenHeight: " + scene.window().screenHeight() );			
 		}
 		if(key == 'x' || key == 'X') {
-			Vec v = scene.pinhole().projectedCoordinatesOf(new Vec(0,0,0));
+			Vec v = scene.viewport().projectedCoordinatesOf(new Vec(0,0,0));
 			println(v);
 		}
 		if(key == 'v' || key == 'V') {
-			Vec v = scene.pinhole().unprojectedCoordinatesOf(new Vec(width/2,height/2,0.5f));
+			Vec v = scene.viewport().unprojectedCoordinatesOf(new Vec(width/2,height/2,0.5f));
 			println(v);
 		}
 		if(key == 'z' || key == 'Z') {
-			//scene.viewWindow().fitCircle(new Vec(0,0), 20);
-			scene.viewWindow().fitCircle(new Vec(65,65), 15);
+			//scene.window().fitCircle(new Vec(0,0), 20);
+			scene.window().fitCircle(new Vec(65,65), 15);
 		}
 		if(key == 'y' || key == 'Y') {
-			scene.viewWindow().flip();			
+			scene.window().flip();			
 		}
 	}
 	

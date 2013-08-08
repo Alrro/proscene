@@ -41,6 +41,7 @@ public class MouseMoveCameraRotate extends PApplet {
 	}
 	
 	public void keyPressed() {
+		if( key != ' ') return;
 		if( !scene.terseHandler().isAgentRegistered(agent) ) {
 			scene.terseHandler().registerAgent(agent);
 			scene.parent.registerMethod("mouseEvent", agent);

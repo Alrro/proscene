@@ -20,7 +20,7 @@ public class TwoViews extends PApplet {
 		canvas = createGraphics(640, 360, renderer);
 		scene = new Scene(this, canvas);		
 		
-		//scene.viewWindow().flip();
+		//scene.window().flip();
 		 
 		auxCanvas = createGraphics(640, 360, renderer);
 		// Note that we pass the upper left corner coordinates where the scene
@@ -58,7 +58,7 @@ public class TwoViews extends PApplet {
 		auxScene.pg().pushStyle();		
 		auxScene.pg().stroke(255,255,0);
 		auxScene.pg().fill(255,255,0,160);
-		auxScene.drawViewWindow(scene.viewWindow());
+		auxScene.drawWindow(scene.window());
 		auxScene.pg().popStyle();		
 		auxScene.endDraw();
 		auxCanvas.endDraw();
@@ -106,12 +106,12 @@ public class TwoViews extends PApplet {
 		}
 		if(key == 'u' || key== 'U' ) {
 			println("projection matrix:");
-			scene.viewWindow().projection().print();
+			scene.window().projection().print();
 			println("world matrix:");
-			scene.viewWindow().frame().worldMatrix().print();			
+			scene.window().frame().worldMatrix().print();			
 			println("view matrix:");
-			scene.viewWindow().view().print();
-			println("camera angle: " + scene.viewWindow().frame().orientation().angle());
+			scene.window().view().print();
+			println("camera angle: " + scene.window().frame().orientation().angle());
 		}
 	}
 }

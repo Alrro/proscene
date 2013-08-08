@@ -140,7 +140,7 @@ public class EventHandling extends PApplet {
 			if(grabsInput)
 				scene.terseHandler().enqueueEventTuple(new EventGrabberTuple(event, iFrame));
 			else
-				scene.terseHandler().enqueueEventTuple(new EventGrabberTuple(event, scene.pinhole().frame()));
+				scene.terseHandler().enqueueEventTuple(new EventGrabberTuple(event, scene.viewport().frame()));
 			prevEvent = event.get();
 		}
 	}
@@ -194,7 +194,7 @@ public class EventHandling extends PApplet {
 					scene.defaultMouseAgent().disableTracking();
 				}
 				else {
-					scene.defaultMouseAgent().setDefaultGrabber(scene.pinhole().frame());
+					scene.defaultMouseAgent().setDefaultGrabber(scene.viewport().frame());
 					scene.defaultMouseAgent().enableTracking();
 				}
 			else

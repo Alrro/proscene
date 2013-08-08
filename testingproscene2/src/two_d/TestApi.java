@@ -160,14 +160,14 @@ public class TestApi extends PApplet {
 		if (key == 'x')
 			f1.scale(-1, 1);
 		if (key == 'X')
-			scene.viewWindow().frame().scale(-1, 1);
+			scene.window().frame().scale(-1, 1);
 		if (key == 'y')
 			f1.scale(1, -1);
 		if (key == 'Y')
-			scene.viewWindow().frame().scale(1, -1);
+			scene.window().frame().scale(1, -1);
 		
 		if (key == 'v' || key == 'V') {
-			scene.viewWindow().flip();
+			scene.window().flip();
 		}
 	}
 }
