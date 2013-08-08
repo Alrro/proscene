@@ -23,6 +23,7 @@ public class IFeelDizzy extends PApplet {
 
 	public void setup() {
 		size(640, 360, P2D);
+		//size(640, 360, JAVA2D);
 
 		img = loadImage("dizzi.jpg");
 		scene = new Scene(this);
@@ -126,6 +127,7 @@ public class IFeelDizzy extends PApplet {
 		}
 	}
 
+	/**
 	public void keyPressed() {
 		if (key == 'p') {
 			println("M1:");
@@ -155,4 +157,5 @@ public class IFeelDizzy extends PApplet {
 			}
 		}
 	}
+	*/
 }
