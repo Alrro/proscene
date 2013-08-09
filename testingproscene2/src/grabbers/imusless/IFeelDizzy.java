@@ -22,8 +22,8 @@ public class IFeelDizzy extends PApplet {
 	int fSize = 16;
 
 	public void setup() {
-		size(640, 360, P2D);
-		//size(640, 360, JAVA2D);
+		//size(640, 360, P2D);
+		size(640, 360, JAVA2D);
 
 		img = loadImage("dizzi.jpg");
 		scene = new Scene(this);
@@ -108,14 +108,11 @@ public class IFeelDizzy extends PApplet {
 	void updateButtons() {
 		for (int i = 1; i < buttons.size(); i++) {
 			// Check if CameraPathPlayer is still valid
-			if ((buttons.get(i) != null)
-					&& (scene.viewport().keyFrameInterpolator(i) == null))
+			if ((buttons.get(i) != null) && (scene.viewport().keyFrameInterpolator(i) == null))
 				buttons.set(i, null);
 			// Or add it if needed
-			if ((scene.viewport().keyFrameInterpolator(i) != null)
-					&& (buttons.get(i) == null))
-				buttons.set(i, new ClickButton(scene, new PVector(10, +(i)
-						* (h + 7)), i));
+			if ((scene.viewport().keyFrameInterpolator(i) != null)	&& (buttons.get(i) == null))
+				buttons.set(i, new ClickButton(scene, new PVector(10, +(i) * (h + 7)), i));
 		}
 	}
 
@@ -128,6 +125,7 @@ public class IFeelDizzy extends PApplet {
 	}
 
 	/**
+	//dirty way to determine positions, orientations, and scaling:
 	public void keyPressed() {
 		if (key == 'p') {
 			println("M1:");

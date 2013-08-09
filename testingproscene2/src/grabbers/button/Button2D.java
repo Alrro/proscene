@@ -26,7 +26,7 @@ public abstract class Button2D extends AbstractGrabber {
 		myText = t;
 		myFont = parent.createFont("FFScala", fSize);
 		parent.textFont(myFont);
-		parent.textAlign(PApplet.CENTER);
+		parent.textAlign(PApplet.LEFT);
 		setText(t);
 		scene.defaultMouseAgent().addInPool(this);
 	}

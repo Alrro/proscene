@@ -83,6 +83,7 @@ public class FrameInteraction extends PApplet {
 	}
 	*/
 
+	/**
 	public void keyPressed() {
 		if (key == 'x')
 			iFrame.scale(-1, 1);
@@ -92,13 +93,6 @@ public class FrameInteraction extends PApplet {
 			iFrame.scale(1, -1);
 		if (key == 'Y')
 			scene.window().frame().scale(1, -1);
-
-		/**
-		 * if(key == 't' || key == 'T') iFrame.scale(-1, 1);
-		 * if(key == 'u' || key == 'U') glIFrame
-		 * scene.window().frame().scale(1, -1);
-		 */
-
 		if (key == 'v' || key == 'V') {
 			scene.window().flip();
 		}
@@ -119,6 +113,7 @@ public class FrameInteraction extends PApplet {
 		else
 			println("scene.window().frame() is NOT inverted");
 	}
+	*/
 	
 	public class Java2DScene extends Scene {
 		public Java2DScene(PApplet p) {
