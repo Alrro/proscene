@@ -59,11 +59,16 @@ public class MouseMoveCameraRotate extends PApplet {
 		public MouseMoveAgent(AbstractScene scn, String n) {
 			super(scn, n);
 			cameraProfile().setBinding(DOF2Action.ROTATE);
+			cameraProfile().setBinding(TH_LEFT, DOF2Action.TRANSLATE);
 		}
-		
 		public void mouseEvent(processing.event.MouseEvent e) {
 			if( e.getAction() == processing.event.MouseEvent.MOVE ) {
 				event = new GenericDOF2Event<Constants.DOF2Action>(prevEvent, e.getX() - scene.upperLeftCorner.getX(), e.getY() - scene.upperLeftCorner.getY());
+				handle(event);
+				prevEvent = event.get();
+			}
+			if( e.getAction() == processing.event.MouseEvent.DRAG ) {
+				event = new GenericDOF2Event<Constants.DOF2Action>(prevEvent, e.getX() - scene.upperLeftCorner.getX(), e.getY() - scene.upperLeftCorner.getY(), e.getModifiers(), e.getButton());
 				handle(event);
 				prevEvent = event.get();
 			}
