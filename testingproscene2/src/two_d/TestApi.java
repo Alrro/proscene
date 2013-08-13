@@ -21,28 +21,28 @@ public class TestApi extends PApplet {
 		
 		f1 = new InteractiveFrame(scene);
 		f1.translate(20, 30);
-		f1.rotate(new Rotation(HALF_PI));
+		f1.rotate(new Rot(HALF_PI));
 		//f1.scale(2f, 2.5f);
 		f1.scale(1.2f, 2.5f);
 		
 		f2 = new InteractiveFrame(scene);
 		f2.setReferenceFrame(f1);
 		f2.translate(30, 20);
-		f2.rotate(new Rotation(-QUARTER_PI));
+		f2.rotate(new Rot(-QUARTER_PI));
 		//f2.scale(1.2f, 1.1f);
 		f2.scale(-0.8f, 1.4f);
 		
 		f3 = new InteractiveFrame(scene);
 		f3.setReferenceFrame(f1);
 		f3.translate(15, 20);
-		f3.rotate(new Rotation(-HALF_PI));
+		f3.rotate(new Rot(-HALF_PI));
 		//f3.scale(1, 1.5f);
 		f3.scale(-1.5f, -1f);
 		
 		f4 = new InteractiveFrame(scene);
 		f4.setReferenceFrame(f2);
 		f4.translate(20, 15);
-		f4.rotate(new Rotation(QUARTER_PI));
+		f4.rotate(new Rot(QUARTER_PI));
 		//f4.scale(1.4f, 0.5f);
 		f4.scale(1.4f, -0.5f);
 		
@@ -134,7 +134,7 @@ public class TestApi extends PApplet {
 		drawArrow(null, vec);
 	}
 	
-	public void drawArrow(GeomFrame frame, Vec vec) {		
+	public void drawArrow(RefFrame frame, Vec vec) {		
 		if(frame != null) {
 			pushMatrix();
 			// Multiply matrix to get in the frame coordinate system.

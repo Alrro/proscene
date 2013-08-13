@@ -239,7 +239,7 @@ public class TestApi extends PApplet {
 		drawArrow(null, vec);
 	}
 	
-	public void drawArrow(GeomFrame frame, Vec vec) {		
+	public void drawArrow(RefFrame frame, Vec vec) {		
 		if(frame != null) {
 			pushMatrix();
 			// Multiply matrix to get in the frame coordinate system.

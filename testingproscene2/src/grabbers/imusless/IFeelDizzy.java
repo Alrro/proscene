@@ -7,8 +7,7 @@ import java.util.ArrayList;
 import processing.core.*;
 import remixlab.proscene.*;
 import remixlab.dandelion.core.*;
-import remixlab.dandelion.geom.GeomFrame;
-import remixlab.dandelion.geom.Rotation;
+import remixlab.dandelion.geom.*;
 import remixlab.dandelion.geom.Vec;
 
 public class IFeelDizzy extends PApplet {
@@ -35,37 +34,37 @@ public class IFeelDizzy extends PApplet {
 		image = new InteractiveFrame(scene);
 
 		message1.setPosition(33.699852f, -62.68051f);
-		message1.setOrientation(new Rotation(-1.5603539f));
+		message1.setOrientation(new Rot(-1.5603539f));
 		message1.setScaling(0.8502696f);
 		
 		message2.setPosition(49.460827f, 74.67359f);
-		message2.setOrientation(new Rotation(-1.533576f));
+		message2.setOrientation(new Rot(-1.533576f));
 		message2.setScaling(0.3391391f);
 		
 		image.setPosition(-314.30075f, -165.1348f);
-		image.setOrientation(new Rotation(-0.0136114275f));
+		image.setOrientation(new Rot(-0.0136114275f));
 		image.setScaling(0.07877492f);
 		
 		// create a camera path and add some key frames:
 		// key frames can be added at runtime with keys [j..n]
 		scene.viewport().frame().setPosition(new Vec(89.71913f, -101.32816f));
-		scene.viewport().frame().setOrientation(new Rotation(-1.542718f));
+		scene.viewport().frame().setOrientation(new Rot(-1.542718f));
 		scene.viewport().frame().setScaling(0.3391391f);
 		scene.viewport().addKeyFrameToPath(1);
 		
 		scene.viewport().frame().setPosition(new Vec(61.501305f, 71.02506f));
-		scene.viewport().frame().setOrientation(new Rotation(-1.5142304f));
+		scene.viewport().frame().setOrientation(new Rot(-1.5142304f));
 		scene.viewport().frame().setScaling(0.13526922f);
 		scene.viewport().addKeyFrameToPath(1);
 		
 		scene.viewport().frame().setPosition(new Vec(-99.00719f, -4.614401f));
-		scene.viewport().frame().setOrientation(new Rotation(-0.010666408f));
+		scene.viewport().frame().setOrientation(new Rot(-0.010666408f));
 		scene.viewport().frame().setScaling(0.8055185f);
 		scene.viewport().addKeyFrameToPath(1);
 
 		// re-position the camera:
 		scene.viewport().frame().setPosition(new Vec(89.71913f, -101.32816f));
-		scene.viewport().frame().setOrientation(new Rotation(-1.542718f));
+		scene.viewport().frame().setOrientation(new Rot(-1.542718f));
 		scene.viewport().frame().setScaling(0.3391391f);
 
 		// drawing of camera paths are toggled with key 'r'.

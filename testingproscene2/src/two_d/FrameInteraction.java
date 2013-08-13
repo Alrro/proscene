@@ -121,7 +121,7 @@ public class FrameInteraction extends PApplet {
 		}
 		
 		@Override	
-		public void applyTransformation(GeomFrame frame) {
+		public void applyTransformation(RefFrame frame) {
 			/**
 			if( renderer() instanceof RendererJava2D && isRightHanded() && frame.referenceFrame() == null )
 				scale(1,-1);
