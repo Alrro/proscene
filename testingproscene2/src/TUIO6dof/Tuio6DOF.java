@@ -1,9 +1,6 @@
 package TUIO6dof;
 
 import processing.core.*;
-import processing.data.*;
-import processing.event.*;
-import processing.opengl.*;
 
 import remixlab.tersehandling.core.*;
 import remixlab.tersehandling.event.*;

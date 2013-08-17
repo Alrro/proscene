@@ -1,9 +1,7 @@
 package TUIO6dof;
-import processing.core.PApplet;
-import processing.core.PGraphics;
-import processing.core.PVector;
-import remixlab.tersehandling.core.AbstractGrabber;
-import remixlab.tersehandling.core.Agent;
+
+import processing.core.*;
+import remixlab.tersehandling.core.*;
 import remixlab.tersehandling.event.TerseEvent;
 import remixlab.tersehandling.generic.event.GenericDOF6Event;
 import remixlab.tersehandling.generic.profile.Duoable;

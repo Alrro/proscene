@@ -2,22 +2,14 @@ package TUIO6dof;
 import java.util.HashMap;
 import java.util.Map;
 
-import processing.core.PApplet;
-import processing.core.PGraphics;
+import processing.core.*;
 import TUIO.TuioCursor;
 import TUIO.TuioPoint;
-import remixlab.tersehandling.core.EventConstants;
-import remixlab.tersehandling.core.Grabbable;
-import remixlab.tersehandling.core.TerseHandler;
-import remixlab.tersehandling.event.ClickEvent;
-import remixlab.tersehandling.event.MotionEvent;
-import remixlab.tersehandling.event.TerseEvent;
-import remixlab.tersehandling.generic.agent.GenericMotionAgent;
-import remixlab.tersehandling.generic.event.GenericClickEvent;
-import remixlab.tersehandling.generic.event.GenericDOF6Event;
-import remixlab.tersehandling.generic.profile.Duoable;
-import remixlab.tersehandling.generic.profile.GenericClickProfile;
-import remixlab.tersehandling.generic.profile.GenericMotionProfile;
+import remixlab.tersehandling.core.*;
+import remixlab.tersehandling.event.*;
+import remixlab.tersehandling.generic.agent.*;
+import remixlab.tersehandling.generic.event.*;
+import remixlab.tersehandling.generic.profile.*;
 
 public class TUIOAgent6DOF
 		extends
@@ -34,19 +26,17 @@ public class TUIOAgent6DOF
 
 	public TUIOAgent6DOF(TerseHandler scn, String n, PGraphics canvas) {
 
-		super(new GenericMotionProfile<MotionAction>(),
-				new GenericClickProfile<ClickAction>(), scn, n);
+		super(new GenericMotionProfile<MotionAction>(),	new GenericClickProfile<ClickAction>(), scn, n);
 
 		this.canvas = canvas;
 		// default bindings
 		clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
-		clickProfile()
-				.setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_ROTATION);
+		clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_ROTATION);
 		// clickProfile().setClickBinding(TH_RIGHT, 1,
 		// ClickAction.CHANGE_STROKE_WEIGHT);
 		// clickProfile().setClickBinding(TH_SHIFT, TH_RIGHT, 1,
 		// ClickAction.CHANGE_STROKE_WEIGHT);
-		profile().setBinding(TH_LEFT, MotionAction.CHANGE_POSITION);
+		profile().setBinding(MotionAction.CHANGE_POSITION);
 		profile().setBinding(TH_RIGHT, MotionAction.CHANGE_ROTATION);
 		// profile().setBinding(TH_SHIFT, TH_LEFT, MotionAction.CHANGE_SHAPE);
 		// profile().setBinding(TH_RIGHT, MotionAction.CHANGE_SHAPE);
@@ -95,24 +85,6 @@ public class TUIOAgent6DOF
 
 	}
 
-	public void handle(TerseEvent event, Grabbable grabbable) {
-		// overkill but feels safer ;)
-		if (event == null || !handler.isAgentRegistered(this))
-			return;
-		if (event instanceof Duoable<?>) {
-			if (event instanceof ClickEvent)
-				handler.enqueueEventTuple(new EventGrabberDuobleTuple(event,
-						clickProfile().handle((Duoable<?>) event), grabbable));
-			else if (event instanceof MotionEvent) {
-				((MotionEvent) event).modulate(sens);
-				if (grabbable != null)
-					handler.enqueueEventTuple(new EventGrabberDuobleTuple(
-							event, motionProfile().handle((Duoable<?>) event),
-							grabbable));
-			}
-		}
-	}
-
 	// called when a cursor is moved
 	public void updateTuioCursor(TuioCursor tcur) {
 
@@ -126,13 +98,15 @@ public class TUIOAgent6DOF
 				//PRIMER INTENTO DE MOVER EN Z ... 
 				// updateGrabber(event);
 			} else {
-				event = new GenericDOF6Event<MotionAction>(prevEvent,
-						tcur.getScreenX(canvas.width),
-						tcur.getScreenY(canvas.height), 0, 0, 0, 0, 0, TH_LEFT);
+				event = new GenericDOF6Event<MotionAction>(prevEvent, tcur.getScreenX(canvas.width),
+						                                              tcur.getScreenY(canvas.height),
+						                                              0, 0, 0, 0, 0, TH_NOBUTTON);
 				// updateGrabber(event);
 			}
-
-			handle(event, trackedGrabber);
+			disableTracking();
+		    setDefaultGrabber(trackedGrabber);
+			handle(event);
+			enableTracking();
 		} else if (cursorIdRotation != null
 				&& cursorIdRotation == tcur.getCursorID()
 				&& grabMap.size() == 1) {
@@ -147,14 +121,15 @@ public class TUIOAgent6DOF
 			int difX = lastX - x;
 			int difY = lastY + y;
 			float ratio = 100;
-			event = new GenericDOF6Event<MotionAction>(prevEvent, 0, 0, 0,
-					-difY / ratio, -difX / ratio, 0, 0, TH_RIGHT);
+			event = new GenericDOF6Event<MotionAction>(prevEvent, 0, 0, 0, -difY / ratio, -difX / ratio, 0, 0, TH_RIGHT);
 			// updateGrabber(event);
 			Grabbable grabbable4Rotate = grabMap.values().iterator().next();
 
-			PApplet.println("" + difX + " " + difY + " object"
-					+ grabbable4Rotate);
-			handle(event, grabbable4Rotate);
+			PApplet.println("" + difX + " " + difY + " object"	+ grabbable4Rotate);
+			disableTracking();
+		    setDefaultGrabber(grabbable4Rotate);
+			handle(event);
+			enableTracking();
 
 		}
 		prevEvent = event.get();
@@ -169,8 +144,7 @@ public class TUIOAgent6DOF
 
 		Grabbable grabbable = grabMap.remove(tcur.getCursorID());
 
-		// queremos quitar tb el otro parámetro, para no intentar rotar algo que
-		// ya hemos soltado
+		// queremos quitar tb el otro parametro, para no intentar rotar algo que ya hemos soltado
 		if (grabbable != null) {
 			cursorIdRotation = null;
 		}

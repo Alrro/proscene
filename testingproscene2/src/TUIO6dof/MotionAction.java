@@ -1,6 +1,6 @@
 package TUIO6dof;
-import remixlab.tersehandling.generic.profile.Actionable;
 
+import remixlab.tersehandling.generic.profile.Actionable;
 
 public enum MotionAction implements Actionable<GlobalAction> {
 	CHANGE_POSITION(GlobalAction.CHANGE_POSITION), CHANGE_ROTATION(

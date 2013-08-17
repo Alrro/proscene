@@ -37,7 +37,7 @@ public class Sphere {
 		if(drawAxis)
 			//DrawingUtils.drawAxis(parent, radius()*1.3f);
 		     scene.drawAxis(radius()*1.3f);
-		if (iFrame.grabsAgent(scene.defaultMouseAgent())) {
+		if (scene.grabsAnAgent(iFrame)) {
 			parent.fill(255, 0, 0);
 			parent.sphere(radius()*1.2f);
 		}

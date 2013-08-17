@@ -35,11 +35,11 @@ public class Box {
 		/**
 		PMatrix3D pM3d =  new PMatrix3D();
 		float [] m = new float [16];
-		Matrix3D m3d = iFrame.matrix();
+		Mat m3d = iFrame.matrix();
 		m = m3d.getTransposed(m);
 		pM3d.set(m);
-		scene.pg3d.applyMatrix(pM3d);
-		*/				
+		scene.pg3d().applyMatrix(pM3d);
+		// */				
 		//Same as the previous commented lines, but a lot more efficient:
 		iFrame.applyWorldTransformation();
 		
@@ -47,7 +47,7 @@ public class Box {
 			//DrawingUtils.drawAxis(parent, PApplet.max(w,h,d)*1.3f);
 			scene.drawAxis(PApplet.max(w,h,d)*1.3f);
 		scene.pg3d().noStroke();
-		if (iFrame.grabsAgent(scene.defaultMouseAgent()))
+		if (scene.grabsAnAgent(iFrame))
 			scene.pg3d().fill(255,0,0);
 		else
 			scene.pg3d().fill(getColor());

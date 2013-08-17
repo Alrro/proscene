@@ -6,5 +6,7 @@
 	<classpathentry kind="lib" path="/home/pierre/Dropbox/workspace/libs/all/controlP5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/p5-2x"/>
 	<classpathentry kind="lib" path="/home/pierre/Dropbox/workspace/libs/all/tersehandling.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/Dropbox/workspace/libs/all/TUIO.jar"/>
+	<classpathentry kind="lib" path="/home/pierre/Dropbox/workspace/libs/all/libTUIO.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
