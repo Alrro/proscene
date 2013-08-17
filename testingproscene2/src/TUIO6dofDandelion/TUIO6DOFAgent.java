@@ -21,10 +21,16 @@ public class TUIO6DOFAgent extends HIDAgent {
 		super(scn, n);
 		this.enableTracking();
 		scene = scn;
+		//estas acciones son 2dof, pero aun asi se pueden emplear
 		cameraProfile().setBinding(DOF6Action.ROTATE);
 		//cameraProfile().setBinding(DOF6Action.TRANSLATE);
 		//frameProfile().setBinding(DOF6Action.ROTATE);
-		frameProfile().setBinding(DOF6Action.TRANSLATE);
+		frameProfile().setBinding(DOF6Action.TRANSLATE);		
+		//esta accion requiere al menos 3 dofs:
+		//cameraProfile().setBinding(DOF6Action.ROTATE3);
+		//y esta 6:
+		//cameraProfile().setBinding(DOF6Action.TRANSLATE_ROTATE);
+		//pero hace falta reducir los objetos, mas abajo. TODO 
 	}
 
 	public void addTuioCursor(TuioCursor tcur) {
