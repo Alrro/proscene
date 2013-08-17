@@ -5,7 +5,7 @@
 
 Running this example requires the following:
 
-|| Extra-requirement: [http://creativecomputing.cc/p5libs/procontroll/ proCONTROLL library]||
+|| Extra-requirements: 1. [http://creativecomputing.cc/p5libs/procontroll/ proCONTROLL library]; and a [http://en.wikipedia.org/wiki/3Dconnexion space navigator]||
 
 <wiki:toc max_depth="1" />
 
