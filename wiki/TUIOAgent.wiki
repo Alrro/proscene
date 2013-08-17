@@ -5,7 +5,7 @@
 
 We are happy to offer this new example in collaboration with [http://edumo.net/wp/ Edumo], whom we are grateful. Running this example requires the following:
 
-|| Extra-requirements: 1. [http://www.tuio.org/?processing TUIO Processing client] and, 2. [https://code.google.com/p/tuiodroid/ tuiodroid] (if you have an Android enable device) and/or a [http://www.tuio.org/?software tuiosimulator] (if you don't)||
+|| Extra-requirements: 1. [http://www.tuio.org/?processing TUIO Processing client]; and, 2. [https://code.google.com/p/tuiodroid/ tuiodroid] (if you have an Android enable device) and/or a [http://www.tuio.org/?software tuiosimulator] (if you don't)||
 
 <wiki:toc max_depth="1" />
 
