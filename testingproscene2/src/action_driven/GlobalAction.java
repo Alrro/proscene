@@ -1,4 +1,4 @@
-package terse;
+package action_driven;
 
 public enum GlobalAction {
   CHANGE_COLOR, 

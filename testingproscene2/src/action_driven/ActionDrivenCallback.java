@@ -1,4 +1,4 @@
-package terse;
+package action_driven;
 
 import processing.core.*;
 import remixlab.tersehandling.core.*;
@@ -16,7 +16,7 @@ public class ActionDrivenCallback extends PApplet {
 
 		public MouseAgent(TerseHandler scn, String n) {
 			super(new GenericMotionProfile<MotionAction>(),
-					new GenericClickProfile<ClickAction>(), scn, n);
+				  new GenericClickProfile<ClickAction>(), scn, n);
 			// default bindings
 			clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
 			clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
@@ -26,24 +26,33 @@ public class ActionDrivenCallback extends PApplet {
 			profile().setBinding(TH_RIGHT, MotionAction.CHANGE_SHAPE);
 		}
 
+		/**
+		// 1st Choice: as it's done in the tutorial. Requires reflection
 		public void mouseEvent(processing.event.MouseEvent e) {
 			if (e.getAction() == processing.event.MouseEvent.MOVE) {
-				event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(),
-						e.getY(), e.getModifiers(), e.getButton());
+				event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(),	e.getY(), e.getModifiers(), e.getButton());
 				updateGrabber(event);
 				prevEvent = event.get();
 			}
 			if (e.getAction() == processing.event.MouseEvent.DRAG) {
-				event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(),
-						e.getY(), e.getModifiers(), e.getButton());
+				event = new GenericDOF2Event<MotionAction>(prevEvent, e.getX(),	e.getY(), e.getModifiers(), e.getButton());
 				handle(event);
 				prevEvent = event.get();
 			}
 			if (e.getAction() == processing.event.MouseEvent.CLICK) {
-				handle(new GenericClickEvent<ClickAction>(e.getX(), e.getY(),
-						e.getModifiers(), e.getButton(), e.getCount()));
+				handle(new GenericClickEvent<ClickAction>(e.getX(), e.getY(), e.getModifiers(), e.getButton(), e.getCount()));
 			}
 		}
+		// */
+		
+		/**
+		// 2nd Choice: not that simple
+		@Override
+		public GenericDOF2Event<MotionAction> feed() {
+			return new GenericDOF2Event<MotionAction>(mouseX, mouseY, TH_NOMODIFIER_MASK, TH_NOBUTTON);
+		}
+		// */
+		
 	}
 
 	public class GrabbableCircle extends AbstractGrabber {
@@ -156,12 +165,15 @@ public class ActionDrivenCallback extends PApplet {
 	MouseAgent agent;
 	TerseHandler terseHandler;
 	GrabbableCircle[] circles;
+	
+	GenericDOF2Event<MotionAction> event, prevEvent;
 
 	public void setup() {
 		size(w, h);
 		terseHandler = new TerseHandler();
 		agent = new MouseAgent(terseHandler, "my_mouse");
-		registerMethod("mouseEvent", agent);
+		//1st choice above
+		//registerMethod("mouseEvent", agent);
 		circles = new GrabbableCircle[50];
 		for (int i = 0; i < circles.length; i++)
 			circles[i] = new GrabbableCircle(agent);
@@ -177,5 +189,24 @@ public class ActionDrivenCallback extends PApplet {
 		}
 		terseHandler.handle();
 	}
-
+	
+	//3rd choice from here
+	@Override
+	public void mouseMoved() {
+		event = new GenericDOF2Event<MotionAction>(prevEvent, mouseX, mouseY, EventConstants.TH_NOMODIFIER_MASK, EventConstants.TH_NOBUTTON);
+		agent.updateGrabber(event);
+		prevEvent = event.get();	
+	}
+	
+	@Override
+	public void mouseDragged() {
+		event = new GenericDOF2Event<MotionAction>(prevEvent, mouseX, mouseY, EventConstants.TH_NOMODIFIER_MASK, EventConstants.TH_LEFT);
+		agent.handle(event);
+		prevEvent = event.get();	
+	}
+	
+	@Override
+	public void mouseClicked() {
+		agent.handle(new GenericClickEvent<ClickAction>(mouseX, mouseY, EventConstants.TH_NOMODIFIER_MASK, EventConstants.TH_RIGHT, 1));	
+	}
 }
