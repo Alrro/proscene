@@ -13,6 +13,7 @@ public class Box {
 	public Box(Scene scn, InteractiveFrame iF) {
 		scene = scn;
 		iFrame = iF;
+		iFrame.setGrabsInputThreshold(30);
 		setSize();
 		setColor();		
 	}
@@ -20,6 +21,7 @@ public class Box {
 	public Box(Scene scn) {
 		scene = scn;
 		iFrame = new InteractiveFrame(scn);
+		iFrame.setGrabsInputThreshold(25);
 		setSize();
 		setColor();		
 		setPosition();

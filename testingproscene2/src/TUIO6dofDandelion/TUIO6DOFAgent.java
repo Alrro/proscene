@@ -23,8 +23,8 @@ public class TUIO6DOFAgent extends HIDAgent {
 		scene = scn;
 		cameraProfile().setBinding(DOF6Action.ROTATE);
 		//cameraProfile().setBinding(DOF6Action.TRANSLATE);
-		frameProfile().setBinding(DOF6Action.ROTATE);
-		//frameProfile().setBinding(DOF6Action.TRANSLATE);
+		//frameProfile().setBinding(DOF6Action.ROTATE);
+		frameProfile().setBinding(DOF6Action.TRANSLATE);
 	}
 
 	public void addTuioCursor(TuioCursor tcur) {

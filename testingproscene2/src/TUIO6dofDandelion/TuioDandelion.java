@@ -26,8 +26,10 @@ public class TuioDandelion extends PApplet {
 		scene = new Scene(this);
 		agent = new TUIO6DOFAgent(scene, "MyTuioAgent");
 		scene.setRadius(150);
-		scene.showAll();	
-		boxes = new Box[50];
+		scene.showAll();
+		//'f' toggles hints
+		scene.setFrameSelectionHintIsDrawn(true);
+		boxes = new Box[30];
 		
 		for (int i = 0; i < boxes.length; i++) {
 			boxes[i] = new Box(scene);
@@ -35,6 +37,8 @@ public class TuioDandelion extends PApplet {
 		}	
 		
 		tuioClient = new TuioProcessing(this, 3333);
+		// 'h' also displays it:
+		scene.displayInfo();
 	}
 
 	public void draw() {	
