@@ -30,7 +30,9 @@ public class TUIO6DOFAgent extends HIDAgent {
 		//cameraProfile().setBinding(DOF6Action.ROTATE3);
 		//y esta 6:
 		//cameraProfile().setBinding(DOF6Action.TRANSLATE_ROTATE);
-		//pero hace falta reducir los objetos, mas abajo. TODO 
+		//pero hace falta reducir los eventos, mas abajo,
+		//como se venia haciendo en el TUIOAgent6DOF
+		//TODO 
 	}
 
 	public void addTuioCursor(TuioCursor tcur) {
