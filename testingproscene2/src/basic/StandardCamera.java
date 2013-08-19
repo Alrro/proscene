@@ -7,6 +7,9 @@ import remixlab.proscene.*;
 import remixlab.dandelion.core.*;
 import remixlab.dandelion.geom.*;
 
+
+//TODO seem broken with P5-2.0.2
+
 @SuppressWarnings("serial")
 public class StandardCamera extends PApplet {
 	Scene scene, auxScene;
@@ -14,21 +17,17 @@ public class StandardCamera extends PApplet {
 
 	public void setup() {
 		size(640, 720, P3D);
-		//size(640, 720, OPENGL);
 
 		canvas = createGraphics(640, 360, P3D);
-		//canvas = createGraphics(640, 360, OPENGL);
 		scene = new Scene(this, canvas);
 		
 		scene.defaultKeyboardAgent().profile().setShortcut('v', KeyboardAction.CAMERA_KIND);
-		// enable computation of the frustum planes equations (disabled by
-		// default)
+		// enable computation of the frustum planes equations (disabled by default)
 		scene.enableFrustumEquationsUpdate();
 		scene.setGridIsDrawn(false);
 		scene.addDrawHandler(this, "mainDrawing");
 		
 		auxCanvas = createGraphics(640, 360, P3D);
-		//auxCanvas = createGraphics(640, 360, OPENGL);
 		// Note that we pass the upper left corner coordinates where the scene
 		// is to be drawn (see drawing code below) to its constructor.
 		auxScene = new Scene(this, auxCanvas, 0, 360);
@@ -46,8 +45,7 @@ public class StandardCamera extends PApplet {
 		PGraphicsOpenGL p = s.pggl();
 		p.background(0);
 		p.noStroke();
-		// the main viewer camera is used to cull the sphere object against its
-		// frustum
+		// the main viewer camera is used to cull the sphere object against its frustum
 		switch (scene.camera().sphereIsVisible(new Vec(0, 0, 0), 40)) {
 		case VISIBLE:
 			p.fill(0, 255, 0);
@@ -63,9 +61,7 @@ public class StandardCamera extends PApplet {
 	}
 
 	public void auxiliarDrawing(Scene s) {
-		mainDrawing(s);
-		//s.drawCamera(scene.camera());		
-		
+		mainDrawing(s);		
 		s.pg3d().pushStyle();
 		s.pg3d().stroke(255,255,0);
 		s.pg3d().fill(255,255,0,160);
