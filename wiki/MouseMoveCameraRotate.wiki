@@ -10,3 +10,52 @@ Running the *`ProScene2`* technological preview *`TerseHandling`* examples requi
 Install the above *`ProScene2`* bundle as any other *Processing* library (details found [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library here])
 
 <wiki:toc max_depth="2" />
+
+=Introduction=
+
+This example is inspired by this [https://forum.processing.org/topic/proscene-rotate-camera-around-scene-center-according-to-2d-mouse-position question] where a user wants to rotate the camera by just moving the mouse (i.e., without dragging it). Simple as it seems, this behavior was not possible to be cleanly implemented in *`ProScene1`*. Here we show how simple it's done in `ProScene2` using `TerseHandling`.
+
+=Implementing a "`MouseMoveAgent`"=
+
+{{{
+public class MouseMoveAgent extends MouseAgent {
+  GenericDOF2Event<Constants.DOF2Action> event, prevEvent;
+  public MouseMoveAgent(AbstractScene scn, String n) {
+    super(scn, n);
+    // while camera rotation requires no mouse button press:
+    cameraProfile().setBinding(DOF2Action.ROTATE); // -> MouseEvent.MOVE
+    // camera translation requires a mouse left button press:
+    cameraProfile().setBinding(TH_LEFT, DOF2Action.TRANSLATE); // -> MouseEvent.DRAG
+    // Disable center and right button camera actions (inherited from MouseAgent):
+    cameraProfile().setBinding(TH_RIGHT, null);
+    cameraProfile().setBinding(TH_CENTER, null);
+  }
+  public void mouseEvent(processing.event.MouseEvent e) {
+    //don't even necessary :P
+    //if( e.getAction() == processing.event.MouseEvent.MOVE || e.getAction() == processing.event.MouseEvent.DRAG) {
+    event = new GenericDOF2Event<Constants.DOF2Action>(prevEvent, e.getX() - scene.upperLeftCorner.getX(), e.getY() - scene.upperLeftCorner.getY(), e.getModifiers(), e.getButton());
+    handle(event);
+    prevEvent = event.get();
+    //}
+  }
+}
+}}}
+
+=Switching between out two mouse agents=
+
+{{{
+public void keyPressed() {
+  // We switch between the default mouse agent and the one we created:
+  if ( key != ' ') return;
+  if ( !scene.terseHandler().isAgentRegistered(agent) ) {
+    scene.terseHandler().registerAgent(agent);
+    scene.parent.registerMethod("mouseEvent", agent);
+    scene.disableDefaultMouseAgent();
+  }
+  else {
+    scene.terseHandler().unregisterAgent(agent);
+    scene.parent.unregisterMethod("mouseEvent", agent);
+    scene.enableDefaultMouseAgent();
+  }
+}
+}}}
