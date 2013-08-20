@@ -3,9 +3,9 @@
 
 || Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package ||
 
-Running this example requires the following:
+Running the ProScene2 technological preview TerseHandling examples requires the following:
 
-|| Extra-requirement: [http://otrolado.info/remixcam.zip ProScene2 technological preview]||
+|| Extra-requirement: [http://otrolado.info/remixcam.zip ProScene2 technological preview] (source code found under the "*examples*" section of the library package ||
 
 <wiki:toc max_depth="1" />
 
