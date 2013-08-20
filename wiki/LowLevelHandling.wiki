@@ -13,7 +13,7 @@ Install the above *`ProScene2`* bundle as any other *Processing* library (detail
 
 =Introduction=
 
-Every *`ProScene2`* application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling instead.
+Every *`ProScene2`* application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling using other`TerseHandling` means instead.
 
 =Disabling high-level handling=
 
@@ -49,7 +49,7 @@ public void mouseMoved() {
 }
 }}}
 
-and a mouse drag will just cause an action to be executed:
+Using TerseEventTuples a mouse drag will cause some (mouse) dof2 actions to be executed:
 
 {{{
 public void mouseDragged() {
@@ -63,6 +63,8 @@ public void mouseDragged() {
   prevEvent = event.get();
 }
 }}}
+
+TerseEventTuples are also used to perform some `ProScene2` (keyboard) dof0 actions:
 
 {{{
 public void keyPressed() {
