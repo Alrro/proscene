@@ -9,6 +9,6 @@ Running the *`ProScene2`* technological preview *`TerseHandling`* examples requi
 
 Install the above *`ProScene2`* bundle as any other *Processing* library (details found [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library here])
 
-<wiki:toc max_depth="1" />
-
 = Introduction =
+
+We are happy to introduce these *`TerseHandling`* *`ProScene2`* sub-series, comprising LowLevelHandling and MouseMoveCameraRotate. More examples to come soon...
