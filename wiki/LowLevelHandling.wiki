@@ -13,9 +13,11 @@ Install the above *`ProScene2`* bundle as any other *Processing* library (detail
 
 =Introduction=
 
-Every `ProScene2` application holds two agents by default: a keyboard agent and a mouse agent. We begin these (sub) series illustrating how to disable them and enqueueing 
+Every `ProScene2` application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling instead.
 
 =Disabling high-level handling=
+
+Disabling the default agents typically takes place in the setup function:
 
 {{{
 public void setup() {
@@ -23,9 +25,13 @@ public void setup() {
   scene.disableDefaultKeyboardAgent();
   scene.disableDefaultMouseAgent();
   ...
+}
 }}}
 
 =Low-level handling=
+
+`Processing` "low-level" event handling requires to override *`mouse*`()* and the *`keyPressed()`* methods.
+
 
 
 {{{
