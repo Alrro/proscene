@@ -1,0 +1,12 @@
+#summary ProScene2 MouseMoveCameraRotate example
+#sidebar TerseHandlingSideBar
+
+|| Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package ||
+
+Running the *`ProScene2`* technological preview *`TerseHandling`* examples requires the following:
+
+|| Extra-requirement: [http://otrolado.info/remixcam.zip ProScene2 technological preview] (source code found under the "*examples*" section of the library package) ||
+
+Install the above *`ProScene2`* bundle as any other *Processing* library (details found [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library here])
+
+<wiki:toc max_depth="1" />
