@@ -13,7 +13,7 @@ Install the above *`ProScene2`* bundle as any other *Processing* library (detail
 
 =Introduction=
 
-Every `ProScene2` application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling instead.
+Every *`ProScene2`* application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling instead.
 
 =Disabling high-level handling=
 
@@ -30,9 +30,9 @@ public void setup() {
 
 =Low-level handling=
 
-`Processing` "low-level" event handling requires to override *`mouse*`()* and the *`keyPressed()`* methods.
+*Processing* "low-level" event handling requires to override *`mouse*`()* and the *`keyPressed()`* methods.
 
-
+We override a *`mouseMove()`* method to reduce *Processing* `mouseX` and `mouseY` variables into a *`TerseHandling`* `GenericDOF2Event` and use that event to check if the mouse grabs an `InteractiveFrame`:
 
 {{{
 public void mouseMoved() {
@@ -48,6 +48,8 @@ public void mouseMoved() {
   prevEvent = event.get();
 }
 }}}
+
+and a mouse drag will just cause an action to be executed:
 
 {{{
 public void mouseDragged() {
