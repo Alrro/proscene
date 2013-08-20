@@ -3,7 +3,7 @@
 
 =`TerseHandling` Tutorial=
 
-|| Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package ||
+|| Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package) ||
 
 `TerseHandling` is a framework designed for _sketching_ generic input events, i.e., transforming input events into high-level user-defined actions, mainly implemented using [http://en.wikipedia.org/wiki/Generics_in_Java generic programming] techniques. It provides its own set of events which supports up to [http://en.wikipedia.org/wiki/Degrees_of_freedom_(mechanics) 6-DOFs], together with a set of *agents* which parses them, i.e., identifies object *grabbers* and the *actions* they should perform, allowing the developer to focus on implementing those actions. A developer workflow using `TerseHandling` would typically involve the following tasks:
 
