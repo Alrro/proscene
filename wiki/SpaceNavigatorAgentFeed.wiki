@@ -1,7 +1,7 @@
 #summary Deploying a DOF6Agent
 #sidebar TerseHandlingSideBar
 
-|| Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package ||
+|| Requirements: [https://processing.org/download/ Processing >= 2.x], and the [http://otrolado.info/tersehandling.zip TerseHandling library] (source code found under the "*examples*" section of the library package) ||
 
 Running this example requires the following:
 
