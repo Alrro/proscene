@@ -17,6 +17,8 @@ This example is inspired by this [https://forum.processing.org/topic/proscene-ro
 
 =Implementing a "`MouseMoveAgent`"=
 
+To implement our `MouseMoveAgent` we extend a *`ProScene1`* `MouseAgent` which is just a specialization of a `TerseHandling` `GenericWheeledMotionAgent`, and define some camera bindings.
+
 {{{
 public class MouseMoveAgent extends MouseAgent {
   GenericDOF2Event<Constants.DOF2Action> event, prevEvent;
@@ -43,12 +45,15 @@ public class MouseMoveAgent extends MouseAgent {
 
 =Switching between out two mouse agents=
 
+Switching between our default mouse agent and the one we implemented above is straightforward. Just bear in mind *Processing* *`mouseEvent`* registration of our new created agent:
+
 {{{
 public void keyPressed() {
   // We switch between the default mouse agent and the one we created:
   if ( key != ' ') return;
   if ( !scene.terseHandler().isAgentRegistered(agent) ) {
     scene.terseHandler().registerAgent(agent);
+    //Processing mouseEvent registration of our agent is necessary:
     scene.parent.registerMethod("mouseEvent", agent);
     scene.disableDefaultMouseAgent();
   }
