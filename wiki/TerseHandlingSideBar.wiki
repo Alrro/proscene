@@ -15,7 +15,7 @@
     * [SpaceNavigatorAgentFeed#Updating_our_reactable_circles Updating our reactable circles]
   * [TUIOAgent 5. TuioAgent (new) ]
     * [TUIOAgent#Implementing_the_TUIOAgent Implementing the TUIOAgent]
-    * [TUIOAgent#Scene_setup_update  Scene setup update
+    * [TUIOAgent#Scene_setup_update  Scene setup update]
   * [ProScene2 6. ProScene2 TerseHandling examples]
   * [BasicKinect 7. More Agent feeds: kinect (soon)]
   * [http://otrolado.info/tersehandlingApi/ Tersehandling API]
