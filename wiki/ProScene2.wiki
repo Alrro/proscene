@@ -11,4 +11,8 @@ Install the above *`ProScene2`* bundle as any other *Processing* library (detail
 
 = Introduction =
 
-We are happy to introduce these *`TerseHandling`* *`ProScene2`* sub-series, comprising LowLevelHandling and MouseMoveCameraRotate. More examples to come soon...
+We are happy to introduce these new *`TerseHandling`* *`ProScene2`* example sub-series.
+
+`ProScene2` will provide two base specialized `TerseHandling` agents: `KeyboardAgent` and `GenericWheeledBiMotionAgent` together with some specialization of those. The aim of these series is to illustrate their use.
+
+Currently, the series comprise LowLevelHandling and MouseMoveCameraRotate. More examples to come soon...
