@@ -5,18 +5,10 @@
 
 Running the *`ProScene2`* technological preview *`TerseHandling`* examples requires the following:
 
-|| Extra-requirement: [http://otrolado.info/remixcam.zip ProScene2 technological preview] (source code found under the "*examples*" section of the library package ||
+|| Extra-requirement: [http://otrolado.info/remixcam.zip ProScene2 technological preview] (source code found under the "*examples*" section of the library package) ||
+
+Install the above *`ProScene2`* bundle as any other *Processing* library (details found [http://wiki.processing.org/w/How_to_Install_a_Contributed_Library here])
 
 <wiki:toc max_depth="1" />
 
 = Introduction =
-
-Add your content here.
-
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
