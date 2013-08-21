@@ -191,6 +191,6 @@ public class GrabbableCircle extends AbstractGrabber {
 
 Same as it was shown in the [CallBack previous example]. Now if you run the sketch (found complete at the zip package here), you should see something like this:
 
-http://otrolado.info/local/remixcam-latest/snapshots/reactable.png
+http://otrolado.info/local/tersehandling-latest/snapshots/reactable.png
 
 Move the mouse around, drag a circle once one is selected or click it!
