@@ -17,7 +17,7 @@ This example is inspired by this [https://forum.processing.org/topic/proscene-ro
 
 =Implementing a "`MouseMoveAgent`"=
 
-To implement our `MouseMoveAgent` we extend a *`ProScene2`* `MouseAgent` which is just a specialization of a `TerseHandling` `GenericWheeledMotionAgent`, and define (among others) the camera binding needed above:
+To implement our `MouseMoveAgent` we extend a *`ProScene2`* `MouseAgent` which is a specialization of the `TerseHandling` `GenericWheeledMotionAgent`, and define (among others) the camera binding needed above:
 
 {{{
 public class MouseMoveAgent extends MouseAgent {
@@ -43,7 +43,7 @@ public class MouseMoveAgent extends MouseAgent {
 }
 }}}
 
-=Switching between out two mouse agents=
+=Switching between our two mouse agents=
 
 Switching between our default mouse agent and the one we implemented above is straightforward. Just bear in mind *Processing* *`mouseEvent`* registration of our newly created agent:
 
