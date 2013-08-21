@@ -1,13 +1,10 @@
-#summary One-sentence summary of this page.
+#summary Tersehandling.js
+#sidebar TerseHandlingSideBar
 
-= Introduction =
+|| Requirements: a modern web-browswer ||
 
-Add your content here.
+TerseHandling has recently been ported to [http://en.wikipedia.org/wiki/JavaScript JavaScript]. Thus you may run online the [http://otrolado.info/local/tersehandling-latest/TerseHandling.js/BoringClickAndDrag/war/Boring.html SimpleCallback] example and the [http://otrolado.info/local/tersehandling-latest/TerseHandling.js/TuplesTerse/war/TuplesTerse.html ActionDrivenCallback] example.
 
+More documentation coming soon...
 
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+<wiki:toc max_depth="1" />
