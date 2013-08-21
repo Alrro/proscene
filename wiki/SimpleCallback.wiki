@@ -108,4 +108,4 @@ http://otrolado.info/local/tersehandling-latest/snapshots/boring.png
 
 Move the mouse around and drag a circle once one is selected!
 
-You may also run the example online using tersehandling.js [http://otrolado.info/local/tersehandling-latest/TerseHandling.js/BoringClickAndDrag/war/Boring.html here].
+You may also run the example online using tersehandling.js [http://otrolado.info/local/tersehandling-latest/TerseHandling.js/BoringClickAndDrag/war/Boring.html here] (documentation coming soon).
