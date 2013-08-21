@@ -13,7 +13,7 @@ Install the above *`ProScene2`* bundle as any other *Processing* library (detail
 
 =Introduction=
 
-Every *`ProScene2`* application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling using other`TerseHandling` means instead.
+Every *`ProScene2`* application holds two agents by default: a keyboard and a mouse. We begin these (sub) series illustrating how to disable them, implementing low-level event handling using other `TerseHandling` means instead.
 
 =Disabling high-level handling=
 
