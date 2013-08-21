@@ -107,3 +107,5 @@ If you run the sketch (found complete at the zip package here), you should see s
 http://otrolado.info/local/tersehandling-latest/snapshots/boring.png
 
 Move the mouse around and drag a circle once one is selected!
+
+You may also run the example online using tersehandling.js [http://otrolado.info/local/tersehandling-latest/TerseHandling.js/BoringClickAndDrag/war/Boring.html here].
