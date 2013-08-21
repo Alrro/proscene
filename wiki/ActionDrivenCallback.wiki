@@ -194,3 +194,5 @@ Same as it was shown in the [CallBack previous example]. Now if you run the sket
 http://otrolado.info/local/tersehandling-latest/snapshots/reactable.png
 
 Move the mouse around, drag a circle once one is selected or click it!
+
+You may also run the example online using tersehandling.js [http://otrolado.info/local/tersehandling-latest/TerseHandling.js/TuplesTerse/war/TuplesTerse.html here] (documentation coming soon).
