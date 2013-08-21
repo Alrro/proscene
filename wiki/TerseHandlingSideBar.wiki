@@ -19,6 +19,6 @@
   * [ProScene2 6. ProScene2 (new)]
     * [LowLevelHandling 6.1. LowLevelHandling]
     * [MouseMoveCameraRotate 6.2. MouseMoveCameraRotate]
-  * [TerseHandlingjs 7. TerseHandling.js]
+  * [TerseHandling_js 7. TerseHandling.js]
   * [BasicKinect 8. More Agent feeds: kinect (soon)]
   * [http://otrolado.info/tersehandlingApi/ Tersehandling API]
