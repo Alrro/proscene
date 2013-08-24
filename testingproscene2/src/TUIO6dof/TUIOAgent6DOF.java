@@ -31,15 +31,13 @@ public class TUIOAgent6DOF
 		this.canvas = canvas;
 		// default bindings
 		clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
-		clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_ROTATION);
-		// clickProfile().setClickBinding(TH_RIGHT, 1,
-		// ClickAction.CHANGE_STROKE_WEIGHT);
-		// clickProfile().setClickBinding(TH_SHIFT, TH_RIGHT, 1,
-		// ClickAction.CHANGE_STROKE_WEIGHT);
+		clickProfile().setClickBinding(TH_META, TH_RIGHT, 1, ClickAction.CHANGE_ROTATION);
+		// clickProfile().setClickBinding(TH_META, TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
+		// clickProfile().setClickBinding((TH_META | TH_SHIFT), TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
 		profile().setBinding(MotionAction.CHANGE_POSITION);
-		profile().setBinding(TH_RIGHT, MotionAction.CHANGE_ROTATION);
+		profile().setBinding(TH_META, TH_RIGHT, MotionAction.CHANGE_ROTATION);
 		// profile().setBinding(TH_SHIFT, TH_LEFT, MotionAction.CHANGE_SHAPE);
-		// profile().setBinding(TH_RIGHT, MotionAction.CHANGE_SHAPE);
+		// profile().setBinding(TH_META, TH_RIGHT, MotionAction.CHANGE_SHAPE);
 	}
 
 	public void mouseEvent(processing.event.MouseEvent e) {

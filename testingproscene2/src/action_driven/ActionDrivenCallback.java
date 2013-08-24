@@ -19,11 +19,11 @@ public class ActionDrivenCallback extends PApplet {
 				  new GenericClickProfile<ClickAction>(), scn, n);
 			// default bindings
 			clickProfile().setClickBinding(TH_LEFT, 1, ClickAction.CHANGE_COLOR);
-			clickProfile().setClickBinding(TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
-			clickProfile().setClickBinding(TH_SHIFT, TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
+			clickProfile().setClickBinding(TH_META, TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
+			clickProfile().setClickBinding((TH_META | TH_SHIFT), TH_RIGHT, 1, ClickAction.CHANGE_STROKE_WEIGHT);
 			profile().setBinding(TH_LEFT, MotionAction.CHANGE_POSITION);
 			profile().setBinding(TH_CENTER, MotionAction.CHANGE_SHAPE);
-			profile().setBinding(TH_RIGHT, MotionAction.CHANGE_SHAPE);
+			profile().setBinding(TH_META, TH_RIGHT, MotionAction.CHANGE_SHAPE);
 		}
 
 		/**
