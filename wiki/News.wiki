@@ -1,5 +1,27 @@
 #summary Wiki page containing all the project news.
 
+=20/07/2013 *Proscene v1.2.0*, "Lirio-de-Mayo" released=
+
+We are pleased to announce the immediate availability of *proscene v1.2.0*, supporting the recent *Processing-2.0.1*. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.2.0.zip here] and install it manually by yourself.
+
+This release introduces the following features (respect to *Proscene-v1.1.1*):
+
+ * *CAD Camera Profile:* This new camera profile mimics the behavior of that found in some CAD applications. To enable it just register it at the scene, e.g., {{{scene.registerCameraProfile(new CameraProfile(scene, "CAD_CAM", CameraProfile.Mode.CAD))}}}. Have a look at the new *CameraHandling.CadCamera* example which also illustrates how to set the camera CAD axis.
+ * *iFrame damping actions:* Proscene approach to damping regards it as special case of spinning/translating with _friction_ which is defined with the (new) methods {{{InteractiveFrame.setSpinningFriction}}} and {{{InteractiveFrame.setTossingFriction}}}. Just bear in mind that damping is disabled by default (which fits current mouse behaviour). Have a look at the new *Basics.MouseSensitivities* example which also illustrates the setting of all variables involved in mouse interaction.
+ * The ability to set the scene as _left-handed_ (as within *Processing* by default) or _right handed_, see `scene.setLeftHanded()` and `scene.setRightHanded()`, respectively (check also the *CadCamera* example)
+
+packaged with some of the fantastic [http://www.openprocessing.org/classroom/1158 proscene class room sketches] by Jacques Maire, found under the *Geometry*, *Quaternions*, and *Shapes* categories of the examples.
+
+Be aware of the following API changes that have been made (respect to *Proscene-v1.1.1*):
+
+ * The API used to define keyboard shortcuts and mouse bindings has slightly changed, and now looks even simpler. For instance, `setCameraMouseBinding((Scene.Modifier.SHIFT.ID | Scene.Modifier.ALT.ID | Scene.Button.LEFT.ID)`, Scene.MouseAction.ROTATE) which would have bound SHIFT + ALT + mouse left button to camera rotation, has become: `setCameraMouseBinding((Event.SHIFT | Event.ALT), LEFT, Scene.MouseAction.ROTATE)`. You might be able to guess what all the others look like (please refer to the *CameraProfile* documentation for the details). Note, however, that `Processing.Event` key modifier constants differ from their `Processing.PApplet` counterparts, and that you should *only* use the former ones within *Proscene*.
+ * {{{Frame.applyTransformation(PGraphics3D p3d)}}} has become {{{Frame.applyTransformation(Scene scn)}}}. Equivalently, you may also call the new {{{Scene.applyTransformation(Frame frame)}}} method.
+ * {{{Scene.coords()}}} which was needed by ScreenDrawing has been marked as deprecated. All 2D primitive drawing using screen coordinates should now just be simply enclosed between {{{beginScreenDrawing()}}} and {{{endScreenDrawing()}}} (please refer to the ScreenDrawing example).
+
+Thanks to Julian Nembrini, one of the main developers of the [http://anar.ch/ Anar library] (which now uses proscene as its default camera), and Gennaro Senatore from the [http://www.expedition.uk.com Expedition Engineering], <wiki:comment> and Juan Pablo Bonilla and Julián Durán (for the new *InverseKinematics* example which is found under the *FrameHandling* category), </wiki:comment> for their collaborations/contributions regarding this release. To all *Proscene* users thank you for your continuous feedback and for playing around with it!
+
+Users of *Processing 1.5.x* may download [http://proscene.googlecode.com/files/proscene-1.1.1.zip Proscene (v1.1.1)] which is the last version supporting it.
+
 =04/06/2013 *Proscene v1.2.0-beta2 (a.k.a. v-1.1.97)* "Casabe wanted" released=
 
 We are pleased to announce the immediate availability of *proscene v1.2.0-beta2*, supporting the recent *Processing-2.0* release. Download it directly through the new Processing PDE "import library" function. You may also download it [http://proscene.googlecode.com/files/proscene-1.1.97.zip here] and install it manually by yourself.
